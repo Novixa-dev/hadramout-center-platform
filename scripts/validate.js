@@ -34,6 +34,7 @@ const requiredFiles = [
   'sitemap.xml',
   'manifest.webmanifest',
   'favicon.svg',
+  'sw.js',
   'assets/logo.svg',
   'assets/icon-192.svg',
   'assets/icon-512.svg'
@@ -88,6 +89,7 @@ console.log('\n4. Verifying Institutional Documentation Suite:');
 const requiredDocs = [
   'PRD.md',
   'README.md',
+  'IMPROVEMENTS_AND_STRATEGY.md',
   'CHANGELOG.md',
   'ROADMAP.md',
   'TODO.md',
