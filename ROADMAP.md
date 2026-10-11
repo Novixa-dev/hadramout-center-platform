@@ -2,22 +2,25 @@
 
 ---
 
-## 🟢 Phase 1: Flagship Release (Current)
+## 🟢 Phase 1 & 2: Enterprise Academic Release (Completed)
 - [x] Complete institutional brand & information architecture overhaul.
 - [x] Resolution of the legacy `/about` 404 defect with full leadership & mission presentation.
-- [x] Categorized library catalog with APA/Chicago/MLA academic citation generator.
-- [x] Periodicals archive showcasing *Majallat Hadramout Al-Thaqafiyyah* (Issue 40+).
+- [x] Categorized library catalog with APA/Chicago/MLA/BibTeX/RIS/Markdown academic citation generator.
+- [x] Periodicals archive showcasing *Majallat Hadramout* (Issue 41 feature & complete historical archive).
 - [x] Interactive historical timeline of Hadhramout across ancient, Islamic, and modern eras.
-- [x] Sub-50ms instant search across publications and symposia.
+- [x] Sub-50ms instant search with autocomplete suggestions, keyword highlighting, and Command Palette (`Ctrl+K`).
+- [x] Dedicated News Engine (`#news`) and Peer-Reviewed Studies Engine (`#articles`) with full reading modal & progress bar.
+- [x] OpenGraph & Twitter Card Live Previewer suite and dynamic DOM `<meta>` updater for rich sharing on WhatsApp and social media.
+- [x] Interactive 16:9 heritage video modal player and dedicated audio player.
 - [x] High-fidelity bilingual RTL/LTR interface (Arabic primary, English secondary).
 - [x] WhatsApp direct order and research inquiry routing.
 
 ---
 
-## 🟡 Phase 2: Scholarly Enhancements (Q1 2027)
-- [ ] Dedicated digital manuscript previewer with deep-zoom capabilities for historical documents.
+## 🟡 Phase 3: Scholarly Ecosystem & Digital Manuscripts (Q1 2027)
+- [ ] Dedicated digital manuscript viewer with deep-zoom IIIF tile capabilities for historical documents.
 - [ ] Interactive archaeological map plotting ancient trade routes and ports (Sumhuram, Khor Rori, Qana, Al-Shihr).
-- [ ] Full-text search inside magazine PDF files via client-side WebAssembly indexing.
+- [ ] Full-text search inside magazine PDF files via client-side Pagefind / WebAssembly indexing.
 
 ---
 

@@ -58,6 +58,8 @@ try {
   assert(data.institution && data.institution.nameAr, 'Institution metadata verified');
   assert(data.publications && data.publications.length >= 8, `Publications catalog verified (${data.publications.length} books found)`);
   assert(data.magazines && data.magazines.length >= 3, `Periodicals archive verified (${data.magazines.length} issues found)`);
+  assert(data.articles && data.articles.length >= 6, `Articles & Studies verified (${data.articles.length} studies found)`);
+  assert(data.news && data.news.length >= 4, `News archive verified (${data.news.length} news items found)`);
   assert(data.forumEvents && data.forumEvents.length >= 2, `Forum events verified (${data.forumEvents.length} events found)`);
   assert(data.timelineMilestones && data.timelineMilestones.length >= 5, `Historical timeline verified (${data.timelineMilestones.length} milestones found)`);
   assert(data.translations && data.translations.ar && data.translations.en, 'Dual-language i18n dictionaries verified (ar/en)');

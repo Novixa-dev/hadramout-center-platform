@@ -2,6 +2,20 @@
 
 All notable changes to the Hadhramout Center Digital Platform are documented here.
 
+## [3.0.0] - 2026-10-11
+### Enterprise Academic Release V3.0 (Live Portal Parity & 5000% Architectural Leap)
+- **Live Portal Parity:** Audited and synchronized live data from `https://hadramout.center/` including Issue 41, peer-reviewed articles by notable Hadhrami scholars, UNESCO heritage coverage, Ba-Huraiz and Bakathir cultural forums, and the latest published dictionaries.
+- **Dedicated News Engine:** Added `#news` route, breaking news ticker banner, institutional press releases, and high-resolution event cards.
+- **Peer-Reviewed Studies Engine:** Added `#articles` route and academic studies catalog covering archaeology, linguistics, diaspora, and literature.
+- **Academic Article Reader:** Implemented rich reading modal with reading progress indicator bar, dynamic font scaling, estimated reading time, and instant citation generators.
+- **Command Palette (`Ctrl + K` / `Cmd + K`):** Implemented instant keyboard-driven search and navigation across all views, books, and articles.
+- **Digital Sharing & Dynamic OpenGraph Suite:** Created interactive OpenGraph and Twitter card live preview modal with instant clipboard copying, social direct sharing, and dynamic DOM `<meta>` synchronization.
+- **Interactive Heritage Media:** Responsive 16:9 modal video player for symposium recordings and dedicated heritage audio player.
+- **Academic Citation & Exporters:** Direct export for APA 7th, Chicago 17th, MLA 9th, BibTeX (`.bib`), RIS (`.ris`), and Markdown (`.md`).
+- **Catalog Layout Flexibility:** Added Grid vs. List view switcher with dynamic sorting by Year, Title, and Popularity.
+- **Audio Haptics:** Subtle Web Audio API acoustic micro-feedback on primary interactive controls.
+- **Validation Suite:** Updated `scripts/validate.js` to assert data integrity for news, articles, and new architecture.
+
 ## [1.1.0] - 2026-10-07
 ### Autonomous Engineering Standards, Arabic Master Playbook & Verification Suite
 - **Added:** Workspace autonomous agent rules suite in `.agents/rules/` (`engineering-standards.md`, `autonomous-workflow.md`, `git-workflow.md`, `quality-assurance.md`).

@@ -169,6 +169,8 @@
         <ul class="nav-menu" id="nav-menu">
           <li><a href="#home" class="nav-link active" data-nav="home" id="nav-home">الرئيسية</a></li>
           <li><a href="#about" class="nav-link" data-nav="about" id="nav-about">عن المركز</a></li>
+          <li><a href="#news" class="nav-link" data-nav="news" id="nav-news">الأخبار</a></li>
+          <li><a href="#articles" class="nav-link" data-nav="articles" id="nav-articles">المقالات</a></li>
           <li><a href="#magazines" class="nav-link" data-nav="magazines" id="nav-magazines">المجلة</a></li>
           <li><a href="#books" class="nav-link" data-nav="books" id="nav-books">الكتب</a></li>
           <li><a href="#conferences" class="nav-link" data-nav="conferences" id="nav-conferences">المؤتمرات</a></li>
@@ -181,8 +183,27 @@
 
       <!-- Header Actions -->
       <div class="header-actions">
-        <!-- Academic Reader Utilities -->
+        <!-- Academic Reader & Navigation Utilities -->
         <div class="header-utility-group">
+          <!-- Instant Command Palette (Ctrl+K) -->
+          <button class="font-scaler-btn" id="btn-open-command-palette" aria-label="البحث السريع والانتقال الفوري (Ctrl+K)" title="البحث الفوري (Ctrl+K)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+
+          <!-- Social Share & OpenGraph Previewer -->
+          <button class="font-scaler-btn" id="btn-open-og-preview" aria-label="معاينة بطاقة المشاركة (OpenGraph)" title="معاينة بطاقة المشاركة (OpenGraph)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+
           <!-- Dark / Daylight Theme Toggle -->
           <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="تبديل الوضع الليلي الأكاديمي" title="تبديل الوضع الليلي">
             <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -236,6 +257,8 @@
       <ul class="mobile-nav-list">
         <li><a href="#home" class="mobile-nav-link active" data-nav="home">الرئيسية</a></li>
         <li><a href="#about" class="mobile-nav-link" data-nav="about">عن المركز</a></li>
+        <li><a href="#news" class="mobile-nav-link" data-nav="news">الأخبار</a></li>
+        <li><a href="#articles" class="mobile-nav-link" data-nav="articles">المقالات</a></li>
         <li><a href="#magazines" class="mobile-nav-link" data-nav="magazines">مجلة حضرموت</a></li>
         <li><a href="#books" class="mobile-nav-link" data-nav="books">إصدارات الكتب</a></li>
         <li><a href="#conferences" class="mobile-nav-link" data-nav="conferences">المؤتمرات العلمية</a></li>
@@ -270,13 +293,14 @@
         </div>
 
         <!-- Unified Fast Academic Search Bar -->
-        <div class="search-container" role="search">
+        <div class="search-container" role="search" style="position: relative;">
           <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <input type="text" id="global-search-input" class="search-input" placeholder="ابحث في عناوين الكتب، المؤرخين، الأبحاث، وأعداد المجلة..." autocomplete="off">
+          <input type="text" id="global-search-input" class="search-input" placeholder="ابحث في عناوين الكتب، المقالات، الأخبار، والمؤرخين..." autocomplete="off">
           <span class="search-shortcut-badge" id="search-esc-badge">ESC للمسح</span>
+          <div id="search-suggestions-dropdown" class="search-suggestions-dropdown"></div>
         </div>
 
         <!-- Category Filter Chips -->
@@ -287,6 +311,28 @@
           <button class="filter-chip" data-category="ports-trade" id="filter-ports">الموانئ والتجارة</button>
           <button class="filter-chip" data-category="archaeology" id="filter-archaeology">الآثار والنقوش</button>
           <button class="filter-chip" data-category="islamic" id="filter-islamic">التاريخ الإسلامي</button>
+          <button class="filter-chip" data-category="literature" id="filter-literature">الأدب والتراث</button>
+          <button class="filter-chip" data-category="diaspora" id="filter-diaspora">الهجرة والمهجر</button>
+        </div>
+
+        <!-- Academic Metrics Counter Strip -->
+        <div class="metrics-counter-bar">
+          <div class="metric-item">
+            <span class="metric-number">41+</span>
+            <span class="metric-label" id="txt-stat-magazines">أعداد مجلة محكمة</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-number">10+</span>
+            <span class="metric-label" id="txt-stat-books">إصدارات ودراسات منشورة</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-number">50+</span>
+            <span class="metric-label" id="txt-stat-events">ندوة ومحاضرة فكرية</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-number">1000+</span>
+            <span class="metric-label" id="txt-stat-archives">وثيقة ومخطوطة مؤرشفة</span>
+          </div>
         </div>
       </div>
     </section>
@@ -296,9 +342,29 @@
 
       <!-- 1. HOME VIEW (Overview Dashboard) -->
       <div id="view-home" class="page-view active">
-        
-        <!-- Featured Magazine Volume Section -->
+
+        <!-- Breaking / Latest Center News Section -->
         <section class="section" style="padding-top: 3.5rem;">
+          <div class="container">
+            <div class="section-header">
+              <span class="section-eyebrow" id="txt-home-news-eyebrow">المركز في الميدان</span>
+              <h2 class="section-title" id="txt-home-news-title">آخر الأخبار والتغطيات المؤسسية</h2>
+              <p class="section-subtitle" id="txt-home-news-subtitle">متابعةٌ دوريةٌ لأنشطة المركز العلمية وزيارات الوفود والشراكات الأكاديمية.</p>
+            </div>
+
+            <!-- Home News Grid -->
+            <div class="news-grid" id="home-news-grid">
+              <!-- Populated by app.js -->
+            </div>
+
+            <div style="text-align: center; margin-top: 2.5rem;">
+              <a href="#news" class="btn-secondary" id="btn-view-all-news">عرض جميع الأخبار والتغطيات الأرشيفية</a>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Featured Magazine Volume Section (Issue 41) -->
+        <section class="section section-alt">
           <div class="container">
             <div class="section-header">
               <span class="section-eyebrow" id="txt-mag-eyebrow">الإصدار الدوري للمركز</span>
@@ -306,31 +372,54 @@
               <p class="section-subtitle" id="txt-mag-subtitle">مجلةٌ فصليةٌ محكّمة تُعنى بالدراسات التاريخية وتوثيق التراث الأدبي والفكري لحضرموت.</p>
             </div>
 
-            <!-- Featured Issue 40 Card -->
+            <!-- Featured Issue 41 Card -->
             <div class="magazine-featured-card" id="magazine-featured-card">
               <div class="magazine-cover-frame">
-                <img src="https://files.hadramout.center/media/2026/09/image-6.png" alt="غلاف مجلة حضرموت الثقافية العدد 40" class="magazine-cover-img" id="mag-feat-cover">
+                <img src="https://files.hadramout.center/media/2026/09/image-6.png" alt="غلاف مجلة حضرموت الثقافية العدد 41" class="magazine-cover-img" id="mag-feat-cover">
               </div>
               <div class="magazine-details">
-                <span class="magazine-badge" id="mag-feat-badge">العدد الأخير الصادر · 40</span>
-                <h3 class="magazine-title" id="mag-feat-title">مجلة حضرموت الثقافية — العدد الأربعون</h3>
+                <span class="magazine-badge" id="mag-feat-badge">العدد الأخير الصادر · 41</span>
+                <h3 class="magazine-title" id="mag-feat-title">مجلة حضرموت الثقافية — العدد الحادي والأربعون</h3>
                 <p class="magazine-desc" id="mag-feat-desc">
-                  صدر عن المركز العدد الأربعون محتوياً على ملف واسع حول الهجرة الحضرمية في بلدان المهجر الشرقي، وأبحاث في العلاقات التاريخية، ومقالات وثائقية تسبر أغوار الموروث الحضرمي الإنساني.
+                  صدر عن المركز العدد (41) من مجلة حضرموت الثقافية محتوياً عدداً من الأضواء والقراءات والحوارات والشخصيات والترجمات والدراسات والكتابات والإبداع الفكري والأكاديمي الرصين.
                 </p>
                 <div class="magazine-meta-list">
-                  <span>المقالات: <strong>14 بحثاً ومقالة</strong></span>
-                  <span>الصفحات: <strong>184 صفحة</strong></span>
+                  <span>المقالات: <strong>16 بحثاً ومقالة</strong></span>
+                  <span>الصفحات: <strong>196 صفحة</strong></span>
                   <span>الناشر: <strong>مركز حضرموت للدراسات</strong></span>
                 </div>
                 <div style="display: flex; gap: 0.85rem; flex-wrap: wrap; margin-top: 0.5rem;">
                   <a href="#magazines" class="btn-primary" style="background-color: var(--color-amber-500); color: #000000;" id="btn-read-issue">
                     طالع تفاصيل العدد وفهرسه
                   </a>
+                  <button class="btn-secondary btn-preview-pdf" data-issue="41" style="background: rgba(255,255,255,0.1); color: #ffffff; border-color: rgba(255,255,255,0.2);">
+                    معاينة الفهرس والصفحات (PDF)
+                  </button>
                   <a href="#magazines" class="btn-secondary" style="background: rgba(255,255,255,0.1); color: #ffffff; border-color: rgba(255,255,255,0.2);">
                     أرشيف الأعداد السابقة
                   </a>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Latest Articles Section -->
+        <section class="section">
+          <div class="container">
+            <div class="section-header">
+              <span class="section-eyebrow" id="txt-home-articles-eyebrow">الأبحاث والدراسات التوثيقية</span>
+              <h2 class="section-title" id="txt-home-articles-title">أحدث المقالات والدراسات المحكمة</h2>
+              <p class="section-subtitle" id="txt-home-articles-subtitle">قراءات نقدية ودراسات تاريخية موثقة بقلم كبار المؤرخين والباحثين.</p>
+            </div>
+
+            <!-- Home Articles Grid -->
+            <div class="articles-grid" id="home-articles-grid">
+              <!-- Populated by app.js -->
+            </div>
+
+            <div style="text-align: center; margin-top: 2.5rem;">
+              <a href="#articles" class="btn-primary" id="btn-view-all-articles">تصفح جميع المقالات والأبحاث المحكمة</a>
             </div>
           </div>
         </section>
@@ -342,6 +431,27 @@
               <span class="section-eyebrow" id="txt-books-eyebrow">المستودع المعرفي المطبوع</span>
               <h2 class="section-title" id="txt-books-title">سلسلة إصدارات الكتب والدراسات</h2>
               <p class="section-subtitle" id="txt-books-subtitle">مؤلفاتٌ ودراساتٌ محكّمة في تاريخ حضرموت القديم والوسيط والمعاصر وتراثها اللغوي والبحري.</p>
+            </div>
+
+            <!-- Catalog Toolbar -->
+            <div class="catalog-toolbar">
+              <div class="toolbar-stats" id="home-books-count-badge">الإصدارات المعروضة: 10</div>
+              <div class="toolbar-controls">
+                <select id="home-books-sort-select" class="sort-select">
+                  <option value="newest">الأحدث نشراً</option>
+                  <option value="oldest">الأقدم</option>
+                  <option value="title">أبجدياً (أ-ي)</option>
+                  <option value="pages">الأكثر صفحات</option>
+                </select>
+                <div class="view-mode-toggle">
+                  <button class="view-mode-btn active" id="btn-home-books-grid" title="عرض شبكي">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  </button>
+                  <button class="view-mode-btn" id="btn-home-books-list" title="عرض قائمة">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Book Cards Grid -->
@@ -479,6 +589,75 @@
         </section>
       </div>
 
+      <!-- 2.5 NEWS VIEW (Field Coverage & Institutional Milestones) -->
+      <div id="view-news" class="page-view" style="display: none;">
+        <section class="section">
+          <div class="container">
+            <div class="section-header">
+              <span class="section-eyebrow" id="txt-news-archive-eyebrow">المركز في الميدان</span>
+              <h2 class="section-title" id="txt-news-archive-title">الأخبار والأنشطة والفعاليات</h2>
+              <p class="section-subtitle" id="txt-news-archive-subtitle">
+                متابعةٌ مستمرةٌ لزيارات الوفود الدولية، الورش الاستراتيجية، والشراكات الأكاديمية مع الجامعات والمؤسسات.
+              </p>
+            </div>
+
+            <!-- Full News Grid -->
+            <div class="news-grid" id="full-news-grid">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 2.8 ARTICLES VIEW (Peer-Reviewed Inquiries & Studies) -->
+      <div id="view-articles" class="page-view" style="display: none;">
+        <section class="section">
+          <div class="container">
+            <div class="section-header">
+              <span class="section-eyebrow" id="txt-articles-archive-eyebrow">الأبحاث والدراسات التوثيقية</span>
+              <h2 class="section-title" id="txt-articles-archive-title">أحدث المقالات والدراسات المحكمة</h2>
+              <p class="section-subtitle" id="txt-articles-archive-subtitle">
+                نخبةٌ من المقالات التاريخية والأدبية والوثائقية بأقلام أساتذة التاريخ والباحثين المحكمين.
+              </p>
+            </div>
+
+            <!-- Category Filter Chips for Articles -->
+            <div class="filter-bar" id="articles-filter-bar" style="margin-bottom: 1.5rem;">
+              <button class="filter-chip active" data-article-category="all">الكل</button>
+              <button class="filter-chip" data-article-category="ports-trade">الموانئ والتجارة</button>
+              <button class="filter-chip" data-article-category="literature">الأدب والشعر</button>
+              <button class="filter-chip" data-article-category="diaspora">الهجرة والمهجر</button>
+              <button class="filter-chip" data-article-category="biography">التراجم والسير</button>
+              <button class="filter-chip" data-article-category="education">تاريخ التعليم</button>
+            </div>
+
+            <!-- Articles Catalog Toolbar -->
+            <div class="catalog-toolbar">
+              <div class="toolbar-stats" id="articles-count-badge">المقالات المعروضة: 6</div>
+              <div class="toolbar-controls">
+                <select id="articles-sort-select" class="sort-select">
+                  <option value="newest">الأحدث نشراً</option>
+                  <option value="views">الأكثر قراءة</option>
+                  <option value="title">أبجدياً (أ-ي)</option>
+                </select>
+                <div class="view-mode-toggle">
+                  <button class="view-mode-btn active" id="btn-articles-grid" title="عرض شبكي">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  </button>
+                  <button class="view-mode-btn" id="btn-articles-list" title="عرض قائمة">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="articles-grid" id="full-articles-grid">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </section>
+      </div>
+
       <!-- 3. MAGAZINES VIEW (Periodicals Archive) -->
       <div id="view-magazines" class="page-view" style="display: none;">
         <section class="section">
@@ -508,6 +687,27 @@
               <p class="section-subtitle" id="txt-books-archive-subtitle">
                 مكتبةٌ شاملة للدراسات والكتب الصادرة عن المركز مع إمكانية التصفية الموضوعية والاقتباس الأكاديمي المباشر.
               </p>
+            </div>
+
+            <!-- Full Books Catalog Toolbar -->
+            <div class="catalog-toolbar">
+              <div class="toolbar-stats" id="full-books-count-badge">الإصدارات المعروضة: 10</div>
+              <div class="toolbar-controls">
+                <select id="full-books-sort-select" class="sort-select">
+                  <option value="newest">الأحدث نشراً</option>
+                  <option value="oldest">الأقدم</option>
+                  <option value="title">أبجدياً (أ-ي)</option>
+                  <option value="pages">الأكثر صفحات</option>
+                </select>
+                <div class="view-mode-toggle">
+                  <button class="view-mode-btn active" id="btn-full-books-grid" title="عرض شبكي">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  </button>
+                  <button class="view-mode-btn" id="btn-full-books-list" title="عرض قائمة">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Publications Catalog Grid -->
@@ -744,6 +944,99 @@
       </div>
     </div>
   </div>
+
+  <!-- Article Full Reader Modal -->
+  <div class="modal-overlay" id="article-reader-modal" role="dialog" aria-modal="true" aria-labelledby="reader-article-title">
+    <div class="modal-dialog article-reader-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="reader-article-title">قراءة المقال والبحث المحكم</h3>
+        <button class="modal-close-btn" id="reader-modal-close-btn" aria-label="إغلاق">&times;</button>
+      </div>
+      <div class="modal-body" id="reader-modal-body">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Player Modal -->
+  <div class="modal-overlay" id="video-player-modal" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+    <div class="modal-dialog video-modal-dialog">
+      <div class="modal-header" style="background: var(--color-primary-900); color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <h3 class="modal-title" id="video-modal-title" style="color: #ffffff;">مشغل الوسائط المرئية</h3>
+        <button class="modal-close-btn" id="video-modal-close-btn" aria-label="إغلاق" style="color: #ffffff;">&times;</button>
+      </div>
+      <div id="video-iframe-slot" class="video-player-frame-wrap">
+        <!-- Iframe injected by app.js -->
+      </div>
+      <div class="video-modal-info" id="video-modal-info">
+        <!-- Meta injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Command Palette Modal (Ctrl + K) -->
+  <div class="modal-overlay" id="command-palette-modal" role="dialog" aria-modal="true" aria-labelledby="command-palette-title">
+    <div class="modal-dialog command-palette-dialog">
+      <div class="command-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="command-palette-input" class="command-palette-input" placeholder="اكتب للانتقال إلى قسم أو البحث في المراجع..." autocomplete="off">
+        <button class="modal-close-btn" id="command-palette-close-btn" aria-label="إغلاق" style="position: static; font-size: 1.5rem;">&times;</button>
+      </div>
+      <ul class="command-results-list" id="command-results-list">
+        <!-- Injected by app.js -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Social Media & OpenGraph Previewer Modal -->
+  <div class="modal-overlay" id="og-preview-modal" role="dialog" aria-modal="true" aria-labelledby="og-modal-title">
+    <div class="modal-dialog og-preview-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="og-modal-title">معاينة بطاقة المشاركة الرقمية (OpenGraph & Twitter Card)</h3>
+        <button class="modal-close-btn" id="og-modal-close-btn" aria-label="إغلاق">&times;</button>
+      </div>
+      <div class="modal-body" id="og-modal-body">
+        <p style="font-size: 0.9rem; color: var(--color-text-muted);">
+          معاينة حية ومطابقة لمعايير المشاركة على واتساب، منصة X، وفيسبوك مع فحص الوسوم الميتادية (OpenGraph Meta Tags):
+        </p>
+        <div class="og-card-frame">
+          <img src="https://hadramout.center/opengraph-image.jpg?opengraph-image.d1f55754.jpg" alt="معاينة بطاقة المشاركة" class="og-preview-img" id="og-view-img">
+          <div class="og-preview-content">
+            <span class="og-preview-domain">HADRAMOUT.CENTER</span>
+            <h4 class="og-preview-title" id="og-view-title">مركز حضرموت للدراسات التاريخية والتوثيق والنشر</h4>
+            <p class="og-preview-desc" id="og-view-desc">المنصة العلمية المرجعية لمركز حضرموت للدراسات التاريخية والتوثيق والنشر بالمكلا — حفظ الذاكرة وتوثيق تاريخ وتراث وحضارة حضرموت.</p>
+          </div>
+        </div>
+
+        <div class="share-channel-buttons">
+          <button class="btn-share-channel btn-share-wa" id="btn-share-whatsapp">واتساب</button>
+          <button class="btn-share-channel btn-share-x" id="btn-share-x">منصة X</button>
+          <button class="btn-share-channel btn-share-fb" id="btn-share-facebook">فيسبوك</button>
+          <button class="btn-share-channel btn-share-tg" id="btn-share-telegram">تليجرام</button>
+          <button class="btn-share-channel btn-share-copy" id="btn-share-copylink">نسخ الرابط</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Preview Simulation Modal -->
+  <div class="modal-overlay" id="pdf-preview-modal" role="dialog" aria-modal="true" aria-labelledby="pdf-modal-title">
+    <div class="modal-dialog pdf-preview-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="pdf-modal-title">معاينة الوثيقة الأكاديمية (PDF Preview)</h3>
+        <button class="modal-close-btn" id="pdf-modal-close-btn" aria-label="إغلاق">&times;</button>
+      </div>
+      <div class="modal-body" id="pdf-modal-body">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress-bar" id="reading-progress-bar"></div>
 
   <!-- Floating Toast Notification -->
   <div class="toast-notification" id="toast-notification" role="status" aria-live="polite">

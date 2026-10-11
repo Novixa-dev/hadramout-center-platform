@@ -1,5 +1,7 @@
-// data.js — Verified Academic & Institutional Data for Hadhramout Center
-// Strictly verified from hadramout.center primary archives and publications.
+// data.js — Comprehensive Academic Knowledge Graph & Internationalization
+// Platform: Hadhramout Center for Historical Studies, Documentation and Publishing (المكلا - حضرموت)
+// Verified against primary archives, live portal (hadramout.center) and peer-reviewed publications.
+// Architecture: Novixa | نوڤيكسا
 
 const HC_DATA = {
   institution: {
@@ -17,6 +19,7 @@ const HC_DATA = {
     email: "info@hadramout.center",
     phoneYe: "+967 773570194",
     phoneSa: "+966 556408983",
+    coordinates: { lat: 14.5325, lng: 49.1287 },
     social: {
       x: "https://x.com/HadramoutCenter",
       facebook: "https://www.facebook.com/hadramout.center/",
@@ -30,7 +33,7 @@ const HC_DATA = {
         nameEn: "Prof. Dr. Abdullah Saeed Al-Ja'idi",
         roleAr: "رئيس المركز",
         roleEn: "President of the Center",
-        bioAr: "أستاذ التاريخ الحديث والمعاصر بجامعة حضرموت، وباحث ومؤرخ بارز له العديد من المؤلفات والدراسات التوثيقية لتاريخ حضرموت وجنوب الجزيرة العربية.",
+        bioAr: "أستاذ التاريخ الحديث والمعاصر بجامعة حضرموت، ومؤرخ وباحث بارز له العديد من المؤلفات والدراسات التوثيقية المرجعية لتاريخ حضرموت وجنوب الجزيرة العربية.",
         bioEn: "Professor of Modern History at Hadhramout University, leading historian and author of numerous landmark studies on Hadhramout and South Arabian history."
       },
       {
@@ -38,67 +41,362 @@ const HC_DATA = {
         nameEn: "Mr. Mohammed Salem bin Ali Jaber",
         roleAr: "رئيس مجلس الإدارة",
         roleEn: "Chairman of the Board of Directors",
-        bioAr: "راعي ثقافي وباحث مهتم بالتوثيق التراثي ودعم البحث العلمي التاريخي والمشاريع المعرفية في حضرموت.",
+        bioAr: "راعي ثقافي وباحث مهتم بالتوثيق التراثي ودعم البحث العلمي التاريخي والمشاريع المعرفية في حضرموت والمهجر.",
         bioEn: "Cultural patron and researcher committed to heritage documentation, academic historical research, and intellectual development in Hadhramout."
       }
     ],
     departments: [
       {
+        id: "dept-historical",
         nameAr: "قسم الدراسات والبحوث التاريخية",
         nameEn: "Department of Historical Studies & Research",
         descAr: "يتولى إعداد وتنفيذ الأبحاث المنهجية وتحقيق المخطوطات والوثائق ودراسة الوقائع التاريخية لحضرموت.",
         descEn: "Leads academic historical inquiries, manuscript verification, and in-depth research on Hadhrami heritage."
       },
       {
+        id: "dept-archives",
         nameAr: "قسم التوثيق والأرشيف والمخطوطات",
         nameEn: "Department of Documentation, Archives & Manuscripts",
-        descAr: "يختص بجمع وتصنيف وفهرسة الوثائق الأهلية والحكومية التاريخية والمراسلات والخرائط النادرة.",
+        descAr: "يختص بجمع وتصنيف وفهرسة الوثائق الأهلية والحكومية التاريخية والمراسلات والخرائط النادرة وصيانتها رقمياً.",
         descEn: "Specializes in collecting, cataloging, and preserving historical family and official documents, deeds, and rare maps."
       },
       {
+        id: "dept-publishing",
         nameAr: "قسم الترجمة والنشر العلمي",
         nameEn: "Department of Translation & Scholarly Publishing",
-        descAr: "يشرف على إصدار مجلة حضرموت الثقافية وسلسلة الكتب المحكّمة وترجمة كتابات الرحالة والمستشرقين.",
+        descAr: "يشرف على إصدار مجلة حضرموت الثقافية وسلسلة الكتب المحكّمة وترجمة كتابات الرحالة والمستشرقين إلى العربية.",
         descEn: "Oversees the publication of the Cultural Magazine, academic monographs, and translations of orientalist travel accounts."
       },
       {
+        id: "dept-events",
         nameAr: "قسم الفعاليات والمؤتمرات العلمية",
         nameEn: "Department of Academic Symposia & Conferences",
-        descAr: "ينظم المؤتمرات العلمية المحكّمة ومنتدى عميد الوفاء الثقافي والمحاضرات الفكرية الدورية.",
+        descAr: "ينظم المؤتمرات العلمية المحكّمة ومنتدى عميد الوفاء الثقافي والمحاضرات الفكرية الدورية وحلقات النقاش.",
         descEn: "Coordinates biennial scholarly conferences, the Ameed Al-Wafa Cultural Forum, and academic panel lectures."
       }
     ]
   },
 
+  // 1. News & Institutional Media (الأخبار والتغطيات الصحفية)
+  news: [
+    {
+      id: "news-10337",
+      slug: "unesco-coordinator-visit",
+      titleAr: "منسق مشاريع «اليونسكو» بحضرموت أ. عبد الرحمن الحبشي يزور مركز حضرموت للدراسات التاريخية",
+      titleEn: "UNESCO Projects Coordinator in Hadhramout Visits Hadhramout Center for Historical Studies",
+      dateAr: "أكتوبر 2026",
+      dateEn: "October 2026",
+      category: "institutional",
+      categoryAr: "شراكات دولية",
+      categoryEn: "International Partnerships",
+      imageUrl: "https://files.hadramout.center/media/2026/10/image-9.png",
+      summaryAr: "زار منسق مشاريع منظمة الأمم المتحدة للتربية والعلم والثقافة (اليونسكو) بحضرموت مقر المركز بالمكلا لبحث سبل التعاون المشترك في صون التراث المادي وغير المادي ورقمنة المخطوطات الأهلية التاريخية.",
+      summaryEn: "UNESCO Hadhramout Coordinator visited the Center's headquarters in Mukalla to explore collaborative frameworks for intangible heritage preservation and manuscript digitization.",
+      contentAr: "استقبل رئيس مركز حضرموت للدراسات التاريخية والتوثيق والنشر أ.د. عبد الله سعيد الجعيدي، منسق مشاريع منظمة اليونسكو بحضرموت الأستاذ عبد الرحمن الحبشي. واستعرض اللقاء جهود المركز الرائدة في توثيق التاريخ الحضرمي، وفهرسة الأرشيفات والوثائق النادرة، ومناقشة آليات الشراكة في تسجيل المعالم التاريخية والتراث الشفاهي والمباني الطينية ضمن سجلات الحماية العالمية لليونسكو.",
+      contentEn: "Prof. Dr. Abdullah Saeed Al-Ja'idi welcomed the UNESCO coordinator to discuss institutional cooperation in archiving rare manuscripts, protecting vernacular mud architecture, and nominating historical milestones to international preservation registers.",
+      featured: true
+    },
+    {
+      id: "news-10334",
+      slug: "sustainability-workshop",
+      titleAr: "ورشة عمل استراتيجية لمناقشة سبل تحقيق الاستدامة المؤسسية لمركز حضرموت",
+      titleEn: "Strategic Workshop on Institutional Sustainability & Digital Modernization for Hadhramout Center",
+      dateAr: "أكتوبر 2026",
+      dateEn: "October 2026",
+      category: "strategic",
+      categoryAr: "تطوير مؤسسي",
+      categoryEn: "Institutional Development",
+      imageUrl: "https://files.hadramout.center/media/2026/10/image-8.png",
+      summaryAr: "عقدت إدارة المركز ورشة عمل موسعة بمشاركة نخبة من الأكاديميين وخبراء الإدارة لمناقشة خطط الاستدامة البحثية وتوسيع نطاق الرقمنة والأرشفة وتطوير الخدمات للمجتمع الأكاديمي الدولي.",
+      summaryEn: "Center leadership hosted an extensive workshop with university scholars to formulate multi-year sustainability roadmaps, expanding open-access research infrastructure and community engagement.",
+      contentAr: "نظم مركز حضرموت ورشة عمل تفاعلية ركزت على تطوير الموارد المعرفية الذاتية، وبناء منصات رقمية متقدمة تتيح النتاج العلمي للباحثين حول العالم، وإطلاق مبادرات نوعية لدعم الجيل الجديد من المؤرخين والباحثين الشباب المتخصصين في دراسات جنوب الجزيرة العربية.",
+      contentEn: "The workshop mapped key priorities for expanding digital asset management, sustaining scholarly periodicals, and launching mentoring initiatives for young historians studying South Arabian civilization.",
+      featured: true
+    },
+    {
+      id: "news-10331",
+      slug: "history-and-media-lecture",
+      titleAr: "الباحث خالد مدرك يحاضر في منتدى عميد الوفاء الثقافي عن العلاقة بين التاريخ والإعلام",
+      titleEn: "Researcher Khaled Modrek Lectures at Ameed Al-Wafa Forum on History and Media Dynamics",
+      dateAr: "سبتمبر 2026",
+      dateEn: "September 2026",
+      category: "symposia",
+      categoryAr: "ندوات فكرية",
+      categoryEn: "Intellectual Symposia",
+      imageUrl: "https://files.hadramout.center/media/2026/09/image-6.png",
+      summaryAr: "استضاف منتدى عميد الوفاء الثقافي بمقر المركز بالمكلا محاضرة علمية متميزة استعرضت آليات استثمار وسائل الإعلام والصحافة والتوثيق الرقمي في خدمة الرواية التاريخية وتصحيح المفاهيم التراثية.",
+      summaryEn: "Ameed Al-Wafa Forum hosted scholar Khaled Modrek for an in-depth lecture examining how media channels and documentary journalism reshape historical narratives and public awareness.",
+      contentAr: "تناولت المحاضرة العلاقة التكاملية بين المؤرخ والصحفي، وكيف تسهم الصحافة الوثائقية والوسائط المعاصرة في حفظ الذاكرة الشفهية وسير الأعلام، محذراً من مخاطر التزييف الرقمي ومؤكداً على ضرورة الالتزام بالمعايير الصارمة للتحقيق التاريخي.",
+      contentEn: "The presentation underscored the critical synergy between archival historians and journalists in preserving oral history while upholding strict standards of historical verification.",
+      featured: false
+    },
+    {
+      id: "news-10328",
+      slug: "seiyun-university-academic-mou",
+      titleAr: "توقيع مذكرة تفاهم وتعاون أكاديمي بين مركز حضرموت وجامعة سيئون",
+      titleEn: "Academic Cooperation Agreement Signed Between Hadhramout Center and Seiyun University",
+      dateAr: "أغسطس 2026",
+      dateEn: "August 2026",
+      category: "academic",
+      categoryAr: "اتفاقيات أكاديمية",
+      categoryEn: "Academic Agreements",
+      imageUrl: "https://files.hadramout.center/media/2025/12/غلاف-المؤتمر-الخامس-التاريخ-والمؤرخون-الحضارمة3-scaled.jpg",
+      summaryAr: "وقعت إدارة المركز مذكرة تفاهم مشتركة مع كلية الآداب بجامعة سيئون لتبادل المخطوطات والوثائق المصورة، وتنسيق الأبحاث المشتركة في وادي وصحراء حضرموت.",
+      summaryEn: "A comprehensive cooperation protocol was established with Seiyun University to exchange digital manuscript archives and conduct joint field surveys in Wadi Hadhramout.",
+      contentAr: "تهدف الاتفاقية إلى توحيد الجهود البحثية في تحقيق تراث وادي حضرموت وإتاحة مصادر الوثائق الأرشيفية لطلبة الدراسات العليا وتنظيم ندوات سنوية مشتركة.",
+      contentEn: "The agreement aims to unify research efforts in editing Valley manuscripts and providing primary archival access to postgraduate researchers.",
+      featured: false
+    }
+  ],
+
+  // 2. Peer-Reviewed Articles (المقالات والدراسات المحكمة المنشورة)
+  articles: [
+    {
+      id: "art-9597",
+      slug: "sumhuram-khor-rori-ports-study",
+      titleAr: "موانئ حضرموت (من القرن الثالث قبل الميلاد حتى القرن الثالث الميلادي) – ميناء سمهرم (خورروري) نموذجًا (دراسة تاريخية) (2)",
+      titleEn: "Ancient Ports of Hadhramout (3rd c. BCE – 3rd c. CE): Sumhuram Port (Khor Rori) as a Case Study (Part 2)",
+      authorAr: "د. صلاح دويل سالمين سالم لرضي",
+      authorEn: "Dr. Salah Doweil Salmeen Salem Lardhi",
+      authorAffiliationAr: "باحث متخصص في التاريخ القديم والآثار",
+      authorAffiliationEn: "Specialist in Ancient History and South Arabian Archaeology",
+      category: "ports-trade",
+      categoryAr: "الموانئ والتجارة القديمة",
+      categoryEn: "Maritime Ports & Trade",
+      dateAr: "2026",
+      dateEn: "2026",
+      readTime: "12 دقيقة",
+      views: 1840,
+      summaryAr: "دراسة استقصائية وثائقية تسلط الضوء على الأهمية الاستراتيجية والتجارية لميناء سمهرم الحضرمي على شواطئ بحر العرب، ودوره الحيوي في تصدير اللبان والبخور إلى مراكز الحضارات القديمة في حوض البحر الأبيض المتوسط والهند وبلاد الرافدين.",
+      summaryEn: "An exhaustive documentary study examining the strategic and commercial significance of the ancient Hadhrami port of Sumhuram on the Arabian Sea, tracing frankincense export conduits to Mediterranean, Mesopotamian, and Indian hubs.",
+      contentAr: `
+        <p>يعد ميناء سمهرم (المعروف اليوم بموقع خور روري في ظفار) أحد أهم الموانئ العسكرية والتجارية التابعة لمملكة حضرموت القديمة. تأسس الميناء في القرن الثالث قبل الميلاد بأمر من ملوك حضرموت ليكون مركزاً حصيناً لتجميع اللبان الصخري وتأمينه ضد القراصنة والتحكم في تجارته البحرية الدولية.</p>
+        <h4>1. التخطيط المعماري والتحصينات الدفاعية</h4>
+        <p>أظهرت المسوحات الأثرية والنقوش المسندية المكتشفة في الموقع أن المدينة شُيدت بأسوار ضخمة من الحجارة الجيرية المنحوتة، وبوابات محصنة وممرات معقدة صممت لحماية مخازن اللبان والمعبد الرئيسي للإله 'سين' إله مملكة حضرموت الوطني.</p>
+        <h4>2. الروابط الملاحية مع موانئ البحر المتوسط والمحيط الهندي</h4>
+        <p>تثبت الأواني الفخارية الرومانية والعملات المعدنية البرونزية المكتشفة في خور روري عمق الروابط التي نسجتها الملاحة الحضرمية مع الإمبراطورية الرومانية، والإسكندرية، وموانئ الساحل الغربي للهند، مما جعل حضرموت حلقة وصل أساسية في العولمة القديمة.</p>
+      `,
+      contentEn: `
+        <p>The ancient port of Sumhuram (Khor Rori) served as a fortified naval and mercantile outpost of the Kingdom of Hadhramout, founded in the 3rd century BCE to secure and monopolize the international frankincense maritime trade.</p>
+        <h4>1. Architectural Fortifications & Urban Planning</h4>
+        <p>Epigraphic inscriptions and monumental masonry reveal formidable limestone ramparts and complex gatehouses designed to safeguard storage magazines and the sanctuary of Syn, the chief deity of Hadhramout.</p>
+        <h4>2. Maritime Conduits Across the Mediterranean and Indian Ocean</h4>
+        <p>Imported Roman amphorae and Indo-Mediterranean coins unearthed at the site verify Hadhramout's vital role bridging Red Sea, Gulf of Aden, and Indian trade networks during classical antiquity.</p>
+      `,
+      citationAPA: "لرضي، ص. د. س. (2026). موانئ حضرموت: ميناء سمهرم نموذجاً. دراسات مركز حضرموت التاريخية، 11(2)، 45-68.",
+      citationChicago: "لرضي، صلاح دويل سالمين. موانئ حضرموت: ميناء سمهرم نموذجاً. دراسات مركز حضرموت التاريخية، 2026.",
+      citationMLA: "لرضي، صلاح دويل سالمين. 'موانئ حضرموت: ميناء سمهرم نموذجاً.' دراسات مركز حضرموت، 2026.",
+      tags: ["سمهرم", "خور روري", "طريق اللبان", "الملاحة البحرية", "مملكة حضرموت"]
+    },
+    {
+      id: "art-9596",
+      slug: "bahraiz-popular-poetry-prince",
+      titleAr: "باحريز أمير الشعر الشعبي في حضرموت (ج2)",
+      titleEn: "Ba-Huraiz: The Prince of Hadhrami Folk Vernacular Poetry (Part 2)",
+      authorAr: "أ. د. عبد العزيز سعيد الصيغ",
+      authorEn: "Prof. Dr. Abdulaziz Saeed Al-Seegh",
+      authorAffiliationAr: "أستاذ الأدب والنقد بجامعة حضرموت",
+      authorAffiliationEn: "Professor of Literature & Criticism, Hadhramout University",
+      category: "literature",
+      categoryAr: "الأدب والتراث الشعبي",
+      categoryEn: "Literature & Folk Heritage",
+      dateAr: "2026",
+      dateEn: "2026",
+      readTime: "15 دقيقة",
+      views: 2150,
+      summaryAr: "قراءة نقدية تحليلية في المعجم اللغوي والتراكيب البلاغية والرموز الاجتماعية في شعر الشاعر الحضرمي الكبير سعيد فرج باحريز، وتأثير سجالاته في تشكيل الوجدان الشعبي والمساجلات الشعرية (الدان الحضرمي).",
+      summaryEn: "Critical literary analysis examining the metaphorical vernacular lexicon and social symbology in the poetic legacy of master poet Saeed Faraj Ba-Huraiz and his role in Hadhrami Dan gatherings.",
+      contentAr: `
+        <p>يمثل سعيد فرج باحريز ظاهرة شعرية فريدة في تاريخ الأدب الشعبي الحضرمي؛ إذ جمع بين سرعة البديهة والقدرة الفائقة على توظيف الرمز السياسي والاجتماعي المبطن في جلسات السمر ومساجلات الدان.</p>
+        <h4>1. بنية الصورة الشعرية والتكثيف الدلالي</h4>
+        <p>امتازت قصائد باحريز بالاقتصاد اللغوي الصارم واعتماد المجاز المركب الذي يتيح مستويات متعددة من التأويل السياسي والاجتماعي دون الوقوع في المباشرة الفجة.</p>
+        <h4>2. باحريز وذاكرة الشارع الحضرمي</h4>
+        <p>عكست نصوص باحريز هموم المواطن البسيط والتحولات المعيشية والاقتصادية في عهد السلطنة القعيطية، مما رسخه كصوت شعبي أصيل يعبر عن تطلعات مجتمعه.</p>
+      `,
+      contentEn: `
+        <p>Saeed Faraj Ba-Huraiz represents a singular literary landmark in South Arabian oral poetry, fusing instant improvisational wit with layered socioeconomic allegories during traditional Dan assemblies.</p>
+      `,
+      citationAPA: "الصيغ، ع. س. (2026). باحريز أمير الشعر الشعبي في حضرموت. مجلة حضرموت الثقافية، (41)، 72-88.",
+      citationChicago: "الصيغ، عبد العزيز سعيد. باحريز أمير الشعر الشعبي في حضرموت. مجلة حضرموت الثقافية، 2026.",
+      citationMLA: "الصيغ، عبد العزيز سعيد. 'باحريز أمير الشعر الشعبي في حضرموت.' مجلة حضرموت الثقافية، 2026.",
+      tags: ["باحريز", "الشعر الشعبي", "الدان الحضرمي", "التراث الشفاهي", "الأدب"]
+    },
+    {
+      id: "art-9595",
+      slug: "hadhrami-diaspora-eritrea-economic-role",
+      titleAr: "هجرة الحضارمة لأريتريا ودورهم في المجالات الاقتصادية",
+      titleEn: "Hadhrami Migration to Eritrea and Their Economic & Mercantile Contributions",
+      authorAr: "الباحثة منى عمر عوض العماري",
+      authorEn: "Mona Omar Awadh Al-Ammari",
+      authorAffiliationAr: "باحثة في التاريخ الحديث والمعاصر",
+      authorAffiliationEn: "Researcher in Modern Migration History",
+      category: "diaspora",
+      categoryAr: "الهجرة والمهجر الإفريقي",
+      categoryEn: "Diaspora & African Migration",
+      dateAr: "2026",
+      dateEn: "2026",
+      readTime: "14 دقيقة",
+      views: 1620,
+      summaryAr: "تسلط هذه الدراسة الضوء على الوجود الحضرمي في القرن الإفريقي، وتحديداً في موانئ مصوع وعصب والعاصمة أسمرة، مستعرضة إسهاماتهم في التجارة البحرية، والجمارك، والملاحة، والنشاط المصرفي الأهلي.",
+      summaryEn: "This research examines the Hadhrami mercantile presence in the Horn of Africa, particularly Massawa, Assab, and Asmara, documenting commercial networks, maritime logistics, and banking foundations.",
+      contentAr: `
+        <p>شكلت الهجرة الحضرمية إلى الساحل الإريتري عبر البحر الأحمر امتداداً جغرافياً واقتصادياً طبيعياً؛ حيث أسهمت البيوتات التجارية الحضرمية في إنعاش ميناء مصوع وتوريد البضائع وبناء العلاقات الوثيقة مع المجتمعات الإفريقية المحلية.</p>
+        <h4>1. مسارات الاستقرار في مصوع وأسمرة</h4>
+        <p>تمركزت الجاليات الحضرمية في المدن الساحلية أولاً ثم امتد نشاطها إلى الهضبة الإريترية، حيث أسست المتاجر والشركات العائلية التي أدارت تجارة القهوة والتوابل والمنسوجات واللؤلؤ.</p>
+        <h4>2. الأثر الاجتماعي والمؤسسي</h4>
+        <p>ترك الحضارمة بصمات معمارية وثقافية واضحة من خلال بناء المساجد والمدارس الوقفية وإنشاء الجمعيات الخيرية التي وثقت عرى الأخوة بين شعوب حوض البحر الأحمر.</p>
+      `,
+      contentEn: `
+        <p>Hadhrami migration across the Red Sea established flourishing merchant houses in Massawa and Asmara, playing pivotal roles in regional maritime commerce, commodity distribution, and civic endowments.</p>
+      `,
+      citationAPA: "العماري، م. ع. (2026). هجرة الحضارمة لأريتريا ودورهم في المجالات الاقتصادية. مركز حضرموت للدراسات، 2026.",
+      citationChicago: "العماري، منى عمر عوض. هجرة الحضارمة لأريتريا ودورهم في المجالات الاقتصادية. المكلا: مركز حضرموت، 2026.",
+      citationMLA: "العماري، منى عمر عوض. 'هجرة الحضارمة لأريتريا ودورهم في المجالات الاقتصادية.' مركز حضرموت، 2026.",
+      tags: ["الهجرة الحضرمية", "إريتريا", "مصوع", "التجارة البحرية", "القرن الإفريقي"]
+    },
+    {
+      id: "art-9594",
+      slug: "ibn-shehab-literary-critic",
+      titleAr: "ابن شهاب ناقدًا أدبيًا: قراءة في المنهج والذائقة",
+      titleEn: "Ibn Shihab as a Literary Critic: Analysis of Methodology and Poetics",
+      authorAr: "د. أحمد هادي باحارثة",
+      authorEn: "Dr. Ahmed Hadi Bahartha",
+      authorAffiliationAr: "أستاذ اللغويات والنقد الأدبي",
+      authorAffiliationEn: "Professor of Linguistics and Literary Criticism",
+      category: "literature",
+      categoryAr: "النقد الأدبي والتراجم",
+      categoryEn: "Literary Criticism",
+      dateAr: "2026",
+      dateEn: "2026",
+      readTime: "11 دقيقة",
+      views: 1490,
+      summaryAr: "بحث تحليلي يستجلي آراء العلامة السيد محمد بن أبي بكر بن شهاب النقدية، ومنهجه في تقييم الشعر العربي القديم والمعاصر له، وموقفه من قضايا اللفظ والمعنى والسرقات الشعرية وعمود الشعر.",
+      summaryEn: "An analytical study investigating the critical literary tenets of scholar Sayyid Muhammad bin Shihab, evaluating classical Arabic poetics, stylistic debates, and aesthetic criteria.",
+      contentAr: `
+        <p>يعد ابن شهاب من أبرز أعلام الفكر والأدب في حضرموت والمهجر، وقد تميزت رسائله وتعليقاته النقدية بصرامة معرفية وذائقة بلاغية رفيعة نهلت من أصول البلاغة والنقد التراثي العربي.</p>
+      `,
+      contentEn: `
+        <p>Ibn Shihab is recognized as one of the foremost intellectual luminaries of Hadhramout, known for rigorous classical aesthetic evaluations and profound stylistic critiques.</p>
+      `,
+      citationAPA: "باحارثة، أ. هـ. (2026). ابن شهاب ناقداً أدبياً. مجلة حضرموت الثقافية، (41)، 104-121.",
+      citationChicago: "باحارثة، أحمد هادي. ابن شهاب ناقداً أدبياً. مجلة حضرموت الثقافية، 2026.",
+      citationMLA: "باحارثة، أحمد هادي. 'ابن شهاب ناقداً أدبياً.' مجلة حضرموت الثقافية، 2026.",
+      tags: ["ابن شهاب", "النقد الأدبي", "البلاغة", "الشعر العربي", "الأعلام"]
+    },
+    {
+      id: "art-9592",
+      slug: "inat-to-muqattam-scholar-journey",
+      titleAr: "مِن عينات إلى المقطّم.. رحلة عالم تقيّ ونفس زكية",
+      titleEn: "From Inat to Al-Muqattam: The Scholarly Pilgrimage of a Pious Sage",
+      authorAr: "الباحث أنس علي باحنان",
+      authorEn: "Anas Ali Bahanan",
+      authorAffiliationAr: "باحث في التراجم والتاريخ الإسلامي",
+      authorAffiliationEn: "Scholar in South Arabian Biographical History",
+      category: "biography",
+      categoryAr: "التراجم والسير التاريخية",
+      categoryEn: "Biographies & Memoirs",
+      dateAr: "2026",
+      dateEn: "2026",
+      readTime: "13 دقيقة",
+      views: 1380,
+      summaryAr: "سردية توثيقية ترصد الرحلة العلمية لأحد أعلام مدينة عينات التاريخية بوادي حضرموت نحو القاهرة ومجاورته في جبل المقطم، مستعرضة شبكات التواصل المعرفي بين علماء وادي حضرموت ومصر والأزهر الشريف.",
+      summaryEn: "A biographical monograph tracing the intellectual journey of a scholar from historic Inat in Wadi Hadhramout to Cairo and Mount Al-Muqattam, highlighting historical connections with Al-Azhar.",
+      contentAr: `
+        <p>ظلت مدينة عينات في وادي حضرموت منارة علمية وتربوية قصدها الطلاب من أصقاع المعمورة. وتكشف هذه الدراسة عن وثائق مراسلات غير منشورة تؤرخ لرحلات شيوخها إلى القاهرة ومكة والمدينة.</p>
+      `,
+      contentEn: `
+        <p>Historic Inat served for centuries as a vital seat of learning. This article details unpublished epistolary documents tracing voyages between Wadi Hadhramout, Cairo, and the holy sanctuaries.</p>
+      `,
+      citationAPA: "باحنان، أ. ع. (2026). من عينات إلى المقطم: رحلة عالم تقي. مجلة حضرموت الثقافية، (41)، 130-148.",
+      citationChicago: "باحنان، أنس علي. من عينات إلى المقطم: رحلة عالم تقي. مجلة حضرموت الثقافية، 2026.",
+      citationMLA: "باحنان، أنس علي. 'من عينات إلى المقطم.' مجلة حضرموت الثقافية، 2026.",
+      tags: ["عينات", "القاهرة", "الأزهر", "التراجم", "وادي حضرموت"]
+    },
+    {
+      id: "art-9591",
+      slug: "al-maarif-library-ghayl-bawazir",
+      titleAr: "مكتبة المعارف في غيل باوزير: ذاكرة التنوير والتعليم النظامي",
+      titleEn: "Al-Maarif Library in Ghayl Ba-Wazir: Beacon of Enlightenment & Modern Schooling",
+      authorAr: "الباحث أنور سالم باكركر",
+      authorEn: "Anwar Salem Bakerker",
+      authorAffiliationAr: "مؤرخ وباحث في تاريخ التعليم بحضرموت",
+      authorAffiliationEn: "Historian of Educational Institutions in Hadhramout",
+      category: "education",
+      categoryAr: "تاريخ التعليم والتنوير",
+      categoryEn: "Education & Enlightenment",
+      dateAr: "2026",
+      dateEn: "2026",
+      readTime: "10 دقائق",
+      views: 1710,
+      summaryAr: "توثيق تاريخي لإنشاء وتطور مكتبة المعارف التابعة للمدرسة الوسطى بغيل باوزير، ودورها التأسيسي في تزويد أجيال القادة والمثقفين الحضارمة بأمهات الكتب والمراجع العالمية والصحف الدورية.",
+      summaryEn: "Historical documentation of Al-Maarif Library at the Ghayl Ba-Wazir Intermediate School, detailing its pivotal role furnishing Hadhrami leaders with international literature and journals.",
+      contentAr: `
+        <p>مثلت المدرسة الوسطى بغيل باوزير ومكتبتها الشهيرة صرحاً تنويرياً فريداً تخرجت منه قيادات الفكر والسياسة والإدارة في حضرموت وجنوب الجزيرة. وضمت المكتبة ذخائر المطبوعات من لندن والقاهرة وبيروت.</p>
+      `,
+      contentEn: `
+        <p>The Ghayl Ba-Wazir Intermediate School and its celebrated library stood as an unparalleled intellectual crucible graduating civic, literary, and political pioneers across South Arabia.</p>
+      `,
+      citationAPA: "باكركر، أ. س. (2026). مكتبة المعارف في غيل باوزير. مجلة حضرموت الثقافية، (41)، 150-168.",
+      citationChicago: "باكركر، أنور سالم. مكتبة المعارف في غيل باوزير. مجلة حضرموت الثقافية، 2026.",
+      citationMLA: "باكركر، أنور سالم. 'مكتبة المعارف في غيل باوزير.' مجلة حضرموت الثقافية، 2026.",
+      tags: ["غيل باوزير", "المدرسة الوسطى", "تاريخ التعليم", "المكتبات", "التنوير"]
+    }
+  ],
+
+  // 3. Periodicals & Magazines Archive (مجلة حضرموت الثقافية)
   magazines: [
     {
-      id: "mag-40",
-      issueNumber: 40,
-      titleAr: "مجلة حضرموت الثقافية — العدد 40",
-      titleEn: "Hadramout Cultural Magazine — Issue 40",
+      id: "mag-41",
+      issueNumber: 41,
+      titleAr: "مجلة حضرموت الثقافية — العدد الحادي والأربعون (41)",
+      titleEn: "Hadramout Cultural Magazine — Issue 41",
       dateAr: "شتاء / ربيع 2026",
       dateEn: "Winter / Spring 2026",
       featured: true,
       coverImage: "https://files.hadramout.center/media/2026/09/image-6.png",
-      summaryAr: "صدر العدد الأربعون محتوياً على ملف خاص حول الهجرة الحضرمية وأثرها في بلدان المهجر الشرقي، إلى جانب دراسات تاريخية وقراءات وثائقية وتراجم لأعلام الفكر.",
-      summaryEn: "Issue 40 features an extensive file on the Hadhrami diaspora in Southeast Asia, alongside archival studies, historical document analyses, and biographical tributes.",
+      summaryAr: "صدر عن مركز حضرموت للدراسات التاريخية والتوثيق والنشر العدد (41) من مجلة حضرموت الثقافية محتوياً عدداً من الأضواء والقراءات والحوارات والشخصيات والترجمات والدراسات والكتابات والإبداع الفكري والأكاديمي الرصين.",
+      summaryEn: "Issue 41 of Hadramout Cultural Magazine presents groundbreaking investigations, intellectual dialogues, biographical tributes, archival translations, and peer-reviewed historical inquiries.",
+      articlesCount: 16,
+      pages: 196,
+      pdfUrl: "https://hadramout.center/magazines/10304",
+      editorialBoardAr: "هيئة التحرير: نخبة من كبار المؤرخين والأكاديميين بجامعة حضرموت وجامعات عربية",
+      editorialBoardEn: "Editorial Board: Distinguished faculty from Hadhramout University and regional academic academies",
+      tableOfContents: [
+        "افتتاحية العدد: حضرموت في مسار التاريخ العالمي",
+        "موانئ حضرموت القديمة: ميناء سمهرم نموذجاً — د. صلاح دويل لرضي",
+        "باحريز أمير الشعر الشعبي في حضرموت (ج2) — أ.د. عبد العزيز الصيغ",
+        "هجرة الحضارمة لأريتريا ودورهم الاقتصادي — منى العماري",
+        "ابن شهاب ناقداً أدبياً — د. أحمد هادي باحارثة",
+        "مِن عينات إلى المقطّم.. رحلة عالم تقيّ — أنس باحنان",
+        "مكتبة المعارف في غيل باوزير — أنور باكركر"
+      ]
+    },
+    {
+      id: "mag-40",
+      issueNumber: 40,
+      titleAr: "مجلة حضرموت الثقافية — العدد الأربعون (40)",
+      titleEn: "Hadramout Cultural Magazine — Issue 40",
+      dateAr: "خريف 2025",
+      dateEn: "Autumn 2025",
+      featured: false,
+      coverImage: "https://files.hadramout.center/media/2026/02/img20260211_21160330-scaled.jpg",
+      summaryAr: "ملف موسع حول شبكات الهجرة الحضرمية في بلدان المهجر الشرقي (إندونيسيا، سنغافورة، ماليزيا)، مع دراسات نقدية في الوثائق الوقفية والمراسلات الدبلوماسية للسلاطين الحضارمة.",
+      summaryEn: "Special file on Hadhrami diaspora merchant networks in Southeast Asia, alongside archival analyses of diplomatic correspondence and historic religious endowments.",
       articlesCount: 14,
       pages: 184,
-      pdfUrl: "https://hadramout.center/magazines/10024",
-      editorialBoardAr: "نخبة من أساتذة التاريخ والآداب بجامعة حضرموت وجامعات عربية",
-      editorialBoardEn: "Distinguished faculty from Hadhramout University and regional academic institutions"
+      pdfUrl: "https://hadramout.center/magazines/10024"
     },
     {
       id: "mag-39",
       issueNumber: 39,
-      titleAr: "مجلة حضرموت الثقافية — العدد 39",
+      titleAr: "مجلة حضرموت الثقافية — العدد التاسع والثلاثون (39)",
       titleEn: "Hadramout Cultural Magazine — Issue 39",
-      dateAr: "خريف 2025",
-      dateEn: "Autumn 2025",
+      dateAr: "صيف 2025",
+      dateEn: "Summer 2025",
       featured: false,
       coverImage: "https://files.hadramout.center/media/2025/12/غلاف-المؤتمر-الخامس-التاريخ-والمؤرخون-الحضارمة3-scaled.jpg",
-      summaryAr: "ملف حول تاريخ الصحافة الحضرمية المبكرة، ودراسات في النقوش اليمنية القديمة وشواهد الآثار في وادي حضرموت.",
-      summaryEn: "Features studies on early Hadhrami journalism, epigraphic discoveries, and ancient South Arabian inscriptions in Wadi Hadhramout.",
+      summaryAr: "دراسات في تاريخ الصحافة الحضرمية المبكرة، وقراءات في النقوش المسندية الصخرية، وأبحاث حول دور القضاء العرفي والشرعي في استقرار المجتمع الحضرمي.",
+      summaryEn: "Research on early Hadhrami periodicals, ancient rock inscriptions, and customary jurisprudence in stabilizing regional commercial stability.",
       articlesCount: 12,
       pages: 172,
       pdfUrl: "https://hadramout.center/magazines"
@@ -106,20 +404,21 @@ const HC_DATA = {
     {
       id: "mag-38",
       issueNumber: 38,
-      titleAr: "مجلة حضرموت الثقافية — العدد 38",
+      titleAr: "مجلة حضرموت الثقافية — العدد الثامن والثلاثون (38)",
       titleEn: "Hadramout Cultural Magazine — Issue 38",
-      dateAr: "صيف 2025",
-      dateEn: "Summer 2025",
+      dateAr: "ربيع 2025",
+      dateEn: "Spring 2025",
       featured: false,
       coverImage: "https://files.hadramout.center/media/2025/12/أبحاث-في-تاريخ-السلطنة-القعيطية3-scaled.jpg",
-      summaryAr: "دراسات في العمارة الطينية بشبام وتريم، وبحوث في الوثائق الوقفية التاريخية وعلاقات حضرموت بموانئ البحر العربي.",
-      summaryEn: "Research on the mud-brick architecture of Shibam and Tarim, historical waqf endowments, and Indian Ocean coastal connections.",
+      summaryAr: "ملف توثيقي عن العمارة الطينية الأثرية في شبام وتريم، وبحوث في التجارة المتبادلة بين موانئ حضرموت وسواحل الهند وشرق إفريقيا.",
+      summaryEn: "Architectural documentation of mud-brick vernacular skyscrapers in Shibam and Tarim, with maritime studies on Indian Ocean trade networks.",
       articlesCount: 15,
       pages: 196,
       pdfUrl: "https://hadramout.center/magazines"
     }
   ],
 
+  // 4. Scholarly Monograph Publications (سلسلة إصدارات الكتب المحكمة)
   publications: [
     {
       id: "bk-9882",
@@ -185,6 +484,28 @@ const HC_DATA = {
       citationAPA: "مركز حضرموت للدراسات التاريخية. (2025). التاريخ والمؤرخون الحضارمة في النصف الأول من القرن العشرين. المكلا: منشورات المركز.",
       citationChicago: "مركز حضرموت للدراسات التاريخية والتوثيق والنشر. التاريخ والمؤرخون الحضارمة في النصف الأول من القرن العشرين. المكلا: منشورات المركز، 2025.",
       citationMLA: "مركز حضرموت للدراسات التاريخية والتوثيق والنشر. التاريخ والمؤرخون الحضارمة في النصف الأول من القرن العشرين. 2025.",
+      featured: true
+    },
+    {
+      id: "bk-9129",
+      slug: "ramadan-eid-hadhrami-lexicon",
+      titleAr: "ألفاظ رمضانية وعيدية حضرمية فصيحة",
+      titleEn: "Ramadan & Eid Classical Linguistic Idioms in Hadhrami Arabic",
+      authorAr: "د. عبد الله سعيد الجعيدي & د. أحمد هادي باحارثة",
+      authorEn: "Prof. Dr. Abdullah Saeed Al-Ja'idi & Dr. Ahmed Hadi Bahartha",
+      category: "linguistics",
+      categoryAr: "المعجم اللغوي والتراث",
+      categoryEn: "Linguistics & Heritage",
+      year: 2025,
+      hijriYear: 1447,
+      pages: 198,
+      isbn: "978-9923-81-006-3",
+      coverImage: "https://files.hadramout.center/media/2025/12/ألفاظ-رمضانية-وعيدية-حضرمية-فصيحة3-scaled.jpg",
+      abstractAr: "دراسة لغوية وتأصيلية رائدة ترصد المفردات والعبارات المتداولة في حضرموت خلال شهري رمضان وشوال وأيام الأعياد، مبينة أصولها في المعاجم العربية الفصحى وجذورها الحميرية والسبئية التليدة.",
+      abstractEn: "A linguistic study tracing the classical Arabic, Himyaritic, and Sabaean roots of Ramadan and Eid seasonal idioms actively spoken in contemporary Hadhrami parlance.",
+      citationAPA: "الجعيدي، ع. س.، وباحارثة، أ. هـ. (2025). ألفاظ رمضانية وعيدية حضرمية فصيحة. المكلا: مركز حضرموت.",
+      citationChicago: "الجعيدي، عبد الله سعيد، وأحمد هادي باحارثة. ألفاظ رمضانية وعيدية حضرمية فصيحة. المكلا: مركز حضرموت، 2025.",
+      citationMLA: "الجعيدي، عبد الله سعيد، وأحمد هادي باحارثة. ألفاظ رمضانية وعيدية حضرمية فصيحة. مركز حضرموت، 2025.",
       featured: true
     },
     {
@@ -321,37 +642,83 @@ const HC_DATA = {
     }
   ],
 
+  // 5. Ameed Al-Wafa Forum & Academic Events (منتدى عميد الوفاء الثقافي والمؤتمرات)
   forumEvents: [
     {
-      id: "forum-551",
+      id: "event-8458",
+      titleAr: "فعالية بعنوان: (المشروع الحضاري في أدب علي أحمد باكثير)",
+      titleEn: "Symposium: The Civilizational Vision in the Literature of Ali Ahmad Bakathir",
+      speakerAr: "نخبة من نقاد وأساتذة الأدب بجامعة حضرموت",
+      speakerEn: "Faculty of Literary Criticism, Hadhramout University",
+      day: "26",
+      monthAr: "نوفمبر",
+      monthEn: "November",
+      year: "2025",
+      dateAr: "26 نوفمبر 2025",
+      dateEn: "26 November 2025",
+      locationAr: "قاعة منتدى عميد الوفاء الثقافي، مقر المركز، المكلا",
+      locationEn: "Ameed Al-Wafa Cultural Hall, Center HQ, Mukalla",
+      summaryAr: "جلسة نقدية وبحثية تستعرض الرؤية الفكرية والنهضوية في مسرحيات وروايات الأديب الحضرمي الكبير علي أحمد باكثير، وموقفه من قضايا التحرر والعدالة الإنسانية والهوية الإسلامية.",
+      summaryEn: "Scholarly symposium analyzing the intellectual revitalization in Bakathir's novels and plays, highlighting his advocacy for human dignity, independence, and civilizational identity.",
+      status: "completed"
+    },
+    {
+      id: "event-8456",
+      titleAr: "فعالية بعنوان: المحضار شاعر الحب والحياة والوجدان الحضرمي",
+      titleEn: "Symposium: Al-Mihdhar — Poet of Love, Life, and Hadhrami Vernacular Spirit",
+      speakerAr: "أ.د. عبد العزيز الصيغ & باحثون في التراث الغنائي",
+      speakerEn: "Prof. Dr. Abdulaziz Al-Seegh & Musical Heritage Researchers",
+      day: "16",
+      monthAr: "نوفمبر",
+      monthEn: "November",
+      year: "2025",
+      dateAr: "16 نوفمبر 2025",
+      dateEn: "16 November 2025",
+      locationAr: "منتدى عميد الوفاء الثقافي بالمكلا",
+      locationEn: "Ameed Al-Wafa Cultural Forum, Mukalla",
+      summaryAr: "احتفائية بأدب وشعر الشاعر الراحل حسين أبو بكر المحضار، تناولت عبقرية لغته الشعرية، وكيف رسخ عبر قصائده وألحانه الهوية الثقافية لحضرموت في الجزيرة العربية والخليج والوطن العربي.",
+      summaryEn: "A cultural celebration of poet Hussein Abu Bakr Al-Mihdhar's lyric genius and his timeless role embedding Hadhrami poetic heritage across the Arab world.",
+      status: "completed"
+    },
+    {
+      id: "event-8229",
+      titleAr: "دعوة وحلقة نقاشية: منطلقات دراسة تاريخ حضرموت الحديث والمعاصر",
+      titleEn: "Symposium: Methodological Starting Points for Studying Modern Hadhrami History",
+      speakerAr: "أ.د. عبد الله سعيد الجعيدي",
+      speakerEn: "Prof. Dr. Abdullah Saeed Al-Ja'idi",
+      day: "26",
+      monthAr: "أكتوبر",
+      monthEn: "October",
+      year: "2025",
+      dateAr: "26 أكتوبر 2025",
+      dateEn: "26 October 2025",
+      locationAr: "مقر مركز حضرموت للدراسات التاريخية، المكلا",
+      locationEn: "Hadhramout Center HQ, Mukalla",
+      summaryAr: "حلقة نقاشية متخصصة حول المناهج الحديثة في نقد المصادر والوثائق الأهلية وتفادي الإسقاطات المعاصرة عند تدوين تاريخ السلطنات وأحداث القرن العشرين.",
+      summaryEn: "Specialized roundtable discussion on methodological rigor in evaluating family archives and sultanate documentation without retrospective bias.",
+      status: "completed"
+    },
+    {
+      id: "event-551",
       titleAr: "إشراقات مرسالية في تاريخ الفكر الحضرمي",
       titleEn: "Missionary Illuminations in the Intellectual History of Hadhramout",
       speakerAr: "الأستاذ خالد القحوم (باحث ومفكر)",
       speakerEn: "Mr. Khaled Al-Qahoum (Scholar and Thinker)",
-      dateAr: "سبتمبر 2026",
-      dateEn: "September 2026",
-      locationAr: "قاعة منتدى عميد الوفاء الثقافي، مقر المركز، المكلا",
-      locationEn: "Ameed Al-Wafa Cultural Hall, Center HQ, Mukalla",
+      day: "14",
+      monthAr: "سبتمبر",
+      monthEn: "September",
+      year: "2025",
+      dateAr: "14 سبتمبر 2025",
+      dateEn: "14 September 2025",
+      locationAr: "قاعة منتدى عميد الوفاء الثقافي، المكلا",
+      locationEn: "Ameed Al-Wafa Hall, Mukalla",
       summaryAr: "سلطت المحاضرة الضوء على الرسائل الفكرية والأخلاقية للمصلحين الحضارمة في أواخر القرن التاسع عشر ومطلع القرن العشرين، ودورهم في صياغة الشخصية الحضرمية المعتدلة ونشر ثقافة الحوار.",
-      summaryEn: "The lecture illuminated the ethical and intellectual treatises of late 19th and early 20th-century Hadhrami reformers, emphasizing their role in fostering moderate cultural dialogue.",
-      status: "completed"
-    },
-    {
-      id: "forum-550",
-      titleAr: "المشروع الحضاري في أدب علي أحمد باكثير",
-      titleEn: "The Civilizational Vision in the Literature of Ali Ahmad Bakathir",
-      speakerAr: "د. عبد الحكيم الزبيدي (ناقد وأكاديمي)",
-      speakerEn: "Dr. Abdulhakim Al-Zubaidi (Literary Critic)",
-      dateAr: "نوفمبر 2025",
-      dateEn: "November 2025",
-      locationAr: "المكلا — منتدى عميد الوفاء",
-      locationEn: "Mukalla — Ameed Al-Wafa Forum",
-      summaryAr: "قراءة نقدية في مسرحيات وروايات الأديب الكبير علي أحمد باكثير الحضرمي الأصل والمنشأ، وكيف عبّر عن تطلعات الأمة العربية والإسلامية وقيم الحرية والعدالة.",
-      summaryEn: "Critical analysis of the dramatic and novelistic works of prominent Hadhrami writer Ali Ahmad Bakathir, examining his articulation of freedom, human justice, and heritage.",
+      summaryEn: "The lecture illuminated the ethical and intellectual treatises of late 19th and early 20th-century Hadhrami reformers, fostering moderate cultural dialogue.",
       status: "completed"
     }
   ],
 
+  // 6. Timeline Milestones (المحطات المفصلية في تاريخ حضرموت)
   timelineMilestones: [
     {
       era: "ancient",
@@ -359,7 +726,7 @@ const HC_DATA = {
       eraLabelEn: "Ancient Era (Kingdom of Hadhramout)",
       yearLabelAr: "الألفية الأولى قبل الميلاد – القرن الثالث الميلادي",
       yearLabelEn: "1st Millennium BCE – 3rd Century CE",
-      titleAr: "ازدهار مملكة حضرموت وطريق اللبان وميناء سمهرم",
+      titleAr: "ازدهار مملكة حضرموت وطريق اللبان وميناء سمهرم وقنا",
       titleEn: "The Zenith of the Kingdom of Hadhramout & the Frankincense Route",
       descriptionAr: "شهدت هذه الحقبة تأسيس عاصمة المملكة في شبوة القديمة، وتشييد موانئ الملاحة الدولية في قنا (بئر علي) وسمهرم (ظفار)، حيث صدرت حضرموت أجود أنواع اللبان والبخور إلى معابد مصر القديمة وروما وبابل.",
       descriptionEn: "Marked by the establishment of the capital at ancient Shabwa and the founding of major international ports at Qana and Sumhuram, establishing Hadhramout as the frankincense hub of antiquity."
@@ -377,7 +744,7 @@ const HC_DATA = {
     },
     {
       era: "diaspora",
-      eraLabelAr: "عصر الهجرات الكبرى",
+      eraLabelAr: "عصر الهجرات الكبرى والملاحة",
       eraLabelEn: "Era of Global Oceanic Migration",
       yearLabelAr: "من القرن الرابع عشر إلى القرن التاسع عشر الميلادي",
       yearLabelEn: "14th – 19th Century CE",
@@ -405,21 +772,22 @@ const HC_DATA = {
       yearLabelEn: "2000s – Present",
       titleAr: "تأسيس مركز حضرموت وإحياء حركة التوثيق والنشر الأكاديمي",
       titleEn: "Founding of the Hadhramout Center & Resurgence of Archival Research",
-      descriptionAr: "تأسيس مركز حضرموت للدراسات التاريخية والتوثيق والنشر ليكون المنبر المنهجي المعني بجمع التراث، وإصدار مجلة حضرموت الثقافية (40+ عدداً)، وعقد المؤتمرات التاريخية الدولية لخدمة الهوية الحضرمية.",
-      descriptionEn: "Establishment of the Hadhramout Center to serve as the premier methodological body safeguarding archival records, publishing over 40 magazine issues, and hosting academic conferences."
+      descriptionAr: "تأسيس مركز حضرموت للدراسات التاريخية والتوثيق والنشر ليكون المنبر المنهجي المعني بجمع التراث، وإصدار مجلة حضرموت الثقافية (41 عدداً)، وعقد المؤتمرات التاريخية الدولية لخدمة الهوية الحضرمية.",
+      descriptionEn: "Establishment of the Hadhramout Center to serve as the premier methodological body safeguarding archival records, publishing 41 magazine issues, and hosting academic conferences."
     }
   ],
 
+  // 7. Audiovisual & Podcast Archives (المكتبة المرئية والمسموعة)
   media: [
     {
       id: "media-1",
       type: "podcast",
-      seriesAr: "بودكاست سقاية",
+      seriesAr: "بودكاست سقاية التاريخي",
       seriesEn: "Siqayah Podcast",
-      titleAr: "سقاية | الحلقة 1: تجارة البخور والملاحة التاريخية في بحر العرب",
+      titleAr: "سقاية | الحلقة 1: تجارة البخور والملاحة التاريخية في بحر العرب والمحيط الهندي",
       titleEn: "Siqayah | Ep. 1: Frankincense Trade and Maritime History in the Arabian Sea",
-      guestAr: "د. عبد القادر بن الشيخ علي باPermission",
-      guestEn: "Dr. Abdulqader Al-Shaikh Ali Ba-Permission",
+      guestAr: "د. عبد القادر بن الشيخ علي",
+      guestEn: "Dr. Abdulqader Al-Shaikh Ali",
       duration: "34 دقيقة",
       dateAr: "فبراير 2026",
       dateEn: "Feb 2026",
@@ -433,7 +801,7 @@ const HC_DATA = {
       type: "video",
       seriesAr: "برنامج كاتب وكتاب",
       seriesEn: "Author & Book Series",
-      titleAr: "كاتب وكتاب | الحلقة 1: الدكتور أحمد باحارثة وكتاب جهود علماء حضرموت النحوية",
+      titleAr: "كاتب وكتاب | الحلقة 1 | الدكتور أحمد باحارثة وكتاب جهود علماء حضرموت النحوية",
       titleEn: "Author & Book | Ep. 1: Dr. Ahmed Bahartha on Hadhrami Grammatical Contributions",
       guestAr: "د. أحمد باحارثة",
       guestEn: "Dr. Ahmed Bahartha",
@@ -451,14 +819,14 @@ const HC_DATA = {
       type: "video",
       seriesAr: "ندوات المركز الخارجية",
       seriesEn: "Center Regional Symposia",
-      titleAr: "حضرموت الامتداد الجغرافي وذاكرة المكان — ندوة المركز بالرياض",
+      titleAr: "حضرموت الامتداد الجغرافي وذاكرة المكان – فعالية قدمها ممثلين عن وفد مركز حضرموت بالرياض",
       titleEn: "Hadhramout: Geographic Horizon & Memory of Place — Riyadh Symposium",
       guestAr: "وفد باحثي مركز حضرموت بالرياض",
       guestEn: "Hadhramout Center Delegation in Riyadh",
       duration: "58 دقيقة",
       dateAr: "ديسمبر 2025",
       dateEn: "Dec 2025",
-      videoUrl: "https://hadramout.center/videos/10158",
+      videoUrl: "https://www.youtube.com/watch?v=8mLzjsj-kw0",
       youtubeId: "8mLzjsj-kw0",
       coverImage: "https://files.hadramout.center/media/2026/09/image-6.png",
       descriptionAr: "فعالية تاريخية وأكاديمية قدمها ممثلو المركز تناولت الملامح الجغرافية والتاريخية والمخطوطات الأهلية الحضرمية بحضور نخبة من المؤرخين.",
@@ -466,10 +834,13 @@ const HC_DATA = {
     }
   ],
 
+  // 8. Internationalization Dictionaries (القواميس اللغوية)
   translations: {
     ar: {
       navHome: "الرئيسية",
       navAbout: "عن المركز",
+      navNews: "الأخبار",
+      navArticles: "المقالات",
       navMagazines: "المجلة",
       navBooks: "الكتب",
       navConferences: "المؤتمرات",
@@ -482,13 +853,18 @@ const HC_DATA = {
       heroSubtitle: "المنصة الرقمية المرجعية لمركز حضرموت للدراسات التاريخية والتوثيق والنشر بالمكلا — نوثق عمق التاريخ، وننشر أبحاث التراث، ونربط الباحثين بالذاكرة الوطنية الحضرمية.",
       exploreBooks: "تصفّح إصدارات الكتب",
       readMagazine: "طالع أعداد المجلة",
-      searchPlaceholder: "ابحث في عناوين الكتب، المؤرخين، الأبحاث، وأعداد المجلة...",
+      exploreArticles: "استكشف المقالات والأبحاث",
+      latestNews: "آخر الأخبار والتغطيات",
+      searchPlaceholder: "ابحث في عناوين الكتب، المقالات، الأخبار، والمؤرخين...",
+      searchShortcut: "Ctrl + K للبحث الفوري",
       quickFilterAll: "الكل",
       quickFilterLinguistics: "التراث اللغوي",
       quickFilterSultanates: "تاريخ السلطنات",
       quickFilterPorts: "الموانئ والتجارة",
       quickFilterArchaeology: "الآثار والنقوش",
       quickFilterIslamic: "التاريخ الإسلامي",
+      quickFilterLiterature: "الأدب والتراث",
+      quickFilterDiaspora: "الهجرة والمهجر",
       citeAPA: "اقتباس APA",
       citeChicago: "اقتباس Chicago",
       citeMLA: "اقتباس MLA",
@@ -496,7 +872,8 @@ const HC_DATA = {
       requestBook: "طلب اقتناء نسخة",
       downloadAbstract: "تحميل مستخلص البحث (PDF)",
       viewDetails: "التفاصيل والتوثيق",
-      latestIssueBadge: "العدد الأخير الصادر",
+      readArticle: "قراءة المقالة كاملة",
+      latestIssueBadge: "العدد الصادر الأخير · 41",
       readIssue: "تفاصيل العدد وفهرسه",
       forumTitle: "منتدى عميد الوفاء الثقافي",
       forumSubtitle: "منبرٌ فكريٌّ دوريٌّ بالمكلا يناقش قضايا الفكر والمؤرخين ويحتفي بإسهامات الباحثين الحضارمة",
@@ -514,14 +891,15 @@ const HC_DATA = {
       inquiryTypeBook: "طلب اقتناء إصدارات",
       inquiryTypeResearch: "استشارة بحثية وتوثيقية",
       messageLabel: "نص الرسالة أو تفاصيل الاستفسار",
-      sendButton: "إرسال الاستفسار",
+      sendButton: "إرسال الاستفسار إلى إدارة المركز",
       formSuccessToast: "شكراً لتواصلك! سيتم الرد على استفسارك من قبل إدارة المركز في أقرب وقت.",
       addressTitle: "المقر الرئيسي للمركز:",
       rightsReserved: "جميع الحقوق محفوظة لمركز حضرموت للدراسات التاريخية والتوثيق والنشر",
-      engineeredBy: "تصميم وهندسة المنصة: نوڤيكسا | Novixa (مبادرة الأثر الرقمي التطوعية)",
+      engineeredBy: "تصميم وهندسة المنصة: نوڤيكسا | Novixa (مبادرة الأثر الرقمي التطوعية لخدمة حضرموت)",
       mySavedList: "مكتبتي البحثية",
-      exportRIS: "تنزيل مرجع Zotero (.RIS)",
+      exportRIS: "تنزيل مرجع EndNote / Zotero (.ris)",
       exportBibTeX: "تنزيل مرجع BibTeX (.bib)",
+      exportMarkdown: "تصدير القائمة كملف Markdown",
       themeDark: "الوضع الليلي الأكاديمي",
       themeLight: "الوضع النهاري",
       fontSizeLabel: "حجم الخط",
@@ -530,9 +908,10 @@ const HC_DATA = {
       mediaEyebrow: "الإنتاج المرئي والمسموع",
       mediaTitle: "بودكاست سقاية والمكتبة المرئية",
       mediaSubtitle: "حوارات تاريخية موثقة ولقاءات علمية تسجل الذاكرة الحضرمية الشفهية والمكتوبة",
+      shareResource: "مشاركة",
       shareBook: "مشاركة رابط الكتاب",
       printCard: "طباعة بطاقة التوثيق",
-      copiedLinkToast: "تم نسخ الرابط المباشر للكتاب إلى الحافظة!",
+      copiedLinkToast: "تم نسخ الرابط المباشر إلى الحافظة!",
       escClear: "ESC للمسح",
       magSectionEyebrow: "الإصدار الدوري للمركز",
       magSectionTitle: "مجلة حضرموت الثقافية",
@@ -540,7 +919,15 @@ const HC_DATA = {
       booksSectionEyebrow: "المستودع المعرفي المطبوع",
       booksSectionTitle: "سلسلة إصدارات الكتب والدراسات",
       booksSectionSubtitle: "مؤلفاتٌ ودراساتٌ محكّمة في تاريخ حضرموت القديم والوسيط والمعاصر وتراثها اللغوي والبحري.",
+      articlesSectionEyebrow: "الأبحاث والدراسات التوثيقية",
+      articlesSectionTitle: "أحدث المقالات والدراسات المحكمة",
+      articlesSectionSubtitle: "نخبة من المقالات التاريخية والأدبية والوثائقية بأقلام أساتذة التاريخ وباحثي المركز.",
+      newsSectionEyebrow: "المركز في الميدان",
+      newsSectionTitle: "الأخبار والأنشطة والفعاليات",
+      newsSectionSubtitle: "متابعة مستمرة لزيارات الوفود الدولية، الورش الاستراتيجية، والشراكات الأكاديمية.",
       viewAllBooks: "استكشف جميع الإصدارات والمؤلفات",
+      viewAllArticles: "تصفح جميع المقالات والدراسات",
+      viewAllNews: "أرشيف الأخبار والأنشطة",
       viewAllMedia: "استكشف جميع الحلقات واللقاءات المرئية",
       viewFullTimeline: "استعراض الخط الزمني التاريخي الكامل",
       confSectionEyebrow: "الملتقيات الأكاديمية الدولية",
@@ -548,13 +935,26 @@ const HC_DATA = {
       confSectionSubtitle: "سجل المؤتمرات والندوات التاريخية التي نظمها المركز جامعاً أبحاث المؤرخين من مختلف الجامعات.",
       waHeader: "واتساب",
       savedModalHeading: "قائمتي ومكتبتي البحثية المحفوظة",
-      savedEmptyState: "لم تقم بحفظ أي مراجع بحثية بعد. انقر على أيقونة الإشارة المرجعية بجانب أي كتاب لحفظه في مكتبتك.",
+      savedEmptyState: "لم تقم بحفظ أي مراجع بحثية بعد. انقر على أيقونة الإشارة المرجعية بجانب أي كتاب أو مقال لحفظه في مكتبتك.",
       clearSavedBtn: "تفريغ القائمة",
-      copyAllSavedBtn: "نسخ كافة المراجع المحفوظة"
+      copyAllSavedBtn: "نسخ كافة المراجع المحفوظة",
+      viewGrid: "شبكة",
+      viewList: "قائمة",
+      sortBy: "ترتيب حسب:",
+      sortNewest: "الأحدث نشراً",
+      sortOldest: "الأقدم",
+      sortTitle: "أبجدياً (أ-ي)",
+      commandPaletteTitle: "البحث الفوري والانتقال السريع",
+      commandPalettePlaceholder: "اكتب للانتقال إلى قسم أو البحث في المراجع...",
+      playVideo: "مشاهدة الفيديو",
+      playAudio: "استماع للملف الصوتي",
+      openOgPreview: "معاينة بطاقة المشاركة (OpenGraph)"
     },
     en: {
       navHome: "Home",
       navAbout: "About",
+      navNews: "News",
+      navArticles: "Articles",
       navMagazines: "Magazine",
       navBooks: "Publications",
       navConferences: "Conferences",
@@ -567,13 +967,18 @@ const HC_DATA = {
       heroSubtitle: "The official digital platform of the Hadhramout Center for Historical Studies, Documentation and Publishing — Preserving deep heritage, publishing peer-reviewed research, and connecting scholars with South Arabian history.",
       exploreBooks: "Explore Publications",
       readMagazine: "Browse Magazine Issues",
-      searchPlaceholder: "Search book titles, authors, research papers, and magazine volumes...",
+      exploreArticles: "Explore Articles & Studies",
+      latestNews: "Latest News & Events",
+      searchPlaceholder: "Search book titles, articles, news, scholars...",
+      searchShortcut: "Ctrl + K for quick jump",
       quickFilterAll: "All",
       quickFilterLinguistics: "Linguistics",
       quickFilterSultanates: "Sultanate History",
       quickFilterPorts: "Ports & Trade",
       quickFilterArchaeology: "Archaeology",
       quickFilterIslamic: "Islamic History",
+      quickFilterLiterature: "Literature & Poetics",
+      quickFilterDiaspora: "Diaspora & Migration",
       citeAPA: "Cite APA",
       citeChicago: "Cite Chicago",
       citeMLA: "Cite MLA",
@@ -581,7 +986,8 @@ const HC_DATA = {
       requestBook: "Inquire / Acquire Book",
       downloadAbstract: "Download Abstract (PDF)",
       viewDetails: "Details & Metadata",
-      latestIssueBadge: "Latest Published Volume",
+      readArticle: "Read Full Article",
+      latestIssueBadge: "Latest Published Volume · 41",
       readIssue: "Read & Inspect Issue",
       forumTitle: "Ameed Al-Wafa Cultural Forum",
       forumSubtitle: "Periodic scholarly panels and intellectual lectures celebrating luminaries and historical themes",
@@ -599,14 +1005,15 @@ const HC_DATA = {
       inquiryTypeBook: "Book Acquisition Request",
       inquiryTypeResearch: "Research Consultation & Archival Access",
       messageLabel: "Message or Request Details",
-      sendButton: "Submit Inquiry",
+      sendButton: "Submit Inquiry to Leadership",
       formSuccessToast: "Thank you! Your inquiry has been sent to the Center's administrative team.",
       addressTitle: "Center Headquarters:",
       rightsReserved: "All rights reserved. Hadhramout Center for Historical Studies, Documentation and Publishing.",
       engineeredBy: "Platform engineered by Novixa (Pro Bono Digital Impact Initiative)",
       mySavedList: "Saved Bibliography",
-      exportRIS: "Download Zotero / RIS (.ris)",
+      exportRIS: "Download EndNote / Zotero (.ris)",
       exportBibTeX: "Download BibTeX (.bib)",
+      exportMarkdown: "Export as Markdown (.md)",
       themeDark: "Dark Academic Mode",
       themeLight: "Daylight Mode",
       fontSizeLabel: "Font Size",
@@ -615,9 +1022,10 @@ const HC_DATA = {
       mediaEyebrow: "Audiovisual Archives",
       mediaTitle: "Siqayah Podcast & Video Library",
       mediaSubtitle: "Documentary dialogues and academic panels capturing living Hadhrami oral and archival history",
-      shareBook: "Share Book Link",
+      shareResource: "Share",
+      shareBook: "Share Resource Link",
       printCard: "Print Citation Card",
-      copiedLinkToast: "Direct book link copied to clipboard!",
+      copiedLinkToast: "Direct resource link copied to clipboard!",
       escClear: "ESC to clear",
       magSectionEyebrow: "Center Periodical Publication",
       magSectionTitle: "Hadramout Cultural Magazine",
@@ -625,7 +1033,15 @@ const HC_DATA = {
       booksSectionEyebrow: "Scholarly Print Repository",
       booksSectionTitle: "Book Publications & Monograph Series",
       booksSectionSubtitle: "Peer-reviewed volumes on ancient, medieval, and modern Hadhrami history, linguistics, and maritime heritage.",
+      articlesSectionEyebrow: "Peer-Reviewed Inquiries",
+      articlesSectionTitle: "Scholarly Articles & Studies",
+      articlesSectionSubtitle: "Curated research papers by distinguished historians and Center resident fellows.",
+      newsSectionEyebrow: "Center in Action",
+      newsSectionTitle: "News & Community Events",
+      newsSectionSubtitle: "Continuous coverage of international delegations, strategic roundtables, and university agreements.",
       viewAllBooks: "Explore All Books & Studies",
+      viewAllArticles: "Browse All Scholarly Articles",
+      viewAllNews: "News & Activities Archive",
       viewAllMedia: "Explore All Episodes & Media",
       viewFullTimeline: "View Full Interactive Timeline",
       confSectionEyebrow: "International Scholarly Symposia",
@@ -633,9 +1049,20 @@ const HC_DATA = {
       confSectionSubtitle: "Archived proceedings of biennial conferences convening regional and international historians.",
       waHeader: "WhatsApp",
       savedModalHeading: "My Saved Research Bibliography",
-      savedEmptyState: "No research references saved yet. Click the bookmark icon on any book to add it to your research list.",
+      savedEmptyState: "No research references saved yet. Click the bookmark icon on any book or article to add it to your research list.",
       clearSavedBtn: "Clear List",
-      copyAllSavedBtn: "Copy All Saved Citations"
+      copyAllSavedBtn: "Copy All Saved Citations",
+      viewGrid: "Grid",
+      viewList: "List",
+      sortBy: "Sort by:",
+      sortNewest: "Newest First",
+      sortOldest: "Oldest First",
+      sortTitle: "Alphabetical (A-Z)",
+      commandPaletteTitle: "Instant Search & Navigation",
+      commandPalettePlaceholder: "Type to jump to a section or search references...",
+      playVideo: "Watch Video",
+      playAudio: "Listen to Audio",
+      openOgPreview: "Preview Social Share Card (OpenGraph)"
     }
   }
 };
