@@ -23,5 +23,10 @@
 - [x] Implementation of interactive 16:9 responsive video modal and heritage audio player
 - [x] Implementation of Academic Metrics Strip and breaking news ticker
 - [x] Implementation of Web Audio API subtle haptics feedback
+- [x] Implementation of Rare Manuscripts Vault (`#manuscripts`) & Folio Inspector with zoom and contrast inversion (`#folio-viewer-modal`)
+- [x] Implementation of Historical Geography & Landmarks Map (`#map`) with classification filters and GPS coordinates
+- [x] Implementation of full PWA Service Worker (`sw.js`) with static asset caching & offline readiness
+- [x] Implementation of Scholarly Research Newsletter dispatch system with localStorage persistence
 - [x] Validation of 100% automated test suite pass via `node scripts/validate.js`
 - [x] Ready for production edge deployment and synchronized with GitHub repository (`origin/master`)
+

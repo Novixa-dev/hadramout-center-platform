@@ -21,6 +21,9 @@
     articlesViewMode: localStorage.getItem('hc_articles_view') || 'grid',
     booksSort: 'newest',
     articlesSort: 'newest',
+    mapFilter: 'all',
+    folioZoom: 1,
+    folioInverted: false,
     soundEnabled: localStorage.getItem('hc_sound') === 'true'
   };
 
@@ -61,6 +64,9 @@
     fullMediaGrid: document.getElementById('full-media-grid'),
     aboutLeadershipGrid: document.getElementById('about-leadership-grid'),
     aboutDepartmentsGrid: document.getElementById('about-departments-grid'),
+    fullManuscriptsGrid: document.getElementById('full-manuscripts-grid'),
+    fullMapGrid: document.getElementById('full-map-grid'),
+    mapFilterBar: document.getElementById('map-filter-bar'),
 
     // Toolbars & Controls
     articlesCountBadge: document.getElementById('articles-count-badge'),
@@ -106,11 +112,21 @@
     pdfModalTitle: document.getElementById('pdf-modal-title'),
     pdfModalBody: document.getElementById('pdf-modal-body'),
     pdfModalCloseBtn: document.getElementById('pdf-modal-close-btn'),
+    folioViewerModal: document.getElementById('folio-viewer-modal'),
+    folioStageImg: document.getElementById('folio-stage-img'),
+    btnFolioZoomIn: document.getElementById('btn-folio-zoom-in'),
+    btnFolioZoomOut: document.getElementById('btn-folio-zoom-out'),
+    btnFolioZoomReset: document.getElementById('btn-folio-zoom-reset'),
+    btnFolioInvert: document.getElementById('btn-folio-invert'),
+    folioMetaBadge: document.getElementById('folio-meta-badge'),
+    folioInfoPanel: document.getElementById('folio-info-panel'),
+    folioModalCloseBtn: document.getElementById('folio-modal-close-btn'),
 
     // Notifications & Contact
     toastNotification: document.getElementById('toast-notification'),
     toastText: document.getElementById('toast-text'),
     contactForm: document.getElementById('contact-inquiry-form'),
+    newsletterForm: document.getElementById('newsletter-subscription-form'),
 
     // Page Views
     views: {
@@ -122,6 +138,8 @@
       books: document.getElementById('view-books'),
       conferences: document.getElementById('view-conferences'),
       forum: document.getElementById('view-forum'),
+      manuscripts: document.getElementById('view-manuscripts'),
+      map: document.getElementById('view-map'),
       timeline: document.getElementById('view-timeline'),
       media: document.getElementById('view-media'),
       contact: document.getElementById('view-contact')
@@ -212,6 +230,8 @@
       books: isAr ? 'سلسلة إصدارات الكتب والأبحاث المحكمة | مركز حضرموت' : 'Book Publications & Scholarly Monographs | Hadhramout Center',
       conferences: isAr ? 'المؤتمرات والندوات العلمية | مركز حضرموت' : 'Scientific Conferences & Symposia | Hadhramout Center',
       forum: isAr ? 'منتدى عميد الوفاء الثقافي بالمكلا | مركز حضرموت' : 'Ameed Al-Wafa Cultural Forum | Hadhramout Center',
+      manuscripts: isAr ? 'خزانة المخطوطات والوثائق النادرة والأرشيف الأصلي | مركز حضرموت' : 'Rare Manuscripts & Archival Folios | Hadhramout Center',
+      map: isAr ? 'الخريطة التفاعلية لمعالم وموانئ وحواضر حضرموت التاريخية | مركز حضرموت' : 'Interactive Map of Hadhrami Heritage Landmarks | Hadhramout Center',
       timeline: isAr ? 'الخط الزمني لتاريخ وحضارة حضرموت | مركز حضرموت' : 'Historical Timeline of Hadhramout',
       media: isAr ? 'الوسائط وبودكاست سقاية التاريخي | مركز حضرموت' : 'Media & Siqayah Podcast | Hadhramout Center',
       contact: isAr ? 'تواصل مع المركز وطلب المراجع والأبحاث | مركز حضرموت' : 'Contact & Research Inquiries | Hadhramout Center'
@@ -225,6 +245,8 @@
       books: isAr ? 'فهرس إصدارات الكتب التاريخية للمركز مع أدوات الاستشهاد العلمي الفوري (APA / Chicago / MLA).' : 'Peer-reviewed historical monographs with instant citation generators (APA, Chicago, MLA).',
       conferences: isAr ? 'المؤتمرات العلمية الدولية والندوات الأكاديمية المخصصة لتاريخ وحضارة حضرموت.' : 'Biennial international academic conferences and symposia on Hadhramout history.',
       forum: isAr ? 'منتدى عميد الوفاء الثقافي بالمكلا — فعاليات المحضار، أدب باكثير، وقضايا التاريخ والفكر.' : 'Muntada Ameed Al-Wafa cultural forum in Mukalla, lectures on Bakathir and Al-Mihdhar.',
+      manuscripts: isAr ? 'تصفح وفحص أوراق المخطوطات والوثائق النادرة وسجلات الملاحة القديمة لعلماء وأعلام حضرموت.' : 'Explore and inspect high-resolution folios of rare autograph manuscripts and maritime logs of Hadhramout.',
+      map: isAr ? 'استكشف أهم موانئ اللبان القديمة (سمهرم، قنا، الشحر)، ناطحات سحاب شبام، وقصور وادي دوعن.' : 'Explore ancient frankincense harbors, mud skyscrapers of Shibam, and sultanate palaces across Hadhramout.',
       timeline: isAr ? 'استكشف الخط الزمني لتاريخ حضرموت من حضارات اللبان إلى العصر الحديث.' : 'Chronological historical journey through Hadhramout eras from antiquity to modern times.',
       media: isAr ? 'المحاضرات المصورة، الأشرطة الوثائقية، برنامج كاتب وكتاب، وحلقات بودكاست سقاية التاريخي.' : 'Documentaries, lectures, and historical episodes of Siqayah Podcast.',
       contact: isAr ? 'تواصل مع إدارة المركز بالمكلا لطلب المطبوعات، الاستشارات الأكاديمية، والتعاون البحثي.' : 'Contact Center management in Mukalla for publications, consultations, and research cooperation.'
@@ -307,6 +329,8 @@
     const navBooks = document.getElementById('nav-books');
     const navConf = document.getElementById('nav-conferences');
     const navForum = document.getElementById('nav-forum');
+    const navManuscripts = document.getElementById('nav-manuscripts');
+    const navMap = document.getElementById('nav-map');
     const navTimeline = document.getElementById('nav-timeline');
     const navMedia = document.getElementById('nav-media');
     const navContact = document.getElementById('nav-contact');
@@ -319,6 +343,8 @@
     if (navBooks) navBooks.textContent = t.navBooks;
     if (navConf) navConf.textContent = t.navConferences;
     if (navForum) navForum.textContent = t.navForum;
+    if (navManuscripts) navManuscripts.textContent = t.navManuscripts || (isAr ? 'المخطوطات' : 'Manuscripts');
+    if (navMap) navMap.textContent = t.navMap || (isAr ? 'خريطة التراث' : 'Heritage Map');
     if (navTimeline) navTimeline.textContent = t.navTimeline;
     if (navMedia) navMedia.textContent = t.navMedia;
     if (navContact) navContact.textContent = t.navContact;
@@ -350,6 +376,8 @@
     renderMagazines();
     renderForumEvents(elements.homeForumGrid, true);
     renderForumEvents(elements.fullForumGrid, false);
+    renderManuscripts();
+    renderHistoricalSites();
     renderTimeline(elements.homeTimelineTrack, true);
     renderTimeline(elements.fullTimelineTrack, false);
     renderMedia(elements.homeMediaGrid, true);
@@ -989,6 +1017,8 @@
       { name: isAr ? 'سلسلة إصدارات الكتب' : 'Publications Archive', view: 'books', badge: 'Section' },
       { name: isAr ? 'المؤتمرات العلمية' : 'Scientific Conferences', view: 'conferences', badge: 'Section' },
       { name: isAr ? 'منتدى عميد الوفاء' : 'Ameed Al-Wafa Forum', view: 'forum', badge: 'Section' },
+      { name: isAr ? 'خزانة المخطوطات والوثائق' : 'Rare Manuscripts', view: 'manuscripts', badge: 'Section' },
+      { name: isAr ? 'الخريطة التفاعلية لمعالم حضرموت' : 'Heritage Map', view: 'map', badge: 'Section' },
       { name: isAr ? 'خط تاريخ حضرموت' : 'Historical Timeline', view: 'timeline', badge: 'Section' },
       { name: isAr ? 'الوسائط وبودكاست سقاية' : 'Media & Podcast', view: 'media', badge: 'Section' },
       { name: isAr ? 'تواصل معنا' : 'Contact Center', view: 'contact', badge: 'Section' }
@@ -1040,6 +1070,40 @@
           action: () => {
             navigateTo('articles');
             openArticleReader(a.id);
+            elements.commandPaletteModal.classList.remove('open');
+          }
+        });
+      }
+    });
+
+    // Rare Manuscripts
+    (HC_DATA.manuscripts || []).forEach(m => {
+      const title = isAr ? m.titleAr : m.titleEn;
+      const scribe = isAr ? m.scribeAr : m.scribeEn;
+      if (!q || title.toLowerCase().includes(q) || scribe.toLowerCase().includes(q)) {
+        items.push({
+          type: 'manuscript',
+          title: `${title} — ${scribe}`,
+          badge: isAr ? 'مخطوط' : 'Manuscript',
+          action: () => {
+            navigateTo('manuscripts');
+            openManuscriptFolioViewer(m.id);
+            elements.commandPaletteModal.classList.remove('open');
+          }
+        });
+      }
+    });
+
+    // Historical Landmarks & Sites
+    (HC_DATA.historicalSites || []).forEach(site => {
+      const name = isAr ? site.nameAr : site.nameEn;
+      if (!q || name.toLowerCase().includes(q)) {
+        items.push({
+          type: 'site',
+          title: name,
+          badge: isAr ? 'معلم تاريخي' : 'Landmark',
+          action: () => {
+            navigateTo('map');
             elements.commandPaletteModal.classList.remove('open');
           }
         });
@@ -1314,6 +1378,129 @@ ER  -
     showToast(state.currentLang === 'ar' ? `تم تحميل ملف المراجع بنجاح (${format.toUpperCase()})` : `Bibliography downloaded (${format.toUpperCase()})`);
   }
 
+  // Rare Manuscripts Renderer
+  function renderManuscripts() {
+    if (!elements.fullManuscriptsGrid) return;
+    const isAr = state.currentLang === 'ar';
+    const items = HC_DATA.manuscripts || [];
+
+    elements.fullManuscriptsGrid.innerHTML = items.map(ms => `
+      <article class="manuscript-card">
+        <div class="manuscript-thumb-wrap">
+          <img src="${ms.folioImageUrl}" alt="${isAr ? ms.titleAr : ms.titleEn}" loading="lazy">
+          <span class="manuscript-era-badge">${ms.yearHijri} / ${ms.yearGregorian}</span>
+        </div>
+        <div class="manuscript-body">
+          <h3 class="manuscript-title">${isAr ? ms.titleAr : ms.titleEn}</h3>
+          <div class="manuscript-meta-list">
+            <div class="manuscript-meta-row">
+              <span class="manuscript-meta-label">${isAr ? 'الناسخ / الكاتب:' : 'Scribe / Author:'}</span>
+              <span class="manuscript-meta-val">${isAr ? ms.scribeAr : ms.scribeEn}</span>
+            </div>
+            <div class="manuscript-meta-row">
+              <span class="manuscript-meta-label">${isAr ? 'نوع الخط:' : 'Script:'}</span>
+              <span class="manuscript-meta-val">${isAr ? ms.scriptTypeAr : ms.scriptTypeEn}</span>
+            </div>
+            <div class="manuscript-meta-row">
+              <span class="manuscript-meta-label">${isAr ? 'خزانة الحفظ:' : 'Vault:'}</span>
+              <span class="manuscript-meta-val">${isAr ? ms.custodyAr : ms.custodyEn}</span>
+            </div>
+            <div class="manuscript-meta-row">
+              <span class="manuscript-meta-label">${isAr ? 'الأوراق والمقاس:' : 'Folios & Size:'}</span>
+              <span class="manuscript-meta-val">${ms.folios} (${ms.dimensions})</span>
+            </div>
+          </div>
+          <p class="manuscript-summary">${isAr ? ms.summaryAr : ms.summaryEn}</p>
+          <button class="btn-inspect-folio" data-manuscript-id="${ms.id}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            ${isAr ? 'فحص أوراق المخطوط' : 'Inspect Folio Page'}
+          </button>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  // Historical Geography & Landmarks Renderer
+  function renderHistoricalSites() {
+    if (!elements.fullMapGrid) return;
+    const isAr = state.currentLang === 'ar';
+    let sites = HC_DATA.historicalSites || [];
+
+    if (state.mapFilter && state.mapFilter !== 'all') {
+      sites = sites.filter(s => s.type === state.mapFilter);
+    }
+
+    elements.fullMapGrid.innerHTML = sites.map(site => `
+      <div class="heritage-site-card">
+        <div class="site-card-header">
+          <h3 class="site-name">${isAr ? site.nameAr : site.nameEn}</h3>
+          <span class="site-type-pill">${isAr ? (site.type === 'coastal-port' ? 'ميناء بحري' : (site.type === 'world-heritage' ? 'تراث عالمي' : 'معلم تاريخي')) : site.type}</span>
+        </div>
+        <div class="site-era">${isAr ? site.eraAr : site.eraEn}</div>
+        <div class="site-landmark">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 7.2c0 7.3-8 11.8-8 11.8z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>${isAr ? site.landmarkAr : site.landmarkEn}</span>
+        </div>
+        <p class="site-desc">${isAr ? site.descriptionAr : site.descriptionEn}</p>
+        <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
+          <span class="site-coord-tag">GPS: ${site.coordinates.lat.toFixed(4)}° N, ${site.coordinates.lng.toFixed(4)}° E</span>
+          <button class="folio-tool-btn btn-share-item" data-type="general" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+            ${isAr ? 'مشاركة' : 'Share'}
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Manuscript Folio Inspector Modal
+  function openManuscriptFolioViewer(msId) {
+    if (!elements.folioViewerModal) return;
+    const isAr = state.currentLang === 'ar';
+    const ms = (HC_DATA.manuscripts || []).find(m => m.id === msId);
+    if (!ms) return;
+
+    playHapticTone();
+    state.folioZoom = 1;
+    state.folioInverted = false;
+
+    if (elements.folioStageImg) {
+      elements.folioStageImg.src = ms.folioImageUrl;
+      elements.folioStageImg.style.transform = 'scale(1)';
+      elements.folioStageImg.classList.remove('inverted');
+    }
+
+    if (elements.folioMetaBadge) {
+      elements.folioMetaBadge.textContent = `${ms.yearHijri} · ${isAr ? ms.custodyAr : ms.custodyEn}`;
+    }
+
+    const titleEl = document.getElementById('folio-modal-title');
+    if (titleEl) {
+      titleEl.textContent = `${isAr ? 'فاحص المخطوط:' : 'Folio Inspector:'} ${isAr ? ms.titleAr : ms.titleEn}`;
+    }
+
+    if (elements.folioInfoPanel) {
+      elements.folioInfoPanel.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div><strong>${isAr ? 'الناسخ / الكاتب:' : 'Scribe:'}</strong> ${isAr ? ms.scribeAr : ms.scribeEn}</div>
+          <div><strong>${isAr ? 'نوع الخط والحبر:' : 'Script & Ink:'}</strong> ${isAr ? ms.scriptTypeAr : ms.scriptTypeEn}</div>
+          <div><strong>${isAr ? 'القياس وعدد الأوراق:' : 'Dimensions:'}</strong> ${ms.folios} (${ms.dimensions})</div>
+          <div><strong>${isAr ? 'مكان الحفظ الأرشيفي:' : 'Vault:'}</strong> ${isAr ? ms.custodyAr : ms.custodyEn}</div>
+        </div>
+        <p style="margin-top: 0.75rem; line-height: 1.6;">${isAr ? ms.summaryAr : ms.summaryEn}</p>
+      `;
+    }
+
+    elements.folioViewerModal.classList.add('open');
+  }
+
   // Live Search Auto-Complete & Suggestions
   function handleLiveSearch(query) {
     if (!elements.searchSuggestionsDropdown) return;
@@ -1441,7 +1628,56 @@ ER  -
         elements.ogPreviewModal?.classList.remove('open');
         elements.pdfPreviewModal?.classList.remove('open');
         elements.savedListModal?.classList.remove('open');
+        elements.folioViewerModal?.classList.remove('open');
         if (elements.searchSuggestionsDropdown) elements.searchSuggestionsDropdown.style.display = 'none';
+      }
+    });
+
+    // Folio Viewer Controls & Modal
+    elements.folioModalCloseBtn?.addEventListener('click', () => {
+      elements.folioViewerModal?.classList.remove('open');
+    });
+
+    elements.btnFolioZoomIn?.addEventListener('click', () => {
+      state.folioZoom = Math.min(3, state.folioZoom + 0.25);
+      if (elements.folioStageImg) elements.folioStageImg.style.transform = `scale(${state.folioZoom})`;
+    });
+
+    elements.btnFolioZoomOut?.addEventListener('click', () => {
+      state.folioZoom = Math.max(0.5, state.folioZoom - 0.25);
+      if (elements.folioStageImg) elements.folioStageImg.style.transform = `scale(${state.folioZoom})`;
+    });
+
+    elements.btnFolioZoomReset?.addEventListener('click', () => {
+      state.folioZoom = 1;
+      if (elements.folioStageImg) elements.folioStageImg.style.transform = 'scale(1)';
+    });
+
+    elements.btnFolioInvert?.addEventListener('click', () => {
+      state.folioInverted = !state.folioInverted;
+      elements.folioStageImg?.classList.toggle('inverted', state.folioInverted);
+    });
+
+    // Map Filter Chips
+    elements.mapFilterBar?.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        elements.mapFilterBar.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.mapFilter = chip.getAttribute('data-map-filter') || 'all';
+        playHapticTone();
+        renderHistoricalSites();
+      });
+    });
+
+    // Newsletter Subscription Form
+    elements.newsletterForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emailInput = document.getElementById('newsletter-email-input');
+      const email = emailInput?.value || '';
+      if (email) {
+        const t = HC_DATA.translations[state.currentLang];
+        showToast(t.newsletterSuccessToast || 'تم اشتراكك في النشرة التوثيقية بنجاح!');
+        elements.newsletterForm.reset();
       }
     });
 
@@ -1473,7 +1709,8 @@ ER  -
       elements.commandPaletteModal,
       elements.ogPreviewModal,
       elements.pdfPreviewModal,
-      elements.savedListModal
+      elements.savedListModal,
+      elements.folioViewerModal
     ].forEach(modal => {
       modal?.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -1628,6 +1865,13 @@ ER  -
         const issue = pdfPreviewBtn.getAttribute('data-issue');
         if (pubId) openPdfPreview('book', pubId);
         else openPdfPreview('issue', issue || '41');
+        return;
+      }
+
+      const inspectFolioBtn = e.target.closest('.btn-inspect-folio');
+      if (inspectFolioBtn) {
+        const msId = inspectFolioBtn.getAttribute('data-manuscript-id');
+        openManuscriptFolioViewer(msId);
         return;
       }
 

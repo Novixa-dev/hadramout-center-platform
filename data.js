@@ -834,7 +834,195 @@ const HC_DATA = {
     }
   ],
 
-  // 8. Internationalization Dictionaries (القواميس اللغوية)
+  // 8. Rare Archival Manuscripts & Deeds (خزانة المخطوطات والوثائق النادرة)
+  manuscripts: [
+    {
+      id: "ms-101",
+      titleAr: "مخطوط غاية الأماني في تفسير الكلام الرباني",
+      titleEn: "Ghayat Al-Amani in Quranic Exegesis",
+      scribeAr: "العلامة محمد بن علي بن علوي باعلوي",
+      scribeEn: "Allama Muhammad bin Ali bin Alawi Ba'Alawi",
+      yearHijri: "984 هـ",
+      yearGregorian: "1576 م",
+      scriptTypeAr: "خط نسخي حضرمي مشكول بمداد أسود وأحمر",
+      scriptTypeEn: "Voweled Hadhrami Naskh script in carbon black and cinnabar red",
+      folios: "284 ورقة (568 صفحة)",
+      dimensions: "28 × 19 سم",
+      custodyAr: "خزانة تريم التوثيقية — رقم الحفظ: 142/ت",
+      custodyEn: "Tarim Archival Repository — Shelf ID: 142/T",
+      summaryAr: "نسخة نادرة تامة الضبط تمتاز بهوامش تفسيرية لغوية دقيقة، وقيد تملك تاريخي بخط الإمام الحبيب عبد الله بن علوي الحداد.",
+      summaryEn: "Rare complete exemplar featuring meticulous marginal linguistic glosses and historic ownership colophon in the hand of Imam Al-Haddad.",
+      folioImageUrl: "https://files.hadramout.center/media/2025/12/أبحاث-في-تاريخ-السلطنة-القعيطية3-scaled.jpg",
+      tags: ["مخطوطات", "تفسير", "تريم", "القرن العاشر الهجري"]
+    },
+    {
+      id: "ms-102",
+      titleAr: "وثيقة صلح وادي دوعن وحلف الفضول الحضرمي الأهلية",
+      titleEn: "Wadi Daw'an Peace Compact & Civic Tribal Covenant",
+      scribeAr: "الشيخ الفقيه سعيد بن عبد الله باوزير",
+      scribeEn: "Sheikh Saeed bin Abdullah Ba Wazir",
+      yearHijri: "1284 هـ",
+      yearGregorian: "1867 م",
+      scriptTypeAr: "رقعة ديوانية حضرمية ممهورة بأختام زعماء العشائر",
+      scriptTypeEn: "Hadhrami Chancellery script with seals of tribal clan elders",
+      folios: "وثيقة حجرية/رق واحدة (طول 110 سم)",
+      dimensions: "110 × 34 سم",
+      custodyAr: "أرشيف وثائق مركز حضرموت بالمكلا — وثيقة رقم: 89/د",
+      custodyEn: "Hadhramout Center Archival Vault, Mukalla — Deed No: 89/D",
+      summaryAr: "وثيقة أصلية نادرة تنظم الأعراف القبلية، وتأمين قوافل التجارة بين الساحل ووادي حضرموت، وتحريم التعدي على المعابر وبساتين النخيل.",
+      summaryEn: "Foundational regional tribal peace compact codifying security pacts for caravan trade routes between coastal ports and inland valleys.",
+      folioImageUrl: "https://files.hadramout.center/media/2026/02/img20260211_21160330-scaled.jpg",
+      tags: ["وثائق أهلية", "دوعن", "أحلاف", "تاريخ قبلي"]
+    },
+    {
+      id: "ms-103",
+      titleAr: "سجل قيود الملاحة البحرية لدفاتر جمارك الشحر وقنا",
+      titleEn: "Maritime Port Ledger & Customs Manifests of Al-Shihr and Qana",
+      scribeAr: "ناظر ميناء الشحر: السيد أبو بكر بن شيخ العيدروس",
+      scribeEn: "Port Overseer: Abu Bakr bin Sheikh Al-Aydaroos",
+      yearHijri: "1312 هـ",
+      yearGregorian: "1894 م",
+      scriptTypeAr: "خط دارج توثيقي تجاري مقيد بالحبر الصمغي",
+      scriptTypeEn: "Commercial registrar script inscribed in archival gum Arabic ink",
+      folios: "146 ورقة مجلدة بجلد الماعز الطبيعي",
+      dimensions: "32 × 22 سم",
+      custodyAr: "مجموعة الوثائق البحرية بمركز حضرموت — كود: 204/ب",
+      custodyEn: "Hadhramout Center Maritime Collection — Code: 204/B",
+      summaryAr: "سجل توثيقي فريد يسجل حركة السفن الشراعية (البغلات، السنابيق، الغنجات) القادمة من بومباي ومومباسا وكاليكوت المحملة بالأرز والأخشاب والتوابل واللبان.",
+      summaryEn: "Rare maritime customs daybook tracking dhow movements (Baghlas, Sanbuqs, Ghanjahs) between Hadhramout, Bombay, Calicut, and East Africa.",
+      folioImageUrl: "https://files.hadramout.center/media/2025/12/موانئ-حضرموت-مركز-حضرموت3-scaled.jpg",
+      tags: ["ملاحة", "الشحر", "بحر العرب", "جمارك", "تجارة بحرية"]
+    },
+    {
+      id: "ms-104",
+      titleAr: "ديوان سفينة البضائع ونفيسة الذخائر (بخط المؤلف)",
+      titleEn: "Diwan Safinat Al-Bada'i' (Autograph Folio of Ibn Ubaydullah)",
+      scribeAr: "المؤرخ والأديب مفتي حضرموت السيد محمد بن عبيد الله السقاف",
+      scribeEn: "Mufti of Hadhramout, Sayyid Muhammad bin Ubaydullah Al-Saqqaf",
+      yearHijri: "1348 هـ",
+      yearGregorian: "1929 م",
+      scriptTypeAr: "خط نسخي أندلسي فني أنيق بحواشي وإلحاقات شعرية",
+      scriptTypeEn: "Polished Andalusian-Naskh script with autograph poetical corrections",
+      folios: "198 ورقة (تجليد أصلي مذهب)",
+      dimensions: "24 × 16 سم",
+      custodyAr: "خزانة المخطوطات الأدبية بمركز حضرموت — رقم: 312/أ",
+      custodyEn: "Hadhramout Center Literary Folios — ID: 312/A",
+      summaryAr: "المخطوطة الأصلية الأم لقصائد وموشحات العلامة ابن عبيد الله السقاف التي دونها في سيئون وعدن أثناء مساجلاته الشعرية مع أدباء الجزيرة العربية ومصر.",
+      summaryEn: "Autograph archetype manuscript containing the poetic and prose masterworks of historian and jurist Ibn Ubaydullah Al-Saqqaf.",
+      folioImageUrl: "https://files.hadramout.center/media/2025/12/غلاف-كتاب-دور-الحضارمة-في-بناء-الدولة-الإسلامية3-scaled.jpg",
+      tags: ["أدب", "شعر", "سيئون", "ابن عبيد الله", "مخطوط أصلي"]
+    }
+  ],
+
+  // 9. Historical Geography & Landmarks (الخريطة التاريخية التفاعلية لمعالم وحواضر حضرموت)
+  historicalSites: [
+    {
+      id: "site-mukalla",
+      nameAr: "المكلا — عاصمة الساحل وحاضرة البحر",
+      nameEn: "Al-Mukalla — Coastal Capital & Port",
+      eraAr: "القرن السادس الهجري / عاصمة القعيطي 1915م",
+      eraEn: "Founded 12th c. CE / Qu'aiti Capital 1915 CE",
+      type: "coastal-port",
+      landmarkAr: "حصن الغويزي (1716م)، قصر السلطان، مسجد الروضة، وخور المكلا.",
+      landmarkEn: "Al-Ghuwayzi Fortress (1716 CE), Sultan's Palace, Al-Rawdha Mosque.",
+      coordinates: { lat: 14.5325, lng: 49.1287 },
+      descriptionAr: "عروس بحر العرب ومركز النشاط الثقافي والتوثيقي في حضرموت، ومقر المركز. تحميها الجبال الشاهقة المطلة على البحر وكانت مركزاً رئيسياً لأسطول الملاحة.",
+      descriptionEn: "The Bride of the Arabian Sea and cultural capital of coastal Hadhramout, flanked by dramatic cliffs and historic maritime trading basins."
+    },
+    {
+      id: "site-shihr",
+      nameAr: "الشحر — أم التراث وميناء اللبان التاريخي",
+      nameEn: "Al-Shihr — Ancient Frankincense Port",
+      eraAr: "الألفية الأولى قبل الميلاد / ملحمة الشهداء السبعة 1523م",
+      eraEn: "1st Millennium BCE / Battle of Seven Martyrs 1523 CE",
+      type: "historic-port",
+      landmarkAr: "سوق سمون القديم، حصن بن عياش، دار ناصر، وبوابة العيدروس التاريخية (السدة).",
+      landmarkEn: "Samoon Bazaar, Bin Ayyash Fort, Dar Nasser, Al-Aydaroos Gate (Al-Siddah).",
+      coordinates: { lat: 14.7597, lng: 49.6083 },
+      descriptionAr: "أعرق موانئ جنوب الجزيرة العربية، ومحطة رئيسية لتصدير لبان ظفار وعاد. شهدت المقاومة البطولية ضد الغزو البرتغالي عام 929هـ (1523م).",
+      descriptionEn: "One of the oldest ports of South Arabia, famous for frankincense trade and the historic resistance against Portuguese naval invasions in 1523 CE."
+    },
+    {
+      id: "site-shibam",
+      nameAr: "شبام — مانهاتن الصحراء وأولى ناطحات السحاب الطينية",
+      nameEn: "Shibam — Manhattan of the Desert",
+      eraAr: "القرن الخامس قبل الميلاد / مسجلة في التراث العالمي لليونسكو",
+      eraEn: "5th Century BCE / UNESCO World Heritage Site",
+      type: "world-heritage",
+      landmarkAr: "أبراج شبام الطينية (تصل إلى 8 طوابق)، مسجد الجامع الهاروني (166هـ).",
+      landmarkEn: "Mud-brick high-rises up to 8 stories, Haruni Grand Mosque (166 AH).",
+      coordinates: { lat: 15.9261, lng: 48.6264 },
+      descriptionAr: "أقدم مدينة ناطحات سحاب في العالم شيدت بالكامل من الطين واللبن المقاوم للعوامل الجوية، تمثل قمة العبقرية الهندسية المعمارية الحضرمية.",
+      descriptionEn: "The world's oldest vertical city made entirely of earthen sun-dried brick, a peerless triumph of vernacular engineering and urban defense."
+    },
+    {
+      id: "site-tarim",
+      nameAr: "تريم — عاصمة الثقافة الإسلامية ومكتبة الأحقاف",
+      nameEn: "Tarim — City of 360 Mosques & Intellectual Hub",
+      eraAr: "القرن الأول الهجري / منارة المحضار الطينية الشامخة",
+      eraEn: "7th Century CE / Iconic Al-Mihdhar Earthen Minaret",
+      type: "islamic-scholarly",
+      landmarkAr: "منارة المحضار (53 متراً طينياً)، قصر الرناد التاريخي، ومكتبة الأحقاف للمخطوطات.",
+      landmarkEn: "Al-Mihdhar Minaret (53m earthen spire), Qasr Al-Ranad, Al-Ahgaff Manuscript Vault.",
+      coordinates: { lat: 16.0544, lng: 48.9958 },
+      descriptionAr: "حاضرة العلم والعلماء في وادي حضرموت، اشتهرت بمدارسها الفقهية التي خرّجت كبار الدعاة الذين نشروا الإسلام في إندونيسيا وماليزيا وشرق إفريقيا.",
+      descriptionEn: "Foremost spiritual and scholarly sanctuary of Hadhramout, home to invaluable manuscript collections and traditional colleges."
+    },
+    {
+      id: "site-seiyun",
+      nameAr: "سيئون — قصر الكثيري الطيني وقلب الوادي النابض",
+      nameEn: "Seiyun — Kathiri Palace & Valley Hub",
+      eraAr: "عاصمة السلطنة الكثيرية / القرن السادس الهجري",
+      eraEn: "Kathiri Sultanate Capital / 12th Century CE",
+      type: "sultanate-capital",
+      landmarkAr: "قصر السلطان الكثيري (أضخم بناء طيني في العالم)، سوق الحنظل، جامع طه.",
+      landmarkEn: "Sultan Kathiri Palace (largest adobe royal palace in the world), Taha Mosque.",
+      coordinates: { lat: 15.9419, lng: 48.7892 },
+      descriptionAr: "حاضرة وادي حضرموت الإدارية، يتوسطها قصر الكثيري المهيب الذي يضم اليوم متحفاً للآثار والمخطوطات ومقتنيات التراث الشعبي.",
+      descriptionEn: "Administrative heart of Wadi Hadhramout, dominated by the majestic Sultan's Palace, housing ancient inscriptions and ethnographic archives."
+    },
+    {
+      id: "site-dawan",
+      nameAr: "وادي دوعن — وادي العسل والقصور الملونة والمهجر",
+      nameEn: "Wadi Daw'an — Valley of Honey & Vernacular Palaces",
+      eraAr: "عصور ما قبل الميلاد / معقل الهجرات التجارية",
+      eraEn: "Pre-Islamic Antiquity / Hub of Indian Ocean Mercantile Families",
+      type: "valley-heritage",
+      landmarkAr: "قرية الخريبة، قصر البقشان في صيف، حصون بضه، ومدرجات النخيل والأشجار.",
+      landmarkEn: "Al-Khuraibah village, Buqshan Palace in Sayf, Bidhah Citadels, date palm terraces.",
+      coordinates: { lat: 15.0167, lng: 48.4500 },
+      descriptionAr: "أحد أخصب وأجمل أودية حضرموت، يشتهر بإنتاج أجود أنواع العسل الدوعني (السدر) في العالم، وقصوره الطينية المزخرفة التي شيدها المهاجرون العائدون من المهجر.",
+      descriptionEn: "Legendary valley renowned globally for premium Sidr honey, decorated polychrome mud palaces, and influential diaspora family lineages."
+    },
+    {
+      id: "site-sumhuram",
+      nameAr: "ميناء سمهرم (خور روري) — قلعة لبان حضرموت القديمة",
+      nameEn: "Sumhuram Port (Khor Rori) — Ancient Frankincense Nexus",
+      eraAr: "القرن الثالث قبل الميلاد إلى القرن الثالث الميلادي (مملكة حضرموت)",
+      eraEn: "3rd Century BCE – 3rd Century CE (Kingdom of Hadhramout)",
+      type: "ancient-archaeology",
+      landmarkAr: "معبد الإله سين، بوابات الحجارة المنحوتة الضخمة، مخازن اللبان الصخري.",
+      landmarkEn: "Sanctuary of Syn, Megalithic limestone gatehouses, frankincense storage chambers.",
+      coordinates: { lat: 17.0392, lng: 54.4344 },
+      descriptionAr: "الميناء العسكري والتجاري الحصين الذي شيده ملوك حضرموت لتأمين صادرات اللبان إلى روما ومصر واليونان والهند. وثقته دراسة المركز المحكمة (2026).",
+      descriptionEn: "Fortified naval and commercial harbor built by Hadhrami kings to monopolize the global frankincense trade to Rome and India."
+    },
+    {
+      id: "site-qana",
+      nameAr: "ميناء قنا التاريخي (بئر علي) — فرضة بحر العرب العريقة",
+      nameEn: "Qana Ancient Port (Bir Ali) — Historic Arabian Sea Haven",
+      eraAr: "الألفية الأولى قبل الميلاد / مذكور في الطواف حول البحر الإريتري",
+      eraEn: "1st Millennium BCE / Documented in Periplus of the Erythraean Sea",
+      type: "ancient-port",
+      landmarkAr: "حصن الغراب، نقوش حصن الغراب المسندية، جزيرة بروم، وحوض الميناء القديم.",
+      landmarkEn: "Husn Al-Ghurab citadel, South Arabian Epigraphic Inscriptions, ancient anchorage basin.",
+      coordinates: { lat: 14.0208, lng: 48.3347 },
+      descriptionAr: "الميناء الرئيسي لمملكة حضرموت القديمة على بحر العرب، انطلقت منه سفن البخور واللبان نحو البحر الأحمر وشمال إفريقيا وموانئ الهند.",
+      descriptionEn: "The primary maritime harbor of the ancient Kingdom of Hadhramout, connecting inland caravan routes directly to deep-water navigation."
+    }
+  ],
+
+  // 10. Internationalization Dictionaries (القواميس اللغوية)
   translations: {
     ar: {
       navHome: "الرئيسية",
@@ -948,7 +1136,20 @@ const HC_DATA = {
       commandPalettePlaceholder: "اكتب للانتقال إلى قسم أو البحث في المراجع...",
       playVideo: "مشاهدة الفيديو",
       playAudio: "استماع للملف الصوتي",
-      openOgPreview: "معاينة بطاقة المشاركة (OpenGraph)"
+      openOgPreview: "معاينة بطاقة المشاركة (OpenGraph)",
+      navManuscripts: "المخطوطات",
+      navMap: "خريطة التراث",
+      manuscriptsEyebrow: "الوثائق الأرشيفية الأصيلة",
+      manuscriptsTitle: "خزانة المخطوطات والوثائق النادرة",
+      manuscriptsSubtitle: "مخطوطات ووثائق وسجلات تاريخية بخطوط أعلام حضرموت توثق الفقه والملاحة والتجارة والأحلاف القبلية",
+      inspectFolioBtn: "فحص أوراق المخطوط",
+      heritageMapEyebrow: "الجغرافيا التاريخية لحضرموت",
+      heritageMapTitle: "الخريطة التفاعلية لمعالم وحواضر حضرموت التاريخية",
+      heritageMapSubtitle: "استكشف الموانئ التاريخية، والمدن الطينية، ومواقع الحضارات القديمة، والأودية الزراعية",
+      newsletterTitle: "النشرة التوثيقية الدورية لمركز حضرموت",
+      newsletterSubtitle: "اشترك في النشرة البريدية الأكاديمية لتصلك أحدث أعداد مجلة حضرموت، وإصدارات الكتب، والدعوات للمؤتمرات العلمية.",
+      subscribeBtn: "اشتراك في النشرة الأكاديمية",
+      newsletterSuccessToast: "تم اشتراكك بنجاح في النشرة التوثيقية لمركز حضرموت!"
     },
     en: {
       navHome: "Home",
@@ -1062,7 +1263,20 @@ const HC_DATA = {
       commandPalettePlaceholder: "Type to jump to a section or search references...",
       playVideo: "Watch Video",
       playAudio: "Listen to Audio",
-      openOgPreview: "Preview Social Share Card (OpenGraph)"
+      openOgPreview: "Preview Social Share Card (OpenGraph)",
+      navManuscripts: "Manuscripts",
+      navMap: "Heritage Map",
+      manuscriptsEyebrow: "Primary Archival Treasures",
+      manuscriptsTitle: "Rare Manuscripts & Archival Folios",
+      manuscriptsSubtitle: "Original autograph folios, maritime manifests, and tribal covenants in historic Hadhrami hands",
+      inspectFolioBtn: "Inspect Folio",
+      heritageMapEyebrow: "Historical Geography of Hadhramout",
+      heritageMapTitle: "Interactive Map of Hadhrami Heritage Landmarks",
+      heritageMapSubtitle: "Explore ancient frankincense harbors, UNESCO mud skyscrapers, and royal sultanate palaces",
+      newsletterTitle: "Hadhramout Center Scholarly Dispatch",
+      newsletterSubtitle: "Subscribe to receive quarterly journal releases, newly cataloged monographs, and conference calls for papers.",
+      subscribeBtn: "Subscribe to Scholarly Dispatch",
+      newsletterSuccessToast: "Successfully subscribed to Hadhramout Center Scholarly Dispatch!"
     }
   }
 };

@@ -11,10 +11,14 @@ All notable changes to the Hadhramout Center Digital Platform are documented her
 - **Command Palette (`Ctrl + K` / `Cmd + K`):** Implemented instant keyboard-driven search and navigation across all views, books, and articles.
 - **Digital Sharing & Dynamic OpenGraph Suite:** Created interactive OpenGraph and Twitter card live preview modal with instant clipboard copying, social direct sharing, and dynamic DOM `<meta>` synchronization.
 - **Interactive Heritage Media:** Responsive 16:9 modal video player for symposium recordings and dedicated heritage audio player.
+- **Rare Archival Manuscripts Vault:** Added `#manuscripts` view and interactive folio inspector modal (`#folio-viewer-modal`) with zoom levels (up to 3x), contrast inversion for faded carbon inks, and codicological cataloging.
+- **Historical Geography & Landmarks Map:** Added `#map` view with categorized heritage sites (ports, mud skyscraper citadels, royal palaces) with GPS coordinates and architectural descriptions.
+- **PWA Offline Service Worker:** Implemented `sw.js` with Cache-First asset persistence and Network-First dynamic caching for seamless offline research across remote valleys.
+- **Scholarly Newsletter Dispatch:** Integrated subscription engine for journal announcements, conferences, and new monograph releases.
 - **Academic Citation & Exporters:** Direct export for APA 7th, Chicago 17th, MLA 9th, BibTeX (`.bib`), RIS (`.ris`), and Markdown (`.md`).
 - **Catalog Layout Flexibility:** Added Grid vs. List view switcher with dynamic sorting by Year, Title, and Popularity.
 - **Audio Haptics:** Subtle Web Audio API acoustic micro-feedback on primary interactive controls.
-- **Validation Suite:** Updated `scripts/validate.js` to assert data integrity for news, articles, and new architecture.
+- **Validation Suite:** Updated `scripts/validate.js` to assert data integrity for news, articles, manuscripts, landmarks, and PWA assets.
 
 ## [1.1.0] - 2026-10-07
 ### Autonomous Engineering Standards, Arabic Master Playbook & Verification Suite

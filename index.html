@@ -175,6 +175,8 @@
           <li><a href="#books" class="nav-link" data-nav="books" id="nav-books">الكتب</a></li>
           <li><a href="#conferences" class="nav-link" data-nav="conferences" id="nav-conferences">المؤتمرات</a></li>
           <li><a href="#forum" class="nav-link" data-nav="forum" id="nav-forum">المنتدى</a></li>
+          <li><a href="#manuscripts" class="nav-link" data-nav="manuscripts" id="nav-manuscripts">المخطوطات</a></li>
+          <li><a href="#map" class="nav-link" data-nav="map" id="nav-map">خريطة التراث</a></li>
           <li><a href="#timeline" class="nav-link" data-nav="timeline" id="nav-timeline">خط التاريخ</a></li>
           <li><a href="#media" class="nav-link" data-nav="media" id="nav-media">الوسائط</a></li>
           <li><a href="#contact" class="nav-link" data-nav="contact" id="nav-contact">تواصل معنا</a></li>
@@ -263,6 +265,8 @@
         <li><a href="#books" class="mobile-nav-link" data-nav="books">إصدارات الكتب</a></li>
         <li><a href="#conferences" class="mobile-nav-link" data-nav="conferences">المؤتمرات العلمية</a></li>
         <li><a href="#forum" class="mobile-nav-link" data-nav="forum">منتدى عميد الوفاء</a></li>
+        <li><a href="#manuscripts" class="mobile-nav-link" data-nav="manuscripts">خزانة المخطوطات</a></li>
+        <li><a href="#map" class="mobile-nav-link" data-nav="map">خريطة التراث</a></li>
         <li><a href="#timeline" class="mobile-nav-link" data-nav="timeline">خط تاريخ حضرموت</a></li>
         <li><a href="#media" class="mobile-nav-link" data-nav="media">الوسائط والبودكاست</a></li>
         <li><a href="#contact" class="mobile-nav-link" data-nav="contact">تواصل معنا</a></li>
@@ -514,6 +518,24 @@
 
             <div style="text-align: center; margin-top: 3rem;">
               <a href="#timeline" class="btn-secondary" id="btn-view-full-timeline">استعراض الخط الزمني التاريخي الكامل</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Scholarly Newsletter Dispatch Banner -->
+        <section class="section" style="padding-top: 0;">
+          <div class="container">
+            <div class="newsletter-strip">
+              <div>
+                <h3 class="newsletter-title" id="txt-newsletter-title">النشرة التوثيقية الدورية لمركز حضرموت</h3>
+                <p class="newsletter-desc" id="txt-newsletter-desc">
+                  اشترك في النشرة الأكاديمية لتصلك أحدث أعداد مجلة حضرموت، وإصدارات الكتب المحكمة، وإعلانات المؤتمرات العلمية مباشرة إلى بريدك الإلكتروني.
+                </p>
+              </div>
+              <form class="newsletter-form" id="newsletter-subscription-form">
+                <input type="email" class="newsletter-input" id="newsletter-email-input" placeholder="أدخل بريدك الإلكتروني الأكاديمي..." required>
+                <button type="submit" class="newsletter-btn" id="btn-subscribe-newsletter">اشتراك</button>
+              </form>
             </div>
           </div>
         </section>
@@ -813,6 +835,52 @@
         </section>
       </div>
 
+      <!-- 10. MANUSCRIPTS VIEW (Rare Archival Folios) -->
+      <div id="view-manuscripts" class="page-view" style="display: none;">
+        <section class="section">
+          <div class="container">
+            <div class="section-header">
+              <span class="section-eyebrow" id="txt-manuscripts-eyebrow">الوثائق الأرشيفية الأصيلة</span>
+              <h2 class="section-title" id="txt-manuscripts-title">خزانة المخطوطات والوثائق النادرة</h2>
+              <p class="section-subtitle" id="txt-manuscripts-subtitle">
+                مخطوطاتٌ ووثائق وسجلاتٌ تاريخيةٌ بخطوط أعلام حضرموت توثق الفقه والملاحة والتجارة والأحلاف القبلية.
+              </p>
+            </div>
+
+            <div class="manuscripts-grid" id="full-manuscripts-grid">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 11. HERITAGE MAP VIEW (Historical Geography & Landmarks) -->
+      <div id="view-map" class="page-view" style="display: none;">
+        <section class="section">
+          <div class="container">
+            <div class="section-header">
+              <span class="section-eyebrow" id="txt-map-eyebrow">الجغرافيا التاريخية لحضرموت</span>
+              <h2 class="section-title" id="txt-map-title">الخريطة التفاعلية لمعالم وحواضر حضرموت التاريخية</h2>
+              <p class="section-subtitle" id="txt-map-subtitle">
+                استكشف الموانئ التاريخية، والمدن الطينية، ومواقع الحضارات القديمة، والأودية الزراعية في حضرموت.
+              </p>
+            </div>
+
+            <!-- Map Filter Chips -->
+            <div class="filter-bar" id="map-filter-bar" style="margin-bottom: 2rem;">
+              <button class="filter-chip active" data-map-filter="all">جميع المعالم والحواضر</button>
+              <button class="filter-chip" data-map-filter="coastal-port">موانئ بحر العرب</button>
+              <button class="filter-chip" data-map-filter="world-heritage">التراث العمراني والوادي</button>
+              <button class="filter-chip" data-map-filter="ancient-archaeology">الآثار والممالك القديمة</button>
+            </div>
+
+            <div class="heritage-sites-grid" id="full-map-grid">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </section>
+      </div>
+
       <!-- 9. CONTACT VIEW -->
       <div id="view-contact" class="page-view" style="display: none;">
         <section class="section">
@@ -1030,6 +1098,33 @@
         <button class="modal-close-btn" id="pdf-modal-close-btn" aria-label="إغلاق">&times;</button>
       </div>
       <div class="modal-body" id="pdf-modal-body">
+        <!-- Injected by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Rare Manuscript Folio Viewer Modal -->
+  <div class="modal-overlay" id="folio-viewer-modal" role="dialog" aria-modal="true" aria-labelledby="folio-modal-title">
+    <div class="folio-viewer-modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="folio-modal-title">فاحص المخطوطات والوثائق النادرة</h3>
+        <button class="modal-close-btn" id="folio-modal-close-btn" aria-label="إغلاق">&times;</button>
+      </div>
+      <div class="folio-stage" id="folio-stage">
+        <img src="" alt="ورقة المخطوط" class="folio-stage-img" id="folio-stage-img">
+      </div>
+      <div class="folio-toolbar">
+        <div class="folio-tool-group">
+          <button class="folio-tool-btn" id="btn-folio-zoom-in">تكبير (+)</button>
+          <button class="folio-tool-btn" id="btn-folio-zoom-out">تصغير (-)</button>
+          <button class="folio-tool-btn" id="btn-folio-zoom-reset">إعادة ضبط</button>
+          <button class="folio-tool-btn" id="btn-folio-invert">عكس التباين (أحبار باهتة)</button>
+        </div>
+        <div class="folio-tool-group">
+          <span id="folio-meta-badge" style="font-size: 0.82rem; font-weight: 700; color: var(--color-amber-600);"></span>
+        </div>
+      </div>
+      <div style="padding: 1.25rem 1.5rem; background: var(--color-surface); border-top: 1px solid var(--color-border); font-size: 0.88rem; color: var(--color-text-muted);" id="folio-info-panel">
         <!-- Injected by app.js -->
       </div>
     </div>

@@ -2280,6 +2280,390 @@ html.font-size-lg { font-size: 18px; }
 }
 
 /* ==========================================================================
+   Rare Manuscripts & Archival Folio Showcase
+   ========================================================================== */
+.manuscripts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.manuscript-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.manuscript-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-amber-500);
+}
+
+.manuscript-thumb-wrap {
+  position: relative;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: var(--color-primary-950);
+}
+
+.manuscript-thumb-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.manuscript-card:hover .manuscript-thumb-wrap img {
+  transform: scale(1.05);
+}
+
+.manuscript-era-badge {
+  position: absolute;
+  top: 1rem;
+  inset-inline-start: 1rem;
+  background: rgba(15, 31, 56, 0.85);
+  color: var(--color-amber-400);
+  border: 1px solid var(--color-amber-500);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+
+.manuscript-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.manuscript-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary-900);
+  line-height: 1.4;
+  margin-bottom: 0.65rem;
+}
+
+.manuscript-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.2rem;
+  border-bottom: 1px dashed var(--color-border);
+  padding-bottom: 1rem;
+}
+
+.manuscript-meta-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.manuscript-meta-label {
+  color: var(--color-text-subtle);
+}
+
+.manuscript-meta-val {
+  font-weight: 600;
+  color: var(--color-primary-800);
+}
+
+.manuscript-summary {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+.btn-inspect-folio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  background: var(--color-primary-900);
+  color: var(--color-amber-400);
+  border: 1px solid var(--color-amber-600);
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  width: 100%;
+}
+
+.btn-inspect-folio:hover {
+  background: var(--color-amber-500);
+  color: var(--color-primary-950);
+}
+
+/* Folio Viewer Modal */
+.folio-viewer-modal-container {
+  max-width: 1100px;
+  width: 95%;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-2xl);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.folio-stage {
+  position: relative;
+  height: 500px;
+  background: #0b1120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.folio-stage:active {
+  cursor: grabbing;
+}
+
+.folio-stage-img {
+  max-height: 92%;
+  max-width: 92%;
+  object-fit: contain;
+  transition: transform 0.2s ease, filter 0.3s ease;
+  user-select: none;
+}
+
+.folio-stage-img.inverted {
+  filter: invert(1) hue-rotate(180deg) contrast(1.3);
+}
+
+.folio-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.5rem;
+  background: var(--color-surface-subtle);
+  border-top: 1px solid var(--color-border);
+  gap: 1rem;
+}
+
+.folio-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.folio-tool-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-900);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all var(--transition-fast);
+}
+
+.folio-tool-btn:hover {
+  border-color: var(--color-amber-500);
+  color: var(--color-amber-600);
+}
+
+/* ==========================================================================
+   Historical Geography & Interactive Landmarks Map
+   ========================================================================== */
+.heritage-map-section {
+  margin-top: 2rem;
+}
+
+.heritage-sites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.heritage-site-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+}
+
+.heritage-site-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-amber-500);
+}
+
+.site-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.site-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary-900);
+  line-height: 1.4;
+}
+
+.site-type-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--color-amber-100);
+  color: var(--color-amber-600);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.site-era {
+  font-size: 0.82rem;
+  color: var(--color-amber-600);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.site-landmark {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary-800);
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.site-desc {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+.site-coord-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  background: var(--color-surface-subtle);
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+}
+
+/* ==========================================================================
+   Newsletter Subscription Dispatch
+   ========================================================================== */
+.newsletter-strip {
+  background: linear-gradient(135deg, var(--color-primary-950) 0%, var(--color-primary-900) 100%);
+  border-radius: var(--radius-xl);
+  padding: 3rem 2.5rem;
+  color: #ffffff;
+  margin: 3.5rem 0;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .newsletter-strip {
+    grid-template-columns: 1fr;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+.newsletter-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-amber-400);
+  margin-bottom: 0.65rem;
+  line-height: 1.35;
+}
+
+.newsletter-desc {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.65rem;
+}
+
+@media (max-width: 480px) {
+  .newsletter-form {
+    flex-direction: column;
+  }
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 0.85rem 1.2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.newsletter-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.newsletter-input:focus {
+  outline: none;
+  border-color: var(--color-amber-400);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.newsletter-btn {
+  padding: 0.85rem 1.5rem;
+  background: var(--color-amber-500);
+  color: var(--color-primary-950);
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-base);
+}
+
+.newsletter-btn:hover {
+  background: var(--color-amber-400);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+}
+
+/* ==========================================================================
    Scholarly Print Stylesheet (Ctrl + P / Academic Paper Citations)
    ========================================================================== */
 @media print {
