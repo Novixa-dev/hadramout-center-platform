@@ -5,9 +5,27 @@
 (function () {
   'use strict';
 
+  // Detect initial language based on saved preference or browser locale
+  function detectInitialLang() {
+    const saved = localStorage.getItem('hc_lang');
+    if (saved) return saved;
+    try {
+      const browserLang = (navigator.language || navigator.userLanguage || 'ar').toLowerCase();
+      const primaryCode = browserLang.split('-')[0];
+      const match = (HC_DATA.languages || []).find(l => l.code === browserLang || l.code === primaryCode);
+      if (match && match.code !== 'ar') {
+        localStorage.setItem('hc_lang', match.code);
+        return match.code;
+      }
+    } catch (e) {
+      // Fallback to Arabic
+    }
+    return 'ar';
+  }
+
   // Application Reactive State
   const state = {
-    currentLang: localStorage.getItem('hc_lang') || 'ar',
+    currentLang: detectInitialLang(),
     currentView: 'home',
     activeCategory: 'all',
     articlesCategory: 'all',
@@ -35,6 +53,19 @@
     mobileMenuBtn: document.getElementById('mobile-menu-btn'),
     mobileDrawer: document.getElementById('mobile-drawer'),
     langToggleBtn: document.getElementById('lang-toggle-btn'),
+    langPickerBtn: document.getElementById('lang-picker-btn'),
+    languagePickerModal: document.getElementById('language-picker-modal'),
+    langModalCloseBtn: document.getElementById('lang-modal-close-btn'),
+    langSearchInput: document.getElementById('lang-search-input'),
+    popularLangChips: document.getElementById('popular-lang-chips'),
+    langGridContainer: document.getElementById('lang-grid-container'),
+    langSearchCount: document.getElementById('lang-search-count'),
+    mobileBottomNav: document.getElementById('mobile-bottom-nav'),
+    mbNavHome: document.getElementById('mb-nav-home'),
+    mbNavBooks: document.getElementById('mb-nav-books'),
+    mbNavArticles: document.getElementById('mb-nav-articles'),
+    mbBtnSearch: document.getElementById('mb-btn-search'),
+    mbBtnMenu: document.getElementById('mb-btn-menu'),
     langLabel: document.getElementById('lang-label'),
     themeToggleBtn: document.getElementById('theme-toggle-btn'),
     fontScalerBtn: document.getElementById('font-scaler-btn'),
@@ -201,6 +232,11 @@
       }
     });
 
+    // Update mobile bottom nav active states
+    if (elements.mbNavHome) elements.mbNavHome.classList.toggle('active', viewName === 'home');
+    if (elements.mbNavBooks) elements.mbNavBooks.classList.toggle('active', viewName === 'books');
+    if (elements.mbNavArticles) elements.mbNavArticles.classList.toggle('active', viewName === 'articles');
+
     // Close mobile drawer if open
     if (elements.mobileDrawer) {
       elements.mobileDrawer.classList.remove('open');
@@ -301,24 +337,70 @@
     }
   }
 
-  // Language & Internationalization System
-  function applyLanguage(lang) {
-    state.currentLang = lang;
-    localStorage.setItem('hc_lang', lang);
-    const isAr = lang === 'ar';
-    const t = HC_DATA.translations[lang];
+  // Multi-Language Auto-Translation System & Trigger Bridge
+  function triggerTranslationBridge(langCode, langName) {
+    showToast(state.currentLang === 'ar' ? `جاري ترجمة المنصة إلى ${langName}...` : `Translating platform to ${langName}...`);
+    try {
+      const cookieVal = `/ar/${langCode}`;
+      document.cookie = `googtrans=${cookieVal}; path=/;`;
+      document.cookie = `googtrans=${cookieVal}; path=/; domain=${window.location.hostname};`;
 
-    elements.html.setAttribute('lang', lang);
-    elements.html.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+      // Dynamically load Google Translate Script if not yet present
+      if (!document.getElementById('google-translate-script')) {
+        window.googleTranslateElementInit = function() {
+          new window.google.translate.TranslateElement({
+            pageLanguage: 'ar',
+            includedLanguages: (HC_DATA.languages || []).map(l => l.code).join(','),
+            autoDisplay: false
+          }, 'google_translate_element');
+        };
+        const s = document.createElement('script');
+        s.id = 'google-translate-script';
+        s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        document.body.appendChild(s);
+      } else {
+        const selectEl = document.querySelector('.goog-te-combo');
+        if (selectEl) {
+          selectEl.value = langCode;
+          selectEl.dispatchEvent(new Event('change'));
+        }
+      }
+    } catch (e) {
+      console.warn('Translation bridge notice:', e);
+    }
+  }
+
+  // Language & Internationalization System
+  function applyLanguage(langCode) {
+    const languagesList = HC_DATA.languages || [];
+    const targetLang = languagesList.find(l => l.code === langCode) || { code: 'ar', name: 'العربية', dir: 'rtl', flag: '🇸🇦' };
+    state.currentLang = langCode;
+    localStorage.setItem('hc_lang', langCode);
+
+    const isAr = langCode === 'ar';
+    const isEn = langCode === 'en';
+    const dir = targetLang.dir || (isAr ? 'rtl' : 'ltr');
+
+    elements.html.setAttribute('lang', langCode);
+    elements.html.setAttribute('dir', dir);
+
+    // Update Header Button flag & label
+    const headerFlag = document.getElementById('header-lang-flag');
+    const headerName = document.getElementById('header-lang-name');
+    if (headerFlag) headerFlag.textContent = targetLang.flag || '🌐';
+    if (headerName) headerName.textContent = targetLang.name || langCode.toUpperCase();
 
     if (elements.langLabel) {
       elements.langLabel.textContent = isAr ? 'English' : 'العربية';
     }
 
+    // Apply native curated dictionaries for ar and en
+    const t = (isEn && HC_DATA.translations.en) ? HC_DATA.translations.en : HC_DATA.translations.ar;
+
     const txtBrandTitle = document.getElementById('txt-brand-title');
     const txtBrandSubtitle = document.getElementById('txt-brand-subtitle');
-    if (txtBrandTitle) txtBrandTitle.textContent = isAr ? HC_DATA.institution.shortNameAr : HC_DATA.institution.shortNameEn;
-    if (txtBrandSubtitle) txtBrandSubtitle.textContent = isAr ? "للدراسات التاريخية والتوثيق والنشر" : "Historical Studies & Documentation";
+    if (txtBrandTitle) txtBrandTitle.textContent = isEn ? HC_DATA.institution.shortNameEn : HC_DATA.institution.shortNameAr;
+    if (txtBrandSubtitle) txtBrandSubtitle.textContent = isEn ? "Historical Studies & Documentation" : "للدراسات التاريخية والتوثيق والنشر";
 
     // Nav Links
     const navHome = document.getElementById('nav-home');
@@ -349,6 +431,18 @@
     if (navMedia) navMedia.textContent = t.navMedia;
     if (navContact) navContact.textContent = t.navContact;
 
+    // Mobile Bottom Nav labels
+    const mbTxtHome = document.getElementById('txt-mb-home');
+    const mbTxtBooks = document.getElementById('txt-mb-books');
+    const mbTxtArticles = document.getElementById('txt-mb-articles');
+    const mbTxtSearch = document.getElementById('txt-mb-search');
+    const mbTxtMenu = document.getElementById('txt-mb-menu');
+    if (mbTxtHome) mbTxtHome.textContent = t.mobileNavHome || (isAr ? 'الرئيسية' : 'Home');
+    if (mbTxtBooks) mbTxtBooks.textContent = t.mobileNavBooks || (isAr ? 'الكتب' : 'Books');
+    if (mbTxtArticles) mbTxtArticles.textContent = t.mobileNavArticles || (isAr ? 'المقالات' : 'Articles');
+    if (mbTxtSearch) mbTxtSearch.textContent = t.mobileNavSearch || (isAr ? 'البحث' : 'Search');
+    if (mbTxtMenu) mbTxtMenu.textContent = t.mobileNavMenu || (isAr ? 'القائمة' : 'Menu');
+
     // Hero Section
     const heroBadge = document.getElementById('hero-badge');
     const heroTitle = document.getElementById('hero-title');
@@ -366,6 +460,15 @@
 
     if (elements.globalSearchInput) {
       elements.globalSearchInput.setAttribute('placeholder', t.searchPlaceholder);
+    }
+
+    // Trigger auto-translation bridge if not Arabic and not English
+    if (!isAr && !isEn) {
+      triggerTranslationBridge(langCode, targetLang.name);
+    } else {
+      // Clear translation cookie when returning to default
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
     }
 
     // Refresh Renders
@@ -386,6 +489,164 @@
     renderDepartments();
     updateSavedCounter();
     updateDocumentMetadata();
+    highlightActiveLanguageCard(langCode);
+  }
+
+  // Highlight active language card & chip in Language Modal
+  function highlightActiveLanguageCard(langCode) {
+    if (elements.langGridContainer) {
+      elements.langGridContainer.querySelectorAll('.lang-card').forEach(card => {
+        const isActive = card.getAttribute('data-lang') === langCode;
+        card.classList.toggle('active', isActive);
+        const checkEl = card.querySelector('.lang-card-check');
+        if (isActive && !checkEl) {
+          const span = document.createElement('span');
+          span.className = 'lang-card-check';
+          span.textContent = '✓';
+          card.appendChild(span);
+        } else if (!isActive && checkEl) {
+          checkEl.remove();
+        }
+      });
+    }
+    if (elements.popularLangChips) {
+      elements.popularLangChips.querySelectorAll('.lang-popular-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.getAttribute('data-lang') === langCode);
+      });
+    }
+  }
+
+  // Render Language Cards into Modal Grid with Search Filtering
+  function renderLanguageCards(query = '') {
+    if (!elements.langGridContainer) return;
+    const q = (query || '').trim().toLowerCase();
+    const list = (HC_DATA.languages || []).filter(l => {
+      if (!q) return true;
+      return l.code.toLowerCase().includes(q) ||
+             (l.name && l.name.toLowerCase().includes(q)) ||
+             (l.nameAr && l.nameAr.toLowerCase().includes(q)) ||
+             (l.nameEn && l.nameEn.toLowerCase().includes(q));
+    });
+
+    if (elements.langSearchCount) {
+      elements.langSearchCount.textContent = state.currentLang === 'ar' 
+        ? `${list.length} لغة متاحة` 
+        : `${list.length} languages available`;
+    }
+
+    if (list.length === 0) {
+      elements.langGridContainer.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; color: var(--color-stone-500);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.5rem; opacity: 0.5;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <p style="font-weight: 500;">${state.currentLang === 'ar' ? 'لم يتم العثور على لغات مطابقة للبحث' : 'No matching languages found'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    elements.langGridContainer.innerHTML = list.map(l => {
+      const isActive = l.code === state.currentLang;
+      return `
+        <button class="lang-card ${isActive ? 'active' : ''}" data-lang="${l.code}" type="button">
+          <span class="lang-card-flag">${l.flag}</span>
+          <div class="lang-card-info">
+            <div class="lang-card-name">${l.name}</div>
+            <div class="lang-card-sub">${state.currentLang === 'ar' ? l.nameAr : l.nameEn} · ${l.code.toUpperCase()}</div>
+          </div>
+          ${isActive ? `<span class="lang-card-check">✓</span>` : ''}
+        </button>
+      `;
+    }).join('');
+
+    elements.langGridContainer.querySelectorAll('.lang-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang');
+        applyLanguage(lang);
+        elements.languagePickerModal?.classList.remove('open');
+        playHapticTone();
+      });
+    });
+  }
+
+  // Initialize Language Picker Modal
+  function initLanguagePickerModal() {
+    if (!elements.languagePickerModal) return;
+
+    // Open Modal
+    elements.langPickerBtn?.addEventListener('click', () => {
+      elements.languagePickerModal.classList.add('open');
+      playHapticTone();
+      if (elements.langSearchInput) {
+        elements.langSearchInput.value = '';
+        renderLanguageCards('');
+        setTimeout(() => elements.langSearchInput.focus(), 120);
+      }
+    });
+
+    // Close Modal Button
+    elements.langModalCloseBtn?.addEventListener('click', () => {
+      elements.languagePickerModal.classList.remove('open');
+      playHapticTone();
+    });
+
+    // Populate Popular Language Chips
+    if (elements.popularLangChips) {
+      const popularCodes = ['ar', 'en', 'fr', 'es', 'tr', 'id', 'ms', 'ur', 'fa', 'de', 'zh-CN', 'ru'];
+      const popList = (HC_DATA.languages || []).filter(l => popularCodes.includes(l.code));
+      elements.popularLangChips.innerHTML = popList.map(l => `
+        <button class="lang-popular-chip ${l.code === state.currentLang ? 'active' : ''}" data-lang="${l.code}" type="button">
+          <span>${l.flag}</span>
+          <span>${l.name}</span>
+        </button>
+      `).join('');
+
+      elements.popularLangChips.querySelectorAll('.lang-popular-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const lang = chip.getAttribute('data-lang');
+          applyLanguage(lang);
+          elements.languagePickerModal.classList.remove('open');
+          playHapticTone();
+        });
+      });
+    }
+
+    // Live search input
+    elements.langSearchInput?.addEventListener('input', (e) => {
+      renderLanguageCards(e.target.value);
+    });
+
+    // Initial render
+    renderLanguageCards('');
+  }
+
+  // Mobile Bottom Navigation Controller
+  function initMobileBottomNav() {
+    elements.mbNavHome?.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('home');
+    });
+    elements.mbNavBooks?.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('books');
+    });
+    elements.mbNavArticles?.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo('articles');
+    });
+    elements.mbBtnSearch?.addEventListener('click', (e) => {
+      e.preventDefault();
+      openCommandPalette();
+    });
+    elements.mbBtnMenu?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isOpen = elements.mobileDrawer?.classList.toggle('open');
+      elements.mobileMenuBtn?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      playHapticTone();
+    });
   }
 
   // Theme Management (Light / Academic Dark)
@@ -604,12 +865,17 @@
       list.sort((a, b) => b.year - a.year);
     }
 
-    // Count badges
-    if (isHome && elements.homeBooksCountBadge) {
-      elements.homeBooksCountBadge.textContent = isAr ? `الإصدارات المعروضة: ${list.length}` : `Books: ${list.length}`;
-    }
-    if (!isHome && elements.fullBooksCountBadge) {
-      elements.fullBooksCountBadge.textContent = isAr ? `الإصدارات المعروضة: ${list.length}` : `Books: ${list.length}`;
+    // Count badges and home slicing
+    const totalCount = list.length;
+    if (isHome) {
+      if (elements.homeBooksCountBadge) {
+        elements.homeBooksCountBadge.textContent = isAr ? `أبرز ${Math.min(8, totalCount)} إصدارات من أصل ${totalCount}` : `Featured ${Math.min(8, totalCount)} of ${totalCount}`;
+      }
+      list = list.slice(0, 8);
+    } else {
+      if (elements.fullBooksCountBadge) {
+        elements.fullBooksCountBadge.textContent = isAr ? `الإصدارات المعروضة: ${totalCount}` : `Publications: ${totalCount}`;
+      }
     }
 
     // Set view mode
@@ -1160,6 +1426,14 @@
         image = 'https://files.hadramout.center/media/2026/09/image-6.png';
         url = `${window.location.origin}${window.location.pathname}#article-${article.id}`;
       }
+    } else if (type === 'news' && id) {
+      const newsItem = (HC_DATA.news || []).find(n => n.id === id);
+      if (newsItem) {
+        title = isAr ? newsItem.titleAr : newsItem.titleEn;
+        desc = (isAr ? newsItem.summaryAr : newsItem.summaryEn).substring(0, 160) + '...';
+        image = newsItem.imageUrl;
+        url = `${window.location.origin}${window.location.pathname}#news`;
+      }
     }
 
     if (elements.ogViewTitle) elements.ogViewTitle.textContent = title;
@@ -1629,6 +1903,7 @@ ER  -
         elements.pdfPreviewModal?.classList.remove('open');
         elements.savedListModal?.classList.remove('open');
         elements.folioViewerModal?.classList.remove('open');
+        elements.languagePickerModal?.classList.remove('open');
         if (elements.searchSuggestionsDropdown) elements.searchSuggestionsDropdown.style.display = 'none';
       }
     });
@@ -1710,7 +1985,8 @@ ER  -
       elements.ogPreviewModal,
       elements.pdfPreviewModal,
       elements.savedListModal,
-      elements.folioViewerModal
+      elements.folioViewerModal,
+      elements.languagePickerModal
     ].forEach(modal => {
       modal?.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -1949,6 +2225,8 @@ ER  -
   // Application Bootstrapper
   function init() {
     initEventListeners();
+    initLanguagePickerModal();
+    initMobileBottomNav();
     initReadingProgress();
     applyTheme(state.theme);
     applyFontSize(state.fontSize);
