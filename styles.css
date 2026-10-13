@@ -591,6 +591,23 @@ a {
   font-size: clamp(1.75rem, 3.5vw, 2.35rem);
   letter-spacing: -0.015em;
   color: var(--color-primary-900);
+  position: relative;
+  padding-bottom: 0.65rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 52px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-amber-500) 0%, rgba(217, 119, 6, 0.2) 100%);
+  border-radius: var(--radius-full);
+}
+
+[dir="rtl"] .section-title::after {
+  background: linear-gradient(270deg, var(--color-amber-500) 0%, rgba(217, 119, 6, 0.2) 100%);
 }
 
 .section-subtitle {
@@ -876,6 +893,158 @@ a {
   font-size: 0.92rem;
   font-weight: 600;
   color: var(--color-primary-800);
+}
+
+/* Peer-Reviewed Scientific Conferences Grid & Cards */
+.conferences-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.conference-card {
+  background-color: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  border-inline-start: 5px solid var(--color-amber-500);
+}
+
+.conference-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-amber-400);
+  box-shadow: var(--shadow-lg), 0 4px 15px rgba(217, 119, 6, 0.08);
+}
+
+.conference-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle at top right, rgba(217, 119, 6, 0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.conf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.conf-edition-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: var(--color-amber-100);
+  color: var(--color-amber-600);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.95rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.conf-date-tag {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-teal-700);
+  background-color: var(--color-teal-50);
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.conf-title {
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: var(--color-primary-900);
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.conf-theme-box {
+  background-color: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.conf-theme-label {
+  font-weight: 700;
+  color: var(--color-amber-600);
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.84rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.conf-summary {
+  font-size: 0.98rem;
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.conf-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding-block: 0.85rem;
+  border-block: 1px solid var(--color-border);
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.conf-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.conf-meta-item strong {
+  color: var(--color-primary-900);
+}
+
+.conf-proceedings-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: rgba(14, 116, 144, 0.05);
+  border: 1px solid rgba(14, 116, 144, 0.15);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.conf-proceedings-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-teal-700);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conf-actions {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* About Hub Grid */
@@ -1343,6 +1512,44 @@ a {
   background: #172033;
   color: #e2e8f0;
   border-color: #334155;
+}
+
+[data-theme="dark"] .conference-card {
+  background-color: #111827;
+  border-color: #1e293b;
+}
+
+[data-theme="dark"] .conference-card:hover {
+  border-color: var(--color-amber-500);
+}
+
+[data-theme="dark"] .conf-edition-badge {
+  background-color: rgba(217, 119, 6, 0.2);
+  color: var(--color-amber-400);
+  border-color: rgba(217, 119, 6, 0.35);
+}
+
+[data-theme="dark"] .conf-date-tag {
+  background-color: rgba(14, 116, 144, 0.2);
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .conf-theme-box {
+  background-color: #172033;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .conf-meta-item strong {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .conf-proceedings-bar {
+  background-color: rgba(14, 116, 144, 0.12);
+  border-color: rgba(14, 116, 144, 0.3);
+}
+
+[data-theme="dark"] .conf-proceedings-title {
+  color: #38bdf8;
 }
 
 /* Font Size Scaling Classes */

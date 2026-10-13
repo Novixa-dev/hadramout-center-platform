@@ -97,6 +97,7 @@
     fullMediaGrid: document.getElementById('full-media-grid'),
     aboutLeadershipGrid: document.getElementById('about-leadership-grid'),
     aboutDepartmentsGrid: document.getElementById('about-departments-grid'),
+    fullConferencesGrid: document.getElementById('full-conferences-grid'),
     fullManuscriptsGrid: document.getElementById('full-manuscripts-grid'),
     fullMapGrid: document.getElementById('full-map-grid'),
     mapFilterBar: document.getElementById('map-filter-bar'),
@@ -472,6 +473,115 @@
       elements.globalSearchInput.setAttribute('placeholder', t.searchPlaceholder);
     }
 
+    // Unified Comprehensive Bilingual Map for All Views & Controls
+    const elementTextMap = {
+      // Home & Global Section Eyebrows & Titles
+      'txt-home-news-eyebrow': t.newsSectionEyebrow,
+      'txt-home-news-title': t.newsSectionTitle,
+      'txt-home-news-subtitle': t.newsSectionSubtitle,
+      'txt-mag-eyebrow': t.magSectionEyebrow,
+      'txt-mag-title': t.magSectionTitle,
+      'txt-home-articles-eyebrow': t.articlesSectionEyebrow,
+      'txt-home-articles-title': t.articlesSectionTitle,
+      'txt-home-articles-subtitle': t.articlesSectionSubtitle,
+      'txt-books-eyebrow': t.booksSectionEyebrow,
+      'txt-books-title': t.booksSectionTitle,
+      'txt-books-subtitle': t.booksSectionSubtitle,
+      'txt-forum-eyebrow': isAr ? 'النشاط الثقافي والفكري' : 'Cultural & Intellectual Salon',
+      'txt-forum-title': isAr ? 'منتدى عميد الوفاء الثقافي' : 'Ameed Al-Wafa Cultural Forum',
+      'txt-home-media-eyebrow': t.mediaEyebrow,
+      'txt-home-media-title': t.mediaTitle,
+      'txt-home-media-subtitle': t.mediaSubtitle,
+      'txt-timeline-eyebrow': isAr ? 'ذاكرة المكان والزمان' : 'Memory of Place & Time',
+      'txt-timeline-title': t.timelineTitle,
+      'txt-timeline-subtitle': t.timelineSubtitle,
+
+      // Archive Views Eyebrows, Titles & Subtitles
+      'txt-news-archive-eyebrow': t.newsSectionEyebrow,
+      'txt-news-archive-title': isAr ? 'الأخبار والأنشطة والفعاليات' : 'Center News, Activities & Delegations',
+      'txt-news-archive-subtitle': t.newsSectionSubtitle,
+      'txt-articles-archive-eyebrow': t.articlesSectionEyebrow,
+      'txt-articles-archive-title': isAr ? 'أحدث المقالات والدراسات المحكمة' : 'Peer-Reviewed Articles & Studies Archive',
+      'txt-articles-archive-subtitle': t.articlesSectionSubtitle,
+      'txt-mag-archive-eyebrow': isAr ? 'الدوريات العلمية المحكّمة' : 'Peer-Reviewed Periodicals',
+      'txt-mag-archive-title': isAr ? 'مجلة حضرموت الثقافية — الأرشيف الكامل (41 عدداً)' : 'Hadramout Cultural Magazine — Complete Archive (41 Issues)',
+      'txt-mag-archive-subtitle': isAr ? 'أرشيفٌ رقميٌّ موثق يتيح تصفح وقراءة كافة أعداد المجلة منذ تأسيسها.' : 'Digital repository providing complete issues, tables of contents, and scholarly essays.',
+      'txt-books-archive-eyebrow': t.booksSectionEyebrow,
+      'txt-books-archive-title': isAr ? 'المكتبة التاريخية والتوثيقية — (52 مؤلفاً ودراسة)' : 'Historical Publications & Monographs — (52 Volumes)',
+      'txt-books-archive-subtitle': t.booksSectionSubtitle,
+      'txt-conf-eyebrow': t.confSectionEyebrow,
+      'txt-conf-title': t.confSectionTitle,
+      'txt-conf-subtitle': t.confSectionSubtitle,
+      'txt-forum-view-eyebrow': isAr ? 'الصالون الثقافي والفكري' : 'Cultural & Intellectual Salon',
+      'txt-forum-view-title': isAr ? 'منتدى عميد الوفاء الثقافي' : 'Ameed Al-Wafa Cultural Forum',
+      'txt-forum-view-subtitle': isAr ? 'ندواتٌ ولقاءاتٌ دوريةٌ بالمكلا تستضيف المفكرين والباحثين لقراءة وتحليل قضايا التراث والتاريخ الحضرمي.' : 'Regular intellectual gatherings in Mukalla hosting scholars and historians to explore Hadhrami heritage.',
+      'txt-timeline-view-eyebrow': isAr ? 'السجل التاريخي الشامل' : 'Comprehensive Historical Record',
+      'txt-timeline-view-title': isAr ? 'خط التاريخ والحضارة الحضرمية' : 'Interactive Historical Timeline of Hadhramout',
+      'txt-timeline-view-subtitle': t.timelineSubtitle,
+      'txt-media-eyebrow': t.mediaEyebrow,
+      'txt-media-title': t.mediaTitle,
+      'txt-media-subtitle': t.mediaSubtitle,
+      'txt-manuscripts-eyebrow': t.manuscriptsEyebrow,
+      'txt-manuscripts-title': t.manuscriptsTitle,
+      'txt-manuscripts-subtitle': t.manuscriptsSubtitle,
+      'txt-map-eyebrow': t.heritageMapEyebrow,
+      'txt-map-title': t.heritageMapTitle,
+      'txt-map-subtitle': t.heritageMapSubtitle,
+      'txt-contact-eyebrow': isAr ? 'قنوات الاتصال المباشر' : 'Direct Institutional Channels',
+      'txt-contact-head': t.contactTitle,
+      'txt-contact-subhead': t.contactSubtitle,
+
+      // Metric Counter Strip
+      'txt-stat-magazines': isAr ? 'أعداد مجلة محكمة' : 'Peer-Reviewed Journal Issues',
+      'txt-stat-books': isAr ? 'إصدارات ودراسات منشورة' : 'Published Books & Monographs',
+      'txt-stat-events': isAr ? 'ندوة ومحاضرة فكرية' : 'Symposia & Cultural Salons',
+      'txt-stat-archives': isAr ? 'وثيقة ومخطوطة مؤرشفة' : 'Archived Records & Folios',
+
+      // Filter Chips
+      'filter-all': t.quickFilterAll,
+      'filter-linguistics': t.quickFilterLinguistics,
+      'filter-sultanates': t.quickFilterSultanates,
+      'filter-ports': t.quickFilterPorts,
+      'filter-archaeology': t.quickFilterArchaeology,
+      'filter-islamic': t.quickFilterIslamic,
+      'filter-literature': t.quickFilterLiterature,
+      'filter-diaspora': t.quickFilterDiaspora,
+
+      // About View Headers
+      'txt-about-eyebrow': isAr ? 'عن المؤسسة ورسالتها' : 'About the Institution & Mission',
+      'about-hero-title': isAr ? HC_DATA.institution.nameAr : HC_DATA.institution.nameEn,
+      'about-hero-desc': isAr ? HC_DATA.institution.taglineAr : HC_DATA.institution.taglineEn,
+      'txt-about-leadership-eyebrow': isAr ? 'الهيئة الإدارية والعلمية' : 'Leadership & Board',
+      'txt-about-leadership-title': t.leadershipTitle,
+      'txt-about-leadership-subtitle': isAr ? 'نخبةٌ من المؤرخين والباحثين والأكاديميين المكرسين لخدمة البحث العلمي.' : 'Distinguished historians and academic leaders presiding over the Center.',
+      'txt-about-depts-eyebrow': isAr ? 'الهيكل التنظيمي' : 'Organizational Structure',
+      'txt-about-depts-title': t.departmentsTitle,
+      'txt-about-depts-subtitle': isAr ? 'تتكامل أقسام المركز لتحقيق أعلى معايير التوثيق والنشر الأكاديمي.' : 'Academic departments and specialized archival divisions driving the Center.',
+
+      // Contact Form Labels & Placeholders
+      'txt-contact-info-title': isAr ? 'بيانات الاتصال الرسمية' : 'Official Contact Directory',
+      'lbl-form-name': isAr ? 'الاسم الكامل *' : 'Full Name *',
+      'lbl-form-email': isAr ? 'البريد الإلكتروني *' : 'Email Address *',
+      'lbl-form-phone': isAr ? 'رقم الهاتف / واتساب *' : 'Phone / WhatsApp *',
+      'lbl-form-type': isAr ? 'نوع الاستفسار' : 'Inquiry Category',
+      'lbl-form-msg': isAr ? 'نص الرسالة أو تفاصيل الطلب *' : 'Message / Details *',
+      'btn-submit-inquiry': t.sendButton,
+
+      // Footer Elements
+      'txt-footer-desc': isAr ? HC_DATA.institution.taglineAr : HC_DATA.institution.taglineEn,
+      'txt-footer-col1': isAr ? 'أقسام المنصة' : 'Platform Navigation',
+      'txt-footer-col2': isAr ? 'قنوات التواصل' : 'Contact Channels',
+      'txt-footer-col3': isAr ? 'المتابعة الرقمية' : 'Social Channels',
+      'txt-copyright': isAr ? '© 2026 مركز حضرموت للدراسات التاريخية والتوثيق والنشر — جميع الحقوق محفوظة.' : '© 2026 Hadhramout Center for Historical Studies, Documentation and Publishing — All Rights Reserved.'
+    };
+
+    Object.keys(elementTextMap).forEach(id => {
+      const el = document.getElementById(id);
+      if (el && elementTextMap[id]) {
+        el.textContent = elementTextMap[id];
+      }
+    });
+
     // Trigger auto-translation bridge if not Arabic and not English
     if (!isAr && !isEn) {
       triggerTranslationBridge(langCode, targetLang.name);
@@ -487,6 +597,7 @@
     renderPublications(elements.homePublicationsGrid, true);
     renderPublications(elements.fullPublicationsGrid, false);
     renderMagazines();
+    renderConferences();
     renderForumEvents(elements.homeForumGrid, true);
     renderForumEvents(elements.fullForumGrid, false);
     renderManuscripts();
@@ -1938,6 +2049,93 @@ ER  -
           </button>
         </div>
       </div>
+    `).join('');
+  }
+
+  // 12. Render Conferences (المؤتمرات العلمية المحكّمة)
+  function renderConferences() {
+    if (!elements.fullConferencesGrid) return;
+    const isAr = state.currentLang === 'ar';
+    const conferences = HC_DATA.conferences || [];
+
+    if (conferences.length === 0) {
+      elements.fullConferencesGrid.innerHTML = `
+        <div style="text-align: center; padding: 3rem; color: var(--color-text-muted);">
+          <p>${isAr ? 'لا توجد مؤتمرات مؤرشفة حالياً.' : 'No archived conferences available.'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    elements.fullConferencesGrid.innerHTML = conferences.map(conf => `
+      <article class="conference-card" id="card-${conf.id}">
+        <div class="conf-header">
+          <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+            <span class="conf-edition-badge">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              ${isAr ? conf.editionAr : conf.editionEn}
+            </span>
+            <span class="conf-date-tag">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              ${isAr ? conf.dateAr : conf.dateEn}
+            </span>
+          </div>
+          <span style="font-weight: 700; font-size: 1.1rem; color: var(--color-amber-600);">${conf.year}م</span>
+        </div>
+
+        <h3 class="conf-title">${isAr ? conf.titleAr : conf.titleEn}</h3>
+
+        <div class="conf-theme-box">
+          <span class="conf-theme-label">${isAr ? 'محور المؤتمر العلمي:' : 'Scientific Conference Theme:'}</span>
+          <p style="color: var(--color-primary-900); font-weight: 500;">${isAr ? conf.themeAr : conf.themeEn}</p>
+        </div>
+
+        <p class="conf-summary">${isAr ? conf.summaryAr : conf.summaryEn}</p>
+
+        <div class="conf-meta-strip">
+          <div class="conf-meta-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span>${isAr ? 'الأبحاث المحكمة:' : 'Peer-Reviewed Papers:'} <strong>${conf.papersCount} ${isAr ? 'بحثاً' : 'papers'}</strong></span>
+          </div>
+          <div class="conf-meta-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <span>${isAr ? 'الجلسات العلمية:' : 'Sessions:'} <strong>${conf.sessionsCount} ${isAr ? 'جلسات' : 'sessions'}</strong></span>
+          </div>
+          <div class="conf-meta-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>${isAr ? 'المقر والقاعة:' : 'Venue:'} <strong>${isAr ? conf.venueAr : conf.venueEn}</strong></span>
+          </div>
+        </div>
+
+        ${conf.proceedingsTitleAr ? `
+          <div class="conf-proceedings-bar">
+            <div class="conf-proceedings-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path></svg>
+              <span>${isAr ? conf.proceedingsTitleAr : conf.proceedingsTitleEn}</span>
+            </div>
+            <a href="#books" class="btn-secondary" style="font-size: 0.82rem; padding: 0.35rem 0.85rem;">
+              ${isAr ? 'عرض في مكتبة الإصدارات' : 'View in Publications'}
+            </a>
+          </div>
+        ` : ''}
+
+        <div class="conf-actions">
+          ${conf.publicationId ? `
+            <button class="btn-primary btn-cite-pub" data-pub-id="${conf.publicationId}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 17h3l2-4V7H5v6h3"></path><path d="M15 17h3l2-4V7h-6v6h3"></path></svg>
+              ${isAr ? 'نسخ الاقتباس الأكاديمي للمؤتمر' : 'Cite Conference Proceedings'}
+            </button>
+            <button class="btn-secondary btn-save-pub" data-pub-id="${conf.publicationId}" title="${isBookSaved(conf.publicationId) ? (isAr ? 'محفوظ' : 'Saved') : (isAr ? 'حفظ في مكتبتي' : 'Save')}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="${isBookSaved(conf.publicationId) ? 'var(--color-amber-500)' : 'none'}" stroke="currentColor" stroke-width="2"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+              ${isBookSaved(conf.publicationId) ? (isAr ? 'محفوظ في مكتبتي' : 'Saved') : (isAr ? 'حفظ المرجع' : 'Save Reference')}
+            </button>
+          ` : ''}
+          <button class="btn-secondary btn-share-item" data-type="conference" data-id="${conf.id}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            ${isAr ? 'مشاركة وقائع المؤتمر' : 'Share Conference'}
+          </button>
+        </div>
+      </article>
     `).join('');
   }
 

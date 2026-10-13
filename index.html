@@ -325,7 +325,7 @@
             <span class="metric-label" id="txt-stat-magazines">أعداد مجلة محكمة</span>
           </div>
           <div class="metric-item">
-            <span class="metric-number">10+</span>
+            <span class="metric-number">52+</span>
             <span class="metric-label" id="txt-stat-books">إصدارات ودراسات منشورة</span>
           </div>
           <div class="metric-item">
@@ -584,9 +584,9 @@
             <!-- Leadership Profiles -->
             <div style="margin-top: 4.5rem;">
               <div class="section-header">
-                <span class="section-eyebrow">الهيئة الإدارية والعلمية</span>
-                <h2 class="section-title">قيادة المركز ومجلس الإدارة</h2>
-                <p class="section-subtitle">نخبةٌ من المؤرخين والباحثين والأكاديميين المكرسين لخدمة البحث العلمي.</p>
+                <span class="section-eyebrow" id="txt-about-leadership-eyebrow">الهيئة الإدارية والعلمية</span>
+                <h2 class="section-title" id="txt-about-leadership-title">قيادة المركز ومجلس الإدارة</h2>
+                <p class="section-subtitle" id="txt-about-leadership-subtitle">نخبةٌ من المؤرخين والباحثين والأكاديميين المكرسين لخدمة البحث العلمي.</p>
               </div>
 
               <div class="leadership-grid" id="about-leadership-grid">
@@ -597,9 +597,9 @@
             <!-- Academic Departments -->
             <div style="margin-top: 4.5rem;">
               <div class="section-header">
-                <span class="section-eyebrow">الهيكل التنظيمي</span>
-                <h2 class="section-title">الأقسام والوحدات العلمية</h2>
-                <p class="section-subtitle">تتكامل أقسام المركز لتحقيق أعلى معايير التوثيق والنشر الأكاديمي.</p>
+                <span class="section-eyebrow" id="txt-about-depts-eyebrow">الهيكل التنظيمي</span>
+                <h2 class="section-title" id="txt-about-depts-title">الأقسام والوحدات العلمية</h2>
+                <p class="section-subtitle" id="txt-about-depts-subtitle">تتكامل أقسام المركز لتحقيق أعلى معايير التوثيق والنشر الأكاديمي.</p>
               </div>
 
               <div class="leadership-grid" id="about-departments-grid">
@@ -787,20 +787,9 @@
               </p>
             </div>
 
-            <div style="background-color: var(--color-surface-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm); margin-bottom: 2rem;">
-              <span style="display: inline-block; background-color: var(--color-amber-100); color: var(--color-amber-600); font-weight: 700; font-size: 0.8rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); margin-bottom: 0.75rem;">
-                المؤتمر العلمي الخامس المنعقد
-              </span>
-              <h3 style="font-size: 1.5rem; margin-bottom: 0.75rem; color: var(--color-primary-900);">
-                التاريخ والمؤرخون الحضارمة في النصف الأول من القرن العشرين
-              </h3>
-              <p style="color: var(--color-text-muted); line-height: 1.8; margin-bottom: 1.5rem;">
-                شارك في هذا المؤتمر نخبة من الباحثين المتخصصين لمناقشة الاتجاهات المنهجية في الكتابة التاريخية عند مؤرخي حضرموت البارزين، ودورهم في حفظ تاريخ المنطقة أثناء التحولات السياسية الكبرى. وقد تم نشر أبحاث المؤتمر في مجلد توثيقي يقع في 580 صفحة.
-              </p>
-              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button class="btn-primary btn-cite-pub" data-pub-id="bk-9308">نسخ الاقتباس الأكاديمي للمؤتمر</button>
-                <a href="#books" class="btn-secondary">عرض المجلد التوثيقي لأعمال المؤتمر</a>
-              </div>
+            <!-- Dynamic Conferences Catalog populated by app.js -->
+            <div id="full-conferences-grid" class="conferences-grid">
+              <!-- Populated by app.js from HC_DATA.conferences -->
             </div>
           </div>
         </section>
@@ -921,7 +910,7 @@
         <section class="section">
           <div class="container">
             <div class="section-header">
-              <span class="section-eyebrow">قنوات الاتصال المباشر</span>
+              <span class="section-eyebrow" id="txt-contact-eyebrow">قنوات الاتصال المباشر</span>
               <h2 class="section-title" id="txt-contact-head">تواصل مع مركز حضرموت</h2>
               <p class="section-subtitle" id="txt-contact-subhead">
                 يسعد المركز باستقبال استفسارات الباحثين، وطلبات اقتناء الكتب والمجلات، وتقديم الاستشارات الأكاديمية والتوثيقية.
