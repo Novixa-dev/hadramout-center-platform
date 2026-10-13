@@ -42,7 +42,9 @@
     mapFilter: 'all',
     folioZoom: 1,
     folioInverted: false,
-    soundEnabled: localStorage.getItem('hc_sound') === 'true'
+    soundEnabled: localStorage.getItem('hc_sound') === 'true',
+    booksPage: 1,
+    booksPerPage: 12
   };
 
   // DOM Elements Cache
@@ -112,6 +114,14 @@
     btnFullBooksList: document.getElementById('btn-full-books-list'),
     homeBooksCountBadge: document.getElementById('home-books-count-badge'),
     fullBooksCountBadge: document.getElementById('full-books-count-badge'),
+    booksPaginationWrapper: document.getElementById('books-pagination-wrapper'),
+    booksPaginationInfo: document.getElementById('books-pagination-info'),
+    booksPaginationControls: document.getElementById('books-pagination-controls'),
+    btnBackToTop: document.getElementById('btn-back-to-top'),
+    btnExportCatalogCsv: document.getElementById('btn-export-catalog-csv'),
+    btnExportCatalogRis: document.getElementById('btn-export-catalog-ris'),
+    btnExportCatalogBib: document.getElementById('btn-export-catalog-bib'),
+    btnExportCatalogJson: document.getElementById('btn-export-catalog-json'),
 
     // Modals
     citationModal: document.getElementById('citation-modal'),
@@ -873,9 +883,23 @@
       }
       list = list.slice(0, 8);
     } else {
+      const perPage = state.booksPerPage;
+      const totalPages = Math.ceil(totalCount / perPage) || 1;
+      if (state.booksPage > totalPages) state.booksPage = totalPages;
+      if (state.booksPage < 1) state.booksPage = 1;
+
+      const startIdx = (state.booksPage - 1) * perPage;
+      const endIdx = Math.min(startIdx + perPage, totalCount);
+
       if (elements.fullBooksCountBadge) {
-        elements.fullBooksCountBadge.textContent = isAr ? `الإصدارات المعروضة: ${totalCount}` : `Publications: ${totalCount}`;
+        elements.fullBooksCountBadge.textContent = isAr 
+          ? `عرض الإصدارات: ${totalCount === 0 ? 0 : startIdx + 1} - ${endIdx} من إجمالي ${totalCount}` 
+          : `Showing: ${totalCount === 0 ? 0 : startIdx + 1} - ${endIdx} of ${totalCount}`;
       }
+
+      // Slice list for the current page
+      list = list.slice(startIdx, endIdx);
+      renderBooksPagination(totalCount, totalPages);
     }
 
     // Set view mode
@@ -924,6 +948,189 @@
         </div>
       </article>
     `).join('');
+  }
+
+  // Academic Pagination Controller for Publications Catalog
+  function renderBooksPagination(totalCount, totalPages) {
+    if (!elements.booksPaginationWrapper) return;
+    if (totalCount <= state.booksPerPage) {
+      elements.booksPaginationWrapper.style.display = 'none';
+      return;
+    }
+    elements.booksPaginationWrapper.style.display = 'flex';
+    const isAr = state.currentLang === 'ar';
+
+    if (elements.booksPaginationInfo) {
+      elements.booksPaginationInfo.textContent = isAr
+        ? `صفحة ${state.booksPage} من ${totalPages} (${totalCount} كتاباً)`
+        : `Page ${state.booksPage} of ${totalPages} (${totalCount} books)`;
+    }
+
+    if (!elements.booksPaginationControls) return;
+
+    let html = '';
+    html += `
+      <button class="pagination-btn" id="btn-page-prev" ${state.booksPage <= 1 ? 'disabled' : ''} title="${isAr ? 'الصفحة السابقة' : 'Previous Page'}">
+        ${isAr ? 'السابق' : 'Prev'}
+      </button>
+    `;
+
+    for (let p = 1; p <= totalPages; p++) {
+      if (totalPages > 7) {
+        if (p > 1 && p < state.booksPage - 1 && p === 2) {
+          html += `<span style="padding: 0 4px; color: var(--color-stone-400);">...</span>`;
+          continue;
+        }
+        if (p > state.booksPage + 1 && p < totalPages && p === totalPages - 1) {
+          html += `<span style="padding: 0 4px; color: var(--color-stone-400);">...</span>`;
+          continue;
+        }
+        if (p !== 1 && p !== totalPages && (p < state.booksPage - 1 || p > state.booksPage + 1)) {
+          continue;
+        }
+      }
+
+      html += `
+        <button class="pagination-btn ${p === state.booksPage ? 'active' : ''}" data-page="${p}">
+          ${p}
+        </button>
+      `;
+    }
+
+    html += `
+      <button class="pagination-btn" id="btn-page-next" ${state.booksPage >= totalPages ? 'disabled' : ''} title="${isAr ? 'الصفحة التالية' : 'Next Page'}">
+        ${isAr ? 'التالي' : 'Next'}
+      </button>
+    `;
+
+    html += `
+      <button class="pagination-btn" id="btn-toggle-perpage" style="margin-inline-start: 0.5rem; font-size: 0.78rem;">
+        ${state.booksPerPage >= 100 ? (isAr ? 'عرض مجزأ' : 'Paginated') : (isAr ? 'عرض الكل' : 'Show All')}
+      </button>
+    `;
+
+    elements.booksPaginationControls.innerHTML = html;
+
+    elements.booksPaginationControls.querySelectorAll('.pagination-btn[data-page]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const page = parseInt(btn.getAttribute('data-page'), 10);
+        if (page && page !== state.booksPage) {
+          state.booksPage = page;
+          renderPublications(elements.fullPublicationsGrid, false);
+          document.getElementById('view-books')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          playHapticTone();
+        }
+      });
+    });
+
+    elements.booksPaginationControls.querySelector('#btn-page-prev')?.addEventListener('click', () => {
+      if (state.booksPage > 1) {
+        state.booksPage--;
+        renderPublications(elements.fullPublicationsGrid, false);
+        document.getElementById('view-books')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        playHapticTone();
+      }
+    });
+
+    elements.booksPaginationControls.querySelector('#btn-page-next')?.addEventListener('click', () => {
+      if (state.booksPage < totalPages) {
+        state.booksPage++;
+        renderPublications(elements.fullPublicationsGrid, false);
+        document.getElementById('view-books')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        playHapticTone();
+      }
+    });
+
+    elements.booksPaginationControls.querySelector('#btn-toggle-perpage')?.addEventListener('click', () => {
+      state.booksPerPage = state.booksPerPage >= 100 ? 12 : 100;
+      state.booksPage = 1;
+      renderPublications(elements.fullPublicationsGrid, false);
+      playHapticTone();
+    });
+  }
+
+  // Full Catalog Bulk Exporter (CSV, RIS, BibTeX, JSON)
+  function exportFullCatalog(format) {
+    const books = HC_DATA.publications || [];
+    let content = '';
+    let mimeType = 'text/plain';
+    let filename = `hadhramout-center-catalog-52books.${format}`;
+
+    if (format === 'csv') {
+      mimeType = 'text/csv;charset=utf-8';
+      const headers = ['ID', 'Title_Ar', 'Title_En', 'Author_Ar', 'Author_En', 'Year', 'HijriYear', 'Pages', 'Category', 'ISBN', 'Citation_APA'];
+      const rows = books.map(b => [
+        `"${b.id}"`,
+        `"${(b.titleAr || '').replace(/"/g, '""')}"`,
+        `"${(b.titleEn || '').replace(/"/g, '""')}"`,
+        `"${(b.authorAr || '').replace(/"/g, '""')}"`,
+        `"${(b.authorEn || '').replace(/"/g, '""')}"`,
+        b.year || '',
+        b.hijriYear || '',
+        b.pages || '',
+        `"${b.category || ''}"`,
+        `"${b.isbn || ''}"`,
+        `"${(b.citationAPA || '').replace(/"/g, '""')}"`
+      ].join(','));
+      content = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
+    } else if (format === 'ris') {
+      mimeType = 'application/x-research-info-systems;charset=utf-8';
+      content = books.map(item => `
+TY  - BOOK
+TI  - ${item.titleAr || item.titleEn}
+AU  - ${item.authorAr || item.authorEn}
+PY  - ${item.year || 2026}
+PB  - مركز حضرموت للدراسات التاريخية والتوثيق والنشر
+CY  - المكلا
+SN  - ${item.isbn || ''}
+ER  - 
+      `.trim()).join('\n\n');
+    } else if (format === 'bib') {
+      mimeType = 'application/x-bibtex;charset=utf-8';
+      content = books.map(item => `
+@book{hc_${item.id.replace(/-/g, '_')},
+  title = {${item.titleAr || item.titleEn}},
+  author = {${item.authorAr || item.authorEn}},
+  year = {${item.year || 2026}},
+  publisher = {مركز حضرموت للدراسات التاريخية والتوثيق والنشر},
+  address = {المكلا، حضرموت},
+  isbn = {${item.isbn || ''}}
+}
+      `.trim()).join('\n\n');
+    } else if (format === 'json') {
+      mimeType = 'application/json;charset=utf-8';
+      content = JSON.stringify(books, null, 2);
+    }
+
+    const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(state.currentLang === 'ar' 
+      ? `تم تحميل فهرس الكتب كاملاً بنجاح (${format.toUpperCase()})` 
+      : `Full catalog exported successfully (${format.toUpperCase()})`);
+  }
+
+  // Floating Back-to-Top Button Handler
+  function initBackToTop() {
+    window.addEventListener('scroll', () => {
+      if (!elements.btnBackToTop) return;
+      if (window.scrollY > 400) {
+        elements.btnBackToTop.classList.add('visible');
+      } else {
+        elements.btnBackToTop.classList.remove('visible');
+      }
+    });
+
+    elements.btnBackToTop?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      playHapticTone();
+    });
   }
 
   // 4. Render Magazines Archive
@@ -1999,6 +2206,7 @@ ER  -
     // Global Search Input
     elements.globalSearchInput?.addEventListener('input', (e) => {
       state.searchQuery = e.target.value;
+      state.booksPage = 1;
       handleLiveSearch(state.searchQuery);
       renderPublications(elements.homePublicationsGrid, true);
       renderPublications(elements.fullPublicationsGrid, false);
@@ -2010,11 +2218,18 @@ ER  -
         elements.categoryFilterBar.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         state.activeCategory = chip.getAttribute('data-category') || 'all';
+        state.booksPage = 1;
         playHapticTone();
         renderPublications(elements.homePublicationsGrid, true);
         renderPublications(elements.fullPublicationsGrid, false);
       });
     });
+
+    // Catalog Bulk Export Buttons
+    elements.btnExportCatalogCsv?.addEventListener('click', () => exportFullCatalog('csv'));
+    elements.btnExportCatalogRis?.addEventListener('click', () => exportFullCatalog('ris'));
+    elements.btnExportCatalogBib?.addEventListener('click', () => exportFullCatalog('bib'));
+    elements.btnExportCatalogJson?.addEventListener('click', () => exportFullCatalog('json'));
 
     // Articles Filter Bar
     elements.articlesFilterBar?.querySelectorAll('.filter-chip').forEach(chip => {
@@ -2030,10 +2245,12 @@ ER  -
     // Sort Dropdowns
     elements.homeBooksSortSelect?.addEventListener('change', (e) => {
       state.booksSort = e.target.value;
+      state.booksPage = 1;
       renderPublications(elements.homePublicationsGrid, true);
     });
     elements.fullBooksSortSelect?.addEventListener('change', (e) => {
       state.booksSort = e.target.value;
+      state.booksPage = 1;
       renderPublications(elements.fullPublicationsGrid, false);
     });
     elements.articlesSortSelect?.addEventListener('change', (e) => {
@@ -2227,6 +2444,7 @@ ER  -
     initEventListeners();
     initLanguagePickerModal();
     initMobileBottomNav();
+    initBackToTop();
     initReadingProgress();
     applyTheme(state.theme);
     applyFontSize(state.fontSize);

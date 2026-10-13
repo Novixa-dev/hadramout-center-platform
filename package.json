@@ -7,9 +7,9 @@
   "license": "MIT",
   "homepage": "https://hadramout.center",
   "scripts": {
-    "dev": "python -m http.server 3000",
-    "serve": "python -m http.server 3000",
-    "start": "python -m http.server 3000",
+    "dev": "node scripts/serve.js",
+    "serve": "node scripts/serve.js",
+    "start": "node scripts/serve.js",
     "validate": "node scripts/validate.js",
     "build": "node scripts/validate.js",
     "test": "node scripts/validate.js"

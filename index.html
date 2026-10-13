@@ -710,9 +710,35 @@
               </p>
             </div>
 
+            <!-- Catalog Bulk Export Strip -->
+            <div class="catalog-export-strip">
+              <div class="catalog-export-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span id="txt-export-catalog-title">تصدير الفهرس الببليوغرافي الكامل (52 كتاباً):</span>
+              </div>
+              <div class="catalog-export-btns">
+                <button type="button" class="btn-catalog-export" id="btn-export-catalog-csv" title="تصدير كجدول إكسل / CSV">
+                  <span>Excel / CSV</span>
+                </button>
+                <button type="button" class="btn-catalog-export" id="btn-export-catalog-ris" title="تصدير لبرامج إدارة المراجع Zotero / EndNote">
+                  <span>Zotero (.RIS)</span>
+                </button>
+                <button type="button" class="btn-catalog-export" id="btn-export-catalog-bib" title="تصدير لباحثي LaTeX / BibTeX">
+                  <span>BibTeX (.bib)</span>
+                </button>
+                <button type="button" class="btn-catalog-export" id="btn-export-catalog-json" title="تصدير كملف بيانات JSON مفتوح">
+                  <span>JSON Data</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Full Books Catalog Toolbar -->
             <div class="catalog-toolbar">
-              <div class="toolbar-stats" id="full-books-count-badge">الإصدارات المعروضة: 10</div>
+              <div class="toolbar-stats" id="full-books-count-badge">الإصدارات المعروضة: 52</div>
               <div class="toolbar-controls">
                 <select id="full-books-sort-select" class="sort-select">
                   <option value="newest">الأحدث نشراً</option>
@@ -734,6 +760,16 @@
             <!-- Publications Catalog Grid -->
             <div class="publications-grid" id="full-publications-grid">
               <!-- Populated by app.js -->
+            </div>
+
+            <!-- Dynamic Academic Pagination -->
+            <div class="pagination-wrapper" id="books-pagination-wrapper">
+              <div class="pagination-info" id="books-pagination-info">
+                <!-- Populated dynamically -->
+              </div>
+              <div class="pagination-controls" id="books-pagination-controls">
+                <!-- Populated dynamically -->
+              </div>
             </div>
           </div>
         </section>
@@ -1275,6 +1311,13 @@
       </div>
     </div>
   </footer>
+
+  <!-- Floating Back to Top Button -->
+  <button id="btn-back-to-top" class="back-to-top-btn" aria-label="العودة للأعلى" title="العودة لأعلى الصفحة">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m18 15-6-6-6 6"></path>
+    </svg>
+  </button>
 
   <!-- Scripts -->
   <script src="data.js?v=2.1.0"></script>
