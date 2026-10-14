@@ -1,0 +1,68 @@
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+
+/**
+ * UI strings.
+ *   messages/ar.json, messages/en.json   hand-written, committed (Arabic is the source of truth)
+ *   $DATA_DIR/i18n/<lang>.json           machine-translated bundles { strings, hashes }, written by the job
+ */
+const MESSAGES_DIR = resolve(process.cwd(), 'messages');
+
+export type Dict = Record<string, string>;
+export interface UiBundle {
+  strings: Dict;
+  hashes: Dict;
+}
+
+const dataDir = () => resolve(process.env.DATA_DIR ?? './data');
+const bundlePath = (lang: string) => join(dataDir(), 'i18n', `${lang}.json`);
+
+const cache = new Map<string, { mtime: number; value: unknown }>();
+
+function readJson<T>(path: string, fallback: T): T {
+  if (!existsSync(path)) return fallback;
+  const mtime = statSync(path).mtimeMs;
+  const hit = cache.get(path);
+  if (hit && hit.mtime === mtime) return hit.value as T;
+  const value = JSON.parse(readFileSync(path, 'utf8')) as T;
+  cache.set(path, { mtime, value });
+  return value;
+}
+
+export function loadSourceMessages(): Dict {
+  return readJson<Dict>(join(MESSAGES_DIR, 'ar.json'), {});
+}
+
+export function loadCuratedMessages(lang: string): Dict {
+  return readJson<Dict>(join(MESSAGES_DIR, `${lang}.json`), {});
+}
+
+export function loadUiBundle(lang: string): UiBundle {
+  return readJson<UiBundle>(bundlePath(lang), { strings: {}, hashes: {} });
+}
+
+export function writeUiBundle(lang: string, bundle: UiBundle): void {
+  const path = bundlePath(lang);
+  mkdirSync(dirname(path), { recursive: true });
+  const tmp = `${path}.tmp`;
+  writeFileSync(tmp, JSON.stringify(bundle));
+  renameSync(tmp, path);
+}
+
+/** Messages for `lang` with the fallback chain lang → en → ar already merged (later spreads lose). */
+export function messagesFor(lang: string): Dict {
+  const ar = loadSourceMessages();
+  if (lang === 'ar') return ar;
+  const en = loadCuratedMessages('en');
+  if (lang === 'en') return { ...ar, ...en };
+  return { ...ar, ...en, ...loadUiBundle(lang).strings, ...loadCuratedMessages(lang) };
+}
+
+/** Fraction of Arabic UI keys that `lang` really has (not just falling back). */
+export function uiCoverage(lang: string): number {
+  if (lang === 'ar') return 1;
+  const keys = Object.keys(loadSourceMessages());
+  if (!keys.length) return 1;
+  const own = { ...loadUiBundle(lang).strings, ...loadCuratedMessages(lang) };
+  return keys.filter((k) => k in own).length / keys.length;
+}

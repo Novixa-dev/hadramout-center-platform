@@ -8,12 +8,14 @@ data/
 *.db-shm
 
 # build output
-public/assets/
-public/fonts/
+
+
 
 # environment
 .env
 .env.*
+!.env.example
+!.env.production.example
 !.env.example
 
 # logs / OS / editors
@@ -33,3 +35,11 @@ coverage/
 .cache/
 .cache/
 .cache-import.log
+
+# logs
+.dev.log
+.seed.log
+.npm-install-*.log
+.next/
+next-env.d.ts
+tsconfig.tsbuildinfo

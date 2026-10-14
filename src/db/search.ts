@@ -1,142 +1,131 @@
-import type { Store, Param } from './store.ts';
+import type { Param, Store } from './store.ts';
 import { LANGUAGES } from '../i18n/languages.ts';
-import { normalizeArabic, stemTokens, toFtsQuery, tokenize, stripClitics } from '../lib/arabic.ts';
+import { normalizeArabic, stemTokens, stripClitics, toFtsQuery, tokenize } from '../lib/arabic.ts';
 import { htmlToText } from '../lib/sanitize.ts';
-import type { PostType } from './model.ts';
 
 /**
- * Full-text index. One row per (post, language). The row id encodes both so a
- * post's rows can be replaced with an indexed range delete.
+ * Full-text index over the content, one row per (document, language).
+ * rowid = docNumber * 128 + languageSlot, so a document's rows are replaced with an indexed range delete.
+ * `kind` is the collection slug; docs of different collections have distinct numeric ids only within
+ * their own collection, so the rowid also folds in a collection slot.
  */
 const LANG_SLOTS = 128;
-const slotOf = new Map(LANGUAGES.map((l, i) => [l.code, i]));
+const KIND_SLOTS = 16;
+const KINDS = ['news', 'articles', 'books', 'magazines', 'events', 'forum-events', 'videos', 'pages'];
+const langSlot = new Map(LANGUAGES.map((l, i) => [l.code, i]));
 
-function rowId(postId: number, lang: string): number {
-  return postId * LANG_SLOTS + (slotOf.get(lang) ?? LANG_SLOTS - 1);
+function base(kind: string, docId: number): number {
+  const k = Math.max(0, KINDS.indexOf(kind));
+  return (docId * KIND_SLOTS + k) * LANG_SLOTS;
 }
 
-interface IndexedText {
+export interface IndexText {
   title: string;
   excerpt: string;
-  body: string;
+  body: string; // plain text
   authors: string;
 }
 
-function put(db: Store, postId: number, type: string, lang: string, t: IndexedText): void {
-  const title = normalizeArabic(t.title);
-  const excerpt = normalizeArabic(t.excerpt);
-  const body = normalizeArabic(t.body);
-  const authors = normalizeArabic(t.authors);
-  const stems = stemTokens(`${title} ${excerpt} ${body} ${authors}`).join(' ');
-  db.run(
-    'INSERT INTO search_index (rowid, title, excerpt, body, authors, stems, lang, post_id, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    rowId(postId, lang),
-    title,
-    excerpt,
-    body,
-    authors,
-    stems,
-    lang,
-    postId,
-    type,
-  );
+export function removeFromIndex(db: Store, kind: string, docId: number): void {
+  const start = base(kind, docId);
+  db.run('DELETE FROM search_index WHERE rowid BETWEEN ? AND ?', start, start + LANG_SLOTS - 1);
 }
 
-export function removeFromIndex(db: Store, postId: number): void {
-  db.run('DELETE FROM search_index WHERE rowid BETWEEN ? AND ?', postId * LANG_SLOTS, postId * LANG_SLOTS + LANG_SLOTS - 1);
-}
-
-/** (Re)build all index rows for one post: Arabic source + every language with a translated title. */
-export function indexPost(db: Store, postId: number): void {
-  const row = db.get<{ type: string; status: string; title: string; excerpt: string; body: string }>('SELECT type, status, title, excerpt, body FROM posts WHERE id = ?', postId);
+/** Replace all index rows of one document. `byLang` maps language code → its (translated or Arabic) text. */
+export function indexDocument(db: Store, kind: string, docId: number, byLang: Record<string, IndexText>): void {
   db.tx(() => {
-    removeFromIndex(db, postId);
-    if (!row || row.status !== 'published') return;
-    const authors = db.all<{ name: string }>('SELECT a.name FROM post_authors pa JOIN authors a ON a.id = pa.author_id WHERE pa.post_id = ?', postId).map((a) => a.name);
-    put(db, postId, row.type, 'ar', { title: row.title, excerpt: row.excerpt, body: htmlToText(row.body), authors: authors.join(' ') });
-
-    const tr = db.all<{ lang: string; field: string; text: string }>(
-      "SELECT lang, field, text FROM translations WHERE scope = 'post' AND ref = ? AND field IN ('title','excerpt','body')",
-      String(postId),
-    );
-    const byLang = new Map<string, Record<string, string>>();
-    for (const t of tr) {
-      const m = byLang.get(t.lang) ?? {};
-      m[t.field] = t.text;
-      byLang.set(t.lang, m);
-    }
-    for (const [lang, f] of byLang) {
-      if (!f.title) continue;
-      put(db, postId, row.type, lang, { title: f.title, excerpt: f.excerpt ?? '', body: htmlToText(f.body ?? ''), authors: '' });
+    removeFromIndex(db, kind, docId);
+    for (const [lang, t] of Object.entries(byLang)) {
+      if (!t.title) continue;
+      const title = normalizeArabic(t.title);
+      const excerpt = normalizeArabic(t.excerpt);
+      const body = normalizeArabic(t.body);
+      const authors = normalizeArabic(t.authors);
+      const stems = stemTokens(`${title} ${excerpt} ${body} ${authors}`).join(' ');
+      db.run(
+        'INSERT INTO search_index (rowid, title, excerpt, body, authors, stems, lang, doc_id, kind) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        base(kind, docId) + (langSlot.get(lang) ?? LANG_SLOTS - 1),
+        title,
+        excerpt,
+        body,
+        authors,
+        stems,
+        lang,
+        docId,
+        kind,
+      );
     }
   });
 }
 
-export function reindexAll(db: Store): number {
-  const ids = db.all<{ id: number }>("SELECT id FROM posts WHERE status = 'published'");
-  db.tx(() => {
-    db.exec('DELETE FROM search_index');
-    for (const { id } of ids) indexPost(db, id);
-  });
-  return ids.length;
+export function clearIndex(db: Store): void {
+  db.exec('DELETE FROM search_index');
+}
+
+export function toIndexText(parts: { title?: unknown; excerpt?: unknown; body?: unknown; authors?: string[] }): IndexText {
+  return {
+    title: typeof parts.title === 'string' ? parts.title : '',
+    excerpt: typeof parts.excerpt === 'string' ? parts.excerpt : '',
+    body: typeof parts.body === 'string' ? htmlToText(parts.body) : '',
+    authors: (parts.authors ?? []).join(' '),
+  };
 }
 
 export interface SearchHit {
   id: number;
-  type: PostType;
+  kind: string;
   rank: number;
 }
 
 export interface SearchOptions {
   q: string;
   lang: string;
-  types?: PostType[];
+  kinds?: string[];
   limit?: number;
   offset?: number;
 }
 
-export function searchPosts(db: Store, opts: SearchOptions): { hits: SearchHit[]; total: number; lang: string } {
+const hasLang = (db: Store, code: string) => (db.get<{ n: number }>('SELECT 1 n FROM search_index WHERE lang = ? LIMIT 1', code)?.n ?? 0) === 1;
+
+export function searchIndex(db: Store, opts: SearchOptions): { hits: SearchHit[]; total: number; lang: string } {
   const match = toFtsQuery(opts.q);
   if (!match) return { hits: [], total: 0, lang: opts.lang };
-
-  // Search in the visitor's language when that language has been indexed, else in the Arabic source.
-  const hasLang = (code: string) => (db.get<{ n: number }>('SELECT 1 n FROM search_index WHERE lang = ? LIMIT 1', code)?.n ?? 0) === 1;
-  const lang = opts.lang !== 'ar' && hasLang(opts.lang) ? opts.lang : 'ar';
-
+  // Search the visitor's language when it has been indexed, else the Arabic source.
+  const lang = opts.lang !== 'ar' && hasLang(db, opts.lang) ? opts.lang : 'ar';
   const params: Param[] = [match, lang];
-  let typeSql = '';
-  if (opts.types?.length) {
-    typeSql = ` AND type IN (${opts.types.map(() => '?').join(',')})`;
-    params.push(...opts.types);
+  let kindSql = '';
+  if (opts.kinds?.length) {
+    kindSql = ` AND kind IN (${opts.kinds.map(() => '?').join(',')})`;
+    params.push(...opts.kinds);
   }
-  const total = db.get<{ n: number }>(`SELECT count(*) n FROM search_index WHERE search_index MATCH ? AND lang = ?${typeSql}`, ...params)?.n ?? 0;
-  const rows = db.all<{ post_id: number; type: PostType; rank: number }>(
-    `SELECT post_id, type, bm25(search_index, 10.0, 4.0, 1.0, 5.0, 0.5) AS rank
-     FROM search_index WHERE search_index MATCH ? AND lang = ?${typeSql}
+  const total = db.get<{ n: number }>(`SELECT count(*) n FROM search_index WHERE search_index MATCH ? AND lang = ?${kindSql}`, ...params)?.n ?? 0;
+  const rows = db.all<{ doc_id: number; kind: string; rank: number }>(
+    `SELECT doc_id, kind, bm25(search_index, 10.0, 4.0, 1.0, 5.0, 0.5) AS rank
+     FROM search_index WHERE search_index MATCH ? AND lang = ?${kindSql}
      ORDER BY rank LIMIT ? OFFSET ?`,
     ...params,
     Math.min(opts.limit ?? 20, 100),
     Math.max(opts.offset ?? 0, 0),
   );
-  return { hits: rows.map((r) => ({ id: r.post_id, type: r.type, rank: r.rank })), total, lang };
+  return { hits: rows.map((r) => ({ id: r.doc_id, kind: r.kind, rank: r.rank })), total, lang };
 }
 
 /** Title-prefix suggestions for the typeahead. */
-export function suggestTitles(db: Store, q: string, lang: string, limit = 8): { id: number; type: PostType }[] {
+export function suggestTitles(db: Store, q: string, lang: string, limit = 8): { id: number; kind: string }[] {
   const tokens = tokenize(normalizeArabic(q)).slice(0, 6);
   if (tokens.length === 0) return [];
-  const match = `title : (${tokens.map((t) => (stripClitics(t) !== t ? `("${t}"* OR "${stripClitics(t)}"*)` : `"${t}"*`)).join(' AND ')})`;
-  const useLang = lang !== 'ar' && (db.get<{ n: number }>('SELECT 1 n FROM search_index WHERE lang = ? LIMIT 1', lang)?.n ?? 0) === 1 ? lang : 'ar';
+  const clause = tokens.map((t) => (stripClitics(t) !== t ? `("${t}"* OR "${stripClitics(t)}"*)` : `"${t}"*`)).join(' AND ');
+  const useLang = lang !== 'ar' && hasLang(db, lang) ? lang : 'ar';
   return db
-    .all<{ post_id: number; type: PostType }>('SELECT post_id, type FROM search_index WHERE search_index MATCH ? AND lang = ? ORDER BY bm25(search_index, 10.0, 0, 0, 0, 0) LIMIT ?', match, useLang, limit)
-    .map((r) => ({ id: r.post_id, type: r.type }));
+    .all<{ doc_id: number; kind: string }>('SELECT doc_id, kind FROM search_index WHERE search_index MATCH ? AND lang = ? ORDER BY bm25(search_index, 10.0, 0, 0, 0, 0) LIMIT ?', `title : (${clause})`, useLang, limit)
+    .map((r) => ({ id: r.doc_id, kind: r.kind }));
 }
 
 /**
- * Build a readable excerpt around the first match using the ORIGINAL text, so diacritics
- * and spelling are preserved. Matching is done word-by-word on normalized forms.
+ * A readable excerpt around the first match built from the ORIGINAL text (diacritics and spelling kept).
+ * Matching is word-by-word on normalized forms.
  */
-export function snippetFor(plain: string, q: string, radius = 16): { text: string; marks: Set<number> } {
+export function snippetFor(plain: string, q: string, radius = 16): { words: string[]; marks: Set<number>; before: boolean; after: boolean } {
   const words = plain.split(/\s+/).filter(Boolean);
   const wanted = tokenize(normalizeArabic(q)).flatMap((t) => (stripClitics(t) !== t ? [t, stripClitics(t)] : [t]));
   const marks = new Set<number>();
@@ -150,10 +139,10 @@ export function snippetFor(plain: string, q: string, radius = 16): { text: strin
   });
   const start = Math.max(0, (first < 0 ? 0 : first) - Math.floor(radius / 3));
   const end = Math.min(words.length, start + radius);
-  const slice = words.slice(start, end);
-  const shifted = new Set<number>([...marks].filter((i) => i >= start && i < end).map((i) => i - start));
   return {
-    text: `${start > 0 ? '… ' : ''}${slice.join(' ')}${end < words.length ? ' …' : ''}`,
-    marks: shifted,
+    words: words.slice(start, end),
+    marks: new Set([...marks].filter((i) => i >= start && i < end).map((i) => i - start)),
+    before: start > 0,
+    after: end < words.length,
   };
 }

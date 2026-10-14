@@ -1,12 +1,10 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { html, raw, esc, attrs, cx, jsonForScript } from '../../src/lib/html.ts';
 import { normalizeArabic, stripClitics, toFtsQuery, authorKey, cleanPersonName, splitAuthors, toLatinDigits, readingMinutes } from '../../src/lib/arabic.ts';
 import { parseArabicDate, toIsoDate, formatDate, formatHijri } from '../../src/lib/dates.ts';
-import { Store, migrate } from '../../src/db/store.ts';
+import { openExtras } from '../../src/lib/extras.ts';
+import { indexDocument, removeFromIndex, searchIndex, suggestTitles, toIndexText } from '../../src/db/search.ts';
 import { loadConfig } from '../../src/config.ts';
 
 describe('html template', () => {
@@ -94,47 +92,44 @@ describe('dates', () => {
 
 describe('config', () => {
   test('defaults are safe for development', () => {
-    const c = loadConfig({ NODE_ENV: 'development' } as NodeJS.ProcessEnv);
+    const c = loadConfig({ NODE_ENV: 'development' } as unknown as NodeJS.ProcessEnv);
     assert.equal(c.defaultLang, 'ar');
     assert.equal(c.translation.provider, 'none');
     assert.deepEqual(c.translation.eagerLangs, ['en']);
-  });
-  test('production refuses a weak session secret', () => {
-    assert.throws(() => loadConfig({ NODE_ENV: 'production', SESSION_SECRET: 'short' } as NodeJS.ProcessEnv), /SESSION_SECRET/);
+    assert.equal(c.translation.model, 'claude-opus-5-5');
   });
   test('provider needs its key', () => {
-    assert.throws(() => loadConfig({ TRANSLATION_PROVIDER: 'anthropic' } as NodeJS.ProcessEnv), /ANTHROPIC_API_KEY/);
-    assert.throws(() => loadConfig({ TRANSLATION_PROVIDER: 'nope' } as NodeJS.ProcessEnv), /TRANSLATION_PROVIDER/);
+    assert.throws(() => loadConfig({ TRANSLATION_PROVIDER: 'anthropic' } as unknown as NodeJS.ProcessEnv), /ANTHROPIC_API_KEY/);
+    assert.throws(() => loadConfig({ TRANSLATION_PROVIDER: 'nope' } as unknown as NodeJS.ProcessEnv), /TRANSLATION_PROVIDER/);
   });
 });
 
-describe('store & migrations', () => {
-  test('applies migrations once, supports FTS5 and savepoints', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'hc-db-'));
-    try {
-      const store = new Store(join(dir, 't.db'));
-      const first = migrate(store, join(import.meta.dirname, '../../migrations'));
-      assert.ok(first.applied.includes('0001_init.sql'));
-      const second = migrate(store, join(import.meta.dirname, '../../migrations'));
-      assert.equal(second.applied.length, 0);
-
-      store.run("INSERT INTO posts (id,type,status,title) VALUES (1,'news','published','عنوان')");
-      store.run('INSERT INTO search_index (rowid,title,excerpt,body,authors,stems,lang,post_id,type) VALUES (1,?,?,?,?,?,?,?,?)', 'ميناء سمهرم', '', 'نص', '', '', 'ar', 1, 'news');
-      assert.equal(store.all("SELECT rowid FROM search_index WHERE search_index MATCH '\"سمهرم\"*'").length, 1);
-
-      assert.throws(() =>
-        store.tx(() => {
-          store.run("INSERT INTO posts (id,type,title) VALUES (2,'news','x')");
-          store.tx(() => store.run("INSERT INTO posts (id,type,title) VALUES (3,'news','y')"));
-          throw new Error('boom');
-        }),
-      );
-      assert.equal(store.get<{ n: number }>('SELECT count(*) n FROM posts')?.n, 1, 'outer rollback undoes nested work');
-
-      assert.throws(() => store.run("INSERT INTO posts (id,type,title) VALUES (9,'bogus','x')"), /CHECK/);
-      store.close();
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
+describe('extras database (full-text index + savepoints)', () => {
+  test('indexes Arabic text with normalization and replaces rows per document', () => {
+    const db = openExtras(':memory:');
+    indexDocument(db, 'articles', 7, { ar: toIndexText({ title: 'ميناء سمهرم', body: '<p>التجارة والموانئ في ظفار</p>', authors: ['أحمد باحارثة'] }), en: toIndexText({ title: 'Port of Sumhuram' }) });
+    assert.equal(searchIndex(db, { q: 'سمهرم', lang: 'ar' }).total, 1);
+    assert.equal(searchIndex(db, { q: 'الموانئ', lang: 'ar' }).total, 1, 'definite article is stripped');
+    assert.equal(searchIndex(db, { q: 'موانئ', lang: 'ar' }).total, 1, 'matches the article form too');
+    assert.equal(searchIndex(db, { q: 'sumhuram', lang: 'en' }).total, 1);
+    assert.equal(searchIndex(db, { q: 'باحارثه', lang: 'ar' }).total, 1, 'teh-marbuta variant');
+    indexDocument(db, 'articles', 7, { ar: toIndexText({ title: 'عنوان آخر' }) });
+    assert.equal(searchIndex(db, { q: 'سمهرم', lang: 'ar' }).total, 0);
+    assert.equal(suggestTitles(db, 'عنو', 'ar').length, 1);
+    removeFromIndex(db, 'articles', 7);
+    assert.equal(searchIndex(db, { q: 'عنوان', lang: 'ar' }).total, 0);
+    db.close();
+  });
+  test('nested transactions roll back as a unit', () => {
+    const db = openExtras(':memory:');
+    assert.throws(() =>
+      db.tx(() => {
+        db.run("INSERT INTO pageviews (day, path, lang, count) VALUES ('d', '/a', 'ar', 1)");
+        db.tx(() => db.run("INSERT INTO pageviews (day, path, lang, count) VALUES ('d', '/b', 'ar', 1)"));
+        throw new Error('boom');
+      }),
+    );
+    assert.equal(db.get<{ n: number }>('SELECT count(*) n FROM pageviews')?.n, 0);
+    db.close();
   });
 });

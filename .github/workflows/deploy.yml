@@ -1,0 +1,93 @@
+name: Deploy
+# Builds the image, pushes it to GHCR, then deploys to the VPS over SSH.
+# Manual runs can deploy any tag (use it to roll back: pass an older sha-xxxxxxx tag).
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to deploy (default: latest build of this run)"
+        required: false
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/hadramout-center-platform
+
+jobs:
+  build:
+    if: ${{ github.event.inputs.tag == '' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: meta
+        run: echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - run: echo "IMAGE_LC=${IMAGE,,}" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          push: true
+          tags: |
+            ${{ env.IMAGE_LC }}:${{ steps.meta.outputs.tag }}
+            ${{ env.IMAGE_LC }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: tools
+          push: true
+          tags: ${{ env.IMAGE_LC }}-tools:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: [build]
+    if: ${{ always() && (needs.build.result == 'success' || needs.build.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve tag
+        run: |
+          TAG="${{ github.event.inputs.tag || needs.build.outputs.tag }}"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "IMAGE_LC=${IMAGE,,}" >> "$GITHUB_ENV"
+      - name: Copy deploy files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          source: deploy/docker-compose.yml,deploy/Caddyfile,deploy/scripts/*
+          target: ${{ secrets.VPS_PATH || '/opt/hadramout' }}
+          strip_components: 1
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          envs: TAG,IMAGE_LC
+          script_stop: true
+          script: |
+            cd "${{ secrets.VPS_PATH || '/opt/hadramout' }}"
+            chmod +x scripts/*.sh
+            ./scripts/deploy.sh "${IMAGE_LC}:${TAG}"
