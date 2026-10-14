@@ -112,7 +112,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       eagerLangs: csv(env.TRANSLATION_EAGER_LANGS, 'en'),
       concurrency: Math.max(1, intFrom(env.TRANSLATION_CONCURRENCY, 2, 'TRANSLATION_CONCURRENCY')),
       dailyCharLimit: intFrom(env.TRANSLATION_DAILY_CHAR_LIMIT, 2_000_000, 'TRANSLATION_DAILY_CHAR_LIMIT'),
-      model: env.TRANSLATION_MODEL ?? 'claude-haiku-5-5',
+      model: env.TRANSLATION_MODEL ?? 'claude-opus-5-5',
       anthropicApiKey: env.ANTHROPIC_API_KEY ?? '',
       googleApiKey: env.GOOGLE_TRANSLATE_API_KEY ?? '',
       libreUrl: (env.LIBRETRANSLATE_URL ?? 'http://localhost:5000').replace(/\/+$/, ''),

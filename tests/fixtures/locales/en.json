@@ -1,0 +1,6 @@
+{
+  "nav.home": "Home",
+  "results.count.one": "One result",
+  "results.count.other": "{count} results",
+  "greeting": "Hello {name}"
+}

@@ -42,6 +42,7 @@
     "mukalla"
   ],
   "dependencies": {
+    "@anthropic-ai/sdk": "0.134.0",
     "@fastify/compress": "9.2.2",
     "@fastify/cookie": "11.1.3",
     "@fastify/formbody": "9.0.1",

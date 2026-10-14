@@ -15,7 +15,10 @@ CREATE TABLE posts (
   data         TEXT    NOT NULL DEFAULT '{}',      -- JSON: non-translatable (pdf, youtube_id, issue_number…)
   featured     INTEGER NOT NULL DEFAULT 0,
   views        INTEGER NOT NULL DEFAULT 0,
+  date_precision TEXT  NOT NULL DEFAULT 'none' CHECK (date_precision IN ('day','month','year','estimated','none')),
   legacy_url   TEXT,
+  source       TEXT    NOT NULL DEFAULT 'manual' CHECK (source IN ('manual','legacy')),
+  edited       INTEGER NOT NULL DEFAULT 0,       -- 1 once a human changed an imported row: re-imports never overwrite it
   created_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
   updated_at   TEXT    NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );

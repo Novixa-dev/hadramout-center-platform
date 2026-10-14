@@ -1,0 +1,6 @@
+{
+  "nav.home": "الرئيسية",
+  "results.count.one": "نتيجة واحدة",
+  "results.count.other": "{count} نتائج",
+  "greeting": "مرحباً {name}"
+}

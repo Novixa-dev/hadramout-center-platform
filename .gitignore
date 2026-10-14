@@ -31,3 +31,5 @@ coverage/
 
 # importer cache (raw fetched HTML)
 .cache/
+.cache/
+.cache-import.log
