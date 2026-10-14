@@ -43,3 +43,8 @@ coverage/
 .next/
 next-env.d.ts
 tsconfig.tsbuildinfo
+
+.server.err
+.server.log
+.images.log
+.build.log
