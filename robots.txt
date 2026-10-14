@@ -1,6 +1,0 @@
-# robots.txt for hadramout.center
-User-agent: *
-Allow: /
-
-# Sitemaps
-Sitemap: https://hadramout.center/sitemap.xml

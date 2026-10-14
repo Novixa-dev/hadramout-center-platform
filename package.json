@@ -1,27 +1,73 @@
 {
   "name": "hadramout-center-platform",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Modern Digital Knowledge & Archival Platform for Hadhramout Center for Historical Studies, Documentation and Publishing. Engineered pro bono by Novixa.",
-  "author": "Novixa <contact@novixa.io>",
-  "license": "MIT",
+  "type": "module",
+  "description": "Digital archive and knowledge platform for the Hadhramout Center for Historical Studies, Documentation and Publishing. Arabic-first, auto-translated, SSR on Node.js + SQLite.",
+  "author": "Novixa <hello@novixa.dev>",
+  "license": "UNLICENSED",
   "homepage": "https://hadramout.center",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Novixa-dev/hadramout-center-platform.git"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
-    "dev": "node scripts/serve.js",
-    "serve": "node scripts/serve.js",
-    "start": "node scripts/serve.js",
-    "validate": "node scripts/validate.js",
-    "build": "node scripts/validate.js",
-    "test": "node scripts/validate.js"
+    "dev": "node --watch --env-file-if-exists=.env src/main.ts",
+    "start": "node --env-file-if-exists=.env src/main.ts",
+    "build": "node scripts/build-assets.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p client/tsconfig.json",
+    "lint": "eslint .",
+    "test": "node --test --test-reporter=spec \"tests/unit/**/*.test.ts\" \"tests/integration/**/*.test.ts\"",
+    "test:unit": "node --test --test-reporter=spec \"tests/unit/**/*.test.ts\"",
+    "test:e2e": "playwright test",
+    "check": "npm run typecheck && npm run lint && npm test",
+    "db:migrate": "node --env-file-if-exists=.env scripts/migrate.ts",
+    "db:seed": "node --env-file-if-exists=.env scripts/seed.ts",
+    "import:legacy": "node scripts/import-legacy.ts",
+    "import:images": "node --env-file-if-exists=.env scripts/import-images.ts",
+    "i18n:ui": "node --env-file-if-exists=.env scripts/translate-ui.ts",
+    "admin:create": "node --env-file-if-exists=.env scripts/create-admin.ts",
+    "backup": "node --env-file-if-exists=.env scripts/backup.ts"
   },
   "keywords": [
     "hadhramout",
     "historical-studies",
-    "archive",
-    "digital-platform",
-    "novixa",
-    "pro-bono",
+    "digital-archive",
+    "arabic",
+    "i18n",
     "yemen",
     "mukalla"
-  ]
+  ],
+  "dependencies": {
+    "@fastify/compress": "9.2.2",
+    "@fastify/cookie": "11.1.3",
+    "@fastify/formbody": "9.0.1",
+    "@fastify/multipart": "10.1.3",
+    "@fastify/rate-limit": "11.2.1",
+    "@fastify/static": "10.1.6",
+    "fastify": "5.12.7",
+    "sanitize-html": "2.18.1",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@fontsource-variable/noto-naskh-arabic": "5.3.0",
+    "@fontsource-variable/source-serif-4": "5.3.1",
+    "@fontsource/ibm-plex-sans-arabic": "5.3.0",
+    "@types/jsdom": "30.0.0",
+    "@types/node": "26.6.5",
+    "@types/sanitize-html": "2.16.2",
+    "axe-core": "4.14.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "jsdom": "30.1.2",
+    "node-html-parser": "9.0.4",
+    "quill": "2.0.3",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2"
+  }
 }
