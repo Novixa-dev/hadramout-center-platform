@@ -5,6 +5,8 @@ import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { listAuthors } from '../../../../lib/data.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
 
+export const dynamic = 'force-dynamic'; // reads searchParams
+
 type Props = { params: Promise<{ locale: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

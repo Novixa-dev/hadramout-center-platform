@@ -19,7 +19,7 @@ interface Meta {
 
 async function stateOf(slug: string, id: string, lang: string): Promise<'ready' | 'pending' | 'failed' | 'none'> {
   const payload = await getPayloadClient();
-  let doc: Meta | null = null;
+  let doc: Meta;
   try {
     doc = (await payload.findByID({ collection: slug as never, id: Number(id), depth: 0, locale: 'ar', overrideAccess: true })) as unknown as Meta;
   } catch {

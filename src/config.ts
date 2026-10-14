@@ -26,7 +26,6 @@ export interface Config {
     libreUrl: string;
     libreApiKey: string;
   };
-  turnstile: { siteKey: string; secretKey: string };
 }
 
 const PROVIDERS: readonly TranslationProviderName[] = ['none', 'mock', 'anthropic', 'google', 'libretranslate'];
@@ -67,6 +66,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   if (!PROVIDERS.includes(provider)) {
     throw new Error(`Invalid TRANSLATION_PROVIDER "${provider}". Use one of: ${PROVIDERS.join(', ')}`);
   }
+  if (isProd && provider === 'mock') throw new Error('TRANSLATION_PROVIDER=mock is for development only');
   if (provider === 'anthropic' && !env.ANTHROPIC_API_KEY) throw new Error('TRANSLATION_PROVIDER=anthropic requires ANTHROPIC_API_KEY');
   if (provider === 'google' && !env.GOOGLE_TRANSLATE_API_KEY) throw new Error('TRANSLATION_PROVIDER=google requires GOOGLE_TRANSLATE_API_KEY');
 
@@ -89,7 +89,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       libreUrl: (env.LIBRETRANSLATE_URL ?? 'http://localhost:5000').replace(/\/+$/, ''),
       libreApiKey: env.LIBRETRANSLATE_API_KEY ?? '',
     },
-    turnstile: { siteKey: env.TURNSTILE_SITE_KEY ?? '', secretKey: env.TURNSTILE_SECRET_KEY ?? '' },
   };
 }
 

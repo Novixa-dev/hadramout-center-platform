@@ -11,6 +11,8 @@ import { htmlToText } from '../../../../lib/sanitize.ts';
 import { Icon } from '../../../../components/Icon.tsx';
 import { Pagination } from '../../../../components/Pagination.tsx';
 
+export const dynamic = 'force-dynamic'; // reads searchParams
+
 type Props = { params: Promise<{ locale: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 const PER_PAGE = 15;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';

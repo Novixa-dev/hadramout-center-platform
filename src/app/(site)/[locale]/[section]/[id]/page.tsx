@@ -7,12 +7,13 @@ import { getDoc, getSite, listDocs, trInfo, type Doc } from '../../../../../lib/
 import { buildMetadata } from '../../../../../lib/seo.ts';
 import { appConfig } from '../../../../../lib/runtime-light.ts';
 import { withHeadingIds } from '../../../../../lib/html-utils.ts';
+import { localizeLegacyMedia } from '../../../../../lib/legacy-media.ts';
 import { formatHijri } from '../../../../../lib/dates.ts';
 import { readingMinutes } from '../../../../../lib/arabic.ts';
 import { htmlToText } from '../../../../../lib/sanitize.ts';
 import { bibKey, formatCitation, scholarMeta, toBibtex, toCslJson, toRis, type CiteSource } from '../../../../../lib/citations.ts';
 import { breadcrumbJsonLd, contentJsonLd, jsonLdString } from '../../../../../lib/jsonld.ts';
-import { Card, Cover, textAttrs } from '../../../../../components/Cards.tsx';
+import { Cover, textAttrs } from '../../../../../components/Cards.tsx';
 import { Icon } from '../../../../../components/Icon.tsx';
 import { CitePanel } from '../../../../../components/client/CitePanel.tsx';
 import { PrintButton, ReadingTools, SaveButton, ShareMenu } from '../../../../../components/client/Tools.tsx';
@@ -112,7 +113,7 @@ export default async function DetailPage({ params }: Props) {
   const authors = authorsOf(doc);
   const date = displayDate(doc, locale);
   const bodyHtml = doc.body ?? '';
-  const { html: prose, toc } = withHeadingIds(bodyHtml);
+  const { html: prose, toc } = withHeadingIds(localizeLegacyMedia(bodyHtml));
   const minutes = bodyHtml ? readingMinutes(htmlToText(bodyHtml), locale) : 0;
   const category = typeof doc.category === 'object' && doc.category ? doc.category : null;
   const magazine = typeof doc.magazine === 'object' && doc.magazine ? doc.magazine : null;

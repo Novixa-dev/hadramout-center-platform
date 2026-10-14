@@ -41,7 +41,6 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
     <header className="site-header">
       <div className="container site-header__bar">
         <Link className="brand" href={href('/')}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="brand__mark" src="/brand/logo-icon.svg" alt="" width={32} height={57} />
           <span className="brand__text">
             <span className="brand__name">{site.shortName || site.name}</span>

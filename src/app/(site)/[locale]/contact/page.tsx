@@ -6,6 +6,8 @@ import { buildMetadata } from '../../../../lib/seo.ts';
 import { Icon } from '../../../../components/Icon.tsx';
 import { ContactForm } from '../../../../components/client/ContactForm.tsx';
 
+export const dynamic = 'force-dynamic'; // reads searchParams
+
 type Props = { params: Promise<{ locale: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
 

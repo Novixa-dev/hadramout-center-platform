@@ -15,7 +15,7 @@ const authorName = (a: unknown): string => (a && typeof a === 'object' && typeof
 export async function reindexDoc(payload: Payload, slug: CollectionSlug | 'pages', id: number, req?: unknown): Promise<void> {
   const db = extras();
   const base = { collection: slug as never, id, depth: 1, overrideAccess: true, fallbackLocale: false as const, ...(req ? { req: req as never } : {}) };
-  let ar: AnyDoc | null = null;
+  let ar: AnyDoc;
   try {
     ar = (await payload.findByID({ ...base, locale: 'ar' })) as unknown as AnyDoc;
   } catch {

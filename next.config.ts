@@ -38,11 +38,12 @@ const nextConfig: NextConfig = {
     ];
   },
   output: 'standalone',
+  outputFileTracingExcludes: { '*': ['./docs/**', './tests/**', './data/**', './content/**', './deploy/**', './.git/**', './.next/cache/**'] },
   agentRules: false,
   poweredByHeader: false,
   images: {
-    localPatterns: [{ pathname: '/api/media/file/**' }],
-    remotePatterns: [{ protocol: 'https', hostname: 'files.hadramout.center' }, { protocol: 'https', hostname: 'i.ytimg.com' }],
+    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/legacy-media/**' }],
+    remotePatterns: [{ protocol: 'https', hostname: 'i.ytimg.com' }],
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

@@ -28,7 +28,7 @@
     "check": "npm run typecheck && npm run lint && npm test",
     "db:seed": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/seed.ts",
     "import:legacy": "node scripts/import-legacy.ts",
-    "import:images": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/import-images.ts"
+    "import:images": "node scripts/import-images.ts"
   },
   "keywords": [
     "hadhramout",

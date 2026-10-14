@@ -4,6 +4,7 @@ import { CONTENT, type ContentType } from './content-types.ts';
 import { formatDate, formatMonthYear, yearOf } from './dates.ts';
 import type { Doc } from './data.ts';
 import { loadConfig } from '../config.ts';
+import { localizeLegacyMedia } from './legacy-media.ts';
 
 export interface Ctx {
   lang: Language;
@@ -46,7 +47,7 @@ export function coverOf(doc: Doc, size: 'thumb' | 'card' | 'large' = 'card'): Co
     const url = c.sizes?.[size]?.url ?? c.url;
     if (url) return { src: url, alt, remote: false };
   }
-  if (doc.coverUrl) return { src: doc.coverUrl, alt, remote: true };
+  if (doc.coverUrl) return { src: localizeLegacyMedia(doc.coverUrl), alt, remote: false };
   return null;
 }
 
