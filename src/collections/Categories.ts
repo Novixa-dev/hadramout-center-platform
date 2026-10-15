@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig, Where } from 'payload';
 import { contentAccess, L, localizedText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
@@ -36,7 +36,7 @@ export const Categories: CollectionConfig = {
       label: L('الموضوع الرئيسي', 'Parent topic'),
       admin: { position: 'sidebar', description: L('اتركه فارغاً لجعل هذا التصنيف موضوعاً رئيسياً.', 'Leave empty to make this a top-level topic.') },
       // two levels only: a parent must itself be top-level
-      filterOptions: ({ id }) => ({ and: [{ parent: { exists: false } }, ...(id ? [{ id: { not_equals: id } }] : [])] }),
+      filterOptions: ({ id }): Where => ({ and: [{ parent: { exists: false } } as Where, ...(id ? [{ id: { not_equals: id } } as Where] : [])] }),
     },
     { name: 'order', type: 'number', defaultValue: 100, label: L('الترتيب', 'Order'), admin: { position: 'sidebar', description: L('الأصغر أولاً.', 'Lower comes first.') } },
     { name: 'description', type: 'textarea', localized: true, label: L('وصف الموضوع', 'Description'), admin: { description: L('يظهر في صفحة الموضوع ومحركات البحث. اكتبه بالعربية فقط.', 'Shown on the topic page and in search results. Write in Arabic only.') } },

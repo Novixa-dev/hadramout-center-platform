@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
-import { listAuthors } from '../../../../lib/data.ts';
+import { listAuthors } from '../../../../lib/facets.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
 
 export const dynamic = 'force-dynamic'; // reads searchParams

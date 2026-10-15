@@ -129,10 +129,20 @@ export const getDoc = cache(async (type: ContentType, id: number, lang: string):
   }
 });
 
-export async function getDocsByIds(slug: CollectionSlug, ids: number[], lang: string): Promise<Doc[]> {
+export async function getDocsByIds(slug: CollectionSlug, ids: number[], lang: string, opts: { light?: boolean } = {}): Promise<Doc[]> {
   if (ids.length === 0) return [];
   const payload = await getPayloadClient();
-  const res = await payload.find({ collection: slug, where: { and: [PUBLISHED, { id: { in: ids } }] }, limit: ids.length, depth: 1, locale: lang as never, fallbackLocale: 'ar', pagination: false });
+  const res = await payload.find({
+    collection: slug,
+    where: { and: [PUBLISHED, { id: { in: ids } }] },
+    limit: ids.length,
+    depth: 1,
+    locale: lang as never,
+    fallbackLocale: 'ar',
+    pagination: false,
+    // list cards never need the (large) body
+    ...(opts.light ? { select: { body: false } as never } : {}),
+  });
   const map = new Map((res.docs as unknown as Doc[]).map((d) => [d.id, d]));
   return ids.map((id) => map.get(id)).filter((d): d is Doc => Boolean(d));
 }
@@ -174,24 +184,6 @@ export const getSite = cache(async (lang: string) => {
     translationMeta?: Doc['translationMeta'];
   };
 });
-
-export interface AuthorSummary {
-  id: number;
-  name: string;
-  count: number;
-}
-
-/** Authors with at least one published article/book, sorted by name. */
-export async function listAuthors(lang: string, q?: string): Promise<AuthorSummary[]> {
-  const payload = await getPayloadClient();
-  const res = await payload.find({ collection: 'authors', limit: 2000, pagination: false, depth: 0, locale: lang as never, fallbackLocale: 'ar', sort: 'nameKey', ...(q ? { where: { name: { like: q } } } : {}) });
-  const counts = new Map<number, number>();
-  for (const slug of ['articles', 'books'] as const) {
-    const docs = await payload.find({ collection: slug, where: PUBLISHED, limit: 5000, pagination: false, depth: 0, select: { authors: true } as never, locale: 'ar' });
-    for (const d of docs.docs as unknown as { authors?: number[] }[]) for (const a of d.authors ?? []) counts.set(a, (counts.get(a) ?? 0) + 1);
-  }
-  return (res.docs as unknown as { id: number; name: string }[]).map((a) => ({ id: a.id, name: a.name, count: counts.get(a.id) ?? 0 })).filter((a) => a.count > 0);
-}
 
 export async function getAuthor(id: number, lang: string) {
   const payload = await getPayloadClient();

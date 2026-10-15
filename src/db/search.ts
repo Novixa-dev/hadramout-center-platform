@@ -104,7 +104,7 @@ export function searchIndex(db: Store, opts: SearchOptions): { hits: SearchHit[]
      FROM search_index WHERE search_index MATCH ? AND lang = ?${kindSql}
      ORDER BY rank LIMIT ? OFFSET ?`,
     ...params,
-    Math.min(opts.limit ?? 20, 100),
+    Math.min(opts.limit ?? 20, 1000),
     Math.max(opts.offset ?? 0, 0),
   );
   return { hits: rows.map((r) => ({ id: r.doc_id, kind: r.kind, rank: r.rank })), total, lang };
