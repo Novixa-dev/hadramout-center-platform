@@ -7,8 +7,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-ccb157d7db356cc07c9f6f0e13e5f2dd}"
-MODEL="${CLOUDFLARE_MODEL:-@cf/google/gemma-3-12b-it}"
+MODEL="${CLOUDFLARE_MODEL:-@cf/mistralai/mistral-small-3.1-24b-instruct}"
 read -r -s -p "Cloudflare API token (Workers AI): " TOKEN; echo
+TOKEN="$(printf %s "$TOKEN" | tr -cd 'A-Za-z0-9_-')"   # keep only valid token characters (drops BOM/CRLF/spaces from a piped clipboard)
 [ -n "$TOKEN" ] || { echo "empty token"; exit 1; }
 
 echo "→ testing the token against Workers AI…"
