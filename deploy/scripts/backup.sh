@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Consistent backup of the SQLite databases + uploaded media. Keeps the last 14 archives.
-# Usage: ./scripts/backup.sh [label]   — run daily from cron:  15 3 * * * /opt/hadramout/scripts/backup.sh daily
+# Usage: ./scripts/backup.sh [label]   — run daily from cron:  15 3 * * * /opt/hadramout-center/scripts/backup.sh daily
 set -euo pipefail
 cd "$(dirname "$0")/.."
 LABEL="${1:-manual}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
-DEST="${BACKUP_DIR:-/opt/hadramout/backups}"
+DEST="${BACKUP_DIR:-/opt/hadramout-center/backups}"
 mkdir -p "$DEST"
 APP="$(docker compose ps -q app)"
 [ -n "$APP" ] || { echo "app container is not running"; exit 1; }

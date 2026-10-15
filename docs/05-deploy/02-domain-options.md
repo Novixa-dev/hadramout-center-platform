@@ -13,7 +13,7 @@
 ## خطة التحويل (cutover)
 1. نشر على `hadramout-center.novixa.dev` واعتماد المركز (راجع `docs/04-qa/01-human-test-guide.md`).
 2. خفض TTL لسجلات `hadramout.center` إلى 300 ثانية قبل 48 ساعة.
-3. ضبط `DOMAIN` و`SITE_URL` في `.env` على `hadramout.center` وإعادة النشر (Caddy يصدر الشهادة تلقائياً).
+3. ضبط `SITE_URL` في `.env` على `hadramout.center` وإضافة كتلة nginx وشهادة Cloudflare للنطاق الجديد (راجع `deploy/nginx` و`server-setup.sh`) ثم إعادة النشر.
 4. تغيير سجل `A` إلى IP الخادم الجديد.
 5. التحقق: الصفحة الرئيسية، `/admin`، خريطة الموقع `/sitemap.xml`، وروابط قديمة مثل `/articles/9597` (تُحوَّل 301 إلى العنوان الجديد).
 6. تقديم `sitemap.xml` في Google Search Console، ومراقبة تقرير التغطية أسبوعين.

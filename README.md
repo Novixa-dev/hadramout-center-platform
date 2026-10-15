@@ -25,4 +25,4 @@ npm run dev                 # http://localhost:3000  ·  الإدارة: /admin
 المحرر يكتب بالعربية فقط. عند طلب زائر لغة أخرى تُنشأ الترجمة تلقائياً (مزوّد يُضبط بـ`TRANSLATION_PROVIDER`: `anthropic` | `google` | `libretranslate` | `mock` | `none`) وتُخزَّن، ولا تُستبدل التعديلات اليدوية.
 
 ## النشر
-Docker + Caddy + GitHub Actions — راجع `docs/05-deploy/01-vps-deploy-guide.md`.
+Docker + GitHub Actions (nginx الخاص بـmailcow خلف Cloudflare) — راجع `docs/05-deploy/01-vps-deploy-guide.md`.

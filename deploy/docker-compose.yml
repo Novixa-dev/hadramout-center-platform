@@ -1,15 +1,19 @@
-# Production stack: app + Caddy (automatic HTTPS). Copy this folder to the VPS (e.g. /opt/hadramout) next to a filled .env.
+# Production stack on the shared Novixa VPS. No ports are published: mailcow's nginx (80/443, Cloudflare in front)
+# reaches the app through the external Docker network `hadramout-center-edge`, created by deploy/server-setup.sh.
+# Lives in /opt/hadramout-center next to a filled .env (see .env.production.example).
 services:
   app:
-    image: ${APP_IMAGE:-ghcr.io/novixa-dev/hadramout-center-platform:latest}
+    image: ${APP_IMAGE:-hadramout-center-platform:latest}
+    container_name: hadramout-center-app
     restart: unless-stopped
     env_file: .env
     environment:
       NODE_ENV: production
     volumes:
       - hc_data:/data
-    expose:
-      - "3000"
+    networks:
+      - edge
+    mem_limit: 1g
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/hc/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 30s
@@ -17,27 +21,10 @@ services:
       start_period: 60s
       retries: 3
 
-  caddy:
-    image: caddy:2
-    restart: unless-stopped
-    depends_on:
-      - app
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    environment:
-      DOMAIN: ${DOMAIN}
-      ACME_EMAIL: ${ACME_EMAIL:-}
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-
-  # One-off tasks:  docker compose run --rm tools npm run db:seed
+  # One-off tasks:  docker compose run --rm tools npm run db:seed   |   docker compose run --rm tools npm run import:images
   tools:
     profiles: ["tools"]
-    image: ${TOOLS_IMAGE:-ghcr.io/novixa-dev/hadramout-center-platform-tools:latest}
+    image: ${TOOLS_IMAGE:-hadramout-center-platform-tools:latest}
     env_file: .env
     environment:
       NODE_ENV: production
@@ -46,5 +33,8 @@ services:
 
 volumes:
   hc_data:
-  caddy_data:
-  caddy_config:
+
+networks:
+  edge:
+    name: hadramout-center-edge
+    external: true

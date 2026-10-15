@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: ./scripts/restore.sh /opt/hadramout/backups/hadramout-daily-XXXX.tgz
+# Usage: ./scripts/restore.sh /opt/hadramout-center/backups/hadramout-daily-XXXX.tgz
 set -euo pipefail
 cd "$(dirname "$0")/.."
 FILE="${1:?backup archive required}"

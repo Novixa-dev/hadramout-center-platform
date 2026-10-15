@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart LR
-  V[الزائر] -->|HTTPS| C[Caddy<br/>TLS + Brotli]
+  V[الزائر] -->|HTTPS| C[Cloudflare + nginx الخاص بـ mailcow]
   C --> A[تطبيق Next.js 16<br/>الموقع العام + لوحة Payload + API]
   A --> DB[(SQLite — payload.db<br/>المحتوى والمستخدمون والمهام)]
   A --> X[(SQLite — extras.db<br/>فهرس البحث FTS5 + عدادات مجهولة)]
@@ -29,7 +29,7 @@ flowchart LR
 | الترجمة | محرك داخلي: مزوّدون قابلون للاستبدال، ذاكرة ترجمة بالتجزئة، قاموس مصطلحات، سقف يومي |
 | الصور | `next/image` (WebP/AVIF) + مجموعة وسائط Payload بأحجام متعددة |
 | الخطوط | IBM Plex Sans Arabic (واجهة) + Noto Naskh (قراءة) + Source Serif 4 (لاتيني)، مستضافة ذاتياً |
-| النشر | Docker متعدد المراحل + Caddy + GitHub Actions |
+| النشر | Docker متعدد المراحل + GitHub Actions (شحن SSH) خلف nginx/Cloudflare |
 
 ## 3. هيكل المستودع
 
@@ -61,4 +61,4 @@ scripts/              import-legacy · seed · build-brand
 4. بعد الكتابة: إعادة فهرسة البحث وتجديد ذاكرة الصفحات.
 
 ## 6. الأمان والأداء (مختصر)
-رؤوس أمان وCSP، حدود معدل على كل نقطة كتابة عامة (مخزنة في extras.db)، honeypot، صلاحيات حسب الدور (مدير/محرر/مراجع ترجمة)، تعقيم HTML صارم، جلسات بكوكي HttpOnly، قفل الحساب بعد 5 محاولات. الأداء: ISR، استبعاد `body` من القوائم، فهارس `_locales`، صور محسّنة، Brotli في Caddy.
+رؤوس أمان وCSP، حدود معدل على كل نقطة كتابة عامة (مخزنة في extras.db)، honeypot، صلاحيات حسب الدور (مدير/محرر/مراجع ترجمة)، تعقيم HTML صارم، جلسات بكوكي HttpOnly، قفل الحساب بعد 5 محاولات. الأداء: ISR، استبعاد `body` من القوائم، فهارس `_locales`، صور محسّنة، ضغط وتخزين مؤقت في Cloudflare.
