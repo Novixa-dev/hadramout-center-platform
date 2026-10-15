@@ -265,7 +265,7 @@ export default async function DetailPage({ params }: Props) {
 
   const relatedBlock = related.length ? (
     <section style={{ marginBlockStart: 'var(--space-8)' }} aria-labelledby="rel-h">
-      <SectionHead title={t('article.related')} as="h2" />
+      <SectionHead title={t('article.related')} id="rel-h" as="h2" />
       {type === 'book' ? (
         <div className="results-grid results-grid--books">{related.map((d) => <BookCard key={d.id} ctx={ctx} doc={d} />)}</div>
       ) : type === 'news' ? (
@@ -282,7 +282,7 @@ export default async function DetailPage({ params }: Props) {
 
   const moreByAuthorBlock = moreByAuthor.length && authors[0] ? (
     <section style={{ marginBlockStart: 'var(--space-8)' }} aria-labelledby="more-author-h">
-      <SectionHead title={t('article.moreByAuthor', { name: authors[0].name })} href={href(`/authors/${authors[0].id}`)} more={t('section.viewAll')} as="h2" />
+      <SectionHead title={t('article.moreByAuthor', { name: authors[0].name })} id="more-author-h" href={href(`/authors/${authors[0].id}`)} more={t('section.viewAll')} as="h2" />
       {type === 'book' ? <div className="results-grid results-grid--books">{moreByAuthor.map((d) => <BookCard key={d.id} ctx={ctx} doc={d} />)}</div> : <EntryList ctx={ctx} docs={moreByAuthor} type={type} compact />}
     </section>
   ) : null;
@@ -389,7 +389,7 @@ export default async function DetailPage({ params }: Props) {
 
             {issueContents?.docs.length ? (
               <section style={{ marginBlockStart: 'var(--space-8)' }} aria-labelledby="issue-h">
-                <SectionHead title={t('article.issueArticles')} lead={t('magazine.contents.count', { count: issueContents.total })} />
+                <SectionHead title={t('article.issueArticles')} id="issue-h" lead={t('magazine.contents.count', { count: issueContents.total })} />
                 <EntryList ctx={ctx} docs={issueContents.docs} type="article" compact />
               </section>
             ) : null}

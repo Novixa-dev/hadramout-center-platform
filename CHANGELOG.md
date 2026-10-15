@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.0.0] - 2026-10-16
+### Redesign v3 — scholarly-editorial UI, discovery, SEO (see `docs/09-redesign/`)
+- **SEO/social:** runtime `robots.txt`/manifest (live robots.txt pointed at the legacy domain), title template, correct `og:site_name`, `og:image:alt`, article/book OG fields, branded per-page 1200×630 social cards with correct Arabic shaping (`/og/...`), Organization/WebSite/CollectionPage/ProfilePage JSON-LD, topic and author sitemap entries, `scripts/seo-audit.mjs`.
+- **Design system:** new tokens and components (Naskh display + Plex UI), text-first article lists, cover shelves, event/date blocks; contrast of every token pair tested in light and dark.
+- **Discovery:** header search with typeahead on every page; faceted lists with exact counts, URL state, chips and phone bottom-sheet; two-level **topics** with landing pages; search v2 with type/year/author facets.
+- **Reading:** TOC with scroll-spy, progress bar, reader settings, permalink + citation box, related and previous/next, issue contents, add-to-calendar (.ics).
+- **Community:** moderated reader reviews (admin approval; aggregate rating published only with ≥3 approved reviews).
+- **Timeline:** era groups, unambiguous year ranges, scientific-review status per entry.
+- **Data:** migrations for topics/reviews/timeline fields; safe editorial corrections (see `docs/09-redesign/02-editorial-issues.md`).
+- **Fixes:** English plural fallback showed Arabic for 1-minute reads; filtered/paginated list canonicals.
+
 ## [4.0.0] - 2026-10-15
 ### Rebuild on Next.js 16 + Payload CMS 3
 - Full rewrite: bilingual RTL/LTR responsive site, admin CMS with roles, AI auto-translation (~90 languages, Arabic source), FTS5 Arabic search, scholarly citations, JSON-LD/SEO, RSS, legacy URL redirects.

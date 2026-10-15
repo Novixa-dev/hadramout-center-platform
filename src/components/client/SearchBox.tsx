@@ -169,7 +169,7 @@ export function SearchBox({ action, lang, labels, size = 'md', autoFocus = false
             enterKeyHint="search"
             role="combobox"
             aria-expanded={options.length > 0}
-            aria-controls={listId}
+            aria-controls={options.length > 0 ? listId : undefined}
             aria-autocomplete="list"
             aria-activedescendant={active >= 0 ? `${uid}-o${active}` : undefined}
           />
@@ -178,22 +178,24 @@ export function SearchBox({ action, lang, labels, size = 'md', autoFocus = false
         <button className="btn btn--gold" type="submit">{labels.submit}</button>
       </form>
       {options.length > 0 || (open && term.length >= 2 && (busy || done)) ? (
-        <ul className="sbox__list" id={listId} role="listbox" aria-label={labels.label}>
-          {showRecent ? <li className="sbox__group" role="presentation">{labels.recent}</li> : null}
-          {options.map((o, i) => (
-            <li key={o.key} id={`${uid}-o${i}`} role="option" aria-selected={i === active} onMouseDown={(e) => e.preventDefault()} onClick={() => go(o.href)} onMouseEnter={() => setActive(i)}>
-              {o.recent ? <Icon name="history" className="icon" /> : o.kind ? <span className="sbox__kind">{o.kind}</span> : <Icon name="search" className="icon" />}
-              <span>{o.label}</span>
-            </li>
-          ))}
-          {showRecent ? (
-            <li role="presentation">
-              <button type="button" className="btn btn--ghost btn--sm" onMouseDown={(e) => e.preventDefault()} onClick={() => { try { localStorage.removeItem(RECENT_KEY); } catch { /* ignore */ } setRecent([]); }}>{labels.clearRecent}</button>
-            </li>
+        <div className="sbox__panel">
+          {showRecent ? <p className="sbox__group" aria-hidden="true">{labels.recent}</p> : null}
+          {options.length > 0 ? (
+            <ul className="sbox__list" id={listId} role="listbox" aria-label={labels.label}>
+              {options.map((o, i) => (
+                <li key={o.key} id={`${uid}-o${i}`} role="option" aria-selected={i === active} onMouseDown={(e) => e.preventDefault()} onClick={() => go(o.href)} onMouseEnter={() => setActive(i)}>
+                  {o.recent ? <Icon name="history" className="icon" /> : o.kind ? <span className="sbox__kind">{o.kind}</span> : <Icon name="search" className="icon" />}
+                  <span>{o.label}</span>
+                </li>
+              ))}
+            </ul>
           ) : null}
-          {open && term.length >= 2 && busy && !items.length ? <li className="sbox__status" role="presentation">{labels.loading}</li> : null}
-          {open && term.length >= 2 && done && !busy && !items.length ? <li className="sbox__status" role="presentation">{labels.none}</li> : null}
-        </ul>
+          {showRecent ? (
+            <button type="button" className="btn btn--ghost btn--sm" onMouseDown={(e) => e.preventDefault()} onClick={() => { try { localStorage.removeItem(RECENT_KEY); } catch { /* ignore */ } setRecent([]); }}>{labels.clearRecent}</button>
+          ) : null}
+          {open && term.length >= 2 && busy && !items.length ? <p className="sbox__status">{labels.loading}</p> : null}
+          {open && term.length >= 2 && done && !busy && !items.length ? <p className="sbox__status">{labels.none}</p> : null}
+        </div>
       ) : null}
       <p className="sr-only" role="status" aria-live="polite">{open && term.length >= 2 && done && !busy ? labels.count.replace('{count}', String(items.length)) : ''}</p>
     </div>

@@ -17,11 +17,10 @@ export function generateStaticParams() {
   return [];
 }
 
+// NB: no `themeColor` here. Next.js turns a light/dark themeColor array into `Accept-CH` + `Critical-CH: Sec-CH-Prefers-Color-Scheme`,
+// which makes Chrome abort and repeat the very first navigation (an extra round trip, fragmented CDN cache, Lighthouse NO_NAVSTART).
+// The two theme-color <meta> tags are rendered by hand in <head> instead.
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fffbf5' },
-    { media: '(prefers-color-scheme: dark)', color: '#0e1815' },
-  ],
   width: 'device-width',
   initialScale: 1,
 };
@@ -54,10 +53,13 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   return (
     <html lang={ctx.lang.tag} dir={ctx.lang.dir} suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content="#fffbf5" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0e1815" media="(prefers-color-scheme: dark)" />
         {locale === 'ar' ? (
           <>
             <link rel="preload" href="/fonts/plex-ar-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
             <link rel="preload" href="/fonts/plex-ar-600.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+            <link rel="preload" href="/fonts/naskh-ar-v1.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
           </>
         ) : null}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />

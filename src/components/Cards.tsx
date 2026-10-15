@@ -208,10 +208,10 @@ export function ContentCard({ ctx, doc, type, eager = false }: CardProps & { typ
   }
 }
 
-export function SectionHead({ title, href, more, lead, as: Tag = 'h2' }: { title: string; href?: string; more?: string; lead?: ReactNode; as?: 'h2' | 'h3' }) {
+export function SectionHead({ title, href, more, lead, id, as: Tag = 'h2' }: { title: string; href?: string; more?: string; lead?: ReactNode; id?: string; as?: 'h2' | 'h3' }) {
   return (
     <div className="section-head">
-      <Tag>{title}</Tag>
+      <Tag id={id}>{title}</Tag>
       {href && more ? (
         <Link className="link-arrow" href={href}>
           {more} <Icon name="arrow" />

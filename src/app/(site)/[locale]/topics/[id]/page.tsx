@@ -31,6 +31,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     title: data.parent ? `${data.node.name} — ${data.parent.name}` : data.node.name,
     description: desc,
     card: { key: 'topics' },
+    readyLangs: ['ar'],
+    incomplete: locale !== 'ar',
     noindex: activeFilters(q).filter((f) => f !== 'topic').length > 0 || isCustomised({ ...q, category: undefined }, 'article'),
     page: q.page,
     pageLabel: ctx.t('list.pageN', { page: q.page }),

@@ -102,8 +102,8 @@
   .topic-card h3 a { color: var(--text); text-decoration: none; }
   .topic-card h3 a::after { content: ''; position: absolute; inset: 0; }
   .topic-card__count { color: var(--accent-text); font-weight: 700; font-size: var(--step--1); }
-  .topic-card ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; color: var(--muted); font-size: var(--step--2); }
-  .topic-card ul a { position: relative; z-index: 1; color: var(--text-2); text-decoration: none; }
+  .topic-card ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0 0.75rem; color: var(--muted); font-size: var(--step--1); }
+  .topic-card ul a { position: relative; z-index: 1; display: inline-flex; align-items: center; min-block-size: 2.25rem; color: var(--text-2); text-decoration: none; }
   .topic-card ul a:hover { color: var(--brand); text-decoration: underline; }
   .authors-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; }
 

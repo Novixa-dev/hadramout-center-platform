@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ctx = makeCtx(locale);
   const topics = await getTopics(locale);
   const total = topics.roots.reduce((s, r) => s + r.total, 0);
-  return buildMetadata({ ctx, path: '/topics', title: ctx.t('topics.title'), description: ctx.t('topics.meta', { count: total, topics: topics.roots.length }), card: { key: 'topics' } });
+  return buildMetadata({ ctx, path: '/topics', title: ctx.t('topics.title'), description: ctx.t('topics.meta', { count: total, topics: topics.roots.length }), card: { key: 'topics' }, readyLangs: ['ar'], incomplete: locale !== 'ar' });
 }
 
 export default async function TopicsPage({ params }: Props) {

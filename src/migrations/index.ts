@@ -3,6 +3,7 @@ import * as migration_20261014_220000_locales_indexes from './20261014_220000_lo
 import * as migration_20261015_222148_taxonomy_reviews_timeline from './20261015_222148_taxonomy_reviews_timeline';
 import * as migration_20261015_222500_curate_topics from './20261015_222500_curate_topics';
 import * as migration_20261015_223000_editorial_fixes from './20261015_223000_editorial_fixes';
+import * as migration_20261015_224000_accessibility_statement from './20261015_224000_accessibility_statement';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20261015_223000_editorial_fixes.up,
     down: migration_20261015_223000_editorial_fixes.down,
     name: '20261015_223000_editorial_fixes',
+  },
+  {
+    up: migration_20261015_224000_accessibility_statement.up,
+    down: migration_20261015_224000_accessibility_statement.down,
+    name: '20261015_224000_accessibility_statement',
   },
 ];

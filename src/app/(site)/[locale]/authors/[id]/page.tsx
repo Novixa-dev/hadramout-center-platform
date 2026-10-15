@@ -66,13 +66,13 @@ export default async function AuthorPage({ params }: Props) {
       <div className="container section" style={{ paddingBlockStart: 'var(--space-6)' }}>
         {books.docs.length ? (
           <section style={{ marginBlockEnd: 'var(--space-8)' }} aria-labelledby="ab">
-            <SectionHead title={t('authors.books')} href={books.total > books.docs.length ? `${href('/books')}?author=${author.id}` : undefined} more={t('section.viewAll')} />
+            <SectionHead title={t('authors.books')} id="ab" href={books.total > books.docs.length ? `${href('/books')}?author=${author.id}` : undefined} more={t('section.viewAll')} />
             <div className="results-grid results-grid--books">{books.docs.map((d) => <BookCard key={d.id} ctx={ctx} doc={d} />)}</div>
           </section>
         ) : null}
         {articles.docs.length ? (
           <section aria-labelledby="aa">
-            <SectionHead title={`${t('authors.articles')} (${articles.total})`} />
+            <SectionHead title={`${t('authors.articles')} (${articles.total})`} id="aa" />
             <EntryList ctx={ctx} docs={articles.docs} type="article" />
             {articles.total > articles.docs.length ? <p style={{ marginBlockStart: 'var(--space-5)' }}><Link className="btn btn--secondary" href={`${href('/articles')}?author=${author.id}`}>{t('authors.allArticles', { count: articles.total })}</Link></p> : null}
           </section>

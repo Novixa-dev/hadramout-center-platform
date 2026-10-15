@@ -77,7 +77,7 @@ export default async function Home({ params }: Props) {
             </nav>
           </div>
           {issue ? (
-            <Link className="hero__feature" href={docHref(ctx, 'magazine', issue.id)} aria-label={issue.title}>
+            <Link className="hero__feature" href={docHref(ctx, 'magazine', issue.id)}>
               <span className="hero__feature-cover"><Cover doc={issue} sizes="104px" priority decorative /></span>
               <span className="hero__feature-text">
                 <span className="eyebrow">{t('home.latestIssue')}</span>
