@@ -1,0 +1,24 @@
+# فهرس الوثائق — منصة مركز حضرموت
+
+**الإنتاج:** https://hadramout-center.novixa.dev · **المستودع:** Novixa-dev/hadramout-center-platform
+
+| المجلد | المحتوى |
+|---|---|
+| `01-audit` | تدقيق المستودع القديم والموقع القديم وأفضل الممارسات |
+| `02-plan` | قرار الإطار، الخطة الرئيسية، المعمارية، نظام التصميم، **الترجمة**، كتالوج الميزات، نموذج المحتوى، القرارات |
+| `03-tracking` | `TRACKER.md` — الحالة الحالية والمتبقي |
+| `04-qa` | دليل الاختبار البشري |
+| `05-deploy` | دليل النشر على الخادم، خيارات النطاق والتحويل |
+| `06-handover` | دليل المحرر (`admin-guide-ar.md`) ودليل الترجمة (`translation-guide-ar.md`) |
+| `07-marketing` | خطة حملة الإطلاق |
+| `08-review` | مراجعة الموقع القديم مقابل الجديد وخطة التحسين |
+| `archive/v1` | وثائق النسخة الأولى (مرجع تاريخي — لا يُعتمد عليها) |
+
+## أوامر أساسية
+```bash
+npm ci && cp .env.example .env && npm run db:seed && npm run dev   # محلياً
+npm run check        # typecheck + lint + tests
+npm run a11y         # axe على 12 صفحة (يتطلب خادماً يعمل)
+npm run import:images
+```
+قواعد الوكلاء: `AGENTS.md` و`.agents/rules/` · مهارة التصميم: `.claude/skills/frontend-design`.

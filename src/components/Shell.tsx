@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Ctx } from '../lib/ctx.ts';
 import { LANGUAGES, POPULAR_CODES } from '../i18n/languages.ts';
-import { Icon } from './Icon.tsx';
+import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
@@ -79,13 +79,14 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
 export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
   const { t, href } = ctx;
   const social = site.social ?? {};
-  const links: { label: string; url?: string }[] = [
-    { label: 'X', url: social.x },
-    { label: 'Facebook', url: social.facebook },
-    { label: 'Instagram', url: social.instagram },
-    { label: 'Telegram', url: social.telegram },
-    { label: 'YouTube', url: social.youtube },
+  const links: { name: SocialName; label: string; url?: string }[] = [
+    { name: 'x', label: 'X', url: social.x },
+    { name: 'facebook', label: 'Facebook', url: social.facebook },
+    { name: 'instagram', label: 'Instagram', url: social.instagram },
+    { name: 'telegram', label: 'Telegram', url: social.telegram },
+    { name: 'youtube', label: 'YouTube', url: social.youtube },
   ];
+  const whatsapp = (site.whatsapp ?? []).filter((w) => w.number);
   return (
     <footer className="site-footer pattern">
       <div className="container">
@@ -130,8 +131,13 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
             </ul>
             <div className="social" style={{ marginBlockStart: '0.9rem' }}>
               {links.filter((l) => l.url).map((l) => (
-                <a key={l.label} href={l.url} target="_blank" rel="noopener noreferrer" aria-label={`${l.label} (${t('a11y.newWindow')})`} style={{ fontSize: '0.72rem', fontWeight: 700 }}>
-                  {l.label.slice(0, 2)}
+                <a key={l.label} href={l.url} target="_blank" rel="noopener noreferrer" aria-label={`${l.label} (${t('a11y.newWindow')})`} title={l.label}>
+                  <SocialIcon name={l.name} />
+                </a>
+              ))}
+              {whatsapp.map((w) => (
+                <a key={w.number} href={`https://wa.me/${w.number.replace(/[^0-9]/g, '').replace(/^0+/, '')}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${w.label ?? ''} ${w.number} (${t('a11y.newWindow')})`} title={`WhatsApp ${w.label ?? ''} ${w.number}`}>
+                  <SocialIcon name="whatsapp" />
                 </a>
               ))}
             </div>

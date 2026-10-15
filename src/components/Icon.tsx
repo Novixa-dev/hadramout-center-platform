@@ -36,3 +36,23 @@ export function Icon({ name, className = 'icon', ...rest }: { name: IconName; cl
     </svg>
   );
 }
+
+const SOCIAL = {
+  x: <path fill="currentColor" stroke="none" d="M18.9 2H22l-7.4 8.5L23 22h-6.6l-5.2-6.8L5.2 22H2l7.9-9.1L1.5 2h6.7l4.7 6.2L18.9 2Zm-1.2 18h1.8L6.6 3.9H4.7L17.7 20Z" />,
+  facebook: <path fill="currentColor" stroke="none" d="M13.5 22v-8.2h2.8l.5-3.4h-3.3V8.3c0-1 .3-1.7 1.7-1.7h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.6H7.4v3.4h2.8V22h3.3Z" />,
+  instagram: <><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none" /></>,
+  telegram: <path d="m22 3-9.5 19-3.2-8.3L1 10.5 22 3Zm-12.7 10.7L22 3" />,
+  youtube: <><rect x="2" y="5" width="20" height="14" rx="4" /><path fill="currentColor" d="m10 9 5 3-5 3V9Z" /></>,
+  whatsapp: <><path d="M3 21l1.6-4.8A8.6 8.6 0 1 1 8 19.5L3 21Z" /><path d="M9 9c.3 2.6 2.4 4.7 5 5l1.2-1.2-1.8-1-.8.6a3 3 0 0 1-1.6-1.6l.6-.8-1-1.8L9 9Z" fill="currentColor" stroke="none" /></>,
+} as const;
+
+export type SocialName = keyof typeof SOCIAL;
+export const isSocialName = (n: string): n is SocialName => n in SOCIAL;
+
+export function SocialIcon({ name, className = 'icon' }: { name: SocialName; className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      {SOCIAL[name]}
+    </svg>
+  );
+}

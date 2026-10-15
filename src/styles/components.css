@@ -137,8 +137,8 @@
     .lang-panel__grab, .lang-panel__head { display: flex; }
     .lang-panel__grab { display: block; }
     .lang-scrim { background: rgb(10 20 16 / 0.55); }
-    .lang-trigger__text { display: none; }
-    .lang-trigger { padding-inline: 0.7rem; }
+    .lang-trigger__text, .lang-trigger__chev { display: none; }
+    .lang-trigger { padding-inline: 0; inline-size: 2.5rem; block-size: 2.5rem; min-block-size: 2.5rem; justify-content: center; }
   }
   @media (prefers-reduced-motion: reduce) { .lang-panel { animation: none; } .lang-trigger__chev { transition: none; } }
   .tabs { display: flex; gap: 0.25rem; flex-wrap: wrap; border-block-end: 1px solid var(--border); margin-block-end: 1rem; }
@@ -156,6 +156,7 @@
 
   /* stats strip */
   .stats { display: grid; gap: 1px; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); background: var(--border); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } .stat:last-child:nth-child(odd) { grid-column: 1 / -1; } }
   .stat { background: var(--surface); padding: 1.1rem 1rem; text-align: center; }
   .stat strong { display: block; font-size: var(--step-3); color: var(--brand); line-height: 1.2; }
   .stat span { color: var(--muted); font-size: var(--step--1); }
