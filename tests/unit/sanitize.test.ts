@@ -54,3 +54,9 @@ describe('text helpers', () => {
     assert.equal(excerptFrom('<p>قصير</p>', 50), 'قصير');
   });
 });
+
+test('cleanBody hook sanitizes editor input and leaves non-strings alone', async () => {
+  const { cleanBody } = await import('../../src/collections/shared.ts');
+  assert.equal(cleanBody({ value: '<p>ok</p><script>alert(1)</script>' }), '<p>ok</p>');
+  assert.equal(cleanBody({ value: undefined }), undefined);
+});

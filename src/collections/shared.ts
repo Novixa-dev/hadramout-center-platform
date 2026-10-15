@@ -1,4 +1,5 @@
 import type { Access, CollectionConfig, Field, FieldAccess, TextField } from 'payload';
+import { sanitizeBody } from '../lib/sanitize.ts';
 import { TRANSLATABLE_EXTRA, type CollectionSlug } from '../lib/content-types.ts';
 
 /** Admin labels are bilingual: the admin UI itself is Arabic-first with English available. */
@@ -61,6 +62,9 @@ const localizedText = (name: string, label: Record<string, string>, extra: Parti
 export { localizedText };
 
 /** Fields every content type shares: title/excerpt/body, cover, status, dates and import bookkeeping. */
+/** Every stored body passes the same allow-list as imported/translated text (editor input is never trusted). */
+export const cleanBody = ({ value }: { value?: unknown }) => (typeof value === 'string' ? sanitizeBody(value) : value);
+
 export function baseFields(opts: { body?: boolean; cover?: boolean; date?: boolean } = {}): Field[] {
   const { body = true, cover = true, date = true } = opts;
   const fields: Field[] = [
@@ -79,6 +83,7 @@ export function baseFields(opts: { body?: boolean; cover?: boolean; date?: boole
       name: 'body',
       type: 'textarea',
       localized: true,
+      hooks: { beforeValidate: [cleanBody] },
       label: L('النص', 'Body'),
       admin: { components: { Field: '/admin/fields/HtmlField#HtmlField' }, description: L('اكتب بالعربية فقط — تُترجم اللغات الأخرى تلقائياً.', 'Write in Arabic only — other languages are translated automatically.') },
       access: { update: localizedUpdate },
