@@ -16,7 +16,8 @@ RUN npm run build
 # One-off tooling image: migrations, seeding, importers (needs the full source + dev dependencies).
 FROM deps AS tools
 COPY . .
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    DATABASE_URL=file:/data/payload.db DATA_DIR=/data MEDIA_DIR=/data/media
 CMD ["npm", "run", "payload", "--", "migrate"]
 
 FROM base AS runner

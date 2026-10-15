@@ -17,7 +17,7 @@ jobs:
       DATABASE_URL: file:./data/ci.db
       DATA_DIR: ./data
       SITE_URL: http://localhost:3000
-      TRANSLATION_PROVIDER: mock
+      TRANSLATION_PROVIDER: none   # "mock" is rejected by the production build on purpose
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4
