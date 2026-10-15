@@ -10,12 +10,13 @@ const isDev = process.env.NODE_ENV !== 'production';
 // Public site CSP. Next.js needs inline scripts for hydration, so script-src keeps 'unsafe-inline'; everything else is locked down.
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+  // static.cloudflareinsights.com: Cloudflare Web Analytics beacon, injected by the CDN when enabled in the dashboard
+  `script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://files.hadramout.center https://i.ytimg.com",
   "font-src 'self'",
   "frame-src https://www.youtube-nocookie.com",
-  "connect-src 'self'",
+  "connect-src 'self' https://cloudflareinsights.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -34,6 +35,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: '/(.*)', headers: SECURITY },
+      // brand/icon files are not content-hashed: a week of caching, revalidated afterwards
+      { source: '/:dir(brand|icons)/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
       { source: '/((?!admin|api).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
     ];
   },

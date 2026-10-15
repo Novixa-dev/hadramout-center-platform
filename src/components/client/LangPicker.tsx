@@ -58,7 +58,7 @@ export function LangPicker({ current, currentNative, options, labels }: Props) {
 
   return (
     <>
-      <button type="button" className="btn btn--ghost btn--sm" onClick={() => ref.current?.showModal()} aria-haspopup="dialog">
+      <button type="button" className="btn btn--ghost btn--sm" onClick={() => ref.current?.showModal()} aria-haspopup="dialog" aria-label={`${labels.title}: ${currentNative}`}>
         <Icon name="globe" />
         <span className="lang-btn__text" lang={current}>{currentNative}</span>
       </button>
