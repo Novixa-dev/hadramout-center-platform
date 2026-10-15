@@ -5,6 +5,7 @@ import '../../../styles/index.css';
 import { isLocale, makeCtx } from '../../../lib/ctx.ts';
 import { enabledOrAll } from '../../../lib/negotiate.ts';
 import { getSite } from '../../../lib/data.ts';
+import { loadConfig } from '../../../config.ts';
 import { uiCoverage } from '../../../i18n/ui-store.ts';
 import { Footer, Header, langOptions } from '../../../components/Shell.tsx';
 import { BackToTop } from '../../../components/client/BackToTop.tsx';
@@ -25,12 +26,22 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SITE_URL ?? 'http://localhost:3000'),
-  manifest: '/manifest.webmanifest',
-  icons: { icon: [{ url: '/icons/favicon-32.png', sizes: '32x32', type: 'image/png' }, { url: '/brand/logo-icon.svg', type: 'image/svg+xml' }], apple: '/icons/icon-192.png' },
-  formatDetection: { telephone: false },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const site = await getSite(isLocale(locale) ? locale : 'ar');
+  const base = loadConfig().siteUrl;
+  return {
+    metadataBase: new URL(base),
+    applicationName: site.name,
+    title: { default: site.name, template: `%s | ${site.shortName || site.name}` },
+    publisher: site.name,
+    creator: 'Novixa',
+    manifest: '/manifest.webmanifest',
+    icons: { icon: [{ url: '/icons/favicon-32.png', sizes: '32x32', type: 'image/png' }, { url: '/brand/logo-icon.svg', type: 'image/svg+xml' }], apple: '/icons/icon-192.png' },
+    formatDetection: { telephone: false, email: false, address: false },
+    verification: { google: process.env.GOOGLE_SITE_VERIFICATION || undefined, other: process.env.BING_SITE_VERIFICATION ? { 'msvalidate.01': process.env.BING_SITE_VERIFICATION } : undefined },
+  };
+}
 
 const THEME_INIT = `(function(){try{var d=document.documentElement,t=localStorage.getItem('hc-theme'),f=localStorage.getItem('hc-fs');if(t)d.setAttribute('data-theme',t);if(f)d.setAttribute('data-fs',f)}catch(e){}})()`;
 

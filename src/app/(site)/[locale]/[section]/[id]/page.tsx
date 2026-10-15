@@ -5,6 +5,7 @@ import { absolute, authorsOf, coverOf, displayDate, docHref, isLocale, makeCtx }
 import { typeFromRoute, type ContentType } from '../../../../../lib/content-types.ts';
 import { getDoc, getSite, listDocs, trInfo, type Doc } from '../../../../../lib/data.ts';
 import { buildMetadata } from '../../../../../lib/seo.ts';
+import { describe } from '../../../../../lib/seo-text.ts';
 import { appConfig } from '../../../../../lib/runtime-light.ts';
 import { withHeadingIds } from '../../../../../lib/html-utils.ts';
 import { localizeLegacyMedia } from '../../../../../lib/legacy-media.ts';
@@ -66,16 +67,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cover = coverOf(doc, 'large');
   const url = absolute(`/${locale}/${section}/${id}`);
   const meta = scholarMeta(citeSourceOf(info.type, doc, url, locale, ''), typeof doc.pdf === 'string' ? doc.pdf : null);
+  const category = typeof doc.category === 'object' && doc.category ? doc.category.name : null;
   return buildMetadata({
     ctx,
     path: `/${section}/${id}`,
     title: doc.title,
-    description: doc.excerpt ?? htmlToText(doc.body ?? '').slice(0, 200),
-    image: cover ? (cover.remote ? cover.src : absolute(cover.src)) : null,
+    description: describe(doc.excerpt, htmlToText(doc.body ?? '')),
+    card: { kind: section, id: doc.id, v: doc.updatedAt ? Date.parse(doc.updatedAt) : undefined },
+    imageAlt: cover?.alt,
     type: info.type === 'book' ? 'book' : info.type === 'article' || info.type === 'news' ? 'article' : 'website',
     readyLangs: readyLangsOf(doc),
     incomplete: tr.status !== 'source' && tr.status !== 'complete',
     publishedTime: doc.datePrecision === 'day' ? doc.publishedAt : null,
+    modifiedTime: doc.updatedAt,
+    authors: authorsOf(doc).map((a) => ({ name: a.name, url: absolute(`/${locale}/authors/${a.id}`) })),
+    section: category,
+    isbn: typeof doc.isbn === 'string' ? doc.isbn : null,
     extra: info.type === 'article' || info.type === 'book' || info.type === 'magazine' ? (meta as never) : undefined,
   });
 }
@@ -145,7 +152,7 @@ export default async function DetailPage({ params }: Props) {
     { name: doc.title, url },
   ];
   const jsonLd = [
-    contentJsonLd({ type, doc, url, lang: ctx.lang.tag, image: cover ? (cover.remote ? cover.src : absolute(cover.src)) : null, orgName: site.name, orgUrl: absolute(`/${locale}`) }),
+    contentJsonLd({ type, doc, url, lang: ctx.lang.tag, image: cover ? (cover.remote ? cover.src : absolute(cover.src)) : null, org: { name: site.name, origin: absolute(''), logo: absolute('/icons/icon-512.png') }, authorUrl: (aid) => absolute(`/${locale}/authors/${aid}`), pdf: typeof doc.pdf === 'string' && doc.pdf ? doc.pdf : null, issue: magazine ? { name: magazine.title, url: absolute(`/${locale}/magazines/${magazine.id}`) } : null, category: category?.name ?? null }),
     breadcrumbJsonLd(crumbs),
   ];
 
