@@ -3,7 +3,7 @@ import { buildSystemPrompt, parseSegments } from './anthropic.ts';
 
 /**
  * Cloudflare Workers AI — free tier (10,000 "neurons" per day, no card needed). Uses an instruction-tuned model
- * (default Gemma 3 12B, strong on Arabic) with the same prompt/segment-marker protocol as the other LLM provider,
+ * (default Mistral Small 3.1 24B, strong on Arabic) with the same prompt/segment-marker protocol as the other LLM provider,
  * so HTML structure, glossary and the tag guard keep working.
  * Docs: https://developers.cloudflare.com/workers-ai/platform/pricing/
  */

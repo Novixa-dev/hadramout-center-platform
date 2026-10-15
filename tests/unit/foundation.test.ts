@@ -139,7 +139,7 @@ describe('cloudflare translation provider', () => {
     const { CloudflareProvider } = await import('../../src/i18n/translation/cloudflare.ts');
     let sent: { messages: { role: string; content: string }[] } | null = null;
     const ok = new CloudflareProvider({
-      accountId: 'acc', apiToken: 'tok', model: '@cf/google/gemma-3-12b-it',
+      accountId: 'acc', apiToken: 'tok', model: '@cf/mistralai/mistral-small-3.1-24b-instruct',
       fetchImpl: (async (_u: unknown, init: { body: string }) => {
         sent = JSON.parse(init.body);
         return new Response(JSON.stringify({ success: true, result: { response: '@@@1@@@\nHello\n@@@2@@@\nWorld' } }), { status: 200 });

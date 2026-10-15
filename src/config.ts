@@ -94,7 +94,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       libreApiKey: env.LIBRETRANSLATE_API_KEY ?? '',
       cloudflareAccountId: env.CLOUDFLARE_ACCOUNT_ID ?? '',
       cloudflareApiToken: env.CLOUDFLARE_API_TOKEN ?? '',
-      cloudflareModel: env.CLOUDFLARE_MODEL ?? '@cf/google/gemma-3-12b-it',
+      cloudflareModel: env.CLOUDFLARE_MODEL ?? '@cf/mistralai/mistral-small-3.1-24b-instruct',
     },
   };
 }

@@ -72,10 +72,10 @@ interface TranslationProvider {
 | بلا مزوّد | `none` | — | العربية + الإنجليزية اليدوية فقط |
 
 ### 6.1 قرار 2026-10-15: المزوّد المجاني المعتمد
-المعتمد افتراضياً للإنتاج: **Cloudflare Workers AI** (، النموذج `@cf/google/gemma-3-12b-it`) — حد مجاني 10,000 neuron/يوم بلا بطاقة، يعمل ببروتوكول الشرائح نفسه فيحافظ على الوسوم والمصطلحات. تفاصيل الاختيار في `docs/08-review/01-site-review-old-vs-new.md` والدليل التشغيلي في `docs/06-handover/translation-guide-ar.md`.
+المعتمد افتراضياً للإنتاج: **Cloudflare Workers AI** (، النموذج `@cf/mistralai/mistral-small-3.1-24b-instruct`) — حد مجاني 10,000 neuron/يوم بلا بطاقة، يعمل ببروتوكول الشرائح نفسه فيحافظ على الوسوم والمصطلحات. تفاصيل الاختيار في `docs/08-review/01-site-review-old-vs-new.md` والدليل التشغيلي في `docs/06-handover/translation-guide-ar.md`.
 
 ### 6.1 قرار 2026-10-15: المزوّد المجاني المعتمد
-المعتمد افتراضياً للإنتاج: **Cloudflare Workers AI** (`TRANSLATION_PROVIDER=cloudflare`، النموذج `@cf/google/gemma-3-12b-it`) — حد مجاني 10,000 neuron/يوم بلا بطاقة دفع، ويعمل ببروتوكول الشرائح نفسه فيحافظ على الوسوم والمصطلحات. تفاصيل المقارنة في `docs/08-review/01-site-review-old-vs-new.md`، والدليل التشغيلي في `docs/06-handover/translation-guide-ar.md`.
+المعتمد افتراضياً للإنتاج: **Cloudflare Workers AI** (`TRANSLATION_PROVIDER=cloudflare`، النموذج `@cf/mistralai/mistral-small-3.1-24b-instruct`) — حد مجاني 10,000 neuron/يوم بلا بطاقة دفع، ويعمل ببروتوكول الشرائح نفسه فيحافظ على الوسوم والمصطلحات. تفاصيل المقارنة في `docs/08-review/01-site-review-old-vs-new.md`، والدليل التشغيلي في `docs/06-handover/translation-guide-ar.md`.
 
 ## 7. قاموس المصطلحات (Glossary)
 
