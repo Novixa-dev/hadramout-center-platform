@@ -29,7 +29,11 @@ function urlset(base: string, entries: Entry[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${rows.join('\n')}\n</urlset>\n`;
 }
 
+const TTL_MS = 60 * 60 * 1000;
+let cached: { at: number; xml: string } | null = null;
+
 export async function GET() {
+  if (cached && Date.now() - cached.at < TTL_MS) return respond(cached.xml);
   const base = loadConfig().siteUrl;
   const payload = await getPayloadClient();
   const ui = uiReadyLangs();
@@ -45,13 +49,16 @@ export async function GET() {
       pagination: false,
       depth: 0,
       locale: 'ar',
-      select: { translationMeta: true, updatedAt: true, body: true } as never,
+      select: { translationMeta: true, updatedAt: true } as never,
     });
-    for (const d of res.docs as unknown as { id: number; updatedAt: string; body?: string; translationMeta?: Record<string, Record<string, unknown>> | null }[]) {
+    for (const d of res.docs as unknown as { id: number; updatedAt: string; translationMeta?: Record<string, Record<string, unknown>> | null }[]) {
       const langs = ['ar'];
-      for (const [l, m] of Object.entries(d.translationMeta ?? {})) if (m?.title && (!d.body || m.body)) langs.push(l);
+      for (const [l, m] of Object.entries(d.translationMeta ?? {})) if (m?.title && m.body) langs.push(l); // conservative: documents without a body list only Arabic
       entries.push({ path: `/${info.route}/${d.id}`, langs, lastmod: d.updatedAt, priority: t === 'article' || t === 'book' ? 0.7 : 0.5 });
     }
   }
-  return new Response(urlset(base, entries), { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+  cached = { at: Date.now(), xml: urlset(base, entries) };
+  return respond(cached.xml);
 }
+
+const respond = (xml: string) => new Response(xml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600, s-maxage=3600' } });
