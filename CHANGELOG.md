@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.0] - 2026-10-15
+### Rebuild on Next.js 16 + Payload CMS 3
+- Full rewrite: bilingual RTL/LTR responsive site, admin CMS with roles, AI auto-translation (~90 languages, Arabic source), FTS5 Arabic search, scholarly citations, JSON-LD/SEO, RSS, legacy URL redirects.
+- Migrated 1,454 items from hadramout.center.
+- Docker + Caddy + GitHub Actions (CI, deploy, rollback), backup/restore scripts, deployment/QA/handover docs.
+
 All notable changes to the Hadhramout Center Digital Platform are documented here.
 
 ## [3.0.0] - 2026-10-11

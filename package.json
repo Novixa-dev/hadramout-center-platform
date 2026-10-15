@@ -1,27 +1,77 @@
 {
   "name": "hadramout-center-platform",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Modern Digital Knowledge & Archival Platform for Hadhramout Center for Historical Studies, Documentation and Publishing. Engineered pro bono by Novixa.",
-  "author": "Novixa <contact@novixa.io>",
-  "license": "MIT",
+  "type": "module",
+  "description": "Digital archive and knowledge platform for the Hadhramout Center for Historical Studies, Documentation and Publishing. Arabic-first, auto-translated, SSR on Node.js + SQLite.",
+  "author": "Novixa <hello@novixa.dev>",
+  "license": "UNLICENSED",
   "homepage": "https://hadramout.center",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Novixa-dev/hadramout-center-platform.git"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
-    "dev": "node scripts/serve.js",
-    "serve": "node scripts/serve.js",
-    "start": "node scripts/serve.js",
-    "validate": "node scripts/validate.js",
-    "build": "node scripts/validate.js",
-    "test": "node scripts/validate.js"
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=6000\" next build",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "node --test --test-reporter=spec \"tests/unit/**/*.test.ts\"",
+    "test:int": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx --test --test-reporter=spec \"tests/integration/**/*.test.ts\"",
+    "check": "npm run typecheck && npm run lint && npm test",
+    "a11y": "node scripts/a11y.mjs",
+    "db:seed": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/seed.ts",
+    "import:legacy": "node scripts/import-legacy.ts",
+    "import:images": "node scripts/import-images.ts"
   },
   "keywords": [
     "hadhramout",
     "historical-studies",
-    "archive",
-    "digital-platform",
-    "novixa",
-    "pro-bono",
+    "digital-archive",
+    "arabic",
+    "i18n",
     "yemen",
     "mukalla"
-  ]
+  ],
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.134.0",
+    "@payloadcms/db-sqlite": "3.90.2",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/richtext-lexical": "3.90.2",
+    "@payloadcms/translations": "3.90.2",
+    "@payloadcms/ui": "3.90.2",
+    "cross-env": "7.0.3",
+    "graphql": "16.11.0",
+    "next": "16.4.1",
+    "payload": "3.90.2",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "sanitize-html": "2.18.1",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/jsdom": "30.0.0",
+    "@types/node": "24.19.2",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/sanitize-html": "2.16.2",
+    "axe-core": "4.14.0",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "jsdom": "30.1.2",
+    "node-html-parser": "9.0.4",
+    "sass": "1.105.1",
+    "tsx": "4.22.4",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2"
+  }
 }
+

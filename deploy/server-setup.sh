@@ -5,9 +5,8 @@
 # Run on the VPS as root from a copy of the deploy/ directory:
 #   bash deploy/server-setup.sh
 #
-# 1. Creates the release directory used by .github/workflows/deploy-server.yml.
-# 2. Runs the hadramout-center-app container (nginx:alpine, static files only)
-#    on its own Docker network, hadramout-center-edge.
+# 1. Creates /opt/hadramout-center and the Docker network hadramout-center-edge.
+# 2. (The app itself is started by the deploy workflow via docker compose.)
 # 3. Joins mailcow's nginx to that network (live + persisted in the override).
 # 4. Installs the mailcow site block, validated with `nginx -t` and rolled back
 #    if the test fails.
@@ -15,10 +14,7 @@
 set -euo pipefail
 
 SITE=hadramout-center
-DEPLOY_PATH=/var/www/hadramout-center
 APP_DIR=/opt/hadramout-center
-APP_CONTAINER=hadramout-center-app
-APP_IMAGE=nginx:1.27-alpine
 NETWORK=hadramout-center-edge
 MAILCOW_DIR=/opt/mailcow-dockerized
 NGINX_CONF_DIR="$MAILCOW_DIR/data/conf/nginx"
@@ -29,25 +25,10 @@ SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
 MAILCOW_NGINX=$(docker ps --filter label=com.docker.compose.service=nginx-mailcow --format '{{.Names}}' | head -n1)
 [ -n "$MAILCOW_NGINX" ] || { echo "mailcow nginx container not found" >&2; exit 1; }
 
-echo "==> Release directory"
-mkdir -p "$DEPLOY_PATH/releases" "$APP_DIR"
-
-echo "==> App container"
-install -m 644 "$SRC_DIR/nginx/site.conf" "$APP_DIR/site.conf"
+echo "==> App directory and edge network"
+mkdir -p "$APP_DIR/scripts" "$APP_DIR/backups"
 docker network inspect "$NETWORK" >/dev/null 2>&1 || docker network create "$NETWORK"
-if docker inspect "$APP_CONTAINER" >/dev/null 2>&1; then
-  docker exec "$APP_CONTAINER" nginx -t
-  docker exec "$APP_CONTAINER" nginx -s reload
-else
-  docker run -d --name "$APP_CONTAINER" \
-    --restart unless-stopped \
-    --network "$NETWORK" \
-    --memory 128m \
-    -v "$DEPLOY_PATH:/srv:ro" \
-    -v "$APP_DIR/site.conf:/etc/nginx/conf.d/default.conf:ro" \
-    "$APP_IMAGE"
-fi
-
+[ -f "$APP_DIR/.env" ] || echo "NOTE: create $APP_DIR/.env from deploy/.env.production.example before the first deploy"
 echo "==> Join mailcow nginx to $NETWORK"
 if ! docker inspect -f '{{json .NetworkSettings.Networks}}' "$MAILCOW_NGINX" | grep -q "\"$NETWORK\""; then
   docker network connect "$NETWORK" "$MAILCOW_NGINX"

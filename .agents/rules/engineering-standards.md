@@ -1,35 +1,15 @@
-# Engineering Standards & Architectural Principles
-**Platform:** Hadhramout Center for Historical Studies, Documentation and Publishing  
-**Engineering Lead:** Eng. Abdulrahman Khaled Radwan (`ak01redwan`) — Novixa (`Novixa`)
+# Engineering Standards (v2)
 
----
+**Stack:** Next.js 16 (App Router, React Server Components) + Payload CMS 3 + SQLite, TypeScript strict, Node 24.
+Decision record: `docs/02-plan/00-framework-decision.md`.
 
-## 1. Core Architectural Tenets
-1. **Zero External Runtime Bloat:**
-   - Use high-performance Vanilla JavaScript (ES6+ modular, IIFE or ES Modules), semantic HTML5, and CSS custom properties (variables).
-   - No heavyweight frontend framework dependencies (e.g. React, Angular, Vue) unless explicitly requested.
-   - Maximize speed for Yemeni and regional internet conditions (slow 3G/4G connectivity). Total core bundle size must stay strictly under **150 KB**.
-
-2. **Bilingual First-Class Support (Arabic & English):**
-   - Full bidirectional layout support (`dir="rtl"` for Arabic, `dir="ltr"` for English).
-   - All dynamic UI strings, card titles, metadata tags, and navigational labels must maintain 100% translation parity in `data.js` (`translations.ar` and `translations.en`).
-   - Accessible font pairings: Cairo / Tajawal for Arabic typography, Inter / system-ui for Latin typography.
-
-3. **Academic & Research Rigor:**
-   - All historical data, author names, publishers, citations (APA 7th, Chicago 17th, MLA 9th), and publication years must be rigorously verified against the Center's official archives.
-   - Citation generation must support instantaneous clipboard copying and export formats (e.g. RIS, BibTeX).
-
-4. **Accessibility & Usability (WCAG 2.1 AA):**
-   - Color contrast ratio >= 4.5:1 in both Light Mode and Academic Dark Mode.
-   - Full keyboard navigation (`Tab`, `Shift+Tab`, `Enter`, `Escape` for modals).
-   - Accessible skip link (`#skip-link`) pointing to `#main-content`.
-   - Descriptive `aria-label`, `aria-expanded`, and role attributes on interactive elements.
-
-5. **Responsive Design Matrix:**
-   - Fluid typography and responsive grid systems supporting screen widths from **320px** (small mobile) through **768px** (tablets), **1024px** (laptops), and **1920px+** (desktop/4K).
-   - Touch targets must be at least **44x44px** on touchscreens.
-
-6. **SEO & Structured Knowledge:**
-   - Canonical and alternate hreflang tags on all views.
-   - Comprehensive Open Graph and Twitter Card tags.
-   - Valid Schema.org JSON-LD structured data for `ResearchOrganization`, `Book`, `Periodical`, and `Event`.
+1. **Arabic is the source language.** Editors enter Arabic only. Every other language is machine-translated, stored in Payload localized fields, and marked `auto | reviewed | manual` in `translationMeta`. Manual edits are never overwritten.
+2. **No invented institutional data.** Anything without a source (legacy site, Center staff) is `draft`. Verified by review, not by trust.
+3. **Rich text is sanitized HTML** (`src/lib/sanitize.ts`) everywhere it enters the database. Never `dangerouslySetInnerHTML` unsanitized input.
+4. **RTL first, logical CSS properties only** (`margin-inline`, `inset-inline-start`). No `left/right` in layout CSS.
+5. **Performance budget:** HTML ≤ 40 KB gz, first-load JS ≤ 110 KB gz, one critical font, images via `next/image` (WebP/AVIF). Server Components by default; client components only for small islands.
+6. **Accessibility:** WCAG 2.2 AA, 44 px targets, visible focus, skip links, correct `lang`/`dir` on mixed-language text.
+7. **SEO:** real URLs `/{lang}/…`, canonical + hreflang only for *complete* translations, `noindex` for partial/fallback pages, JSON-LD and Google Scholar `citation_*` tags.
+8. **Security:** CSP and security headers, rate limits on every public write endpoint, honeypot, no secrets in git, roles enforced in Payload access control.
+9. **Cost guard:** translation is triggered by user action (never by crawlers), capped by `TRANSLATION_DAILY_CHAR_LIMIT`.
+10. **Schema changes need a Payload migration** (`npm run payload migrate:create <name>`); never rely on dev push.

@@ -1,30 +1,32 @@
-name: Production Readiness & Quality Audit
-
+name: CI
 on:
   push:
-    branches:
-      - '**'
-    tags-ignore:
-      - '**'
+    branches: [master, main]
   pull_request:
-    branches:
-      - master
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  audit:
-    name: Code & Schema Validation
+  check:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PAYLOAD_SECRET: ci-only-secret-0123456789abcdef0123456789
+      DATABASE_URL: file:./data/ci.db
+      DATA_DIR: ./data
+      SITE_URL: http://localhost:3000
+      TRANSLATION_PROVIDER: mock
+      NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Syntax Check JavaScript
-        run: node -c app.js data.js scripts/validate.js
-
-      - name: Run Novixa Integrity Audit
-        run: npm test
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build

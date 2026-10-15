@@ -1,0 +1,161 @@
+name: Deploy to Production Server
+
+# Builds the Docker image in CI, ships it to the VPS over SSH (docker save | docker load — no registry login needed),
+# restarts the app with a health check and automatic rollback. mailcow's nginx (already on 80/443) proxies to the container.
+# Manual run: set `tag` to redeploy an older already-loaded image (rollback), or `with_tools` to also ship the seed/import image.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      with_tools:
+        description: "Also ship the tools image (needed for the first deploy: seed + import:images)"
+        type: boolean
+        default: false
+      tag:
+        description: "Roll back to this already-loaded image tag (e.g. sha-1a2b3c4); skips the build"
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-server
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://hadramout-center.novixa.dev
+  APP_DIR: /opt/hadramout-center
+  IMAGE: hadramout-center-platform
+  # Server's ED25519 host key fingerprint (ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub).
+  HOST_KEY_FINGERPRINT: SHA256:d+JQJVamnSYO2Wv/XHo9I3hGEp/id9TRXM27+QI6pTU
+
+jobs:
+  check:
+    if: ${{ github.event.inputs.tag == '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PAYLOAD_SECRET: ci-only-secret-0123456789abcdef0123456789
+      DATABASE_URL: file:./data/ci.db
+      DATA_DIR: ./data
+      TRANSLATION_PROVIDER: none
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+  deploy:
+    needs: [check]
+    if: ${{ always() && (needs.check.result == 'success' || needs.check.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment:
+      name: production
+      url: https://hadramout-center.novixa.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then TAG="${{ github.event.inputs.tag }}"; else TAG="sha-${GITHUB_SHA::7}"; fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Verify deployment secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY; do
+            if [ -z "${!name}" ]; then echo "::error::Missing repository secret: $name"; missing=1; fi
+          done
+          exit $missing
+
+      - name: Configure SSH (pinned host key)
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' | sed '/^[[:space:]]*$/d' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null || { echo "::error::DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" 2>/dev/null > ~/.ssh/known_hosts
+          scanned=$(ssh-keygen -lf ~/.ssh/known_hosts | awk '{print $2}')
+          if [ "$scanned" != "$HOST_KEY_FINGERPRINT" ]; then echo "::error::Host key mismatch: got '${scanned}'"; exit 1; fi
+          chmod 644 ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o BatchMode=yes "${DEPLOY_USER}@${DEPLOY_HOST}" true \
+            || { echo "::error::SSH login failed — is the deploy public key in authorized_keys?"; exit 1; }
+
+      - uses: docker/setup-buildx-action@v3
+        if: ${{ github.event.inputs.tag == '' }}
+
+      - name: Build app image
+        if: ${{ github.event.inputs.tag == '' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          load: true
+          tags: ${{ env.IMAGE }}:${{ env.TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build tools image
+        if: ${{ github.event.inputs.tag == '' && github.event.inputs.with_tools == 'true' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: tools
+          load: true
+          tags: ${{ env.IMAGE }}-tools:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Ship images
+        if: ${{ github.event.inputs.tag == '' }}
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          SSH="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+          IMAGES="${IMAGE}:${TAG}"
+          if [ "${{ github.event.inputs.with_tools }}" = "true" ]; then IMAGES="$IMAGES ${IMAGE}-tools:latest"; fi
+          docker save $IMAGES | gzip | $SSH "${DEPLOY_USER}@${DEPLOY_HOST}" "gunzip | docker load"
+
+      - name: Upload deploy files
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          SSH="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+          $SSH "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${APP_DIR}/scripts'"
+          rsync -az -e "$SSH" deploy/docker-compose.yml "${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/docker-compose.yml"
+          rsync -az -e "$SSH" deploy/scripts/ "${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/scripts/"
+
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "cd '${APP_DIR}' && chmod +x scripts/*.sh && ./scripts/deploy.sh '${IMAGE}:${TAG}'"
+
+      - name: Public health check
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS "${SITE_URL}/api/hc/health" | grep -q '"status":"ok"'; then echo "Live: ${SITE_URL}"; exit 0; fi
+            echo "Attempt $i failed — retrying..."; sleep 10
+          done
+          echo "::error::${SITE_URL} health check failed (the server-side check passed, so look at Cloudflare/nginx)"; exit 1
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

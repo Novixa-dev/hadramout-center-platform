@@ -1,23 +1,50 @@
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-npm-debug.log*
-
-# Node
+# dependencies
 node_modules/
 
-# Local env files
-.env.local
-.env.*.local
+# runtime data (SQLite, uploads, backups) — never commit
+data/
+*.db
+*.db-wal
+*.db-shm
 
-# Editor directories
+# build output
+
+
+
+# environment
+.env
+.env.*
+!.env.example
+!.env.production.example
+!.env.example
+
+# logs / OS / editors
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+
+# tests
+playwright-report/
+test-results/
+coverage/
+
+# importer cache (raw fetched HTML)
+.cache/
+.cache/
+.cache-import.log
+
+# logs
+.dev.log
+.seed.log
+.npm-install-*.log
+.next/
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+.server.err
+.server.log
+.images.log
+.build.log
