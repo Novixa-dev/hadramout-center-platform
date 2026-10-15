@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
     return [
       { source: '/(.*)', headers: SECURITY },
       // brand/icon files are not content-hashed: a week of caching, revalidated afterwards
-      { source: '/:dir(brand|icons)/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
+      { source: '/:dir(brand|icons|fonts)/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
       { source: '/((?!admin|api).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
     ];
   },
