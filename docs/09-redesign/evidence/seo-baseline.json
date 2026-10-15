@@ -1,0 +1,623 @@
+{
+  "base": "https://hadramout-center.novixa.dev",
+  "lang": "ar",
+  "at": "2026-10-15T22:03:03.795Z",
+  "rows": [
+    {
+      "url": "/ar",
+      "status": 200,
+      "bytes": 134183,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "مركز حضرموت للدراسات التاريخية والتوثيق والنشر",
+      "description": "يعد مركز حضرموت للدراسات التاريخية والتوثيق والنشر من المراكز العلمية المستقلة، يمارس نشاطه في مجالات الدراسات والبحوث التاريخية والترجمة والتوثيق والنشر، ويخصص حيزاً كبيراً من نشاطه العلمي لدراسة تا…",
+      "canonical": "https://hadramout-center.novixa.dev/ar",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/news",
+      "status": 200,
+      "bytes": 91828,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "أخبار المركز",
+      "description": "",
+      "canonical": "https://hadramout-center.novixa.dev/ar/news",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/articles",
+      "status": 200,
+      "bytes": 87148,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "المقالات والدراسات",
+      "description": "دراسات وأبحاث ومقالات منشورة في مجلة حضرموت الثقافية وخارجها.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/articles",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/books",
+      "status": 200,
+      "bytes": 100669,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "إصدارات الكتب",
+      "description": "مؤلفات وتحقيقات وأعمال مؤتمرات علمية صادرة عن المركز.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/books",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/magazines",
+      "status": 200,
+      "bytes": 89353,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "مجلة حضرموت الثقافية",
+      "description": "أعداد المجلة الدورية: دراسات وقراءات وحوارات وترجمات وإبداع.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/magazines",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/events",
+      "status": 200,
+      "bytes": 65961,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "المؤتمرات والندوات",
+      "description": "",
+      "canonical": "https://hadramout-center.novixa.dev/ar/events",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/forum",
+      "status": 200,
+      "bytes": 66079,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "منتدى عميد الوفاء الثقافي",
+      "description": "منتدى ثقافي من هيكلية المركز، يستلهم فكرته من ندوة الوفاء التي كان يقيمها الشيخ أحمد محمد باجنيد (رحمه الله) بمدينة الرياض.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/forum",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/videos",
+      "status": 200,
+      "bytes": 56053,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "المرئيات",
+      "description": "",
+      "canonical": "https://hadramout-center.novixa.dev/ar/videos",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/authors",
+      "status": 200,
+      "bytes": 163385,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "الكتّاب",
+      "description": "فهرس كتّاب المركز ومؤلفيه حسب الاسم.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/authors",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/timeline",
+      "status": 200,
+      "bytes": 58718,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "خط حضرموت الزمني",
+      "description": "محطات تاريخية بارزة.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/timeline",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/topics",
+      "status": 404
+    },
+    {
+      "url": "/ar/about",
+      "status": 200,
+      "bytes": 53748,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "عن المركز",
+      "description": "يُعدّ مركز حضرموت للدراسات التاريخية والتوثيق والنشر من المراكز العلمية المستقلة، يمارس نشاطه في مجالات الدراسات والبحوث التاريخية والترجمة والتوثيق والنشر، ويخصّص حيّزاً كبيراً من نشاطه العلمي لدراسة",
+      "canonical": "https://hadramout-center.novixa.dev/ar/about",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/contact",
+      "status": 200,
+      "bytes": 54822,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "تواصل معنا",
+      "description": "لأي استفسار أو طلب إصدار أو اقتراح، يسعدنا تواصلك.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/contact",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/privacy",
+      "status": 200,
+      "bytes": 52398,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "سياسة الخصوصية",
+      "description": "نحترم خصوصيتك. هذه الصفحة تشرح بإيجاز ما يجمعه الموقع وما لا يجمعه. ما لا نجمعه لا نستخدم ملفات تعريف ارتباط (كوكيز) للتتبع أو الإعلانات. لا نبيع بياناتك ولا نشاركها مع جهات إعلانية. لا نسجّل عناوين I",
+      "canonical": "https://hadramout-center.novixa.dev/ar/privacy",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/terms",
+      "status": 200,
+      "bytes": 51546,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "شروط الاستخدام",
+      "description": "باستخدامك هذا الموقع فإنك توافق على الشروط التالية: المحتوى المنشور ملك لمركز حضرموت للدراسات التاريخية والتوثيق والنشر ولأصحابه. يجوز الاقتباس العلمي مع الإشارة الواضحة إلى المصدر ورابطه (يمكنك توليد",
+      "canonical": "https://hadramout-center.novixa.dev/ar/terms",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/accessibility",
+      "status": 200,
+      "bytes": 51620,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "بيان إمكانية الوصول",
+      "description": "نسعى لأن يكون الموقع متاحاً للجميع، وفق معايير WCAG 2.2 المستوى AA. ما نوفره تصفح كامل بلوحة المفاتيح، وروابط «تخطي إلى المحتوى» وإلى البحث. تباين ألوان كافٍ، ووضع ليلي، وتحكم بحجم الخط وعرض السطر في",
+      "canonical": "https://hadramout-center.novixa.dev/ar/accessibility",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA",
+      "status": 200,
+      "bytes": 85385,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "البحث",
+      "description": "",
+      "canonical": "https://hadramout-center.novixa.dev/ar/search",
+      "robots": "noindex, follow",
+      "noindex": true,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/news/387",
+      "status": 200,
+      "bytes": 71828,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "منسق مشاريع «اليونسكو» بحضرموت أ. عبد الرحمن الحبشي يزور مركز حضرموت للدراسات التاريخية",
+      "description": "زار أ. عبد الرحمن الحبشي منسق مشاريع منظمة الأمم المتحدة للتربية والعلوم والثقافة (اليونسكو) في حضرموت مقر «مركز حضرموت للدراسات التاريخية والتوثيق والنشر» بمدينة المكلا. وتأتي هذه الزيارة للتعرف عن…",
+      "canonical": "https://hadramout-center.novixa.dev/ar/news/387",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "article",
+      "ogImage": "https://hadramout-center.novixa.dev/legacy-media/2026/10/image-9.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "NewsArticle",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/articles/894",
+      "status": 200,
+      "bytes": 109081,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "قراءة في الأدب النِّسْوي الحضرمي .. خديجة بنت علي الحبشي أنموذجًا",
+      "description": "ستنهج هذه القراءة مسارين متتالين؛ الأول سيعطي لمحة عامة عن الأدب النسوي، والآخر سيكون قراءةً مقتضبة في ديوان السيدة خديجة بنت علي الحبشي ــ عليهما رحمة الله ــ كأنموذج للشعر النسوي الحضرمي؛ وقد خصَّت…",
+      "canonical": "https://hadramout-center.novixa.dev/ar/articles/894",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "article",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "ScholarlyArticle",
+        "BreadcrumbList"
+      ],
+      "citation": 4
+    },
+    {
+      "url": "/ar/books/37",
+      "status": 200,
+      "bytes": 72568,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "وجوه في بلاد العرب",
+      "description": "والمشاهد والتجارب التي يحتويها هذا الكتاب الذي بين أيدينا مستخلصة من هذه الفترات جميعها التي قضاها والدي في الجزيرة العربية؛ ولذا يمكن القول إنها تمتد على عقدين من الزمان من ١٩٢٦ إلى ١٩٤٥. وهذه القصص…",
+      "canonical": "https://hadramout-center.novixa.dev/ar/books/37",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "book",
+      "ogImage": "https://hadramout-center.novixa.dev/legacy-media/2026/03/img20251202_21053978-scaled.jpg",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "Book",
+        "BreadcrumbList"
+      ],
+      "citation": 4
+    },
+    {
+      "url": "/ar/magazines/40",
+      "status": 200,
+      "bytes": 79748,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "مجلة حضرموت الثقافية العدد 41",
+      "description": "صدور العدد 40 من مجلة (حضرموت الثقافية) إعلام المركز / المكلا صدر عن مركز حضرموت للدراسات التاريخية والتوثيق والنشر العدد (41) من مجلة حضرموت الثقافية محتويا عددا من المتابعات والأضواء والقراءات والح…",
+      "canonical": "https://hadramout-center.novixa.dev/ar/magazines/40",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/legacy-media/2026/10/Extracted-pages-from-%D9%85%D8%AC%D9%84%D8%A9-%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA-%D8%A7%D9%84%D8%B9%D8%AF%D8%AF-41.jpg",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "PublicationIssue",
+        "BreadcrumbList"
+      ],
+      "citation": 5
+    },
+    {
+      "url": "/ar/events/53",
+      "status": 200,
+      "bytes": 60661,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "فعالية بعنوان (المشروع الحضاري في أدب باكثير)",
+      "description": "أقام منتدى عميد الوفاء الثقافي فعالية بعنوان (المشروع الحضاري في أدب باكثير). تحدث فيها : د. طه حسين الحضرمي أدايرها : أ. عبدالله خالد مقيدحان التاريخ: السبت 26 أكتوبر 2024م.",
+      "canonical": "https://hadramout-center.novixa.dev/ar/events/53",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "Event",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/forum/7",
+      "status": 200,
+      "bytes": 63694,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "فعالية بعنوان .. إسهامات الحضارمة في المعارف الملاحية",
+      "description": "يعلن منتدى عميد الوفاء الثقافي عن فعالية بعنوان **إسهامات الحضارمة في المعارف الملاحية*. ⚪ يتحدث فيها : أ. محمد علوي باهارون ⚪ يديرها : أ. عمرو خالد بلخشر 🗓️التاريخ: السبت 12 أكتوبر 2024م. ⌛التوقيت…",
+      "canonical": "https://hadramout-center.novixa.dev/ar/forum/7",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "Event",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/videos/2",
+      "status": 200,
+      "bytes": 61522,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "حضرموت الامتداد الجغرافي وذاكرة المكان – فعالية قدمها ممثلين عن وفد مركز حضرموت للدراسات التاريخية بالرياض",
+      "description": "فيديو: تقرير قناة الجنوب اليوم عن فعالية منتدى ثلوثية بامحسون الثقافي الذي قدمه ممثلين عن وفد مركز حضرموت للدراسات التاريخية و التوثيق والنشر فعالية (حضرموت الامتداد الجغرافي وذاكرة المكان ) قدمها أ.…",
+      "canonical": "https://hadramout-center.novixa.dev/ar/videos/2",
+      "robots": "index, follow, max-image-preview:large",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "https://hadramout-center.novixa.dev/brand/og-default.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "VideoObject",
+        "BreadcrumbList"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "page": "/ar",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar",
+      "level": "warn",
+      "msg": "home without WebSite JSON-LD"
+    },
+    {
+      "page": "/ar/news",
+      "level": "error",
+      "msg": "missing meta description"
+    },
+    {
+      "page": "/ar/news",
+      "level": "error",
+      "msg": "missing og:description"
+    },
+    {
+      "page": "/ar/news",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/articles",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/books",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/magazines",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/events",
+      "level": "error",
+      "msg": "missing meta description"
+    },
+    {
+      "page": "/ar/events",
+      "level": "error",
+      "msg": "missing og:description"
+    },
+    {
+      "page": "/ar/events",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/forum",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/videos",
+      "level": "error",
+      "msg": "missing meta description"
+    },
+    {
+      "page": "/ar/videos",
+      "level": "error",
+      "msg": "missing og:description"
+    },
+    {
+      "page": "/ar/videos",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/authors",
+      "level": "warn",
+      "msg": "description is only 36 chars"
+    },
+    {
+      "page": "/ar/authors",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/timeline",
+      "level": "warn",
+      "msg": "description is only 20 chars"
+    },
+    {
+      "page": "/ar/timeline",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/topics",
+      "level": "error",
+      "msg": "HTTP 404"
+    },
+    {
+      "page": "/ar/about",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/contact",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/privacy",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/terms",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/accessibility",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA",
+      "level": "error",
+      "msg": "missing meta description"
+    },
+    {
+      "page": "/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA",
+      "level": "warn",
+      "msg": "missing og:description"
+    },
+    {
+      "page": "/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/news/387",
+      "level": "warn",
+      "msg": "title is 87 chars (>70)"
+    },
+    {
+      "page": "/ar/news/387",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/articles/894",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/books/37",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/magazines/40",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/events/53",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/forum/7",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/ar/videos/2",
+      "level": "warn",
+      "msg": "title is 106 chars (>70)"
+    },
+    {
+      "page": "/ar/videos/2",
+      "level": "warn",
+      "msg": "missing og:image:alt"
+    },
+    {
+      "page": "/robots.txt",
+      "level": "error",
+      "msg": "Sitemap points to https://hadramout.center/sitemap.xml (expected https://hadramout-center.novixa.dev)"
+    },
+    {
+      "page": "/robots.txt",
+      "level": "error",
+      "msg": "Host directive is https://hadramout.center"
+    }
+  ]
+}
