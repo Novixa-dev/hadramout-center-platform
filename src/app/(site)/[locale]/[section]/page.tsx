@@ -118,7 +118,7 @@ export default async function SectionPage({ params, searchParams }: Props) {
           {filtered ? <Link className="btn btn--ghost" href={href(`/${section}`)}>{t('list.clear')}</Link> : null}
         </form>
 
-        <p className="result-count" aria-live="polite">{t('list.count', { count: result.total })}</p>
+        <h2 className="result-count" aria-live="polite" style={{ fontSize: 'var(--step-0)', fontWeight: 400 }}>{t('list.count', { count: result.total })}</h2>
         {result.docs.length === 0 ? (
           <p className="notice">{t('list.empty')}</p>
         ) : isEvent ? (

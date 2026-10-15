@@ -26,6 +26,7 @@
     "test": "node --test --test-reporter=spec \"tests/unit/**/*.test.ts\"",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation node --import tsx --test --test-reporter=spec \"tests/integration/**/*.test.ts\"",
     "check": "npm run typecheck && npm run lint && npm test",
+    "a11y": "node scripts/a11y.mjs",
     "db:seed": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/seed.ts",
     "import:legacy": "node scripts/import-legacy.ts",
     "import:images": "node scripts/import-images.ts"
@@ -73,3 +74,4 @@
     "typescript-eslint": "8.71.2"
   }
 }
+

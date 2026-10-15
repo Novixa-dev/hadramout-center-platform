@@ -94,7 +94,7 @@ export default async function SearchPage({ params, searchParams }: Props) {
                 <Link key={s} className="chip chip--lg" href={`${href('/search')}?q=${encodeURIComponent(q)}&type=${s}`} aria-current={kind === s ? 'true' : undefined}>{t(`type.${s}`)}</Link>
               ))}
             </div>
-            <p className="result-count" aria-live="polite">{total ? t('search.results', { count: total, q }) : t('search.none', { q })}</p>
+            <h2 className="result-count" aria-live="polite" style={{ fontSize: 'var(--step-0)', fontWeight: 400 }}>{total ? t('search.results', { count: total, q }) : t('search.none', { q })}</h2>
             {usedLang !== locale ? <p className="notice notice--warn">{t('tr.missingNotice')}</p> : null}
             <div>
               {items.map(({ doc, kind: k }) => {
