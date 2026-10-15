@@ -1,0 +1,117 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-server
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://hadramout-center.novixa.dev
+  DEPLOY_PATH: /var/www/hadramout-center
+  KEEP_RELEASES: 5
+
+jobs:
+  deploy:
+    name: Validate & Deploy via SSH
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://hadramout-center.novixa.dev
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Platform Audit & Schema Validation
+        run: node scripts/validate.js
+
+      - name: Verify deployment secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing repository secret: $name"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      # Only public runtime files are shipped; docs, strategy files and scripts stay in the repo.
+      - name: Assemble release bundle
+        run: |
+          mkdir -p dist
+          cp -r index.html styles.css app.js data.js sw.js \
+                manifest.webmanifest favicon.svg robots.txt sitemap.xml \
+                assets dist/
+          echo "${GITHUB_SHA}" > dist/version.txt
+
+      - name: Upload release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          RELEASE="${DEPLOY_PATH}/releases/${GITHUB_SHA}"
+          SSH="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+          $SSH "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${RELEASE}'"
+          rsync -az --delete -e "$SSH" dist/ "${DEPLOY_USER}@${DEPLOY_HOST}:${RELEASE}/"
+
+      - name: Activate release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s <<EOF
+          set -euo pipefail
+          cd '${DEPLOY_PATH}'
+          chmod -R a+rX 'releases/${GITHUB_SHA}'
+          ln -sfn 'releases/${GITHUB_SHA}' current.tmp
+          mv -Tf current.tmp current
+          ls -1dt releases/*/ | tail -n +$((${KEEP_RELEASES} + 1)) | xargs -r rm -rf
+          echo "Active release: \$(readlink current)"
+          EOF
+
+      - name: Health check
+        run: |
+          for i in 1 2 3 4 5; do
+            served=$(curl -fsS "${SITE_URL}/version.txt?nocache=${GITHUB_SHA}" || true)
+            if [ "$served" = "${GITHUB_SHA}" ]; then
+              echo "Live: ${SITE_URL} is serving ${GITHUB_SHA}"
+              exit 0
+            fi
+            echo "Attempt $i: served version '${served}' — retrying..."
+            sleep 5
+          done
+          echo "::error::${SITE_URL} is not serving ${GITHUB_SHA}"
+          exit 1
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
