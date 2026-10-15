@@ -47,7 +47,8 @@ export default async function Home({ params }: Props) {
   return (
     <>
       <section className="hero pattern">
-        <div className="container hero__inner">
+        <div className="container hero__grid">
+        <div className="hero__inner">
           <p className="eyebrow">{t('home.hero.eyebrow')}</p>
           <h1>{t('home.hero.title')}</h1>
           <p className="hero__lead">{t('home.hero.lead')}</p>
@@ -56,11 +57,27 @@ export default async function Home({ params }: Props) {
             <input id="home-q" className="input" type="search" name="q" placeholder={t('home.search.placeholder')} autoComplete="off" />
             <button className="btn btn--gold" type="submit">{t('home.search.submit')}</button>
           </form>
+          <nav className="hero__chips" aria-label={t('home.quick.title')}>
+            {([['/articles', 'nav.articles'], ['/books', 'nav.books'], ['/magazines', 'nav.magazines'], ['/news', 'nav.news'], ['/events', 'nav.events']] as const).map(([path, key]) => (
+              <Link key={path} className="chip chip--glass" href={href(path)}>{t(key)}</Link>
+            ))}
+          </nav>
+        </div>
+        {issue ? (
+          <Link className="hero__feature" href={docHref(ctx, 'magazine', issue.id)} aria-label={issue.title}>
+            <span className="hero__feature-cover"><Cover doc={issue} sizes="260px" priority /></span>
+            <span className="hero__feature-text">
+              <span className="eyebrow">{t('meta.issue', { n: Number(issue.issueNumber ?? 0) })}</span>
+              <strong>{issue.title}</strong>
+              <span className="hero__feature-cta">{t('home.readIssue')} <Icon name="arrow" /></span>
+            </span>
+          </Link>
+        ) : null}
         </div>
         <Skyline className="hero__skyline" />
       </section>
 
-      <section className="section" style={{ paddingBlockStart: 'var(--space-6)' }}>
+      <section className="stats-band">
         <div className="container">
           <div className="stats" aria-label={site.shortName ?? site.name}>
             {stats.map(([n, label]) => (
@@ -72,6 +89,20 @@ export default async function Home({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {news.docs.length ? (
+        <section className="section">
+          <div className="container">
+            <SectionHead title={t('home.latestNews')} href={href('/news')} more={t('home.news.more')} />
+            <div className="editorial">
+              <Card ctx={ctx} doc={news.docs[0]!} type="news" eager />
+              <div className="editorial__side">
+                {news.docs.slice(1).map((d) => <Card key={d.id} ctx={ctx} doc={d} type="news" row />)}
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {issue ? (
         <section className="section section--tint">
@@ -109,15 +140,6 @@ export default async function Home({ params }: Props) {
           <SectionHead title={t('home.books')} href={href('/books')} more={t('section.viewAll')} />
           <div className="grid grid--books">
             {books.docs.map((d) => <Card key={d.id} ctx={ctx} doc={d} type="book" />)}
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <SectionHead title={t('home.latestNews')} href={href('/news')} more={t('section.viewAll')} />
-          <div className="grid">
-            {news.docs.map((d) => <Card key={d.id} ctx={ctx} doc={d} type="news" />)}
           </div>
         </div>
       </section>

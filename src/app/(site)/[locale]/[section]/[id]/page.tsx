@@ -170,7 +170,7 @@ export default async function DetailPage({ params }: Props) {
         />
       ) : null}
       <div className="container">
-        <nav className="breadcrumbs" aria-label="breadcrumb" style={{ paddingBlockStart: 'var(--space-5)' }}>
+        <nav className="breadcrumbs" aria-label={t('a11y.breadcrumb')} style={{ paddingBlockStart: 'var(--space-5)' }}>
           <ol>
             <li><Link href={href('/')}>{t('nav.home')}</Link></li>
             <li><Link href={href(`/${section}`)}>{t(TITLE_KEY[type])}</Link></li>

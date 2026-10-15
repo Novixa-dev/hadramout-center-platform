@@ -19,15 +19,19 @@ export function Cover({ doc, sizes, priority = false, fallbackLabel }: { doc: Do
   return <Image src={c.src} alt={c.alt} fill sizes={sizes} priority={priority} style={{ objectFit: 'cover' }} />;
 }
 
+const categoryName = (doc: Doc): string | null => (doc.category && typeof doc.category === 'object' ? doc.category.name : null);
+
 interface CardProps {
   ctx: Ctx;
   doc: Doc;
   type: ContentType;
   eager?: boolean;
   badge?: ReactNode;
+  /** horizontal layout (media beside text) */
+  row?: boolean;
 }
 
-export function Card({ ctx, doc, type, eager = false, badge }: CardProps) {
+export function Card({ ctx, doc, type, eager = false, badge, row = false }: CardProps) {
   const { t, lang } = ctx;
   const tr = trInfo(doc, lang.code);
   const date = displayDate(doc, lang.code);
@@ -35,14 +39,14 @@ export function Card({ ctx, doc, type, eager = false, badge }: CardProps) {
   const hasCover = Boolean(coverOf(doc));
   const isBook = type === 'book' || type === 'magazine';
   return (
-    <article className={`card ${isBook ? 'card--book' : ''} ${!hasCover && type !== 'book' && type !== 'magazine' ? 'card--plain' : ''}`}>
+    <article className={`card ${row ? 'card--row' : ''} ${isBook ? 'card--book' : ''} ${!hasCover && type !== 'book' && type !== 'magazine' ? 'card--plain' : ''}`}>
       {hasCover || isBook ? (
         <div className="card__media">
           <Cover doc={doc} sizes="(max-width: 640px) 50vw, 280px" priority={eager} fallbackLabel={doc.title} />
         </div>
       ) : null}
       <div className="card__body">
-        {badge}
+        {badge ?? <span className={`chip chip--type chip--${type}`}>{categoryName(doc) ?? t(`card.type.${type}` as never)}</span>}
         <h3 className="card__title" {...textAttrs(tr.titleLang, lang.code)}>
           <Link href={docHref(ctx, type, doc.id)}>{doc.title}</Link>
         </h3>

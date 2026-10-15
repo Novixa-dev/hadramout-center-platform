@@ -6,6 +6,7 @@ import { LangPicker } from './client/LangPicker.tsx';
 import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
 import { NavLinks } from './client/NavLinks.tsx';
+import { NavMore } from './client/NavMore.tsx';
 import type { getSite } from '../lib/data.ts';
 
 type Site = Awaited<ReturnType<typeof getSite>>;
@@ -19,6 +20,16 @@ export const NAV = [
   { key: 'nav.forum', path: '/forum' },
   { key: 'nav.videos', path: '/videos' },
   { key: 'nav.about', path: '/about' },
+  { key: 'nav.contact', path: '/contact' },
+] as const;
+
+/** Primary sections stay visible in the header; the rest live under "More" so nothing is crowded. */
+const PRIMARY = NAV.slice(0, 5);
+const SECONDARY = [
+  { key: 'nav.forum', path: '/forum' },
+  { key: 'nav.about', path: '/about' },
+  { key: 'nav.timeline', path: '/timeline' },
+  { key: 'nav.authors', path: '/authors' },
   { key: 'nav.contact', path: '/contact' },
 ] as const;
 
@@ -48,13 +59,15 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           </span>
         </Link>
         <nav className="nav" aria-label={t('nav.main')}>
-          <NavLinks items={NAV.slice(0, 8).map((n) => ({ href: href(n.path), label: t(n.key) }))} />
+          <NavLinks items={[...PRIMARY, { key: 'nav.videos', path: '/videos' }].map((n) => ({ href: href(n.path), label: t(n.key) }))}>
+            <NavMore label={t('nav.more')} items={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} />
+          </NavLinks>
         </nav>
         <div className="header-tools">
           <Link className="icon-btn" href={href('/search')} aria-label={t('nav.search')}>
             <Icon name="search" />
           </Link>
-          <LangPicker current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close') }} />
+          <LangPicker current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
           <ThemeToggle label={t('theme.toggle')} />
           <MobileMenu label={t('nav.menu')} closeLabel={t('nav.close')} items={[...NAV.map((n) => ({ href: href(n.path), label: t(n.key) })), { href: href('/authors'), label: t('nav.authors') }, { href: href('/timeline'), label: t('nav.timeline') }]} />
         </div>

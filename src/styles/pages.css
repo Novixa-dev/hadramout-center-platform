@@ -1,12 +1,35 @@
 @layer pages {
   .hero { background: var(--hero-bg); color: var(--hero-text); position: relative; overflow: hidden; --pattern: var(--gold-400); }
   .hero::before { opacity: 0.12; }
-  .hero__inner { display: grid; gap: var(--space-6); padding-block: clamp(3rem, 8vw, 6.5rem) clamp(5rem, 10vw, 8rem); max-inline-size: 46rem; }
+  .hero__grid { display: grid; gap: var(--space-8); align-items: center; }
+  @media (min-width: 1000px) { .hero__grid { grid-template-columns: minmax(0, 1fr) minmax(16rem, 21rem); } }
+  .hero__feature { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; align-items: center; padding: 1rem; border-radius: var(--r-xl); background: rgb(255 255 255 / 0.09); border: 1px solid rgb(255 255 255 / 0.22); backdrop-filter: blur(8px); color: #fff; text-decoration: none; box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.55); transition: transform var(--t-med) var(--ease), background var(--t-med) var(--ease); }
+  .hero__feature:hover { transform: translateY(-3px); background: rgb(255 255 255 / 0.14); color: #fff; }
+  .hero__feature-cover { position: relative; aspect-ratio: 2 / 3; border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-3); background: rgb(255 255 255 / 0.1); }
+  .hero__feature-text { display: grid; gap: 0.35rem; min-inline-size: 0; }
+  .hero__feature-text strong { font-size: var(--step-0); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .hero__feature-cta { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--gold-300); font-weight: 600; font-size: var(--step--1); }
+  .hero__feature-cta .icon { inline-size: 1rem; block-size: 1rem; }
+  :dir(rtl) .hero__feature-cta .icon { transform: scaleX(-1); }
+  .hero__inner { display: grid; gap: var(--space-6); padding-block: clamp(3rem, 8vw, 6rem) clamp(6rem, 11vw, 9rem); max-inline-size: 46rem; }
   .hero h1 { color: #fff; font-size: var(--step-5); line-height: 1.25; }
   .hero__lead { font-size: var(--step-1); color: #dcebe5; max-inline-size: 38rem; }
   .hero .eyebrow { color: var(--gold-300); }
   .hero__search { display: flex; gap: 0.5rem; max-inline-size: 36rem; }
   .hero__search .input { background: #fff; color: #1f2421; border-color: transparent; min-block-size: 3.25rem; }
+  .hero__chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip--glass { min-block-size: 2.25rem; padding-inline: 0.95rem; background: rgb(255 255 255 / 0.1); color: #fff; border-color: rgb(255 255 255 / 0.28); font-size: var(--step--1); backdrop-filter: blur(4px); }
+  a.chip--glass:hover { background: rgb(255 255 255 / 0.2); color: #fff; }
+  .stats-band { position: relative; z-index: 2; margin-block-start: calc(-1 * clamp(2.5rem, 5vw, 4rem)); }
+  .stats-band .stats { box-shadow: var(--shadow-3); }
+  .editorial { display: grid; gap: var(--space-5); align-items: stretch; }
+  .editorial > .card .card__media { aspect-ratio: 16 / 9; }
+  .editorial > .card .card__title { font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem); }
+  .editorial__side { display: grid; gap: var(--space-5); align-content: start; }
+  @media (min-width: 900px) { .editorial { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); } }
+  .card--row { flex-direction: row; }
+  .card--row .card__media { flex: 0 0 40%; aspect-ratio: auto; min-block-size: 8.5rem; }
+  @media (max-width: 520px) { .card--row { flex-direction: column; } .card--row .card__media { flex-basis: auto; aspect-ratio: 16 / 10; } }
   .hero__skyline { position: absolute; inset-inline: 0; inset-block-end: -1px; color: var(--bg); inline-size: 100%; block-size: clamp(3rem, 8vw, 6rem); pointer-events: none; }
   .issue-spot { display: grid; gap: var(--space-6); align-items: center; grid-template-columns: minmax(0, 14rem) 1fr; }
   .issue-spot__cover { position: relative; aspect-ratio: 2 / 3; border-radius: var(--r-md); overflow: hidden; box-shadow: var(--shadow-3); background: var(--surface-3); }
@@ -71,7 +94,6 @@
     .dl { grid-template-columns: 1fr; gap: 0.1rem; }
     .dl dt { margin-block-start: 0.6rem; }
     .brand__sub { display: none; }
-    .lang-btn__text { display: none; }
     .site-header__bar { gap: 0.25rem; }
   }
 }

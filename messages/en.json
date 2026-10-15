@@ -29,6 +29,8 @@
   "lang.popular": "Most used",
   "lang.all": "All languages",
   "lang.note": "Arabic is the authoritative text. Other languages are machine-translated.",
+  "lang.none": "No matching language",
+  "lang.machine": "Machine translation",
   "tr.machine": "Machine translation — the Arabic text is the authoritative version.",
   "tr.reviewed": "Translation reviewed by the Center's team.",
   "tr.viewOriginal": "View the Arabic original",
@@ -212,5 +214,16 @@
   "pwa.offline.title": "You are offline",
   "pwa.offline.text": "You can read pages you visited recently or your saved items.",
   "date.unknown": "Not specified",
-  "a11y.newWindow": "Opens in a new window"
+  "a11y.newWindow": "Opens in a new window",
+  "a11y.breadcrumb": "Breadcrumb",
+  "card.type.article": "Study",
+  "card.type.news": "News",
+  "card.type.book": "Book",
+  "card.type.magazine": "Issue",
+  "card.type.video": "Video",
+  "card.type.event": "Event",
+  "card.type.forum": "Forum",
+  "home.quick.title": "Start here",
+  "home.readIssue": "Read the issue",
+  "home.news.more": "All news"
 }

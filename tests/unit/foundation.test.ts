@@ -133,3 +133,25 @@ describe('extras database (full-text index + savepoints)', () => {
     db.close();
   });
 });
+
+describe('cloudflare translation provider', () => {
+  test('sends the segment protocol and parses markers; daily-limit error is retryable', async () => {
+    const { CloudflareProvider } = await import('../../src/i18n/translation/cloudflare.ts');
+    let sent: { messages: { role: string; content: string }[] } | null = null;
+    const ok = new CloudflareProvider({
+      accountId: 'acc', apiToken: 'tok', model: '@cf/google/gemma-3-12b-it',
+      fetchImpl: (async (_u: unknown, init: { body: string }) => {
+        sent = JSON.parse(init.body);
+        return new Response(JSON.stringify({ success: true, result: { response: '@@@1@@@\nHello\n@@@2@@@\nWorld' } }), { status: 200 });
+      }) as unknown as typeof fetch,
+    });
+    const r = await ok.translate({ texts: ['مرحبا', 'عالم'], format: 'text', to: 'en', toName: 'English', glossary: [] });
+    assert.deepEqual(r.texts, ['Hello', 'World']);
+    assert.match(sent!.messages[1]!.content, /@@@1@@@\nمرحبا/);
+    const limited = new CloudflareProvider({
+      accountId: 'a', apiToken: 't', model: 'm',
+      fetchImpl: (async () => new Response(JSON.stringify({ success: false, errors: [{ code: 4006, message: 'daily limit' }] }), { status: 429 })) as unknown as typeof fetch,
+    });
+    await assert.rejects(limited.translate({ texts: ['x'], format: 'text', to: 'en', toName: 'English', glossary: [] }), (e: Error & { retryable?: boolean }) => e.retryable === true);
+  });
+});
