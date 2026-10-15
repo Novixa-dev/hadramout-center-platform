@@ -31,7 +31,7 @@ export default async function AuthorPage({ params }: Props) {
     <>
       <div className="page-head">
         <div className="container">
-          <nav className="breadcrumbs" aria-label="breadcrumb"><ol><li><Link href={href('/')}>{t('nav.home')}</Link></li><li><Link href={href('/authors')}>{t('authors.title')}</Link></li></ol></nav>
+          <nav className="breadcrumbs" aria-label={t('a11y.breadcrumb')}><ol><li><Link href={href('/')}>{t('nav.home')}</Link></li><li><Link href={href('/authors')}>{t('authors.title')}</Link></li></ol></nav>
           <h1 style={{ marginBlockStart: '0.5rem' }}>{author.name}</h1>
           {author.bio ? <p>{author.bio}</p> : null}
         </div>

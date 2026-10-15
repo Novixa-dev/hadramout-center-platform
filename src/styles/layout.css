@@ -17,7 +17,7 @@
   .brand__text { display: grid; line-height: 1.25; min-inline-size: 0; }
   .brand__name { font-weight: 700; font-size: var(--step-0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .brand__sub { font-size: var(--step--2); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .nav { display: none; margin-inline-start: auto; min-inline-size: 0; }
+  .nav { display: none; margin-inline: auto; min-inline-size: 0; }
   /* the brand never shrinks to an ellipsis on desktop; the subtitle yields first */
   @media (min-width: 1280px) {
     .brand { flex: none; }
@@ -29,7 +29,17 @@
   .nav__link { white-space: nowrap; display: inline-flex; align-items: center; min-block-size: 2.75rem; padding-inline: 0.8rem; border-radius: var(--r-md); text-decoration: none; color: var(--text-2); font-weight: 500; font-size: var(--step--1); }
   .nav__link:hover { background: var(--surface-3); color: var(--text); }
   .nav__link[aria-current='page'] { color: var(--brand); background: var(--brand-soft); font-weight: 600; }
-  .header-tools { display: flex; align-items: center; gap: 0.25rem; margin-inline-start: auto; }
+  .header-tools { display: flex; align-items: center; gap: 0.35rem; margin-inline-start: auto; }
+  /* "More" disclosure menu */
+  .nav-more { position: relative; }
+  .nav-more__btn { border: 0; background: transparent; font: inherit; font-size: var(--step--1); font-weight: 500; cursor: pointer; gap: 0.3rem; }
+  .nav-more__btn[data-current='true'] { color: var(--brand); background: var(--brand-soft); font-weight: 600; }
+  .nav-more__chev { inline-size: 1rem; block-size: 1rem; transition: transform var(--t-med) var(--ease); }
+  .nav-more__btn[aria-expanded='true'] .nav-more__chev { transform: rotate(180deg); }
+  .nav-more__menu { position: absolute; inset-inline-end: 0; inset-block-start: calc(100% + 0.4rem); z-index: 80; min-inline-size: 13rem; list-style: none; margin: 0; padding: 0.4rem; background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--r-lg); box-shadow: var(--shadow-3); }
+  .nav-more__menu[hidden] { display: none; }
+  .nav-more__menu a { display: flex; align-items: center; min-block-size: 2.75rem; padding-inline: 0.85rem; border-radius: var(--r-md); text-decoration: none; color: var(--text); font-size: var(--step--1); }
+  .nav-more__menu a:hover, .nav-more__menu a[aria-current='page'] { background: var(--brand-soft); color: var(--brand); }
   @media (min-width: 1280px) {
     .nav { display: block; }
     .header-tools { margin-inline-start: 0; }

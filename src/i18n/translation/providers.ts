@@ -2,6 +2,7 @@ import type { Config } from '../../config.ts';
 import { decodeEntities, protectGlossary, relevantGlossary, unprotectGlossary } from './blocks.ts';
 import { TranslationError, type TranslateRequest, type TranslateResult, type TranslationProvider } from './types.ts';
 import { AnthropicProvider } from './anthropic.ts';
+import { CloudflareProvider } from './cloudflare.ts';
 
 const joinGlossaryText = (texts: string[]) => texts.join('\n');
 
@@ -99,6 +100,8 @@ export function createProvider(config: Config): TranslationProvider | null {
       return new MockProvider();
     case 'anthropic':
       return new AnthropicProvider({ apiKey: t.anthropicApiKey, model: t.model });
+    case 'cloudflare':
+      return new CloudflareProvider({ accountId: t.cloudflareAccountId, apiToken: t.cloudflareApiToken, model: t.cloudflareModel });
     case 'google':
       return new GoogleProvider(t.googleApiKey);
     case 'libretranslate':

@@ -22,6 +22,7 @@ const PATHS = {
   rss: <><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" /><circle cx="5" cy="19" r="1.5" /></>,
   textsize: <path d="M4 19 9 5l5 14M6 14h6M16 19l2.5-7 2.5 7M17 17h3" />,
   check: <path d="m5 12 5 5 9-10" />,
+  down: <path d="m6 9 6 6 6-6" />,
   copy: <><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h8" /></>,
   external: <path d="M14 4h6v6M20 4 10 14M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />,
 } as const;

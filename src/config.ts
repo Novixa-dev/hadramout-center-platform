@@ -4,7 +4,7 @@
  * are read in payload.config.ts; everything application-specific lives here.
  */
 
-export type TranslationProviderName = 'none' | 'mock' | 'anthropic' | 'google' | 'libretranslate';
+export type TranslationProviderName = 'none' | 'mock' | 'anthropic' | 'google' | 'libretranslate' | 'cloudflare';
 
 export interface Config {
   env: 'development' | 'production' | 'test';
@@ -25,10 +25,13 @@ export interface Config {
     googleApiKey: string;
     libreUrl: string;
     libreApiKey: string;
+    cloudflareAccountId: string;
+    cloudflareApiToken: string;
+    cloudflareModel: string;
   };
 }
 
-const PROVIDERS: readonly TranslationProviderName[] = ['none', 'mock', 'anthropic', 'google', 'libretranslate'];
+const PROVIDERS: readonly TranslationProviderName[] = ['none', 'mock', 'anthropic', 'google', 'libretranslate', 'cloudflare'];
 
 function list(value: string | undefined, fallback: string): '*' | string[] {
   const raw = (value ?? fallback).trim();
@@ -68,6 +71,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   }
   if (isProd && provider === 'mock') throw new Error('TRANSLATION_PROVIDER=mock is for development only');
   if (provider === 'anthropic' && !env.ANTHROPIC_API_KEY) throw new Error('TRANSLATION_PROVIDER=anthropic requires ANTHROPIC_API_KEY');
+  if (provider === 'cloudflare' && (!env.CLOUDFLARE_ACCOUNT_ID || !env.CLOUDFLARE_API_TOKEN)) throw new Error('TRANSLATION_PROVIDER=cloudflare requires CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN');
   if (provider === 'google' && !env.GOOGLE_TRANSLATE_API_KEY) throw new Error('TRANSLATION_PROVIDER=google requires GOOGLE_TRANSLATE_API_KEY');
 
   return {
@@ -88,6 +92,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       googleApiKey: env.GOOGLE_TRANSLATE_API_KEY ?? '',
       libreUrl: (env.LIBRETRANSLATE_URL ?? 'http://localhost:5000').replace(/\/+$/, ''),
       libreApiKey: env.LIBRETRANSLATE_API_KEY ?? '',
+      cloudflareAccountId: env.CLOUDFLARE_ACCOUNT_ID ?? '',
+      cloudflareApiToken: env.CLOUDFLARE_API_TOKEN ?? '',
+      cloudflareModel: env.CLOUDFLARE_MODEL ?? '@cf/google/gemma-3-12b-it',
     },
   };
 }

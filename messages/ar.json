@@ -29,6 +29,8 @@
   "lang.popular": "الأكثر استخداماً",
   "lang.all": "كل اللغات",
   "lang.note": "اللغة العربية هي المرجع. بقية اللغات تُترجم آلياً.",
+  "lang.none": "لا توجد لغة مطابقة",
+  "lang.machine": "ترجمة آلية",
   "tr.machine": "ترجمة آلية — النص العربي هو المرجع المعتمد.",
   "tr.reviewed": "ترجمة راجعها فريق المركز.",
   "tr.viewOriginal": "عرض النص العربي",
@@ -213,5 +215,16 @@
   "pwa.offline.title": "لا يوجد اتصال بالإنترنت",
   "pwa.offline.text": "يمكنك قراءة الصفحات التي زرتها مؤخراً أو المحفوظات.",
   "date.unknown": "غير محدد",
-  "a11y.newWindow": "يفتح في نافذة جديدة"
+  "a11y.newWindow": "يفتح في نافذة جديدة",
+  "a11y.breadcrumb": "مسار التصفح",
+  "card.type.article": "دراسة",
+  "card.type.news": "خبر",
+  "card.type.book": "كتاب",
+  "card.type.magazine": "عدد",
+  "card.type.video": "مرئي",
+  "card.type.event": "فعالية",
+  "card.type.forum": "منتدى",
+  "home.quick.title": "ابدأ من هنا",
+  "home.readIssue": "اقرأ العدد",
+  "home.news.more": "كل الأخبار"
 }
