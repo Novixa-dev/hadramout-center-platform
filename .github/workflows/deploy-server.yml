@@ -17,6 +17,8 @@ env:
   SITE_URL: https://hadramout-center.novixa.dev
   DEPLOY_PATH: /var/www/hadramout-center
   KEEP_RELEASES: 5
+  # Server's ED25519 host key fingerprint (ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub).
+  HOST_KEY_FINGERPRINT: SHA256:d+JQJVamnSYO2Wv/XHo9I3hGEp/id9TRXM27+QI6pTU
 
 jobs:
   deploy:
@@ -42,10 +44,9 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           missing=0
-          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS; do
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY; do
             if [ -z "${!name}" ]; then
               echo "::error::Missing repository secret: $name"
               missing=1
@@ -55,14 +56,30 @@ jobs:
 
       - name: Configure SSH
         env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          # Strip CRs and surrounding blank lines that creep in when pasting the key.
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' | sed '/^[[:space:]]*$/d' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null \
+            || { echo "::error::DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
+
+          # Trust the server only if its scanned host key matches the pinned fingerprint.
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" 2>/dev/null > ~/.ssh/known_hosts
+          scanned=$(ssh-keygen -lf ~/.ssh/known_hosts | awk '{print $2}')
+          if [ "$scanned" != "$HOST_KEY_FINGERPRINT" ]; then
+            echo "::error::Host key mismatch: got '${scanned}', expected '${HOST_KEY_FINGERPRINT}'"
+            exit 1
+          fi
           chmod 644 ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "${DEPLOY_USER}@${DEPLOY_HOST}" true \
+            || { echo "::error::SSH login failed — is the deploy public key in the server's authorized_keys?"; exit 1; }
+          echo "SSH connection verified"
 
       # Only public runtime files are shipped; docs, strategy files and scripts stay in the repo.
       - name: Assemble release bundle
