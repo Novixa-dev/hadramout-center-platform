@@ -32,10 +32,12 @@ interface Args {
   /** parent magazine issue (for articles published in an issue) */
   issue?: { name: string; url: string } | null;
   category?: string | null;
+  /** real, approved reader ratings (only passed when there are enough of them) */
+  rating?: { value: number; count: number } | null;
 }
 
 /** JSON-LD for a content page (ScholarlyArticle, Book, PublicationIssue, NewsArticle, Event, VideoObject). */
-export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf, issue, category }: Args): Record<string, unknown> {
+export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf, issue, category, rating }: Args): Record<string, unknown> {
   const publisher = publisherRef(org);
   const authors = authorsOf(doc).map((a) => ({ '@type': 'Person', name: a.name, url: authorUrl(a.id) }));
   const date = doc.datePrecision && !['estimated', 'none'].includes(doc.datePrecision) ? isoOrUndefined(doc.publishedAt) : undefined;
@@ -80,6 +82,7 @@ export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf
         ...(doc.translator ? { translator: { '@type': 'Person', name: String(doc.translator) } } : {}),
         ...(doc.editor ? { editor: { '@type': 'Person', name: String(doc.editor) } } : {}),
         ...(category ? { genre: category } : {}),
+        ...(rating ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: rating.value, ratingCount: rating.count, bestRating: 5, worstRating: 1 } } : {}),
         ...(pdf ? { workExample: { '@type': 'Book', bookFormat: 'https://schema.org/EBook', encodingFormat: 'application/pdf', url: pdf, isAccessibleForFree: true } } : {}),
       };
     case 'magazine':

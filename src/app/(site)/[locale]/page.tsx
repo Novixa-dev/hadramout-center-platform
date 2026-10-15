@@ -1,13 +1,18 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { isLocale, makeCtx, docHref } from '../../../lib/ctx.ts';
-import { countByType, getSite, listDocs } from '../../../lib/data.ts';
+import { absolute, isLocale, makeCtx, docHref } from '../../../lib/ctx.ts';
+import { getSite, listTimeline } from '../../../lib/data.ts';
+import { getTopics, latest, rowCount, topAuthors } from '../../../lib/facets.ts';
 import { buildMetadata } from '../../../lib/seo.ts';
-import { Card, Cover, EventCard, SectionHead } from '../../../components/Cards.tsx';
+import { describe } from '../../../lib/seo-text.ts';
+import { jsonLdString, siteJsonLd } from '../../../lib/jsonld.ts';
+import { isSocialName } from '../../../components/Icon.tsx';
+import { BookCard, Cover, EntryList, EventRow, IssueCard, SectionHead, Tile, VideoTile } from '../../../components/Cards.tsx';
+import { searchLabels } from '../../../components/Shell.tsx';
+import { SearchBox } from '../../../components/client/SearchBox.tsx';
 import { Skyline } from '../../../components/Skyline.tsx';
 import { Icon } from '../../../components/Icon.tsx';
-import { NewsletterForm } from '../../../components/client/NewsletterForm.tsx';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -15,177 +20,190 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const ctx = makeCtx(locale);
   const site = await getSite(locale);
-  return buildMetadata({ ctx, path: '/', title: site.name, description: site.description ?? site.tagline });
+  const title = site.tagline ? `${site.name} — ${ctx.t('home.hero.eyebrow')}` : site.name;
+  return buildMetadata({ ctx, path: '/', title, absoluteTitle: true, description: describe(site.description, site.tagline, ctx.t('home.hero.lead')), card: { key: 'home' } });
 }
 
 export default async function Home({ params }: Props) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const ctx = makeCtx(locale);
-  const { t, href } = ctx;
-  const [site, counts, magazines, articles, news, books, upcoming, forum, videos] = await Promise.all([
+  const { t, href, lang } = ctx;
+  const [site, counts, issues, articles, news, books, upcoming, recentEvents, forum, videos, topics, authors, timeline] = await Promise.all([
     getSite(locale),
-    countByType(),
-    listDocs({ type: 'magazine', lang: locale, limit: 3 }),
-    listDocs({ type: 'article', lang: locale, limit: 6 }),
-    listDocs({ type: 'news', lang: locale, limit: 3 }),
-    listDocs({ type: 'book', lang: locale, limit: 6, sort: 'newest' }),
-    listDocs({ type: 'event', lang: locale, limit: 3, when: 'upcoming', sort: 'oldest' }),
-    listDocs({ type: 'forum', lang: locale, limit: 3 }),
-    listDocs({ type: 'video', lang: locale, limit: 3 }),
+    Promise.all((['article', 'book', 'magazine', 'event', 'forum', 'news'] as const).map(rowCount)),
+    latest('magazine', locale, 8),
+    latest('article', locale, 6),
+    latest('news', locale, 4),
+    latest('book', locale, 10),
+    latest('event', locale, 3, { when: 'upcoming', sort: 'oldest' }),
+    latest('event', locale, 3),
+    latest('forum', locale, 3),
+    latest('video', locale, 3),
+    getTopics(locale),
+    topAuthors(locale, 14),
+    listTimeline(locale),
   ]);
-  const issue = magazines.docs[0];
+  const [nArticles, nBooks, nIssues, nEvents, nForum, nNews] = counts;
+  const issue = issues[0];
+  const events = upcoming.length ? upcoming : recentEvents;
+  const roots = topics.roots.filter((r) => r.total > 0).slice(0, 8);
+  const fmt = new Intl.NumberFormat('en');
 
-  const stats: [number, string][] = [
-    [counts.article, t('home.stats.articles')],
-    [counts.book, t('home.stats.books')],
-    [counts.magazine, t('home.stats.issues')],
-    [counts.event + counts.forum, t('home.stats.events')],
-    [counts.news, t('home.stats.news')],
+  const stats: [string, number, string][] = [
+    ['/articles', nArticles, t('home.stats.articles')],
+    ['/books', nBooks, t('home.stats.books')],
+    ['/magazines', nIssues, t('home.stats.issues')],
+    ['/events', nEvents + nForum, t('home.stats.events')],
+    ['/news', nNews, t('home.stats.news')],
   ];
+  const sameAs = Object.entries(site.social ?? {}).filter(([k, v]) => v && isSocialName(k)).map(([, v]) => v as string);
+  const ld = siteJsonLd({ name: site.name, alternateName: site.shortName, origin: absolute(''), logo: absolute('/icons/icon-512.png'), description: describe(site.description), email: site.email, address: site.address, sameAs, lang: lang.code });
+  const fmtYear = (y: number) => (y < 0 ? `${Math.abs(y)} ${t('timeline.bce')}` : String(y));
 
   return (
     <>
-      <section className="hero pattern">
+      <section className="hero pattern" aria-labelledby="hero-h">
         <div className="container hero__grid">
-        <div className="hero__inner">
-          <p className="eyebrow">{t('home.hero.eyebrow')}</p>
-          <h1>{t('home.hero.title')}</h1>
-          <p className="hero__lead">{t('home.hero.lead')}</p>
-          <form className="hero__search" action={href('/search')} role="search">
-            <label className="sr-only" htmlFor="home-q">{t('nav.search')}</label>
-            <input id="home-q" className="input" type="search" name="q" placeholder={t('home.search.placeholder')} autoComplete="off" />
-            <button className="btn btn--gold" type="submit">{t('home.search.submit')}</button>
-          </form>
-          <nav className="hero__chips" aria-label={t('home.quick.title')}>
-            {([['/articles', 'nav.articles'], ['/books', 'nav.books'], ['/magazines', 'nav.magazines'], ['/news', 'nav.news'], ['/events', 'nav.events']] as const).map(([path, key]) => (
-              <Link key={path} className="chip chip--glass" href={href(path)}>{t(key)}</Link>
-            ))}
-          </nav>
-        </div>
-        {issue ? (
-          <Link className="hero__feature" href={docHref(ctx, 'magazine', issue.id)} aria-label={issue.title}>
-            <span className="hero__feature-cover"><Cover doc={issue} sizes="260px" priority /></span>
-            <span className="hero__feature-text">
-              <span className="eyebrow">{t('meta.issue', { n: Number(issue.issueNumber ?? 0) })}</span>
-              <strong>{issue.title}</strong>
-              <span className="hero__feature-cta">{t('home.readIssue')} <Icon name="arrow" /></span>
-            </span>
-          </Link>
-        ) : null}
+          <div className="hero__inner">
+            <p className="eyebrow">{t('home.hero.eyebrow')}</p>
+            <h1 id="hero-h">{t('home.hero.title')}</h1>
+            <p className="hero__lead">{t('home.hero.lead')}</p>
+            <SearchBox action={href('/search')} lang={lang.code} labels={searchLabels(ctx)} size="lg" />
+            <nav className="hero__chips" aria-label={t('home.quick.title')}>
+              {([['/articles', 'nav.articles'], ['/books', 'nav.books'], ['/magazines', 'nav.magazines'], ['/topics', 'nav.topics'], ['/timeline', 'nav.timeline']] as const).map(([path, key]) => (
+                <Link key={path} className="chip chip--glass" href={href(path)}>{t(key)}</Link>
+              ))}
+            </nav>
+          </div>
+          {issue ? (
+            <Link className="hero__feature" href={docHref(ctx, 'magazine', issue.id)} aria-label={issue.title}>
+              <span className="hero__feature-cover"><Cover doc={issue} sizes="104px" priority decorative /></span>
+              <span className="hero__feature-text">
+                <span className="eyebrow">{t('home.latestIssue')}</span>
+                <strong>{t('meta.issue', { n: Number(issue.issueNumber ?? 0) })}</strong>
+                <span className="hero__feature-cta">{t('home.readIssue')} <Icon name="arrow" /></span>
+              </span>
+            </Link>
+          ) : null}
         </div>
         <Skyline className="hero__skyline" />
       </section>
 
-      <section className="stats-band">
+      <div className="strip">
         <div className="container">
-          <div className="stats" aria-label={site.shortName ?? site.name}>
-            {stats.map(([n, label]) => (
-              <div className="stat" key={label}>
-                <strong>{new Intl.NumberFormat('en').format(n)}</strong>
-                <span>{label}</span>
+          <ul className="stats" aria-label={site.shortName ?? site.name}>
+            {stats.map(([path, n, label]) => (
+              <li key={path}>
+                <Link href={href(path)}>
+                  <strong>{fmt.format(n)}</strong> <span>{label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <section className="section section--tight">
+        <div className="container split">
+          <div>
+            <SectionHead title={t('home.latestNews')} href={href('/news')} more={t('home.news.more')} />
+            {news.length ? (
+              <div className="stack-list">
+                <Tile ctx={ctx} doc={news[0]!} type="news" lead eager />
+                {news.slice(1).map((d) => <Tile key={d.id} ctx={ctx} doc={d} type="news" row />)}
               </div>
+            ) : null}
+          </div>
+          <div>
+            <SectionHead title={upcoming.length ? t('home.upcoming') : t('home.events')} href={href('/events')} more={t('section.viewAll')} as="h2" />
+            <div>{events.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type="event" />)}</div>
+            {forum.length ? (
+              <div style={{ marginBlockStart: 'var(--space-6)' }}>
+                <SectionHead title={t('home.forum')} href={href('/forum')} more={t('section.viewAll')} />
+                <div>{forum.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type="forum" />)}</div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--tight cv section--tint">
+        <div className="container">
+          <SectionHead title={t('home.topics')} href={href('/topics')} more={t('home.topics.more')} lead={t('home.topics.lead')} />
+          <div className="topic-grid">
+            {roots.map((r) => (
+              <article key={r.id} className="topic-card">
+                <p className="topic-card__count">{t('topics.count', { count: r.total })}</p>
+                <h3><Link href={href(`/topics/${r.id}`)}>{r.name}</Link></h3>
+                <ul aria-label={t('topics.sub')}>
+                  {r.children.filter((c) => c.own > 0).slice(0, 4).map((c) => <li key={c.id}><Link href={href(`/topics/${c.id}`)}>{c.name}</Link></li>)}
+                </ul>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {news.docs.length ? (
-        <section className="section">
-          <div className="container">
-            <SectionHead title={t('home.latestNews')} href={href('/news')} more={t('home.news.more')} />
-            <div className="editorial">
-              <Card ctx={ctx} doc={news.docs[0]!} type="news" eager />
-              <div className="editorial__side">
-                {news.docs.slice(1).map((d) => <Card key={d.id} ctx={ctx} doc={d} type="news" row />)}
-              </div>
-            </div>
+      <section className="section section--tight cv">
+        <div className="container split split--even">
+          <div>
+            <SectionHead title={t('home.latestArticles')} href={href('/articles')} more={t('section.viewAll')} />
+            <EntryList ctx={ctx} docs={articles} type="article" />
           </div>
-        </section>
-      ) : null}
-
-      {issue ? (
-        <section className="section section--tint">
-          <div className="container">
-            <SectionHead title={t('home.latestIssue')} href={href('/magazines')} more={t('section.viewAll')} />
-            <div className="issue-spot">
-              <Link className="issue-spot__cover" href={docHref(ctx, 'magazine', issue.id)}>
-                <Cover doc={issue} sizes="224px" priority />
-              </Link>
-              <div className="stack">
-                <p className="eyebrow">{t('meta.issue', { n: Number(issue.issueNumber ?? 0) })}</p>
-                <h3 style={{ fontSize: 'var(--step-3)' }}><Link href={docHref(ctx, 'magazine', issue.id)} style={{ color: 'inherit', textDecoration: 'none' }}>{issue.title}</Link></h3>
-                {issue.excerpt ? <p style={{ color: 'var(--text-2)', maxInlineSize: '40rem' }}>{issue.excerpt}</p> : null}
-                <div className="cluster">
-                  <Link className="btn btn--primary" href={docHref(ctx, 'magazine', issue.id)}>{t('magazine.contents')}</Link>
-                  {typeof issue.pdf === 'string' && issue.pdf ? <a className="btn btn--secondary" href={issue.pdf} target="_blank" rel="noopener noreferrer"><Icon name="download" />{t('magazine.download')}</a> : null}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      <section className="section">
-        <div className="container">
-          <SectionHead title={t('home.latestArticles')} href={href('/articles')} more={t('section.viewAll')} />
-          <div className="grid">
-            {articles.docs.map((d) => <Card key={d.id} ctx={ctx} doc={d} type="article" />)}
-          </div>
-        </div>
-      </section>
-
-      <section className="section section--tint">
-        <div className="container">
-          <SectionHead title={t('home.books')} href={href('/books')} more={t('section.viewAll')} />
-          <div className="grid grid--books">
-            {books.docs.map((d) => <Card key={d.id} ctx={ctx} doc={d} type="book" />)}
-          </div>
-        </div>
-      </section>
-
-      {(upcoming.docs.length || forum.docs.length) ? (
-        <section className="section section--tint">
-          <div className="container grid grid--wide" style={{ alignItems: 'start' }}>
-            {upcoming.docs.length ? (
-              <div>
-                <SectionHead title={t('home.upcoming')} href={href('/events')} more={t('section.viewAll')} />
-                <div className="stack">{upcoming.docs.map((d) => <EventCard key={d.id} ctx={ctx} doc={d} type="event" />)}</div>
+          <div>
+            <SectionHead title={t('home.authors')} href={href('/authors')} more={t('home.authors.more')} />
+            <ul className="authors-cloud">
+              {authors.map((a) => (
+                <li key={a.id}><Link className="chip chip--lg chip--outline" href={href(`/authors/${a.id}`)}>{a.name} <small>{a.count}</small></Link></li>
+              ))}
+            </ul>
+            {timeline.length ? (
+              <div style={{ marginBlockStart: 'var(--space-8)' }}>
+                <SectionHead title={t('home.timeline')} href={href('/timeline')} more={t('home.timeline.more')} />
+                <ol className="stack-list" style={{ listStyle: 'none', padding: 0 }}>
+                  {timeline.slice(0, 3).map((e) => (
+                    <li key={e.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(5.5rem, auto) 1fr', gap: '1rem', alignItems: 'baseline' }}>
+                      <strong style={{ color: 'var(--accent-text)', fontVariantNumeric: 'tabular-nums' }}>{fmtYear(e.yearFrom)}</strong>
+                      <span>{e.title}</span>
+                    </li>
+                  ))}
+                </ol>
               </div>
             ) : null}
-            <div>
-              <SectionHead title={t('home.forum')} href={href('/forum')} more={t('section.viewAll')} />
-              <div className="stack">{forum.docs.map((d) => <EventCard key={d.id} ctx={ctx} doc={d} type="forum" />)}</div>
-            </div>
           </div>
-        </section>
-      ) : null}
+        </div>
+      </section>
 
-      {videos.docs.length ? (
-        <section className="section">
+      <section className="section section--tight cv section--tint">
+        <div className="container">
+          <SectionHead title={t('home.issues')} href={href('/magazines')} more={t('section.viewAll')} />
+          <div className="shelf shelf--issues">
+            {issues.map((d) => <IssueCard key={d.id} ctx={ctx} doc={d} />)}
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--tight cv">
+        <div className="container">
+          <SectionHead title={t('home.books')} href={href('/books')} more={t('section.viewAll')} />
+          <div className="shelf">
+            {books.map((d) => <BookCard key={d.id} ctx={ctx} doc={d} />)}
+          </div>
+        </div>
+      </section>
+
+      {videos.length ? (
+        <section className="section section--tight cv section--tint">
           <div className="container">
             <SectionHead title={t('home.videos')} href={href('/videos')} more={t('section.viewAll')} />
             <div className="grid">
-              {videos.docs.map((d) => <Card key={d.id} ctx={ctx} doc={d} type="video" />)}
+              {videos.map((d) => <VideoTile key={d.id} ctx={ctx} doc={d} />)}
             </div>
           </div>
         </section>
       ) : null}
-
-      <section className="section section--tint">
-        <div className="container grid grid--wide" style={{ alignItems: 'center' }}>
-          <div className="stack">
-            <h2>{t('home.cta.title')}</h2>
-            <p style={{ color: 'var(--text-2)' }}>{t('home.cta.text')}</p>
-            <Link className="btn btn--primary" href={href('/contact')}>{t('nav.contact')}</Link>
-          </div>
-          <div className="side__box">
-            <h2>{t('newsletter.title')}</h2>
-            <p style={{ color: 'var(--text-2)', marginBlockEnd: '0.75rem', fontSize: 'var(--step--1)' }}>{t('newsletter.text')}</p>
-            <NewsletterForm lang={locale} labels={{ email: t('newsletter.email'), submit: t('newsletter.submit'), ok: t('newsletter.ok'), error: t('newsletter.error') }} />
-          </div>
-        </div>
-      </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(ld) }} />
     </>
   );
 }

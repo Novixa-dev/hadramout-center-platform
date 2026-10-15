@@ -222,3 +222,19 @@ export async function neighboursAndRelated(type: ContentType, docId: number): Pr
 export async function rowCount(type: ContentType): Promise<number> {
   return (await getRows(type)).length;
 }
+
+/** Newest (or soonest/oldest) documents of a type without any filtering — home page blocks and "more like this" lists. */
+export async function latest(type: ContentType, lang: string, limit: number, opts: { when?: 'upcoming' | 'past'; sort?: Sort; withCover?: boolean } = {}): Promise<Doc[]> {
+  const rows = await getRows(type);
+  let filtered = filterRows(rows, { when: opts.when });
+  if (opts.withCover) filtered = filtered.filter((r) => r.hasCover);
+  const ids = sortRows(filtered, opts.sort ?? 'newest')
+    .slice(0, limit)
+    .map((r) => r.id);
+  return getDocsByIds(CONTENT[type].slug, ids, lang, { light: true });
+}
+
+/** Authors ordered by number of works (home page "most published"). */
+export async function topAuthors(lang: string, limit: number): Promise<AuthorSummary[]> {
+  return (await listAuthors(lang)).sort((a, b) => b.count - a.count).slice(0, limit);
+}

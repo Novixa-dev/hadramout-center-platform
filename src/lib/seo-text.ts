@@ -25,7 +25,8 @@ export function cleanDescription(text: string | null | undefined): string {
     .trim();
 }
 
-export const titlePart = (title: string) => clip(title, 62);
+/** Leaves room for the " | site name" suffix so the full <title> stays near 60–70 characters. */
+export const titlePart = (title: string) => clip(title, 54);
 export const socialTitle = (title: string) => clip(title, 90);
 
 /** First non-empty candidate, cleaned and clipped to the search-result length. */

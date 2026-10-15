@@ -27,7 +27,7 @@ describe('seo text helpers', () => {
     assert.equal(describeText(null, undefined), '');
     assert.equal(describeText('قصير'), 'قصير', 'a short candidate is better than none');
   });
-  test('titlePart limits the <title> text', () => assert.ok(titlePart('عنوان '.repeat(40)).length <= 62));
+  test('titlePart limits the <title> text', () => assert.ok(titlePart('عنوان '.repeat(40)).length <= 54));
   test('isoOrUndefined never invents a date', () => {
     assert.equal(isoOrUndefined('2024-03-12'), '2024-03-12T00:00:00.000Z');
     assert.equal(isoOrUndefined('not a date'), undefined);

@@ -1,8 +1,8 @@
-/* The two Arabic Plex files live in /public/fonts (stable URL) so the layout can preload them for Arabic pages. */
-/* Self-hosted fonts (no third-party requests). Arabic + Latin subsets only; other scripts use system fonts. */
+/* Self-hosted fonts (no third-party requests). Arabic + Latin subsets only; other scripts use system fonts.
+   The Arabic Plex files and Naskh live in /public/fonts (stable URLs) so the layout can preload them for Arabic pages. */
 @font-face { font-family: 'Plex Arabic'; font-weight: 400; font-style: normal; font-display: swap; src: url('/fonts/plex-ar-400.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
 @font-face { font-family: 'Plex Arabic'; font-weight: 600 700; font-style: normal; font-display: swap; src: url('/fonts/plex-ar-600.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
 @font-face { font-family: 'Plex Arabic'; font-weight: 400 500; font-style: normal; font-display: swap; src: url('../fonts/plex-lat-400.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215; }
 @font-face { font-family: 'Plex Arabic'; font-weight: 600 700; font-style: normal; font-display: swap; src: url('../fonts/plex-lat-600.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215; }
-@font-face { font-family: 'Naskh'; font-weight: 400 700; font-style: normal; font-display: swap; src: url('../fonts/naskh-ar.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+@font-face { font-family: 'Naskh'; font-weight: 400 700; font-style: normal; font-display: swap; src: url('/fonts/naskh-ar-v1.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
 @font-face { font-family: 'Serif 4'; font-weight: 200 900; font-style: normal; font-display: swap; src: url('../fonts/serif4-lat.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215; }

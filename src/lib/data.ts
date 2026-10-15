@@ -181,6 +181,7 @@ export const getSite = cache(async (lang: string) => {
     email?: string;
     whatsapp?: { label?: string; number: string }[];
     social?: Record<string, string | undefined>;
+    reviewsEnabled?: boolean | null;
     translationMeta?: Doc['translationMeta'];
   };
 });
@@ -200,8 +201,22 @@ export async function listCategories(lang: string, kind: 'article' | 'book') {
   return res.docs as unknown as { id: number; name: string }[];
 }
 
-export async function listTimeline(lang: string) {
+export interface TimelineEntry {
+  id: number;
+  title: string;
+  body?: string | null;
+  era?: string | null;
+  yearFrom: number;
+  yearTo?: number | null;
+  source?: string | null;
+  sourceUrl?: string | null;
+  relatedArticle?: number | null;
+  reviewStatus?: 'pending' | 'reviewed' | null;
+  reviewedAt?: string | null;
+}
+
+export async function listTimeline(lang: string): Promise<TimelineEntry[]> {
   const payload = await getPayloadClient();
-  const res = await payload.find({ collection: 'timeline', where: { status: { equals: 'published' } }, sort: 'yearFrom', limit: 200, pagination: false, depth: 0, locale: lang as never, fallbackLocale: 'ar' });
-  return res.docs as unknown as { id: number; title: string; body?: string | null; era?: string | null; yearFrom: number; yearTo?: number | null; source?: string | null }[];
+  const res = await payload.find({ collection: 'timeline', where: { status: { equals: 'published' } }, sort: 'yearFrom', limit: 500, pagination: false, depth: 0, locale: lang as never, fallbackLocale: 'ar' });
+  return res.docs as unknown as TimelineEntry[];
 }

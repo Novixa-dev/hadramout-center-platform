@@ -95,36 +95,24 @@ export function PrintButton({ label }: { label: string }) {
   return <button type="button" className="btn btn--secondary btn--sm" onClick={() => window.print()}><Icon name="print" /> {label}</button>;
 }
 
-/** A−/A+ text size (3 steps, remembered) and a reading-progress bar. */
-export function ReadingTools({ smaller, larger }: { smaller: string; larger: string }) {
-  const bar = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      if (bar.current) bar.current.style.inlineSize = `${max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0}%`;
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-  const steps = ['sm', 'md', 'lg', 'xl'];
-  const change = (dir: 1 | -1) => {
-    const cur = document.documentElement.getAttribute('data-fs') ?? 'md';
-    const next = steps[Math.min(steps.length - 1, Math.max(0, steps.indexOf(cur) + dir))] as string;
-    if (next === 'md') document.documentElement.removeAttribute('data-fs');
-    else document.documentElement.setAttribute('data-fs', next);
+/** A read-only value (permalink, citation) with a copy button; the text stays selectable if the clipboard is blocked. */
+export function CopyField({ value, label, copied, mono = true }: { value: string; label: string; copied: string; mono?: boolean }) {
+  const [done, setDone] = useState(false);
+  const copy = async () => {
     try {
-      localStorage.setItem('hc-fs', next === 'md' ? '' : next);
+      await navigator.clipboard.writeText(value);
+      setDone(true);
+      setTimeout(() => setDone(false), 1800);
     } catch {
-      /* ignore */
+      /* clipboard unavailable */
     }
   };
   return (
-    <>
-      <div className="progress" ref={bar} aria-hidden="true" />
-      <button type="button" className="btn btn--secondary btn--sm" onClick={() => change(-1)} aria-label={smaller}><Icon name="textsize" /> −</button>
-      <button type="button" className="btn btn--secondary btn--sm" onClick={() => change(1)} aria-label={larger}><Icon name="textsize" /> +</button>
-    </>
+    <div className="permalink" style={mono ? undefined : { direction: 'inherit', textAlign: 'start' }}>
+      <code>{value}</code>
+      <button type="button" className="btn btn--secondary btn--sm" onClick={copy} aria-label={label}>
+        <Icon name={done ? 'check' : 'copy'} /> <span aria-live="polite">{done ? copied : label}</span>
+      </button>
+    </div>
   );
 }

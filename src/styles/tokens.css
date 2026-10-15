@@ -1,4 +1,5 @@
-/* Design tokens — derived from the Center's official logo: teal-green #2A836E + gold #C49952 on warm paper. */
+/* Design tokens — derived from the Center's official logo: teal-green #2A836E + gold #C49952 on warm paper.
+   Scholarly-editorial system (v3): serif display + sans UI, one spacing scale, three radii, two elevations. */
 @layer reset, tokens, base, layout, components, pages, utilities, print;
 
 @layer tokens {
@@ -11,13 +12,14 @@
     --gold-50: #fbf6ec; --gold-100: #f4e8cf; --gold-200: #e8d1a0; --gold-300: #dbb775; --gold-400: #cfa860;
     --gold-500: #c49952; --gold-600: #a97f37; --gold-700: #86632b; --gold-800: #644a22; --gold-900: #423119;
 
-    /* semantic colors: light | dark */
+    /* semantic colors: light | dark  (text pairs verified ≥ 4.5:1, see docs/09-redesign) */
     --bg: light-dark(#fffbf5, #0e1815);
     --surface: light-dark(#ffffff, #14211d);
     --surface-2: light-dark(#faf4ea, #1a2b26);
     --surface-3: light-dark(#f3eadb, #223630);
     --border: light-dark(#e8dfd0, #2a3c36);
     --border-strong: light-dark(#d2c6b0, #3c534b);
+    --rule: light-dark(#dccfb8, #34493f);
     --text: light-dark(#1f2421, #ece8df);
     --text-2: light-dark(#3c423d, #cfd5cd);
     --muted: light-dark(#5b5f58, #a8b1aa);
@@ -37,9 +39,11 @@
     --hero-bg: light-dark(var(--green-900), #0a1411);
     --hero-text: #f6f1e7;
     --pattern: light-dark(var(--green-700), var(--gold-400));
+    --scrim: rgb(10 20 16 / 0.55);
 
-    /* type */
+    /* type — display = Naskh/Serif (titles), ui = Plex (everything else), read = Naskh/Serif (long text) */
     --font-ui: 'Plex Arabic', system-ui, -apple-system, 'Segoe UI', 'Noto Sans', 'Noto Sans Arabic', Tahoma, sans-serif;
+    --font-display: 'Naskh', 'Serif 4', 'Noto Naskh Arabic', 'Traditional Arabic', Georgia, 'Times New Roman', serif;
     --font-read-ar: 'Naskh', 'Noto Naskh Arabic', 'Traditional Arabic', serif;
     --font-read-latin: 'Serif 4', Georgia, 'Times New Roman', serif;
     --step--2: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
@@ -52,20 +56,22 @@
     --step-5: clamp(2.7rem, 1.7rem + 4.5vw, 4.8rem);
     --lh-ui: 1.65;
     --lh-read: 2;
+    --lh-title: 1.45;
 
-    /* space (4px grid), radius, shadow, motion */
+    /* space (4px grid), radius, elevation, motion, layers */
     --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.5rem; --space-6: 2rem; --space-8: 3rem; --space-10: 4rem; --space-12: 6rem;
-    --section: clamp(3rem, 6vw, 6rem);
+    --section: clamp(2.75rem, 5.5vw, 5rem);
     --gutter: clamp(1rem, 4vw, 2rem);
-    --container: 1200px;
+    --container: 1240px;
     --prose: 68ch;
-    --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px; --r-full: 999px;
+    --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 22px; --r-full: 999px;
     --shadow-1: 0 1px 2px rgb(60 40 10 / 0.06), 0 1px 3px rgb(60 40 10 / 0.05);
-    --shadow-2: 0 6px 16px -4px rgb(60 40 10 / 0.12), 0 2px 6px rgb(60 40 10 / 0.06);
-    --shadow-3: 0 18px 40px -12px rgb(60 40 10 / 0.22);
+    --shadow-2: 0 10px 28px -10px rgb(60 40 10 / 0.22), 0 2px 6px rgb(60 40 10 / 0.07);
+    --shadow-3: 0 22px 48px -14px rgb(40 30 10 / 0.3);
     --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --t-fast: 120ms; --t-med: 200ms; --t-slow: 320ms;
     --header-h: 4.25rem;
+    --z-header: 50; --z-drawer: 90; --z-dialog: 120; --z-toast: 200;
   }
 
   :root[data-theme='light'] { color-scheme: light; }
@@ -73,15 +79,19 @@
 
   @supports not (color: light-dark(#000, #fff)) {
     :root {
-      --bg: #fffbf5; --surface: #fff; --surface-2: #faf4ea; --surface-3: #f3eadb; --border: #e8dfd0; --border-strong: #d2c6b0;
+      --bg: #fffbf5; --surface: #fff; --surface-2: #faf4ea; --surface-3: #f3eadb; --border: #e8dfd0; --border-strong: #d2c6b0; --rule: #dccfb8;
       --text: #1f2421; --text-2: #3c423d; --muted: #5b5f58; --brand: #226a5a; --brand-strong: #1c5547; --brand-fill: #226a5a; --brand-soft: #eef7f4;
       --accent: #c49952; --accent-text: #86632b; --accent-soft: #fbf6ec; --focus: #1a5fb4; --success: #1e7a4a; --warning: #9a6700; --danger: #b3261e;
       --hero-bg: #174438; --pattern: #226a5a;
     }
   }
 
-  /* user font-size control: A− / A / A+ */
+  /* reader preferences (stored per browser): size, line spacing, width */
   :root[data-fs='sm'] { --fs-scale: 0.92; }
   :root[data-fs='lg'] { --fs-scale: 1.12; }
   :root[data-fs='xl'] { --fs-scale: 1.25; }
+  :root[data-lh='tight'] { --lh-read: 1.75; }
+  :root[data-lh='loose'] { --lh-read: 2.25; }
+  :root[data-rw='narrow'] { --prose: 56ch; }
+  :root[data-rw='wide'] { --prose: 78ch; }
 }

@@ -125,7 +125,7 @@ async function auditPage(url) {
   for (const s of ld) {
     try {
       const data = JSON.parse(s.text);
-      for (const d of Array.isArray(data) ? data : [data]) row.jsonld.push(d['@type']);
+      for (const d of Array.isArray(data) ? data : [data]) for (const n of d['@graph'] ?? [d]) row.jsonld.push(n['@type']);
     } catch {
       add(path, 'error', 'invalid JSON-LD');
     }

@@ -1,6 +1,7 @@
 import { authorsOf, coverOf, displayDate, makeCtx, isLocale } from './ctx.ts';
 import { typeFromRoute } from './content-types.ts';
 import { getDoc, getSite } from './data.ts';
+import { getPayloadClient } from './runtime.ts';
 import { loadConfig } from '../config.ts';
 import { drawable, loadCoverBytes, type OgInput } from './og.ts';
 
@@ -9,6 +10,7 @@ const isArabicText = (s: string) => /\p{Script=Arabic}/u.test(s);
 
 /** Card for one document of the archive; null when it does not exist or is not published. */
 export async function docCard(lang: string, kind: string, id: number): Promise<{ input: OgInput; version: string } | null> {
+  if (kind === 'pages') return staticPageCard(lang, id);
   const info = typeFromRoute(kind);
   if (!info || !isLocale(lang)) return null;
   let useLang = lang;
@@ -48,6 +50,29 @@ export async function docCard(lang: string, kind: string, id: number): Promise<{
       host: host(),
     },
   };
+}
+
+/** Card for a CMS page (about, privacy, terms…): its own title under the institution name. */
+async function staticPageCard(lang: string, id: number): Promise<{ input: OgInput; version: string } | null> {
+  if (!isLocale(lang)) return null;
+  const payload = await getPayloadClient();
+  const find = async (l: string) => {
+    try {
+      return (await payload.findByID({ collection: 'pages', id, depth: 0, locale: l as never, fallbackLocale: 'ar', overrideAccess: false })) as unknown as { title: string; updatedAt?: string; status?: string };
+    } catch {
+      return null;
+    }
+  };
+  let page = await find(lang);
+  let useLang = lang;
+  if (page && !drawable(page.title)) {
+    page = await find('ar');
+    useLang = 'ar';
+  }
+  if (!page) return null;
+  const ctx = makeCtx(useLang);
+  const site = await getSite(useLang);
+  return { version: page.updatedAt ?? '', input: { dir: isArabicText(page.title) ? 'rtl' : ctx.lang.dir, org: drawable(site.name) ? site.name : (await getSite('ar')).name, kicker: ctx.t('og.archive'), title: page.title, host: host() } };
 }
 
 const PAGE_TITLES: Record<string, { title: string; lead?: string }> = {

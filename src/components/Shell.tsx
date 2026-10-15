@@ -1,37 +1,40 @@
 import Link from 'next/link';
 import type { Ctx } from '../lib/ctx.ts';
 import { LANGUAGES, POPULAR_CODES } from '../i18n/languages.ts';
+import { clip } from '../lib/seo-text.ts';
 import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
 import { NavLinks } from './client/NavLinks.tsx';
 import { NavMore } from './client/NavMore.tsx';
+import { SearchToggle } from './client/SearchToggle.tsx';
+import { NewsletterForm } from './client/NewsletterForm.tsx';
+import type { SearchLabels } from './client/SearchBox.tsx';
 import type { getSite } from '../lib/data.ts';
 
 type Site = Awaited<ReturnType<typeof getSite>>;
 
-export const NAV = [
+/** Sections that stay visible in the header; everything else lives under "More" so nothing is crowded. */
+const PRIMARY = [
   { key: 'nav.news', path: '/news' },
   { key: 'nav.articles', path: '/articles' },
   { key: 'nav.books', path: '/books' },
   { key: 'nav.magazines', path: '/magazines' },
   { key: 'nav.events', path: '/events' },
-  { key: 'nav.forum', path: '/forum' },
   { key: 'nav.videos', path: '/videos' },
+] as const;
+
+const SECONDARY = [
+  { key: 'nav.topics', path: '/topics' },
+  { key: 'nav.forum', path: '/forum' },
+  { key: 'nav.authors', path: '/authors' },
+  { key: 'nav.timeline', path: '/timeline' },
   { key: 'nav.about', path: '/about' },
   { key: 'nav.contact', path: '/contact' },
 ] as const;
 
-/** Primary sections stay visible in the header; the rest live under "More" so nothing is crowded. */
-const PRIMARY = NAV.slice(0, 5);
-const SECONDARY = [
-  { key: 'nav.forum', path: '/forum' },
-  { key: 'nav.about', path: '/about' },
-  { key: 'nav.timeline', path: '/timeline' },
-  { key: 'nav.authors', path: '/authors' },
-  { key: 'nav.contact', path: '/contact' },
-] as const;
+export const NAV = [...PRIMARY, ...SECONDARY] as const;
 
 export interface LangOption {
   code: string;
@@ -44,6 +47,24 @@ export interface LangOption {
 
 export function langOptions(readyCodes: Set<string>): LangOption[] {
   return LANGUAGES.map((l) => ({ code: l.code, native: l.native, english: l.english, dir: l.dir, popular: (POPULAR_CODES as readonly string[]).includes(l.code), ready: readyCodes.has(l.code) }));
+}
+
+const KINDS = ['news', 'articles', 'books', 'magazines', 'events', 'forum-events', 'videos'] as const;
+
+export function searchLabels(ctx: Ctx): SearchLabels {
+  const { t } = ctx;
+  return {
+    label: t('nav.search'),
+    placeholder: t('search.placeholder'),
+    submit: t('home.search.submit'),
+    loading: t('search.suggest.loading'),
+    none: t('search.suggest.none'),
+    viewAll: t('search.suggest.viewAll', { q: '{q}' }),
+    recent: t('search.recent'),
+    clearRecent: t('search.recent.clear'),
+    count: t('search.suggest.count', { count: '{count}' }),
+    kinds: Object.fromEntries(KINDS.map((k) => [k, t(`type.${k}`)])),
+  };
 }
 
 export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: LangOption[] }) {
@@ -59,17 +80,20 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           </span>
         </Link>
         <nav className="nav" aria-label={t('nav.main')}>
-          <NavLinks items={[...PRIMARY, { key: 'nav.videos', path: '/videos' }].map((n) => ({ href: href(n.path), label: t(n.key) }))}>
+          <NavLinks items={PRIMARY.map((n) => ({ href: href(n.path), label: t(n.key) }))}>
             <NavMore label={t('nav.more')} items={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} />
           </NavLinks>
         </nav>
         <div className="header-tools">
-          <Link className="icon-btn" href={href('/search')} aria-label={t('nav.search')}>
-            <Icon name="search" />
-          </Link>
+          <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
           <LangPicker current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
-          <ThemeToggle label={t('theme.toggle')} />
-          <MobileMenu label={t('nav.menu')} closeLabel={t('nav.close')} items={[...NAV.map((n) => ({ href: href(n.path), label: t(n.key) })), { href: href('/authors'), label: t('nav.authors') }, { href: href('/timeline'), label: t('nav.timeline') }]} />
+          <span className="theme-desktop"><ThemeToggle label={t('theme.toggle')} /></span>
+          <MobileMenu
+            label={t('nav.menu')}
+            closeLabel={t('nav.close')}
+            items={[{ href: href('/'), label: t('nav.home') }, ...NAV.map((n) => ({ href: href(n.path), label: t(n.key) })), { href: href('/saved'), label: t('saved.title') }]}
+            footer={<ThemeToggle label={t('theme.toggle')} />}
+          />
         </div>
       </div>
     </header>
@@ -90,46 +114,18 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
   return (
     <footer className="site-footer pattern">
       <div className="container">
+        <div className="footer-news">
+          <div>
+            <h2>{t('newsletter.title')}</h2>
+            <p>{t('newsletter.text')}</p>
+          </div>
+          <NewsletterForm lang={ctx.lang.code} variant="inline" labels={{ email: t('newsletter.email'), submit: t('newsletter.submit'), ok: t('newsletter.ok'), error: t('newsletter.error') }} />
+        </div>
         <div className="site-footer__grid">
           <div>
             <h2>{site.name}</h2>
-            <p style={{ color: '#cfe0d9', fontSize: 'var(--step--1)' }}>{site.tagline}</p>
-          </div>
-          <div>
-            <h2>{t('footer.explore')}</h2>
-            <ul>
-              {NAV.slice(0, 7).map((n) => (
-                <li key={n.path}>
-                  <Link href={href(n.path)}>{t(n.key)}</Link>
-                </li>
-              ))}
-              <li><Link href={href('/authors')}>{t('nav.authors')}</Link></li>
-              <li><Link href={href('/timeline')}>{t('nav.timeline')}</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h2>{t('footer.about')}</h2>
-            <ul>
-              <li><Link href={href('/about')}>{t('nav.about')}</Link></li>
-              <li><Link href={href('/contact')}>{t('nav.contact')}</Link></li>
-              <li><Link href={href('/search')}>{t('nav.search')}</Link></li>
-              <li><Link href={href('/saved')}>{t('saved.title')}</Link></li>
-            </ul>
-            <h2 style={{ marginBlockStart: '1.25rem' }}>{t('footer.legal')}</h2>
-            <ul>
-              <li><Link href={href('/privacy')}>{t('footer.privacy')}</Link></li>
-              <li><Link href={href('/terms')}>{t('footer.terms')}</Link></li>
-              <li><Link href={href('/accessibility')}>{t('footer.accessibility')}</Link></li>
-              <li><a href={`/feeds/${ctx.lang.code}/all.xml`}>{t('footer.rss')}</a></li>
-            </ul>
-          </div>
-          <div>
-            <h2>{t('contact.title')}</h2>
-            <ul>
-              {site.address ? <li>{site.address}</li> : null}
-              {site.email ? <li><a href={`mailto:${site.email}`}>{site.email}</a></li> : null}
-            </ul>
-            <div className="social" style={{ marginBlockStart: '0.9rem' }}>
+            {site.description ? <p className="site-footer__about">{clip(site.description, 230)}</p> : null}
+            <div className="social" style={{ marginBlockStart: '1rem' }}>
               {links.filter((l) => l.url).map((l) => (
                 <a key={l.label} href={l.url} target="_blank" rel="noopener noreferrer" aria-label={`${l.label} (${t('a11y.newWindow')})`} title={l.label}>
                   <SocialIcon name={l.name} />
@@ -141,6 +137,41 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
                 </a>
               ))}
             </div>
+          </div>
+          <nav aria-label={t('footer.explore')}>
+            <h3>{t('footer.explore')}</h3>
+            <ul>
+              {[...PRIMARY, SECONDARY[0], SECONDARY[1]].map((n) => (
+                <li key={n.path}><Link href={href(n.path)}>{t(n.key)}</Link></li>
+              ))}
+            </ul>
+          </nav>
+          <nav aria-label={t('footer.research')}>
+            <h3>{t('footer.research')}</h3>
+            <ul>
+              <li><Link href={href('/search')}>{t('nav.search')}</Link></li>
+              <li><Link href={href('/authors')}>{t('nav.authors')}</Link></li>
+              <li><Link href={href('/timeline')}>{t('nav.timeline')}</Link></li>
+              <li><Link href={href('/saved')}>{t('saved.title')}</Link></li>
+              <li><a href={`/feeds/${ctx.lang.code}/all.xml`}>{t('footer.rss')}</a></li>
+            </ul>
+          </nav>
+          <nav aria-label={t('footer.about')}>
+            <h3>{t('footer.about')}</h3>
+            <ul>
+              <li><Link href={href('/about')}>{t('nav.about')}</Link></li>
+              <li><Link href={href('/contact')}>{t('nav.contact')}</Link></li>
+              <li><Link href={href('/privacy')}>{t('footer.privacy')}</Link></li>
+              <li><Link href={href('/terms')}>{t('footer.terms')}</Link></li>
+              <li><Link href={href('/accessibility')}>{t('footer.accessibility')}</Link></li>
+            </ul>
+          </nav>
+          <div>
+            <h3>{t('contact.title')}</h3>
+            <ul>
+              {site.address ? <li style={{ display: 'flex', gap: '0.5rem', alignItems: 'start' }}><Icon name="pin" /><span>{site.address}</span></li> : null}
+              {site.email ? <li><a href={`mailto:${site.email}`} style={{ direction: 'ltr', unicodeBidi: 'plaintext' }}><Icon name="mail" />&nbsp;{site.email}</a></li> : null}
+            </ul>
           </div>
         </div>
         <div className="site-footer__legal">
