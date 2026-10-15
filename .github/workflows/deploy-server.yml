@@ -1,0 +1,134 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-server
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://hadramout-center.novixa.dev
+  DEPLOY_PATH: /var/www/hadramout-center
+  KEEP_RELEASES: 5
+  # Server's ED25519 host key fingerprint (ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub).
+  HOST_KEY_FINGERPRINT: SHA256:d+JQJVamnSYO2Wv/XHo9I3hGEp/id9TRXM27+QI6pTU
+
+jobs:
+  deploy:
+    name: Validate & Deploy via SSH
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://hadramout-center.novixa.dev
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Platform Audit & Schema Validation
+        run: node scripts/validate.js
+
+      - name: Verify deployment secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing repository secret: $name"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: Configure SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          # Strip CRs and surrounding blank lines that creep in when pasting the key.
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' | sed '/^[[:space:]]*$/d' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null \
+            || { echo "::error::DEPLOY_SSH_KEY is not a valid private key"; exit 1; }
+
+          # Trust the server only if its scanned host key matches the pinned fingerprint.
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" 2>/dev/null > ~/.ssh/known_hosts
+          scanned=$(ssh-keygen -lf ~/.ssh/known_hosts | awk '{print $2}')
+          if [ "$scanned" != "$HOST_KEY_FINGERPRINT" ]; then
+            echo "::error::Host key mismatch: got '${scanned}', expected '${HOST_KEY_FINGERPRINT}'"
+            exit 1
+          fi
+          chmod 644 ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o BatchMode=yes \
+            "${DEPLOY_USER}@${DEPLOY_HOST}" true \
+            || { echo "::error::SSH login failed — is the deploy public key in the server's authorized_keys?"; exit 1; }
+          echo "SSH connection verified"
+
+      # Only public runtime files are shipped; docs, strategy files and scripts stay in the repo.
+      - name: Assemble release bundle
+        run: |
+          mkdir -p dist
+          cp -r index.html styles.css app.js data.js sw.js \
+                manifest.webmanifest favicon.svg robots.txt sitemap.xml \
+                assets dist/
+          echo "${GITHUB_SHA}" > dist/version.txt
+
+      - name: Upload release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          RELEASE="${DEPLOY_PATH}/releases/${GITHUB_SHA}"
+          SSH="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+          $SSH "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${RELEASE}'"
+          rsync -az --delete -e "$SSH" dist/ "${DEPLOY_USER}@${DEPLOY_HOST}:${RELEASE}/"
+
+      - name: Activate release
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s <<EOF
+          set -euo pipefail
+          cd '${DEPLOY_PATH}'
+          chmod -R a+rX 'releases/${GITHUB_SHA}'
+          ln -sfn 'releases/${GITHUB_SHA}' current.tmp
+          mv -Tf current.tmp current
+          ls -1dt releases/*/ | tail -n +$((${KEEP_RELEASES} + 1)) | xargs -r rm -rf
+          echo "Active release: \$(readlink current)"
+          EOF
+
+      - name: Health check
+        run: |
+          for i in 1 2 3 4 5; do
+            served=$(curl -fsS "${SITE_URL}/version.txt?nocache=${GITHUB_SHA}" || true)
+            if [ "$served" = "${GITHUB_SHA}" ]; then
+              echo "Live: ${SITE_URL} is serving ${GITHUB_SHA}"
+              exit 0
+            fi
+            echo "Attempt $i: served version '${served}' — retrying..."
+            sleep 5
+          done
+          echo "::error::${SITE_URL} is not serving ${GITHUB_SHA}"
+          exit 1
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
