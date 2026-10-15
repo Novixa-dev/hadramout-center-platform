@@ -6,8 +6,8 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 /** /og/{lang}/{home|articles|authors|…}.png — branded social card for a list or landing page. */
-export async function GET(req: Request, { params }: { params: Promise<{ lang: string; key: string }> }) {
-  const { lang, key } = await params;
+export async function GET(req: Request, { params }: { params: Promise<{ lang: string; kind: string }> }) {
+  const { lang, kind: key } = await params;
   if (!allow(`og:${clientKey(req)}`, 90, 60)) return new Response('Too many requests', { status: 429, headers: { 'retry-after': '60' } });
   try {
     const card = await pageCard(lang, key.replace(/\.png$/i, ''));

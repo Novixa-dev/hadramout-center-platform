@@ -43,6 +43,7 @@ export const Site: GlobalConfig = {
         { name: 'youtube', type: 'text', label: 'YouTube' },
       ],
     },
+    { name: 'reviewsEnabled', type: 'checkbox', defaultValue: true, label: L('تفعيل مراجعات القراء', 'Enable reader reviews'), admin: { description: L('تظهر المراجعة بعد موافقة المحرر فقط.', 'A review is shown only after an editor approves it.') } },
     { name: 'translationMeta', type: 'json', admin: { hidden: true } },
   ],
 };

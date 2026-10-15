@@ -80,6 +80,7 @@ export interface Config {
     timeline: Timeline;
     media: Media;
     glossary: Glossary;
+    reviews: Review;
     messages: Message;
     subscribers: Subscriber;
     'translation-usage': TranslationUsage;
@@ -105,6 +106,7 @@ export interface Config {
     timeline: TimelineSelect<false> | TimelineSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     glossary: GlossarySelect<false> | GlossarySelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     messages: MessagesSelect<false> | MessagesSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
     'translation-usage': TranslationUsageSelect<false> | TranslationUsageSelect<true>;
@@ -627,6 +629,8 @@ export interface Author {
   createdAt: string;
 }
 /**
+ * Two levels: a main topic, then sub-categories (magazine columns etc.).
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
@@ -634,6 +638,18 @@ export interface Category {
   id: number;
   name: string;
   kind: 'article' | 'book';
+  /**
+   * Leave empty to make this a top-level topic.
+   */
+  parent?: (number | null) | Category;
+  /**
+   * Lower comes first.
+   */
+  order?: number | null;
+  /**
+   * Shown on the topic page and in search results. Write in Arabic only.
+   */
+  description?: string | null;
   translationMeta?:
     | {
         [k: string]: unknown;
@@ -951,6 +967,13 @@ export interface Timeline {
    * Cite the scholarly reference for each event.
    */
   source?: string | null;
+  sourceUrl?: string | null;
+  /**
+   * Link the event to a published study in the archive when one exists.
+   */
+  relatedArticle?: (number | null) | Article;
+  reviewStatus?: ('pending' | 'reviewed') | null;
+  reviewedAt?: string | null;
   status: 'draft' | 'published';
   translationMeta?:
     | {
@@ -1077,6 +1100,23 @@ export interface Glossary {
     | 'la';
   translation: string;
   kind?: ('term' | 'person' | 'place' | 'org' | 'keep') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  targetType: 'book' | 'article' | 'magazine';
+  targetId: number;
+  rating: number;
+  name?: string | null;
+  body: string;
+  lang?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  fingerprint?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1325,6 +1365,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'glossary';
         value: number | Glossary;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
       } | null)
     | ({
         relationTo: 'messages';
@@ -1598,6 +1642,9 @@ export interface AuthorsSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
   kind?: T;
+  parent?: T;
+  order?: T;
+  description?: T;
   translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1626,6 +1673,10 @@ export interface TimelineSelect<T extends boolean = true> {
   yearFrom?: T;
   yearTo?: T;
   source?: T;
+  sourceUrl?: T;
+  relatedArticle?: T;
+  reviewStatus?: T;
+  reviewedAt?: T;
   status?: T;
   translationMeta?: T;
   updatedAt?: T;
@@ -1693,6 +1744,22 @@ export interface GlossarySelect<T extends boolean = true> {
   lang?: T;
   translation?: T;
   kind?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  targetType?: T;
+  targetId?: T;
+  rating?: T;
+  name?: T;
+  body?: T;
+  lang?: T;
+  status?: T;
+  fingerprint?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1862,6 +1929,10 @@ export interface Site {
     telegram?: string | null;
     youtube?: string | null;
   };
+  /**
+   * A review is shown only after an editor approves it.
+   */
+  reviewsEnabled?: boolean | null;
   translationMeta?:
     | {
         [k: string]: unknown;
@@ -1901,6 +1972,7 @@ export interface SiteSelect<T extends boolean = true> {
         telegram?: T;
         youtube?: T;
       };
+  reviewsEnabled?: T;
   translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;

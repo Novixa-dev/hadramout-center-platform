@@ -14,6 +14,7 @@ import { Categories } from './collections/Categories.ts';
 import { News, Articles, Books, Magazines, Events, ForumEvents, Videos } from './collections/content.ts';
 import { Pages } from './collections/Pages.ts';
 import { Timeline } from './collections/Timeline.ts';
+import { Reviews } from './collections/Reviews.ts';
 import { Glossary } from './collections/Glossary.ts';
 import { Messages, Subscribers, TranslationUsage } from './collections/Forms.ts';
 import { Site } from './globals/Site.ts';
@@ -32,7 +33,7 @@ export default buildConfig({
   },
   i18n: { supportedLanguages: { ar, en }, fallbackLanguage: 'ar' },
   localization: { locales: PAYLOAD_LOCALES, defaultLocale: DEFAULT_LOCALE, fallback: true },
-  collections: [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Authors, Categories, Pages, Timeline, Media, Glossary, Messages, Subscribers, TranslationUsage, Users],
+  collections: [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, TranslationUsage, Users],
   globals: [Site],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
