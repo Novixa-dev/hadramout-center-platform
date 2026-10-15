@@ -47,7 +47,7 @@ export default async function Home({ params }: Props) {
   const [nArticles, nBooks, nIssues, nEvents, nForum, nNews] = counts;
   const issue = issues[0];
   const events = upcoming.length ? upcoming : recentEvents;
-  const roots = topics.roots.filter((r) => r.total > 0).slice(0, 8);
+  const roots = topics.roots.filter((r) => r.total > 0 && r.children.length > 0).slice(0, 8);
   const fmt = new Intl.NumberFormat('en');
 
   const stats: [string, number, string][] = [

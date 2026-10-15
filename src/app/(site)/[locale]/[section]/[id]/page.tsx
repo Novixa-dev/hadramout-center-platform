@@ -221,12 +221,18 @@ export default async function DetailPage({ params }: Props) {
   const header = (
     <header className="article-header" data-print-source={`${site.name} — ${url}`}>
       <p className="cluster" style={{ '--gap': '0.75rem' } as React.CSSProperties}>
-        <Link className="kicker" href={href(`/${section}`)}>{t(TITLE_KEY[type])}</Link>
-        {category ? <Link className="kicker" href={href(type === 'article' ? `/topics/${category.id}` : `/${section}`)}>{category.name}</Link> : null}
+        {category && type === 'article' ? (
+          <Link className="kicker" href={href(`/topics/${category.id}`)}>{category.name}</Link>
+        ) : (
+          <>
+            <Link className="kicker" href={href(`/${section}`)}>{t(TITLE_KEY[type])}</Link>
+            {category ? <span className="kicker">{category.name}</span> : null}
+          </>
+        )}
         {type === 'magazine' ? <span className="kicker">{t('meta.issue', { n: Number(doc.issueNumber ?? 0) })}</span> : null}
       </p>
       <h1 className={`article-title ${doc.title.length > 90 ? 'article-title--sm' : ''}`} {...textAttrs(tr.titleLang, locale)}>{doc.title}</h1>
-      {byline}
+      {type === 'book' || type === 'magazine' ? null : byline}
     </header>
   );
 

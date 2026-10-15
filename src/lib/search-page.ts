@@ -61,7 +61,7 @@ export async function runSearch(p: SearchParams): Promise<SearchResult> {
   const rank = new Map(hitRows.map((r) => [r.id, r.id]));
   const sorted = sortRows(matched, p.sort ?? 'relevance', rank) as typeof hitRows;
 
-  const pages = Math.max(1, Math.ceil(sorted.length / SEARCH_PER_PAGE));
+  const pages = Math.max(1, Math.ceil(sorted.length / SEARCH_PER_PAGE)); // pages beyond the kept hits are not offered
   const page = Math.min(Math.max(1, p.page), pages);
   const slice = sorted.slice((page - 1) * SEARCH_PER_PAGE, page * SEARCH_PER_PAGE);
 
@@ -74,7 +74,9 @@ export async function runSearch(p: SearchParams): Promise<SearchResult> {
     return doc ? [{ doc, kind: r.slug }] : [];
   });
 
-  return { total: sorted.length, kindCounts, counts, items, pages, page, usedLang: res.lang, authorNames, popular: sorted.length === 0 ? popularQueries(db) : [] };
+  // the index can match more than we keep for faceting (MAX_HITS); without extra filters report the exact total
+  const exact = !p.year && !p.author ? res.total : sorted.length;
+  return { total: exact, kindCounts, counts, items, pages, page, usedLang: res.lang, authorNames, popular: sorted.length === 0 ? popularQueries(db) : [] };
 }
 
 /** Best-effort statistics of what visitors look for (used for the "popular searches" hints). */

@@ -25,7 +25,9 @@ export default async function TopicsPage({ params }: Props) {
   const ctx = makeCtx(locale);
   const { t, href, lang } = ctx;
   const [topics, site] = await Promise.all([getTopics(locale), getSite(locale)]);
-  const roots = topics.roots.filter((r) => r.total > 0);
+  // curated topics have sub-categories; stray single categories are listed together under "other"
+  const roots = topics.roots.filter((r) => r.total > 0 && r.children.length > 0);
+  const others = topics.roots.filter((r) => r.total > 0 && r.children.length === 0);
   const ld = [
     collectionJsonLd({ name: t('topics.title'), description: t('topics.lead'), url: absolute(`/${lang.code}/topics`), lang: lang.tag, org: { name: site.name, origin: absolute(''), logo: absolute('/icons/icon-512.png') }, items: roots.map((r) => ({ name: r.name, url: absolute(`/${lang.code}/topics/${r.id}`) })) }),
     breadcrumbJsonLd([{ name: t('nav.home'), url: absolute(`/${lang.code}`) }, { name: t('topics.title'), url: absolute(`/${lang.code}/topics`) }]),
@@ -49,6 +51,15 @@ export default async function TopicsPage({ params }: Props) {
               ) : null}
             </article>
           ))}
+          {others.length ? (
+            <article className="topic-card">
+              <p className="topic-card__count">{t('topics.count', { count: others.reduce((s, r) => s + r.total, 0) })}</p>
+              <h2 style={{ fontSize: 'var(--step-1)' }}>{t('topics.other')}</h2>
+              <ul aria-label={t('topics.sub')}>
+                {others.map((c) => <li key={c.id}><Link href={href(`/topics/${c.id}`)}>{c.name}</Link> <span aria-hidden="true">({c.total})</span></li>)}
+              </ul>
+            </article>
+          ) : null}
         </div>
         {topics.uncategorised > 0 ? <p className="notice" style={{ marginBlockStart: 'var(--space-6)' }}>{t('topics.uncategorised', { count: topics.uncategorised })} <Link href={href('/articles')}>{t('topics.browseAll')}</Link></p> : null}
       </div>
