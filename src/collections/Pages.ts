@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { contentAccess, L, localizedText } from './shared.ts';
+import { cleanBody, contentAccess, L, localizedText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Pages: CollectionConfig = {
@@ -30,6 +30,7 @@ export const Pages: CollectionConfig = {
       name: 'body',
       type: 'textarea',
       localized: true,
+      hooks: { beforeValidate: [cleanBody] },
       label: L('النص', 'Body'),
       admin: { components: { Field: '/admin/fields/HtmlField#HtmlField' } },
     },
