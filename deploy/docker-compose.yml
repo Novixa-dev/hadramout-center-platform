@@ -25,9 +25,11 @@ services:
   tools:
     profiles: ["tools"]
     image: ${TOOLS_IMAGE:-hadramout-center-platform-tools:latest}
+    user: "1000:1000"   # same uid as the app (node) so files written to /data stay writable by it
     env_file: .env
     environment:
       NODE_ENV: production
+      HOME: /tmp
     volumes:
       - hc_data:/data
 

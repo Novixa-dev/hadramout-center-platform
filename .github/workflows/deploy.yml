@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       with_tools:
-        description: "Also ship the tools image (needed for the first deploy: seed + import:images)"
+        description: "Force shipping the tools image (otherwise only shipped when the server does not have it yet)"
         type: boolean
         default: false
       tag:
@@ -94,6 +94,16 @@ jobs:
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes -o BatchMode=yes "${DEPLOY_USER}@${DEPLOY_HOST}" true \
             || { echo "::error::SSH login failed — is the deploy public key in authorized_keys?"; exit 1; }
 
+      - name: Does the server already have the tools image?
+        if: ${{ github.event.inputs.tag == '' }}
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          have=$(ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "docker image inspect ${IMAGE}-tools:latest >/dev/null 2>&1 && echo yes || echo no")
+          if [ "$have" = "no" ] || [ "${{ github.event.inputs.with_tools }}" = "true" ]; then echo "WITH_TOOLS=true" >> "$GITHUB_ENV"; else echo "WITH_TOOLS=false" >> "$GITHUB_ENV"; fi
+
       - uses: docker/setup-buildx-action@v3
         if: ${{ github.event.inputs.tag == '' }}
 
@@ -109,7 +119,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build tools image
-        if: ${{ github.event.inputs.tag == '' && github.event.inputs.with_tools == 'true' }}
+        if: ${{ github.event.inputs.tag == '' && env.WITH_TOOLS == 'true' }}
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -127,7 +137,7 @@ jobs:
         run: |
           SSH="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
           IMAGES="${IMAGE}:${TAG}"
-          if [ "${{ github.event.inputs.with_tools }}" = "true" ]; then IMAGES="$IMAGES ${IMAGE}-tools:latest"; fi
+          if [ "$WITH_TOOLS" = "true" ]; then IMAGES="$IMAGES ${IMAGE}-tools:latest"; fi
           docker save $IMAGES | gzip | $SSH "${DEPLOY_USER}@${DEPLOY_HOST}" "gunzip | docker load"
 
       - name: Upload deploy files
@@ -136,9 +146,10 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
         run: |
           SSH="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
-          $SSH "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${APP_DIR}/scripts'"
+          $SSH "${DEPLOY_USER}@${DEPLOY_HOST}" "mkdir -p '${APP_DIR}/scripts' '${APP_DIR}/server'"
           rsync -az -e "$SSH" deploy/docker-compose.yml "${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/docker-compose.yml"
           rsync -az -e "$SSH" deploy/scripts/ "${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/scripts/"
+          rsync -az -e "$SSH" deploy/server-setup.sh deploy/nginx "${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/server/"
 
       - name: Deploy
         env:
