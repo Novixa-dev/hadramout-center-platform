@@ -95,5 +95,7 @@
     .dl dt { margin-block-start: 0.6rem; }
     .brand__sub { display: none; }
     .site-header__bar { gap: 0.25rem; }
+    .header-tools { gap: 0.1rem; }
+    .header-tools .icon-btn { inline-size: 2.5rem; block-size: 2.5rem; }
   }
 }
