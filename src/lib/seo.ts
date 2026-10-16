@@ -69,7 +69,7 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
     languages['x-default'] = url('ar');
   }
   const noindex = Boolean(m.noindex || m.incomplete || !isIndexable(lang));
-  const baseTitle = m.absoluteTitle ? m.title : titlePart(withPage(m.title, page, m.pageLabel ?? String(page)));
+  const baseTitle = m.absoluteTitle ? clip(m.title, 70) : titlePart(withPage(m.title, page, m.pageLabel ?? String(page)));
   const description = describe(m.description, site.description, site.tagline);
   const image = m.image ?? cardUrl(lang, m.card ?? { key: 'home' });
   const imageAlt = clip(m.imageAlt ?? `${m.title} — ${site.name}`, 200);

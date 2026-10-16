@@ -349,5 +349,7 @@
   "topics.uncategorised": "{count} items have not been categorised yet.",
   "videos.lead": "The Center's videos: recorded scholarly seminars, conversations and meetings on Hadhramout's history and culture.",
   "meta.readingTime.one": "1 min read",
-  "topics.other": "Other categories"
+  "topics.other": "Other categories",
+  "site.name": "Hadhramout Center for Historical Studies, Documentation and Publishing",
+  "site.short": "Hadhramout Center"
 }

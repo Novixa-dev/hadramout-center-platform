@@ -43,7 +43,8 @@
 
     /* type — display = Naskh/Serif (titles), ui = Plex (everything else), read = Naskh/Serif (long text) */
     --font-ui: 'Plex Arabic', system-ui, -apple-system, 'Segoe UI', 'Noto Sans', 'Noto Sans Arabic', Tahoma, sans-serif;
-    --font-display: 'Naskh', 'Serif 4', 'Noto Naskh Arabic', 'Traditional Arabic', Georgia, 'Times New Roman', serif;
+    /* Latin pages: serif display. Arabic-script pages override below so spaces/digits come from Plex (already loaded) and the 51 KB Serif 4 file is never fetched */
+    --font-display: 'Serif 4', 'Naskh', Georgia, 'Times New Roman', serif;
     --font-read-ar: 'Naskh', 'Noto Naskh Arabic', 'Traditional Arabic', serif;
     --font-read-latin: 'Serif 4', Georgia, 'Times New Roman', serif;
     --step--2: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
@@ -72,6 +73,11 @@
     --t-fast: 120ms; --t-med: 200ms; --t-slow: 320ms;
     --header-h: 4.25rem;
     --z-header: 50; --z-drawer: 90; --z-dialog: 120; --z-toast: 200;
+  }
+
+  :root:lang(ar), :root:lang(fa), :root:lang(ur), :root:lang(ps), :root:lang(sd), :root:lang(ug), :root:lang(ckb), :root:lang(ku) {
+    --font-ui: 'Plex AR', 'Plex Arabic', system-ui, -apple-system, 'Segoe UI', 'Noto Sans', 'Noto Sans Arabic', Tahoma, sans-serif;
+    --font-display: 'Naskh', 'Plex AR', 'Plex Arabic', 'Noto Naskh Arabic', 'Traditional Arabic', serif;
   }
 
   :root[data-theme='light'] { color-scheme: light; }

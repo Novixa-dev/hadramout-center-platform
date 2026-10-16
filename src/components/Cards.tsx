@@ -31,7 +31,7 @@ interface CardProps {
 
 function Kicker({ ctx, doc, type }: { ctx: Ctx; doc: Doc; type: ContentType }) {
   const cat = categoryOf(doc);
-  if (cat) return <Link className="kicker" href={ctx.href(`/topics/${cat.id}`)} style={{ position: 'relative', zIndex: 1 }}>{cat.name}</Link>;
+  if (cat) return <Link className="kicker" dir="auto" href={ctx.href(`/topics/${cat.id}`)} style={{ position: 'relative', zIndex: 1 }}>{cat.name}</Link>;
   return <span className="kicker">{ctx.t(`card.type.${type}`)}</span>;
 }
 
@@ -52,7 +52,7 @@ export function Entry({ ctx, doc, type = 'article', eager = false, compact = fal
         </h3>
         {!compact && doc.excerpt ? <p className="entry__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{doc.excerpt}</p> : null}
         <p className="entry__meta">
-          {authors.length ? <span>{authors.map((a, i) => <span key={a.id}>{i ? '، ' : ''}<Link href={href(`/authors/${a.id}`)}>{a.name}</Link></span>)}</span> : null}
+          {authors.length ? <span>{authors.map((a, i) => <span key={a.id}>{i ? '، ' : ''}<Link href={href(`/authors/${a.id}`)} dir="auto">{a.name}</Link></span>)}</span> : null}
           {date ? <time dateTime={doc.publishedAt ?? undefined}>{date}</time> : null}
           {issue ? <span>{ctx.t('meta.issue', { n: Number(issue.issueNumber ?? 0) })}</span> : null}
         </p>
@@ -119,7 +119,7 @@ export function BookCard({ ctx, doc, eager = false }: CardProps) {
         <h3 className="book__title" {...textAttrs(tr.titleLang, lang.code)}>
           <Link href={docHref(ctx, 'book', doc.id)}>{doc.title}</Link>
         </h3>
-        {authors.length ? <p className="book__author">{authors.map((a) => a.name).join('، ')}</p> : null}
+        {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => a.name).join('، ')}</p> : null}
         {year ? <p className="book__meta">{year}</p> : <p className="book__meta">{t('book.noYear')}</p>}
       </div>
     </article>

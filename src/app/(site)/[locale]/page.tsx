@@ -20,7 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const ctx = makeCtx(locale);
   const site = await getSite(locale);
-  const title = site.tagline ? `${site.name} — ${ctx.t('home.hero.eyebrow')}` : site.name;
+  const full = `${site.name} — ${ctx.t('home.hero.eyebrow')}`;
+  const title = full.length <= 70 ? full : `${site.shortName || site.name} — ${ctx.t('home.hero.eyebrow')}`;
   return buildMetadata({ ctx, path: '/', title, absoluteTitle: true, description: describe(site.description, site.tagline, ctx.t('home.hero.lead')), card: { key: 'home' } });
 }
 

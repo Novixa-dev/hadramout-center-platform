@@ -57,9 +57,9 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <meta name="theme-color" content="#0e1815" media="(prefers-color-scheme: dark)" />
         {locale === 'ar' ? (
           <>
-            <link rel="preload" href="/fonts/plex-ar-400.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-            <link rel="preload" href="/fonts/plex-ar-600.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-            <link rel="preload" href="/fonts/naskh-ar-v1.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+            <link rel="preload" href="/fonts/plexui-ar-400-v2.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+            <link rel="preload" href="/fonts/plexui-ar-600-v2.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+            <link rel="preload" href="/fonts/naskh-ar-700-v2.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
           </>
         ) : null}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />

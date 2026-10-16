@@ -20,8 +20,8 @@
   .brand__text { display: grid; line-height: 1.25; min-inline-size: 0; }
   .brand__name { font-family: var(--font-display); font-weight: 700; font-size: var(--step-1); white-space: nowrap; }
   .brand__sub { font-size: var(--step--2); color: var(--muted); white-space: nowrap; }
-  .nav { display: none; margin-inline: auto; min-inline-size: 0; }
-  .nav__list { display: flex; gap: 0.1rem; list-style: none; padding: 0; }
+  .nav { display: none; flex: 1 1 0; margin-inline: 0.75rem; min-inline-size: 0; }
+  .nav__list { display: flex; flex-wrap: nowrap; position: relative; gap: 0.1rem; list-style: none; padding: 0; }
   .nav__link { position: relative; white-space: nowrap; display: inline-flex; align-items: center; min-block-size: 2.75rem; padding-inline: 0.7rem; border-radius: var(--r-md); text-decoration: none; color: var(--text-2); font-weight: 500; font-size: var(--step--1); }
   .nav__link:hover { background: var(--surface-3); color: var(--text); }
   .nav__link[aria-current='page'] { color: var(--brand); font-weight: 600; }

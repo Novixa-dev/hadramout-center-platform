@@ -54,7 +54,7 @@ function TopicFacet({ ctx, roots, counts, selected }: { ctx: Ctx; roots: TopicNo
             <summary>
               <label className="check">
                 <input type="radio" name="category" value={r.id} defaultChecked={selected === r.id} />
-                <span>{r.name}</span>
+                <span dir="auto">{r.name}</span>
                 <span className="count">{total}</span>
               </label>
             </summary>
@@ -63,7 +63,7 @@ function TopicFacet({ ctx, roots, counts, selected }: { ctx: Ctx; roots: TopicNo
                 {kids.map((c) => (
                   <label key={c.id} className="check">
                     <input type="radio" name="category" value={c.id} defaultChecked={selected === c.id} />
-                    <span>{c.name}</span>
+                    <span dir="auto">{c.name}</span>
                     <span className="count">{c.n}</span>
                   </label>
                 ))}
@@ -189,7 +189,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
                     <div className="facet__list">
                       <label className="check"><input type="radio" name="author" value="" defaultChecked={!q.author} /><span>{t('list.all')}</span></label>
                       {authorOptions.map((a) => (
-                        <label key={a.id} className="check"><input type="radio" name="author" value={a.id} defaultChecked={q.author === a.id} /><span>{a.name}</span><span className="count">{a.n}</span></label>
+                        <label key={a.id} className="check"><input type="radio" name="author" value={a.id} defaultChecked={q.author === a.id} /><span dir="auto">{a.name}</span><span className="count">{a.n}</span></label>
                       ))}
                     </div>
                     <p style={{ marginBlockStart: '0.4rem' }}><Link className="link-arrow" href={href('/authors')}>{t('list.allAuthors')} <Icon name="arrow" /></Link></p>

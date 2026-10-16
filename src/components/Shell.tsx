@@ -6,8 +6,7 @@ import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
-import { NavLinks } from './client/NavLinks.tsx';
-import { NavMore } from './client/NavMore.tsx';
+import { PriorityNav } from './client/PriorityNav.tsx';
 import { SearchToggle } from './client/SearchToggle.tsx';
 import { NewsletterForm } from './client/NewsletterForm.tsx';
 import type { SearchLabels } from './client/SearchBox.tsx';
@@ -80,9 +79,7 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           </span>
         </Link>
         <nav className="nav" aria-label={t('nav.main')}>
-          <NavLinks items={PRIMARY.map((n) => ({ href: href(n.path), label: t(n.key) }))}>
-            <NavMore label={t('nav.more')} items={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} />
-          </NavLinks>
+          <PriorityNav items={PRIMARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} more={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} moreLabel={t('nav.more')} />
         </nav>
         <div className="header-tools">
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />

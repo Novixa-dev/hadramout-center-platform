@@ -1,6 +1,7 @@
 import { cache } from 'react';
 import type { Where } from 'payload';
 import { getPayloadClient } from './runtime.ts';
+import { makeT } from '../i18n/t.ts';
 import { CONTENT, type ContentType, type CollectionSlug } from './content-types.ts';
 
 /** Loosely-typed document as returned by Payload for the public site. */
@@ -170,20 +171,31 @@ export async function getPage(slug: string, lang: string) {
   return (res.docs[0] as unknown as { id: number; title: string; body?: string; translationMeta?: Doc['translationMeta'] } | undefined) ?? null;
 }
 
-export const getSite = cache(async (lang: string) => {
+export interface SiteInfo {
+  name: string;
+  shortName?: string;
+  tagline?: string;
+  description?: string;
+  address?: string;
+  email?: string;
+  whatsapp?: { label?: string; number: string }[];
+  social?: Record<string, string | undefined>;
+  reviewsEnabled?: boolean | null;
+  translationMeta?: Doc['translationMeta'];
+}
+
+/**
+ * Site settings in `lang`. Until an editor (or the translation job) provides the institution's name in a language, the
+ * CMS falls back to Arabic; page titles, headers and social cards then show the official English name from the UI
+ * strings instead of an Arabic name inside an English sentence.
+ */
+export const getSite = cache(async (lang: string): Promise<SiteInfo> => {
   const payload = await getPayloadClient();
-  return (await payload.findGlobal({ slug: 'site', locale: lang as never, fallbackLocale: 'ar', depth: 0 })) as unknown as {
-    name: string;
-    shortName?: string;
-    tagline?: string;
-    description?: string;
-    address?: string;
-    email?: string;
-    whatsapp?: { label?: string; number: string }[];
-    social?: Record<string, string | undefined>;
-    reviewsEnabled?: boolean | null;
-    translationMeta?: Doc['translationMeta'];
-  };
+  const site = (await payload.findGlobal({ slug: 'site', locale: lang as never, fallbackLocale: 'ar', depth: 0 })) as unknown as SiteInfo;
+  if (lang === 'ar') return site;
+  const own = (site.translationMeta?.[lang] ?? {}) as Record<string, unknown>;
+  const t = makeT(lang);
+  return { ...site, name: own.name ? site.name : t('site.name'), shortName: own.shortName ? site.shortName : t('site.short') };
 });
 
 export async function getAuthor(id: number, lang: string) {
