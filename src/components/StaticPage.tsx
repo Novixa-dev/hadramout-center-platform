@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
-import { makeCtx } from '../lib/ctx.ts';
+import { absolute, makeCtx } from '../lib/ctx.ts';
 import { getPage, trInfo, type Doc } from '../lib/data.ts';
 import { appConfig } from '../lib/runtime-light.ts';
+import { breadcrumbJsonLd, jsonLdString } from '../lib/jsonld.ts';
+import { PageHead } from './PageHead.tsx';
 import { TrBanner } from './client/TrBanner.tsx';
 
 export function readyLangsOf(doc: Pick<Doc, 'translationMeta' | 'body'>): string[] {
@@ -18,6 +20,7 @@ export async function StaticPage({ locale, slug }: { locale: string; slug: strin
   const { t, href } = ctx;
   const tr = trInfo(page as never, locale);
   const cfg = appConfig();
+  const ld = breadcrumbJsonLd([{ name: t('nav.home'), url: absolute(`/${locale}`) }, { name: page.title, url: absolute(`/${locale}/${slug}`) }]);
   return (
     <>
       {locale !== 'ar' ? (
@@ -34,12 +37,11 @@ export async function StaticPage({ locale, slug }: { locale: string; slug: strin
           labels={{ machine: t('tr.machine'), reviewed: t('tr.reviewed'), pending: t('tr.pending'), unavailable: t('tr.unavailable'), failed: t('tr.failed'), ready: t('tr.ready'), viewOriginal: t('tr.viewOriginal'), report: t('tr.report') }}
         />
       ) : null}
-      <div className="page-head">
-        <div className="container"><h1 lang={tr.titleLang === 'ar' && locale !== 'ar' ? 'ar' : undefined}>{page.title}</h1></div>
-      </div>
-      <div className="container section" style={{ paddingBlockStart: 'var(--space-6)' }}>
+      <PageHead ctx={ctx} crumbs={[{ name: page.title }]} title={page.title} titleAttrs={tr.titleLang === 'ar' && locale !== 'ar' ? { lang: 'ar', dir: 'rtl' } : undefined} />
+      <div className="container--narrow section" style={{ paddingBlockStart: 'var(--space-6)' }}>
         <div className="prose" lang={tr.bodyLang === 'ar' ? 'ar' : locale} dir={tr.bodyLang === 'ar' ? 'rtl' : ctx.lang.dir} dangerouslySetInnerHTML={{ __html: page.body ?? '' }} />
       </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(ld) }} />
     </>
   );
 }

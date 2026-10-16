@@ -23,7 +23,11 @@ CMD ["npm", "run", "payload", "--", "migrate"]
 FROM base AS runner
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 \
     DATABASE_URL=file:/data/payload.db DATA_DIR=/data MEDIA_DIR=/data/media
-RUN mkdir -p /data && chown -R node:node /data /app
+# fontconfig: the social-card renderer (sharp/Pango) needs a fontconfig setup to shape Arabic text; dejavu is the glyph fallback
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /data && chown -R node:node /data /app
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
