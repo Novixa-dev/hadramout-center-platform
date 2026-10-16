@@ -49,3 +49,4 @@ tsconfig.tsbuildinfo
 .images.log
 .build.log
 .scratch/
+.lighthouse/

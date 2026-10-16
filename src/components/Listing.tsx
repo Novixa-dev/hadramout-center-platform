@@ -89,7 +89,13 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
   const site = await getSite(lang.code);
 
   const base = href(basePath);
-  const link = (patch: Partial<Record<keyof ListQuery, unknown>>) => `${base}${toSearch(queryParams(q, type, { page: 1, ...patch }))}`;
+  // a topic landing page carries its category in the path, never in the query string
+  const params = (patch: Partial<Record<keyof ListQuery, unknown>>) => {
+    const p = queryParams(q, type, { page: 1, ...patch });
+    if (fixed?.category) delete p.category;
+    return p;
+  };
+  const link = (patch: Partial<Record<keyof ListQuery, unknown>>) => `${base}${toSearch(params(patch))}`;
   // filters the visitor chose (a fixed topic is part of the page, not a removable chip)
   const userActive = activeFilters(parsed).filter((f) => !(fixed?.category && f === 'topic'));
   const hasFacets = facets.length > 0;
@@ -268,7 +274,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
               })}
             </div>
           )}
-          <Pagination ctx={ctx} page={res.page} pages={res.pages} basePath={basePath} query={queryParams(q, type, { page: 1 })} />
+          <Pagination ctx={ctx} page={res.page} pages={res.pages} basePath={basePath} query={params({})} />
         </section>
         {hasFacets ? <FilterBehavior formId="filter-form" /> : null}
       </div>
