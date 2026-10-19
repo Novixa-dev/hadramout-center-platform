@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import type { Ctx } from '../lib/ctx.ts';
 import { absolute } from '../lib/ctx.ts';
 import { CONTENT, type ContentType } from '../lib/content-types.ts';
@@ -86,6 +87,8 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
   const sort = effectiveSort(q);
   const limit = perPage(type, q.view);
   const res = await queryArchive({ type, lang: lang.code, q: q.q, year: q.year, category: q.category, author: q.author, pdf: q.pdf, when: q.when, sort, page: q.page, limit });
+  // a page beyond the last one does not exist: 404 instead of serving the last page again under an endless set of URLs
+  if (q.page > res.pages) notFound();
   const site = await getSite(lang.code);
 
   const base = href(basePath);
