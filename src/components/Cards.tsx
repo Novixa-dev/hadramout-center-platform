@@ -8,6 +8,7 @@ import type { ContentType } from '../lib/content-types.ts';
 import type { Doc } from '../lib/data.ts';
 import { trInfo } from '../lib/data.ts';
 import { Icon } from './Icon.tsx';
+import { stripReferenceLine } from '../lib/seo-text.ts';
 
 /** `lang`/`dir` attributes for text that fell back to Arabic inside a page in another language. */
 export function textAttrs(shownLang: string, pageLang: string): { lang?: string; dir?: 'rtl' } {
@@ -50,7 +51,7 @@ export function Entry({ ctx, doc, type = 'article', eager = false, compact = fal
         <h3 className="entry__title" {...textAttrs(tr.titleLang, lang.code)}>
           <Link href={docHref(ctx, type, doc.id)}>{doc.title}</Link>
         </h3>
-        {!compact && doc.excerpt ? <p className="entry__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{doc.excerpt}</p> : null}
+        {!compact && stripReferenceLine(doc.excerpt) ? <p className="entry__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{stripReferenceLine(doc.excerpt)}</p> : null}
         <p className="entry__meta">
           {authors.length ? <span>{authors.map((a, i) => <span key={a.id}>{i ? '، ' : ''}<Link href={href(`/authors/${a.id}`)} dir="auto">{a.name}</Link></span>)}</span> : null}
           {date ? <time dateTime={doc.publishedAt ?? undefined}>{date}</time> : null}
@@ -96,7 +97,7 @@ export function Tile({ ctx, doc, type = 'news', eager = false, lead = false, row
         <h3 className="tile__title" {...textAttrs(tr.titleLang, lang.code)}>
           <Link href={docHref(ctx, type, doc.id)}>{doc.title}</Link>
         </h3>
-        {!row && doc.excerpt ? <p className="tile__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{doc.excerpt}</p> : null}
+        {!row && stripReferenceLine(doc.excerpt) ? <p className="tile__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{stripReferenceLine(doc.excerpt)}</p> : null}
         {date ? <p className="tile__meta"><time dateTime={doc.publishedAt ?? undefined}>{date}</time></p> : null}
       </div>
     </article>

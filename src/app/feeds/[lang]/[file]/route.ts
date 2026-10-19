@@ -3,6 +3,7 @@ import { loadConfig } from '../../../../config.ts';
 import { CONTENT, CONTENT_TYPES, typeFromRoute, type ContentType } from '../../../../lib/content-types.ts';
 import { getLanguage } from '../../../../i18n/languages.ts';
 import { htmlToText } from '../../../../lib/sanitize.ts';
+import { stripReferenceLine } from '../../../../lib/seo-text.ts';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +24,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ lang: s
     const info = CONTENT[t];
     const res = await payload.find({ collection: info.slug, where: { status: { equals: 'published' } }, sort: '-publishedAt', limit: 30, depth: 0, locale: lang as never, fallbackLocale: 'ar' });
     for (const d of res.docs as unknown as { id: number; title: string; excerpt?: string; body?: string; publishedAt?: string; datePrecision?: string }[]) {
-      items.push({ title: d.title, link: `${base}/${lang}/${info.route}/${d.id}`, desc: d.excerpt || htmlToText(d.body ?? '').slice(0, 300), date: d.publishedAt && d.datePrecision === 'day' ? new Date(d.publishedAt).toUTCString() : undefined });
+      items.push({ title: d.title, link: `${base}/${lang}/${info.route}/${d.id}`, desc: stripReferenceLine(d.excerpt) || htmlToText(d.body ?? '').slice(0, 300), date: d.publishedAt && d.datePrecision === 'day' ? new Date(d.publishedAt).toUTCString() : undefined });
     }
   }
   items.sort((a, b) => (b.date ? Date.parse(b.date) : 0) - (a.date ? Date.parse(a.date) : 0));

@@ -2,7 +2,7 @@ import type { ContentType } from './content-types.ts';
 import { PERIODICAL_NAME } from './periodical.ts';
 import type { Doc } from './data.ts';
 import { authorsOf } from './ctx.ts';
-import { isoOrUndefined } from './seo-text.ts';
+import { isoOrUndefined, stripReferenceLine } from './seo-text.ts';
 
 /**
  * schema.org JSON-LD. Only facts that are also visible on the page are emitted; unknown values are omitted,
@@ -43,6 +43,7 @@ export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf
   const authors = authorsOf(doc).map((a) => ({ '@type': 'Person', name: a.name, url: authorUrl(a.id) }));
   const date = doc.datePrecision && !['estimated', 'none'].includes(doc.datePrecision) ? isoOrUndefined(doc.publishedAt) : undefined;
   const modified = isoOrUndefined(doc.updatedAt);
+  const summary = stripReferenceLine(doc.excerpt).trim();
   const base = {
     '@context': 'https://schema.org',
     '@id': `${url}#content`,
@@ -53,7 +54,7 @@ export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf
     inLanguage: lang,
     isAccessibleForFree: true,
     ...(image ? { image: [image] } : {}),
-    ...(doc.excerpt ? { description: doc.excerpt } : {}),
+    ...(summary ? { description: summary } : {}),
     ...(modified ? { dateModified: modified } : {}),
   };
   switch (type) {
@@ -114,7 +115,7 @@ export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf
       return {
         ...base,
         '@type': 'VideoObject',
-        description: doc.excerpt || doc.title,
+        description: summary || doc.title,
         thumbnailUrl: image ?? undefined,
         publisher,
         ...(doc.youtubeId ? { embedUrl: `https://www.youtube-nocookie.com/embed/${doc.youtubeId}` } : {}),
