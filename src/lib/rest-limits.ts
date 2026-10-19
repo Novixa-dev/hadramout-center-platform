@@ -1,6 +1,6 @@
-/** Ceilings for anonymous reads of Payload's public REST API (/api/<collection>). */
+/** Ceilings for reads of Payload's REST API (/api/<collection>). */
 export const REST_MAX_LIMIT = 100;
-export const REST_MAX_DEPTH = 1;
+export const REST_MAX_DEPTH = 2;
 
 const clampLimit = (n: number): number => (n <= 0 ? REST_MAX_LIMIT : Math.min(Math.trunc(n), REST_MAX_LIMIT)); // limit=0 means "no limit" in Payload
 const clampDepth = (n: number): number => Math.min(Math.max(Math.trunc(n), 0), REST_MAX_DEPTH);

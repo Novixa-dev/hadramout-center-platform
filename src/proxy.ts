@@ -15,13 +15,14 @@ const LEGACY_LIST = /^\/(news|articles|books|magazines|events|forum|videos|about
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
-  // Anonymous reads of the public REST API get a hard ceiling on page size and relationship depth (signed-in staff are exempt).
-  if (req.method === 'GET' && pathname.startsWith('/api/') && !pathname.startsWith('/api/hc/') && !req.cookies.has('payload-token')) {
+  // Reads of the REST API get a hard ceiling on page size and relationship depth. There is deliberately no staff exemption:
+  // a cookie cannot be validated here, so an exemption would be bypassable with any fake value (the admin UI stays well under the ceiling).
+  if (req.method === 'GET' && pathname.startsWith('/api/') && !pathname.startsWith('/api/hc/')) {
     const clamped = clampRestQuery(search);
     if (clamped !== null) {
-      const url = req.nextUrl.clone();
-      url.search = clamped;
-      return NextResponse.rewrite(url);
+      // A rewrite would not change the query string the REST handler reads, so clients are redirected to the clamped URL.
+      // The Location is relative on purpose: behind the reverse proxy req.url can carry the container address, not the public host.
+      return new NextResponse(null, { status: 307, headers: { location: `${pathname}?${clamped}`, 'cache-control': 'no-store' } });
     }
   }
   if (SKIP.test(pathname) || /\.[a-z0-9]{2,5}$/i.test(pathname)) return NextResponse.next();

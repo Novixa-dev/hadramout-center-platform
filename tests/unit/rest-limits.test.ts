@@ -4,12 +4,12 @@ import { clampRestQuery } from '../../src/lib/rest-limits.ts';
 
 test('leaves compliant queries untouched', () => {
   assert.equal(clampRestQuery(''), null);
-  assert.equal(clampRestQuery('?limit=20&depth=1&page=2'), null);
+  assert.equal(clampRestQuery('?limit=20&depth=2&page=2'), null);
   assert.equal(clampRestQuery('?limit=100&depth=0'), null);
 });
 
 test('caps oversize limit and depth', () => {
-  assert.equal(clampRestQuery('?limit=1000&depth=3&where[x]=1'), new URLSearchParams('limit=100&depth=1&where[x]=1').toString());
+  assert.equal(clampRestQuery('?limit=1000&depth=3&where[x]=1'), new URLSearchParams('limit=100&depth=2&where[x]=1').toString());
 });
 
 test('limit=0 (unlimited in Payload) and junk values are capped', () => {
