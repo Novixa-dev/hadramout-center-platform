@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.0] - 2026-10-19
+### Audit and hardening (see `docs/reports/BASELINE_REPORT.md`, `docs/planning/PROGRESS.md`)
+- **Security:** REST reads capped (`limit<=100`, `depth<=2`; previously `limit=1000&depth=3` returned 1.4 MB anonymously); unused GraphQL removed; health endpoint no longer leaks user existence or error text.
+- **Reliability:** only a missing/unreadable document renders 404 — database failures now surface as 5xx instead of being cached as "gone"; implausible ids → 404; route error boundary.
+- **Operations:** backups include the mirrored legacy images and fail loudly; deploy aborts if the pre-deploy backup fails.
+- **SEO/content:** magazine citations name the periodical; video JSON-LD thumbnails valid; the migrated "المرجع … اضغط هنا" line is dropped from descriptions, cards, JSON-LD and feeds; importer keeps titles with names.
+- **Tooling:** ESLint covers `.tsx`; stray `node_modules` recovery copies ignored.
+- **Docs:** audit of legacy parity, architecture, data model/IA, migration and redirects; benchmark review.
+
 ## [5.0.0] - 2026-10-16
 ### Redesign v3 — scholarly-editorial UI, discovery, SEO (see `docs/09-redesign/`)
 - **SEO/social:** runtime `robots.txt`/manifest (live robots.txt pointed at the legacy domain), title template, correct `og:site_name`, `og:image:alt`, article/book OG fields, branded per-page 1200×630 social cards with correct Arabic shaping (`/og/...`), Organization/WebSite/CollectionPage/ProfilePage JSON-LD, topic and author sitemap entries, `scripts/seo-audit.mjs`.

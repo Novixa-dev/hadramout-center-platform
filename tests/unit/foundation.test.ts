@@ -64,6 +64,10 @@ describe('arabic utilities', () => {
   test('splitAuthors', () => {
     assert.deepEqual(splitAuthors('أحمد باوزير، محمد سالم'), ['أحمد باوزير', 'محمد سالم']);
     assert.deepEqual(splitAuthors('علي سالم'), ['علي سالم']);
+    // a title followed by "/" is part of the name, not a second author
+    assert.deepEqual(splitAuthors('الشيخ / أحمد بن علي'), ['الشيخ أحمد بن علي']);
+    assert.deepEqual(splitAuthors('أ.م.د / سالم الكثيري'), ['أ.م.د سالم الكثيري']);
+    assert.deepEqual(splitAuthors('محمد / علي'), ['محمد', 'علي']);
   });
   test('digits and reading time', () => {
     assert.equal(toLatinDigits('٠١٢٣٤٥٦٧٨٩۰۱'), '012345678901');

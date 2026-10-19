@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { enabledOrAll, negotiate } from './lib/negotiate.ts';
+import { clampRestQuery } from './lib/rest-limits.ts';
 
 /**
  * Edge of the site:
@@ -13,6 +14,18 @@ const LEGACY_LIST = /^\/(news|articles|books|magazines|events|forum|videos|about
 
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
+
+  // Reads of the REST API get a hard ceiling on page size and relationship depth. There is deliberately no staff exemption:
+  // a cookie cannot be validated here, so an exemption would be bypassable with any fake value (the admin UI stays well under the ceiling).
+  if (req.method === 'GET' && pathname.startsWith('/api/') && !pathname.startsWith('/api/hc/')) {
+    const clamped = clampRestQuery(search);
+    if (clamped !== null) {
+      // A rewrite would not change the query string the REST handler reads, so clients are redirected to the clamped URL.
+      // Built on SITE_URL: behind the reverse proxy req.url can carry the container address, not the public host.
+      const target = new URL(`${pathname}?${clamped}`, process.env.SITE_URL || req.url);
+      return NextResponse.redirect(target, 307);
+    }
+  }
   if (SKIP.test(pathname) || /\.[a-z0-9]{2,5}$/i.test(pathname)) return NextResponse.next();
 
   const first = pathname.split('/')[1] ?? '';

@@ -27,7 +27,8 @@ export function makeCtx(code: string): Ctx {
 }
 
 export const siteUrl = (): string => loadConfig().siteUrl;
-export const absolute = (path: string): string => `${siteUrl()}${path}`;
+/** Absolute URL on this site; values that are already absolute (e.g. YouTube thumbnails) pass through unchanged. */
+export const absolute = (path: string): string => (/^https?:\/\//i.test(path) ? path : `${siteUrl()}${path}`);
 
 export function docHref(ctx: Pick<Ctx, 'href'>, type: ContentType, id: number, lang?: string): string {
   return ctx.href(`/${CONTENT[type].route}/${id}`, lang);

@@ -15,9 +15,16 @@ export function clip(text: string | null | undefined, max: number): string {
   return `${(atWord.length >= max * 0.6 ? atWord : cut).replace(/[\s,;:،؛.\-–—]+$/u, '')}…`;
 }
 
+/**
+ * Migrated magazine articles begin with a citation line ("المرجع : مجلة حضرموت الثقافية .. العدد 5 .. ص 103 رابط العدد 5 : اضغط هنا").
+ * That line is bibliographic data, not a summary, so it is dropped wherever an excerpt is shown as prose (descriptions, cards, feeds).
+ */
+const REFERENCE_LINE = /^\s*المرجع\s*:[^]{0,160}?رابط\s+العدد[\d\s–—-]*:?\s*اضغط\s+هنا\s*/u;
+export const stripReferenceLine = (text: string | null | undefined): string => (text ?? '').replace(REFERENCE_LINE, '');
+
 /** Remove Markdown/HTML leftovers and decorative leading phrases from a candidate description. */
 export function cleanDescription(text: string | null | undefined): string {
-  return (text ?? '')
+  return stripReferenceLine(text)
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ')
     .replace(/[*_`#>]+/g, '')

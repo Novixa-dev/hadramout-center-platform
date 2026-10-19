@@ -10,3 +10,4 @@ data
 !.env.example
 docs
 tests
+.node_modules.recovery-*

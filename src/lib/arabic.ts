@@ -111,12 +111,23 @@ export function authorKey(name: string): string {
     .trim();
 }
 
-/** Split a byline into individual author names ("أ و ب" / "أ، ب" / "أ & ب"). */
+/** True when a byline fragment holds only titles ("الشيخ", "أ.م.د"), so it belongs to the name that follows it. */
+const isBareHonorific = (fragment: string): boolean => fragment.split(' ').every((t) => HONORIFIC_TOKENS.has(normalizeArabic(t)));
+
+/** Split a byline into individual author names ("أ و ب" / "أ، ب" / "أ & ب"). A title before "/" stays with its name ("الشيخ / فلان"). */
 export function splitAuthors(line: string): string[] {
-  return line
+  const fragments = line
     .split(/\s+(?:و|&|and)\s+(?=[^\s])|[،;؛/|]/g)
     .map((s) => s.trim())
     .filter((s) => s.length > 1);
+  const out: string[] = [];
+  for (let i = 0; i < fragments.length; i++) {
+    const fragment = fragments[i] as string;
+    const next = fragments[i + 1];
+    if (next !== undefined && isBareHonorific(fragment)) fragments[i + 1] = `${fragment} ${next}`;
+    else out.push(fragment);
+  }
+  return out;
 }
 
 export function wordCount(text: string): number {

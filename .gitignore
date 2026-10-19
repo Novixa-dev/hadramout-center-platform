@@ -50,3 +50,6 @@ tsconfig.tsbuildinfo
 .build.log
 .scratch/
 .lighthouse/
+
+# stray npm recovery copies
+.node_modules.recovery-*/

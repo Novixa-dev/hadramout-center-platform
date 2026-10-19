@@ -113,3 +113,19 @@ describe('social cards', () => {
     assert.equal((await sharp(png).metadata()).width, OG_WIDTH);
   });
 });
+
+describe('magazine reference line', () => {
+  const ref = 'المرجع : مجلة حضرموت الثقافية .. العدد 5 .. ص 103 رابط العدد 5: اضغط هنا ( 1 ) لم يكن حدّاد بن حسن الكاف مجرّد شاعر';
+  test('is dropped from descriptions and excerpts, keeping the article text', async () => {
+    const { stripReferenceLine } = await import('../../src/lib/seo-text.ts');
+    assert.equal(stripReferenceLine(ref), '( 1 ) لم يكن حدّاد بن حسن الكاف مجرّد شاعر');
+    assert.equal(cleanDescription(ref).startsWith('( 1 ) لم يكن'), true);
+  });
+  test('ordinary text and references without the issue-link tail are untouched', async () => {
+    const { stripReferenceLine } = await import('../../src/lib/seo-text.ts');
+    assert.equal(stripReferenceLine('نص عادي'), 'نص عادي');
+    assert.equal(stripReferenceLine('المرجع : مجلة حضرموت الثقافية .. العدد 24 – 25 .. ص 4 رابط العدد 24 – 25 : اضغط هنا عندما يقام'), 'عندما يقام');
+    assert.equal(stripReferenceLine(null), '');
+    assert.equal(stripReferenceLine('المرجع : كتاب بلا رابط'), 'المرجع : كتاب بلا رابط');
+  });
+});
