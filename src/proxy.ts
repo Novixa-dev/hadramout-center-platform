@@ -21,8 +21,9 @@ export function proxy(req: NextRequest) {
     const clamped = clampRestQuery(search);
     if (clamped !== null) {
       // A rewrite would not change the query string the REST handler reads, so clients are redirected to the clamped URL.
-      // The Location is relative on purpose: behind the reverse proxy req.url can carry the container address, not the public host.
-      return new NextResponse(null, { status: 307, headers: { location: `${pathname}?${clamped}`, 'cache-control': 'no-store' } });
+      // Built on SITE_URL: behind the reverse proxy req.url can carry the container address, not the public host.
+      const target = new URL(`${pathname}?${clamped}`, process.env.SITE_URL || req.url);
+      return NextResponse.redirect(target, 307);
     }
   }
   if (SKIP.test(pathname) || /\.[a-z0-9]{2,5}$/i.test(pathname)) return NextResponse.next();
