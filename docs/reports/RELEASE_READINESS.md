@@ -1,6 +1,6 @@
 # Release readiness — redesign v3 integration
 
-**Assessment date:** 2026-10-18  
+**Assessment date:** 2026-10-18
 **Status:** not ready to deploy without CI and staging verification.
 
 | Requirement | Status | Evidence / required action |

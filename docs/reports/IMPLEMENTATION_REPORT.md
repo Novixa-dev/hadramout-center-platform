@@ -1,7 +1,7 @@
 # Implementation report — redesign v3 integration
 
-**Date:** 2026-10-18  
-**Branch:** `master` (local; 9 commits ahead of `origin/master`)  
+**Date:** 2026-10-18
+**Branch:** `master` (local; 9 commits ahead of `origin/master`)
 **Scope:** audit-led integration of the directly-descended redesign branch `claude/hadramout-redesign-refactor-52667b`.
 
 ## Delivered
