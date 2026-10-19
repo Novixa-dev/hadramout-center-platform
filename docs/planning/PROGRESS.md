@@ -35,7 +35,7 @@ Findings from the finished audits were **not** adversarially re-verified (the ve
 
 ## Next actionable tasks (in order)
 
-1. Push the branch, open a PR, let CI run (typecheck, lint, tests, Docker build). Do not merge to `master` until CI is green — merging deploys.
+1. PR #13 is open and CI is green on the latest push (install, typecheck, lint, 119 tests, build). Do not merge to `master` until the server-side backup/migration rehearsal is done — merging deploys.
 2. Before deploying: rehearse migrations 3–6 on a copy of the production database (done locally in < 1 s) and confirm `backup.sh` runs on the server with the new `legacy-media` coverage and its size.
 3. Performance: profile the home page (PERF-T1), then cut its RSC payload (PERF-T2) and move search off the event loop (PERF-T3) — see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md).
 4. Still to write: full security review, per-route SEO matrix, manual accessibility test, an integration/e2e test tier, and the consolidated gap analysis, roadmap and backlog.
