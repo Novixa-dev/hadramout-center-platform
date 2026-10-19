@@ -27,6 +27,7 @@ import { ReadingProgress } from '../../../../../components/client/ReadingProgres
 import { TocSpy } from '../../../../../components/client/Toc.tsx';
 import { TrBanner } from '../../../../../components/client/TrBanner.tsx';
 import { VideoFacade } from '../../../../../components/client/VideoFacade.tsx';
+import { PERIODICAL_NAME } from '../../../../../lib/periodical.ts';
 
 type Props = { params: Promise<{ locale: string; section: string; id: string }> };
 
@@ -53,7 +54,7 @@ function citeSourceOf(type: ContentType, doc: Doc, url: string, lang: string, no
     edition: doc.edition as string | undefined,
     editors: doc.editor ? [String(doc.editor)] : undefined,
     translators: doc.translator ? [String(doc.translator)] : undefined,
-    containerTitle: type === 'article' && magazine ? magazine.title : undefined,
+    containerTitle: type === 'article' && magazine ? PERIODICAL_NAME : undefined,
     issue: type === 'article' && magazine ? magazine.issueNumber : type === 'magazine' ? (doc.issueNumber as number | undefined) : undefined,
     url,
     accessed: new Date().toISOString(),

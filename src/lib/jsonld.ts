@@ -1,4 +1,5 @@
 import type { ContentType } from './content-types.ts';
+import { PERIODICAL_NAME } from './periodical.ts';
 import type { Doc } from './data.ts';
 import { authorsOf } from './ctx.ts';
 import { isoOrUndefined } from './seo-text.ts';
@@ -92,7 +93,7 @@ export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf
         issueNumber: doc.issueNumber,
         publisher,
         ...(date ? { datePublished: date } : {}),
-        isPartOf: { '@type': 'Periodical', name: 'مجلة حضرموت الثقافية', publisher },
+        isPartOf: { '@type': 'Periodical', name: PERIODICAL_NAME, publisher },
         ...(pdf ? { encoding: { '@type': 'MediaObject', contentUrl: pdf, encodingFormat: 'application/pdf' } } : {}),
       };
     case 'event':
