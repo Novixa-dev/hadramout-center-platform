@@ -38,6 +38,9 @@ export default buildConfig({
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   defaultMaxTextLength: 3_000_000,
+  // The site reads content through the local API; the public GraphQL surface is not used, so it is switched off.
+  graphQL: { disable: true },
+  maxDepth: 3,
   typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
   db: sqliteAdapter({
     client: { url: process.env.DATABASE_URL || 'file:./data/payload.db' },

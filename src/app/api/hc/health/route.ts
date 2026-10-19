@@ -8,10 +8,11 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const payload = await getPayloadClient();
-    const { totalDocs } = await payload.count({ collection: 'users', overrideAccess: true });
+    await payload.count({ collection: 'users', overrideAccess: true });
     extras().get('SELECT 1');
-    return NextResponse.json({ status: 'ok', users: totalDocs > 0, time: new Date().toISOString() });
+    return NextResponse.json({ status: 'ok', time: new Date().toISOString() });
   } catch (err) {
-    return NextResponse.json({ status: 'error', message: (err as Error).message }, { status: 503 });
+    console.error('[health]', err);
+    return NextResponse.json({ status: 'error' }, { status: 503 });
   }
 }

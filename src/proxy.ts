@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { enabledOrAll, negotiate } from './lib/negotiate.ts';
+import { clampRestQuery } from './lib/rest-limits.ts';
 
 /**
  * Edge of the site:
@@ -13,6 +14,16 @@ const LEGACY_LIST = /^\/(news|articles|books|magazines|events|forum|videos|about
 
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
+
+  // Anonymous reads of the public REST API get a hard ceiling on page size and relationship depth (signed-in staff are exempt).
+  if (req.method === 'GET' && pathname.startsWith('/api/') && !pathname.startsWith('/api/hc/') && !req.cookies.has('payload-token')) {
+    const clamped = clampRestQuery(search);
+    if (clamped !== null) {
+      const url = req.nextUrl.clone();
+      url.search = clamped;
+      return NextResponse.rewrite(url);
+    }
+  }
   if (SKIP.test(pathname) || /\.[a-z0-9]{2,5}$/i.test(pathname)) return NextResponse.next();
 
   const first = pathname.split('/')[1] ?? '';

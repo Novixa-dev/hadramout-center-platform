@@ -30,7 +30,8 @@ if ! docker compose run --rm --no-deps --entrypoint sh app -c 'test -f /data/pay
   docker compose run --rm tools npm run import:images || echo "(image mirroring incomplete — missing files are fetched lazily)"
 elif docker compose ps -q app 2>/dev/null | grep -q .; then
   echo "→ backup before deploy"
-  ./scripts/backup.sh pre-deploy || echo "(backup skipped)"
+  # A migration may merge/delete rows, so a deploy over an existing database must not proceed without a restorable backup.
+  ./scripts/backup.sh pre-deploy || { echo "✗ pre-deploy backup failed — aborting; the live site was NOT touched."; exit 1; }
 fi
 
 # ── the mailcow nginx must already proxy to this container on :3000 (otherwise switching = 502) ──

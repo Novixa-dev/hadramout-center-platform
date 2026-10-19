@@ -17,7 +17,9 @@ fs.mkdirSync('/data/_bk',{recursive:true});
 for (const f of ['payload.db','extras.db']) { if(!fs.existsSync('/data/'+f)) continue; try{fs.unlinkSync('/data/_bk/'+f);}catch{}
   const d=new DatabaseSync('/data/'+f); d.exec(\"VACUUM INTO '/data/_bk/\"+f+\"'\"); d.close(); }
 "
-docker exec "$APP" sh -c "cd /data && tar czf /tmp/bk.tgz _bk media i18n 2>/dev/null || tar czf /tmp/bk.tgz _bk"
+# Archive the snapshots plus every data directory that exists (uploads, translation bundles, the mirrored legacy images).
+# legacy-media matters: once the old host goes offline those files cannot be re-fetched. A tar failure must fail the backup.
+docker exec "$APP" sh -c 'cd /data && DIRS=_bk; for d in media i18n legacy-media; do if [ -d "$d" ]; then DIRS="$DIRS $d"; fi; done; tar czf /tmp/bk.tgz $DIRS'
 docker cp "$APP:/tmp/bk.tgz" "$DEST/hadramout-$LABEL-$STAMP.tgz"
 docker exec "$APP" sh -c "rm -rf /data/_bk /tmp/bk.tgz"
 ls -1t "$DEST"/hadramout-*.tgz | tail -n +15 | xargs -r rm -f
