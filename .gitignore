@@ -48,3 +48,5 @@ tsconfig.tsbuildinfo
 .server.log
 .images.log
 .build.log
+.scratch/
+.lighthouse/

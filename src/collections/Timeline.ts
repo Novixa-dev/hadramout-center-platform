@@ -28,6 +28,24 @@ export const Timeline: CollectionConfig = {
       ],
     },
     { name: 'source', type: 'text', label: L('المصدر', 'Source'), admin: { description: L('اذكر المرجع العلمي لكل حدث.', 'Cite the scholarly reference for each event.') } },
+    { name: 'sourceUrl', type: 'text', label: L('رابط المصدر', 'Source link') },
+    { name: 'relatedArticle', type: 'relationship', relationTo: 'articles', label: L('دراسة ذات صلة', 'Related study'), admin: { description: L('اربط الحدث بدراسة منشورة في الأرشيف عند توفرها.', 'Link the event to a published study in the archive when one exists.') } },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'reviewStatus',
+          type: 'select',
+          defaultValue: 'pending',
+          options: [
+            { label: L('بانتظار مراجعة اللجنة العلمية', 'Awaiting scientific review'), value: 'pending' },
+            { label: L('راجعته اللجنة العلمية', 'Reviewed by the scientific committee'), value: 'reviewed' },
+          ],
+          label: L('حالة المراجعة', 'Review status'),
+        },
+        { name: 'reviewedAt', type: 'date', label: L('تاريخ المراجعة', 'Reviewed on'), admin: { date: { pickerAppearance: 'dayOnly' } } },
+      ],
+    },
     {
       name: 'status',
       type: 'select',

@@ -1,0 +1,543 @@
+{
+  "base": "http://localhost:3100",
+  "lang": "ar",
+  "at": "2026-10-16T03:13:30.549Z",
+  "rows": [
+    {
+      "url": "/ar",
+      "status": 200,
+      "bytes": 199246,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "مركز حضرموت للدراسات التاريخية والتوثيق والنشر — أرشيف رقمي مفتوح",
+      "description": "يعد مركز حضرموت للدراسات التاريخية والتوثيق والنشر من المراكز العلمية المستقلة، يمارس نشاطه في مجالات الدراسات والبحوث التاريخية والترجمة والتوثيق والنشر…",
+      "canonical": "http://localhost:3100/ar",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/home.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "ResearchOrganization",
+        "WebSite"
+      ]
+    },
+    {
+      "url": "/ar/news",
+      "status": 200,
+      "bytes": 114225,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "أخبار المركز | مركز حضرموت",
+      "description": "أخبار مركز حضرموت للدراسات التاريخية والتوثيق والنشر وأنشطته وفعالياته وإصداراته، مرتبة من الأحدث.",
+      "canonical": "http://localhost:3100/ar/news",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/news.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/articles",
+      "status": 200,
+      "bytes": 147485,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "المقالات والدراسات | مركز حضرموت",
+      "description": "دراسات وأبحاث ومقالات منشورة في مجلة حضرموت الثقافية وخارجها.",
+      "canonical": "http://localhost:3100/ar/articles",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/articles.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/books",
+      "status": 200,
+      "bytes": 142760,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "إصدارات الكتب | مركز حضرموت",
+      "description": "مؤلفات وتحقيقات وأعمال مؤتمرات علمية صادرة عن المركز.",
+      "canonical": "http://localhost:3100/ar/books",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/books.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/magazines",
+      "status": 200,
+      "bytes": 118453,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "مجلة حضرموت الثقافية | مركز حضرموت",
+      "description": "أعداد المجلة الدورية: دراسات وقراءات وحوارات وترجمات وإبداع.",
+      "canonical": "http://localhost:3100/ar/magazines",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/magazines.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/events",
+      "status": 200,
+      "bytes": 87455,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "المؤتمرات والندوات | مركز حضرموت",
+      "description": "مؤتمرات وندوات ولقاءات علمية ينظمها المركز، القادمة منها والسابقة.",
+      "canonical": "http://localhost:3100/ar/events",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/events.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/forum",
+      "status": 200,
+      "bytes": 85156,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "منتدى عميد الوفاء الثقافي | مركز حضرموت",
+      "description": "منتدى ثقافي من هيكلية المركز، يستلهم فكرته من ندوة الوفاء التي كان يقيمها الشيخ أحمد محمد باجنيد (رحمه الله) بمدينة الرياض.",
+      "canonical": "http://localhost:3100/ar/forum",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/forum.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/videos",
+      "status": 200,
+      "bytes": 65314,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "المرئيات | مركز حضرموت",
+      "description": "مرئيات المركز: ندوات وحوارات ولقاءات علمية مسجّلة عن تاريخ حضرموت وثقافتها، تُعرض دون تحميل مسبق للمشغّل.",
+      "canonical": "http://localhost:3100/ar/videos",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/videos.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/authors",
+      "status": 200,
+      "bytes": 149782,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "الكتّاب | مركز حضرموت",
+      "description": "فهرس كتّاب المركز ومؤلفيه حسب الاسم. 274 كاتباً ومؤلفاً.",
+      "canonical": "http://localhost:3100/ar/authors",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/authors.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/timeline",
+      "status": 200,
+      "bytes": 75066,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "خط حضرموت الزمني | مركز حضرموت",
+      "description": "محطات تاريخية بارزة. هذا المحتوى تعريفي عام ويخضع لمراجعة الهيئة العلمية للمركز.",
+      "canonical": "http://localhost:3100/ar/timeline",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/timeline.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/topics",
+      "status": 200,
+      "bytes": 82446,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "المواضيع والتصنيفات | مركز حضرموت",
+      "description": "تصفّح 767 مقالة ودراسة موزّعة على 10 مواضيع رئيسية.",
+      "canonical": "http://localhost:3100/ar/topics",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/topics.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/about",
+      "status": 200,
+      "bytes": 61737,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "عن المركز | مركز حضرموت",
+      "description": "يُعدّ مركز حضرموت للدراسات التاريخية والتوثيق والنشر من المراكز العلمية المستقلة، يمارس نشاطه في مجالات الدراسات والبحوث التاريخية والترجمة والتوثيق والنشر…",
+      "canonical": "http://localhost:3100/ar/about",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/pages/1.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/contact",
+      "status": 200,
+      "bytes": 63863,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "تواصل معنا | مركز حضرموت",
+      "description": "لأي استفسار أو طلب إصدار أو اقتراح، يسعدنا تواصلك.",
+      "canonical": "http://localhost:3100/ar/contact",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/contact.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": [
+        "ContactPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/privacy",
+      "status": 200,
+      "bytes": 60424,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "سياسة الخصوصية | مركز حضرموت",
+      "description": "نحترم خصوصيتك. هذه الصفحة تشرح بإيجاز ما يجمعه الموقع وما لا يجمعه. ما لا نجمعه لا نستخدم ملفات تعريف ارتباط (كوكيز) للتتبع أو الإعلانات. لا نبيع بياناتك…",
+      "canonical": "http://localhost:3100/ar/privacy",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/pages/2.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/terms",
+      "status": 200,
+      "bytes": 59568,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "شروط الاستخدام | مركز حضرموت",
+      "description": "باستخدامك هذا الموقع فإنك توافق على الشروط التالية: المحتوى المنشور ملك لمركز حضرموت للدراسات التاريخية والتوثيق والنشر ولأصحابه. يجوز الاقتباس العلمي مع…",
+      "canonical": "http://localhost:3100/ar/terms",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/pages/3.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/accessibility",
+      "status": 200,
+      "bytes": 61666,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "بيان إمكانية الوصول | مركز حضرموت",
+      "description": "نسعى لأن يكون الموقع متاحاً للجميع، وفق معايير WCAG 2.2 المستوى AA. هذا البيان يصف ما نعمل به فعلاً وما نعرف أنه ما زال ناقصاً. ما نوفره تصفح كامل بلوحة…",
+      "canonical": "http://localhost:3100/ar/accessibility",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/pages/4.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA",
+      "status": 200,
+      "bytes": 109406,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "البحث | مركز حضرموت",
+      "description": "اكتب كلمة أو أكثر. يتجاهل البحث التشكيل وفروق الهمزات.",
+      "canonical": "http://localhost:3100/ar/search",
+      "robots": "noindex, follow",
+      "noindex": true,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/search.png",
+      "hreflang": 3,
+      "h1": 1,
+      "jsonld": []
+    },
+    {
+      "url": "/ar/news/387",
+      "status": 200,
+      "bytes": 85289,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "منسق مشاريع «اليونسكو» بحضرموت أ. عبد الرحمن الحبشي… | مركز حضرموت",
+      "description": "زار أ. عبد الرحمن الحبشي منسق مشاريع منظمة الأمم المتحدة للتربية والعلوم والثقافة (اليونسكو) في حضرموت مقر «مركز حضرموت للدراسات التاريخية والتوثيق والنشر»…",
+      "canonical": "http://localhost:3100/ar/news/387",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "article",
+      "ogImage": "http://localhost:3100/og/ar/news/387.png?v=1792014859382",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "NewsArticle",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/articles/894",
+      "status": 200,
+      "bytes": 138893,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "قراءة في الأدب النِّسْوي الحضرمي .. خديجة بنت علي… | مركز حضرموت",
+      "description": "ستنهج هذه القراءة مسارين متتالين؛ الأول سيعطي لمحة عامة عن الأدب النسوي، والآخر سيكون قراءةً مقتضبة في ديوان السيدة خديجة بنت علي الحبشي ــ عليهما رحمة الله…",
+      "canonical": "http://localhost:3100/ar/articles/894",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "article",
+      "ogImage": "http://localhost:3100/og/ar/articles/894.png?v=1792014889546",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "ScholarlyArticle",
+        "BreadcrumbList"
+      ],
+      "citation": 4
+    },
+    {
+      "url": "/ar/books/37",
+      "status": 200,
+      "bytes": 87360,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "وجوه في بلاد العرب | مركز حضرموت",
+      "description": "والمشاهد والتجارب التي يحتويها هذا الكتاب الذي بين أيدينا مستخلصة من هذه الفترات جميعها التي قضاها والدي في الجزيرة العربية؛ ولذا يمكن القول إنها تمتد على…",
+      "canonical": "http://localhost:3100/ar/books/37",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "book",
+      "ogImage": "http://localhost:3100/og/ar/books/37.png?v=1792014891253",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "Book",
+        "BreadcrumbList"
+      ],
+      "citation": 4
+    },
+    {
+      "url": "/ar/magazines/40",
+      "status": 200,
+      "bytes": 95781,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "مجلة حضرموت الثقافية العدد 41 | مركز حضرموت",
+      "description": "صدور العدد 41 من مجلة (حضرموت الثقافية) إعلام المركز / المكلا صدر عن مركز حضرموت للدراسات التاريخية والتوثيق والنشر العدد (41) من مجلة حضرموت الثقافية…",
+      "canonical": "http://localhost:3100/ar/magazines/40",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/magazines/40.png?v=1792014850413",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "PublicationIssue",
+        "BreadcrumbList"
+      ],
+      "citation": 5
+    },
+    {
+      "url": "/ar/events/53",
+      "status": 200,
+      "bytes": 71965,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "فعالية بعنوان (المشروع الحضاري في أدب باكثير) | مركز حضرموت",
+      "description": "أقام منتدى عميد الوفاء الثقافي فعالية بعنوان (المشروع الحضاري في أدب باكثير). تحدث فيها : د. طه حسين الحضرمي أدايرها : أ. عبدالله خالد مقيدحان التاريخ…",
+      "canonical": "http://localhost:3100/ar/events/53",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/events/53.png?v=1792014893126",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "Event",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/forum/7",
+      "status": 200,
+      "bytes": 77915,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "فعالية بعنوان .. إسهامات الحضارمة في المعارف الملاحية | مركز حضرموت",
+      "description": "يعلن منتدى عميد الوفاء الثقافي عن فعالية بعنوان إسهامات الحضارمة في المعارف الملاحية. ⚪ يتحدث فيها : أ. محمد علوي باهارون ⚪ يديرها : أ. عمرو خالد بلخشر…",
+      "canonical": "http://localhost:3100/ar/forum/7",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/forum/7.png?v=1792014893280",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "Event",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/videos/2",
+      "status": 200,
+      "bytes": 71199,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "حضرموت الامتداد الجغرافي وذاكرة المكان – فعالية… | مركز حضرموت",
+      "description": "فيديو: تقرير قناة الجنوب اليوم عن فعالية منتدى ثلوثية بامحسون الثقافي الذي قدمه ممثلين عن وفد مركز حضرموت للدراسات التاريخية و التوثيق والنشر فعالية (حضرموت…",
+      "canonical": "http://localhost:3100/ar/videos/2",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/videos/2.png?v=1792014893398",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "VideoObject",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/authors/146",
+      "status": 200,
+      "bytes": 62498,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "أ. د. أحمد إبراهيم محتسب حنشور | مركز حضرموت",
+      "description": "أعمال أ. د. أحمد إبراهيم محتسب حنشور في أرشيف المركز: 1 مقالة ودراسة و0 كتاباً.",
+      "canonical": "http://localhost:3100/ar/authors/146",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/authors.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "ProfilePage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/topics/54",
+      "status": 200,
+      "bytes": 124737,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "دراسات وبحوث | مركز حضرموت",
+      "description": "مقالات ودراسات «دراسات وبحوث» في أرشيف المركز (119 مادة).",
+      "canonical": "http://localhost:3100/ar/topics/54",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/topics.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "CollectionPage",
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "url": "/ar/authors/146",
+      "status": 200,
+      "bytes": 62498,
+      "lang": "ar",
+      "dir": "rtl",
+      "title": "أ. د. أحمد إبراهيم محتسب حنشور | مركز حضرموت",
+      "description": "أعمال أ. د. أحمد إبراهيم محتسب حنشور في أرشيف المركز: 1 مقالة ودراسة و0 كتاباً.",
+      "canonical": "http://localhost:3100/ar/authors/146",
+      "robots": "index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1",
+      "noindex": false,
+      "ogType": "website",
+      "ogImage": "http://localhost:3100/og/ar/authors.png",
+      "hreflang": 2,
+      "h1": 1,
+      "jsonld": [
+        "ProfilePage",
+        "BreadcrumbList"
+      ]
+    }
+  ],
+  "findings": []
+}

@@ -7,7 +7,7 @@ import { enabledOrAll, negotiate } from './lib/negotiate.ts';
  *  - legacy URLs (/articles/9597 …) → internal redirect handler that maps old ids
  * Admin, API, assets and SEO files are left alone.
  */
-const SKIP = /^\/(admin|api|_next|brand|icons|feeds|sitemap|robots|manifest|sw\.js|healthz|legacy|favicon|media)/;
+const SKIP = /^\/(admin|api|_next|brand|icons|fonts|og|feeds|sitemap|robots|manifest|sw\.js|healthz|legacy|favicon|media)/;
 const LEGACY = /^\/(news|articles|books|magazines|events|forum|videos)\/(\d+)\/?$/;
 const LEGACY_LIST = /^\/(news|articles|books|magazines|events|forum|videos|about)\/?$/;
 

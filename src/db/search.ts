@@ -104,10 +104,27 @@ export function searchIndex(db: Store, opts: SearchOptions): { hits: SearchHit[]
      FROM search_index WHERE search_index MATCH ? AND lang = ?${kindSql}
      ORDER BY rank LIMIT ? OFFSET ?`,
     ...params,
-    Math.min(opts.limit ?? 20, 100),
+    Math.min(opts.limit ?? 20, 1000),
     Math.max(opts.offset ?? 0, 0),
   );
   return { hits: rows.map((r) => ({ id: r.doc_id, kind: r.kind, rank: r.rank })), total, lang };
+}
+
+/** Number of matching documents per collection (for the result-type facet), independent of any type filter. */
+export function searchKindCounts(db: Store, q: string, lang: string): Record<string, number> {
+  const match = toFtsQuery(q);
+  if (!match) return {};
+  const useLang = lang !== 'ar' && hasLang(db, lang) ? lang : 'ar';
+  const rows = db.all<{ kind: string; n: number }>('SELECT kind, count(*) AS n FROM search_index WHERE search_index MATCH ? AND lang = ? GROUP BY kind', match, useLang);
+  return Object.fromEntries(rows.map((r) => [r.kind, r.n]));
+}
+
+/** Most frequent recent queries that actually found something (shown when a search finds nothing). */
+export function popularQueries(db: Store, limit = 8, days = 60): string[] {
+  return db
+    .all<{ q: string }>("SELECT q FROM search_queries WHERE results > 0 AND day >= date('now', ?) GROUP BY q ORDER BY sum(count) DESC LIMIT ?", `-${days} days`, limit)
+    .map((r) => r.q)
+    .filter((q) => q.length >= 2 && q.length <= 40);
 }
 
 /** Title-prefix suggestions for the typeahead. */

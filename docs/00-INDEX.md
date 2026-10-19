@@ -12,6 +12,7 @@
 | `06-handover` | دليل المحرر (`admin-guide-ar.md`) ودليل الترجمة (`translation-guide-ar.md`) |
 | `07-marketing` | خطة حملة الإطلاق |
 | `08-review` | مراجعة الموقع القديم مقابل الجديد وخطة التحسين |
+| `09-redesign` | **التصميم v3**: خط الأساس والخطة، التغييرات، مشكلات المحتوى للمراجعة، تقرير الجودة، أفكار مؤجّلة |
 | `archive/v1` | وثائق النسخة الأولى (مرجع تاريخي — لا يُعتمد عليها) |
 
 ## أوامر أساسية
@@ -19,6 +20,7 @@
 npm ci && cp .env.example .env && npm run db:seed && npm run dev   # محلياً
 npm run check        # typecheck + lint + tests
 npm run a11y         # axe على 12 صفحة (يتطلب خادماً يعمل)
+node scripts/seo-audit.mjs <url>   # فحص SEO/OG/JSON-LD/robots/sitemap لموقع يعمل
 npm run import:images
 ```
 قواعد الوكلاء: `AGENTS.md` و`.agents/rules/` · مهارة التصميم: `.claude/skills/frontend-design`.

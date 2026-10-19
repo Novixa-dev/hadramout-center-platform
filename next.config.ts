@@ -59,4 +59,25 @@ const nextConfig: NextConfig = {
   turbopack: { root: path.resolve(dirname) },
 };
 
-export default withPayload(nextConfig, { devBundleServerPackages: false });
+const configured = withPayload(nextConfig, { devBundleServerPackages: false });
+
+/**
+ * withPayload adds `Accept-CH` / `Critical-CH: Sec-CH-Prefers-Color-Scheme` (+ a matching `Vary`) to EVERY path so the admin can
+ * pick its theme on the first render. On the public site that header makes Chrome abort and repeat the first navigation
+ * (an extra round trip, measured ≈ +1 TTFB), fragments any CDN cache by the hint, and breaks Lighthouse (NO_NAVSTART).
+ * Keep the hint for /admin only.
+ */
+const CLIENT_HINT = /^(accept-ch|critical-ch)$/i;
+const upstreamHeaders = configured.headers;
+configured.headers = async () => {
+  const rules = (await upstreamHeaders?.()) ?? [];
+  const isHint = (h: { key: string; value: string }) => CLIENT_HINT.test(h.key) || (/^vary$/i.test(h.key) && /Sec-CH-Prefers-Color-Scheme/i.test(h.value));
+  const adminHints = [
+    { key: 'Accept-CH', value: 'Sec-CH-Prefers-Color-Scheme' },
+    { key: 'Vary', value: 'Sec-CH-Prefers-Color-Scheme' },
+    { key: 'Critical-CH', value: 'Sec-CH-Prefers-Color-Scheme' },
+  ];
+  return [...rules.map((r) => ({ ...r, headers: r.headers.filter((h) => !isHint(h)) })).filter((r) => r.headers.length > 0), { source: '/admin/:path*', headers: adminHints }];
+};
+
+export default configured;
