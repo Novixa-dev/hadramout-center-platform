@@ -1,4 +1,5 @@
 import { cache } from 'react';
+import { isNotFound, isPlausibleId } from './errors.ts';
 import type { Where } from 'payload';
 import { getPayloadClient } from './runtime.ts';
 import { makeT } from '../i18n/t.ts';
@@ -121,12 +122,15 @@ export async function listDocs(p: ListParams): Promise<ListResult> {
 }
 
 export const getDoc = cache(async (type: ContentType, id: number, lang: string): Promise<Doc | null> => {
+  if (!isPlausibleId(id)) return null;
   const payload = await getPayloadClient();
   try {
     const doc = await payload.findByID({ collection: CONTENT[type].slug, id, depth: 2, locale: lang as never, fallbackLocale: 'ar', overrideAccess: false });
     return doc as unknown as Doc;
-  } catch {
-    return null;
+  } catch (err) {
+    // only a missing document is a 404; a database failure must surface as a 5xx so it is retried and never cached as "gone"
+    if (isNotFound(err)) return null;
+    throw err;
   }
 });
 
@@ -199,11 +203,13 @@ export const getSite = cache(async (lang: string): Promise<SiteInfo> => {
 });
 
 export async function getAuthor(id: number, lang: string) {
+  if (!isPlausibleId(id)) return null;
   const payload = await getPayloadClient();
   try {
     return (await payload.findByID({ collection: 'authors', id, depth: 0, locale: lang as never, fallbackLocale: 'ar' })) as unknown as { id: number; name: string; bio?: string | null };
-  } catch {
-    return null;
+  } catch (err) {
+    if (isNotFound(err)) return null;
+    throw err;
   }
 }
 
