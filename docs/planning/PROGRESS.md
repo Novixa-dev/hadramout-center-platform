@@ -12,7 +12,8 @@
 | Architecture and code quality | DONE | [SYSTEM_ARCHITECTURE](../architecture/SYSTEM_ARCHITECTURE.md) |
 | Data model, taxonomy, IA | DONE | [DATA_MODEL_AND_TAXONOMY](../architecture/DATA_MODEL_AND_TAXONOMY.md), [INFORMATION_ARCHITECTURE](../architecture/INFORMATION_ARCHITECTURE.md) |
 | Content migration and redirects | DONE | [migration/](../migration/) |
-| Functional flows, SEO matrix, accessibility, performance, security, testing | **NOT DONE** — the automated audit was cut off by a usage limit. Partial, evidence-backed checks were done inline (security headers, REST exposure, rate-limit key, legacy-media proxy, SEO audit script, axe) | none yet |
+| Performance | PARTIAL — lab baseline measured, plan written (single runs; field data and a profiled trace still missing) | [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md) |
+| Functional edge cases, security, SEO, accessibility | PARTIAL — production edge-case probes, header/exposure spot checks, local SEO-script and axe runs are recorded; the full security review, per-route SEO matrix, manual keyboard/screen-reader testing and an integration/e2e test tier are NOT done | [CURRENT_STATE_AUDIT](../audit/CURRENT_STATE_AUDIT.md) |
 | Consolidated gap analysis, roadmap, backlog | **NOT DONE** — per-area task tables exist inside the documents above (e.g. DATA tasks T1–T10) | none yet |
 
 Findings from the finished audits were **not** adversarially re-verified (the verification agents hit the same limit); treat severity as the auditor's claim backed by the cited evidence.
@@ -30,14 +31,16 @@ Findings from the finished audits were **not** adversarially re-verified (the ve
 | DATA-002 | The migrated "المرجع … اضغط هنا" citation line is dropped from descriptions, cards, JSON-LD and feeds (714/714 real excerpts) |
 | DATA-005 | Importer keeps a title with its name when splitting a byline on `/` |
 | ARCH-007 | ESLint rules now apply to `.tsx` |
+| SEO | List pages beyond the last page now return 404 (verified on a local build: article list has 46 pages; page 50 → 404) |
 
 ## Next actionable tasks (in order)
 
 1. Push the branch, open a PR, let CI run (typecheck, lint, tests, Docker build). Do not merge to `master` until CI is green — merging deploys.
 2. Before deploying: rehearse migrations 3–6 on a copy of the production database (done locally in < 1 s) and confirm `backup.sh` runs on the server with the new `legacy-media` coverage and its size.
-3. Re-run the unfinished audit areas (security, performance/Lighthouse, accessibility with a real browser, functional sweep, SEO route matrix) and write the consolidated gap analysis, roadmap and backlog.
-4. Data work needing editors: author merges (DATA-006), the 142 uncategorised articles (DATA-004), article dates that are cover-upload months (DATA-001, LEG-002).
-5. Hosting of the 63 PDFs that still point at `files.hadramout.center` (LEG-001/MIG-001) — must be solved before the legacy host is retired.
+3. Performance: profile the home page (PERF-T1), then cut its RSC payload (PERF-T2) and move search off the event loop (PERF-T3) — see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md).
+4. Still to write: full security review, per-route SEO matrix, manual accessibility test, an integration/e2e test tier, and the consolidated gap analysis, roadmap and backlog.
+5. Data work needing editors: author merges (DATA-006), the 142 uncategorised articles (DATA-004), article dates that are cover-upload months (DATA-001, LEG-002).
+6. Hosting of the 63 PDFs that still point at `files.hadramout.center` (LEG-001/MIG-001) — must be solved before the legacy host is retired.
 
 ## Blocked on the owner
 
