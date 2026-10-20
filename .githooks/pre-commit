@@ -1,0 +1,6 @@
+#!/bin/sh
+# Blocks a commit when typecheck, lint or unit tests fail. Enabled by `npm install` (scripts/setup-hooks.mjs).
+# Emergency escape (do not use it to push a failing change):  HC_SKIP_HOOKS=1 git commit ...
+[ "${HC_SKIP_HOOKS:-}" = "1" ] && exit 0
+echo "pre-commit: npm run check (typecheck + lint + unit tests)..."
+npm run check --silent || { echo "pre-commit: check failed — commit blocked (fix it, or HC_SKIP_HOOKS=1 in an emergency)"; exit 1; }

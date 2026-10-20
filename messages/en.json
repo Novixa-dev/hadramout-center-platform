@@ -1,5 +1,6 @@
 {
   "site.skip": "Skip to content",
+  "review.pendingApproval": "Draft awaiting the Center's approval: this text was written by the development team and has not been approved yet.",
   "staging.banner": "Preview version under development for review — not the Center's official website; content may change before approval.",
   "site.skipSearch": "Skip to search",
   "site.loading": "Loading…",
