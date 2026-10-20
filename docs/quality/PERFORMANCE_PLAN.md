@@ -30,6 +30,21 @@ The search CLS did not reproduce on the current source (0 on a local production 
 
 Likely cause of TBT: hydrating a large RSC payload plus 174 links on a 4× throttled CPU. **This is a hypothesis from the structure, not a profiled result.**
 
+## 2b. First profile and experiments (2026-10-20, local production build, single run, noisy host)
+
+Lighthouse mobile on `/ar`: performance 57, FCP 1.2 s, LCP 4.4 s, TBT 1.7 s, CLS 0. Main-thread work 6.2 s under 4× throttling: **Style & Layout 2.6 s**, Script evaluation 1.8 s (the two largest chunks: 0.9 s and 0.75 s), Other 1.2 s, HTML/CSS parse 0.3 s; 9 long tasks. Lighthouse warned the host CPU is slower than expected, so absolute numbers are inflated; only the ranking is informative.
+
+Structure: 813 elements, DOM depth 8, 62 KB minified CSS (about 620 rules, one `:has`, 5 `content-visibility` sections), 9 `@font-face`.
+
+Tried and **rejected** with evidence:
+
+| Idea | Measured | Decision |
+|---|---|---|
+| Fewer `next/image` widths (15 → 8) | `srcset` text 40 KB → 25 KB, home HTML 200 KB → 185 KB (-7.6%), inline RSC data unchanged (100 KB) | Rejected: small gain, and Cloudflare serves stale HTML (`stale-while-revalidate`) whose old widths would return 400 from `/_next/image` |
+| Move the 7.8 KB decorative skyline SVG to a file | Appears twice (HTML + RSC data) but compresses to almost nothing | Rejected: negligible transfer gain, needs CSS mask (older-browser risk) |
+
+Conclusion: the RSC data is the serialized React tree (191 links, 317 class names), i.e. proportional to the number of rendered cards, and cannot be shrunk without showing less. Next steps are therefore (a) repeat the profile on a quiet machine or a CI runner, three runs, (b) look at what forces 2.6 s of style/layout (font swap re-layouts, `content-visibility` sections, large grids) with a Chrome trace, and (c) decide with the Center how many cards the home page needs.
+
 ## 3. Verified facts that constrain the plan
 
 - Production HTML for the home page is served with `s-maxage=300, stale-while-revalidate`, but content and list pages are `no-store` and Cloudflare reports DYNAMIC (ARCH-002). No edge HTML caching rule exists (TRACKER item 3, owner credentials needed).
@@ -42,7 +57,7 @@ Likely cause of TBT: hydrating a large RSC payload plus 174 links on a 4× throt
 |---|---|---|---|---|
 | PERF-T1 | Profile the home page (Chrome performance trace, mobile throttling) and record the top 5 long tasks before changing anything | high | Written list of long tasks with their sources | Trace summary committed under `docs/` |
 | PERF-T2 | Reduce the home RSC payload: fewer cards above the fold, pass only the fields cards display (no `body`, no unused relations) | high | Home HTML ≤ 120 KB, inline flight data ≤ 50 KB | `curl` size; Lighthouse TBT ≤ 600 ms |
-| PERF-T3 | Move search/typeahead FTS off the event loop (worker thread) or cap concurrent searches (ARCH-001) | high | p95 search ≤ 150 ms with 10 parallel requests; other pages stay responsive | Parallel `curl` benchmark on a copy |
+| PERF-T3 | Move search/typeahead FTS off the event loop (worker thread). **Partly done:** a 60 s result cache (invalidated by index writes) makes repeats cheap (query "حضرموت": >1 s of blocking → ~0.2 s page time); typeahead is rate-limited. Cold queries still block (1.2 s measured for the slowest) | high | p95 search ≤ 150 ms with 10 parallel requests; other pages stay responsive | Parallel `curl` benchmark on a copy |
 | PERF-T4 | Cloudflare cache rule for anonymous HTML plus purge on publish (needs the owner's token) | high | `cf-cache-status: HIT` on `/ar`, TTFB under 200 ms | `curl -I` twice |
 | PERF-T5 | Re-run Lighthouse on the deployed build, 3 runs per page, take the median | medium | Home mobile perf ≥ 80; search CLS ≤ 0.1 | `scripts/lighthouse.mjs` |
 | PERF-T6 | Collect field data: Search Console Core Web Vitals report and Cloudflare Web Analytics (already allowed by the CSP) | medium | INP, LCP, CLS at p75 recorded | Console screenshots |

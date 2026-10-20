@@ -100,13 +100,16 @@ export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf
     case 'event':
     case 'forum': {
       const attendance = doc.venue ? 'https://schema.org/OfflineEventAttendanceMode' : doc.link ? 'https://schema.org/OnlineEventAttendanceMode' : undefined;
+      // Google requires a startDate for Event markup. Many migrated events carry no structured date (their date is only in the text),
+      // and a page about a past forum is not the event itself, so those are described as a plain CreativeWork instead of invalid Event markup.
+      if (!doc.eventDate) return { ...base, '@type': 'CreativeWork', publisher };
       return {
         ...base,
         '@type': 'Event',
         organizer: publisher,
-        ...(doc.eventDate ? { startDate: String(doc.eventDate).slice(0, 10) } : {}),
+        startDate: String(doc.eventDate).slice(0, 10),
         ...(doc.endDate ? { endDate: String(doc.endDate).slice(0, 10) } : {}),
-        ...(doc.venue ? { location: { '@type': 'Place', name: doc.venue } } : {}),
+        ...(doc.venue ? { location: { '@type': 'Place', name: doc.venue, address: doc.venue } } : {}),
         ...(doc.speaker ? { performer: { '@type': 'Person', name: String(doc.speaker) } } : {}),
         ...(attendance ? { eventAttendanceMode: attendance } : {}),
       };

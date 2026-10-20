@@ -12,6 +12,7 @@ npm run payload migrate  # create the database
 npm run db:seed          # content snapshot + admin (ADMIN_EMAIL / ADMIN_PASSWORD)
 npm run dev              # http://localhost:3000  (admin at /admin)
 npm run check            # typecheck + lint + unit tests
+npm run build && npm run smoke   # runtime tier: probes the built standalone server (needs a seeded DB: DB_DIR=...); CI runs it on a fresh snapshot seed
 ```
 
 Layout: `src/app` (routes) · `src/collections` · `src/i18n` (languages, translation engine) · `src/lib` · `src/components` · `src/styles` · `messages/` (UI strings) · `content/` (legacy snapshot) · `docs/`.

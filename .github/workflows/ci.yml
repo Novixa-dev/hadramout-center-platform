@@ -30,3 +30,18 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      # Runtime tier: fresh database from the committed snapshot, then the standalone server (as in Docker) is probed.
+      - name: Migrate and seed a throwaway database
+        env:
+          DATABASE_URL: file:${{ github.workspace }}/.smoke-data/payload.db
+          DATA_DIR: ${{ github.workspace }}/.smoke-data
+          ADMIN_EMAIL: ci@example.org
+          ADMIN_PASSWORD: ci-only-password-123456
+        run: |
+          mkdir -p .smoke-data
+          npm run payload -- migrate
+          npm run db:seed
+      - name: Smoke test the built server (routes, regressions, SEO audit)
+        env:
+          DB_DIR: ${{ github.workspace }}/.smoke-data
+        run: bash scripts/smoke-prod.sh

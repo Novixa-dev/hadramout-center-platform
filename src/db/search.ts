@@ -19,6 +19,28 @@ function base(kind: string, docId: number): number {
   return (docId * KIND_SLOTS + k) * LANG_SLOTS;
 }
 
+/**
+ * Short-lived result cache. Ranking the whole match set is the expensive part (a query for the Center's own name takes
+ * about a second of synchronous CPU), and popular queries repeat, so identical lookups within TTL_MS reuse the result.
+ * Every index write clears it, so editors never see stale results for longer than the write itself.
+ */
+const TTL_MS = 60_000;
+const MAX_ENTRIES = 300;
+const caches = new WeakMap<Store, Map<string, { at: number; value: unknown }>>();
+
+function cached<T>(db: Store, key: string, compute: () => T, clone: (v: T) => T): T {
+  let map = caches.get(db);
+  if (!map) caches.set(db, (map = new Map()));
+  const hit = map.get(key);
+  if (hit && Date.now() - hit.at < TTL_MS) return clone(hit.value as T);
+  const value = compute();
+  if (map.size >= MAX_ENTRIES) map.delete(map.keys().next().value as string); // oldest first (Map keeps insertion order)
+  map.set(key, { at: Date.now(), value });
+  return clone(value);
+}
+
+export const clearSearchCache = (db: Store): void => caches.get(db)?.clear();
+
 export interface IndexText {
   title: string;
   excerpt: string;
@@ -27,12 +49,14 @@ export interface IndexText {
 }
 
 export function removeFromIndex(db: Store, kind: string, docId: number): void {
+  clearSearchCache(db);
   const start = base(kind, docId);
   db.run('DELETE FROM search_index WHERE rowid BETWEEN ? AND ?', start, start + LANG_SLOTS - 1);
 }
 
 /** Replace all index rows of one document. `byLang` maps language code → its (translated or Arabic) text. */
 export function indexDocument(db: Store, kind: string, docId: number, byLang: Record<string, IndexText>): void {
+  clearSearchCache(db);
   db.tx(() => {
     removeFromIndex(db, kind, docId);
     for (const [lang, t] of Object.entries(byLang)) {
@@ -59,6 +83,7 @@ export function indexDocument(db: Store, kind: string, docId: number, byLang: Re
 }
 
 export function clearIndex(db: Store): void {
+  clearSearchCache(db);
   db.exec('DELETE FROM search_index');
 }
 
@@ -90,6 +115,11 @@ const hasLang = (db: Store, code: string) => (db.get<{ n: number }>('SELECT 1 n 
 export function searchIndex(db: Store, opts: SearchOptions): { hits: SearchHit[]; total: number; lang: string } {
   const match = toFtsQuery(opts.q);
   if (!match) return { hits: [], total: 0, lang: opts.lang };
+  const key = ['search', match, opts.lang, (opts.kinds ?? []).join(','), opts.limit ?? 20, opts.offset ?? 0].join('|');
+  return cached(db, key, () => runSearch(db, opts, match), (r) => ({ ...r, hits: r.hits.map((h) => ({ ...h })) }));
+}
+
+function runSearch(db: Store, opts: SearchOptions, match: string): { hits: SearchHit[]; total: number; lang: string } {
   // Search the visitor's language when it has been indexed, else the Arabic source.
   const lang = opts.lang !== 'ar' && hasLang(db, opts.lang) ? opts.lang : 'ar';
   const params: Param[] = [match, lang];
@@ -114,9 +144,16 @@ export function searchIndex(db: Store, opts: SearchOptions): { hits: SearchHit[]
 export function searchKindCounts(db: Store, q: string, lang: string): Record<string, number> {
   const match = toFtsQuery(q);
   if (!match) return {};
-  const useLang = lang !== 'ar' && hasLang(db, lang) ? lang : 'ar';
-  const rows = db.all<{ kind: string; n: number }>('SELECT kind, count(*) AS n FROM search_index WHERE search_index MATCH ? AND lang = ? GROUP BY kind', match, useLang);
-  return Object.fromEntries(rows.map((r) => [r.kind, r.n]));
+  return cached(
+    db,
+    ['kinds', match, lang].join('|'),
+    () => {
+      const useLang = lang !== 'ar' && hasLang(db, lang) ? lang : 'ar';
+      const rows = db.all<{ kind: string; n: number }>('SELECT kind, count(*) AS n FROM search_index WHERE search_index MATCH ? AND lang = ? GROUP BY kind', match, useLang);
+      return Object.fromEntries(rows.map((r) => [r.kind, r.n]));
+    },
+    (r) => ({ ...r }),
+  );
 }
 
 /** Most frequent recent queries that actually found something (shown when a search finds nothing). */

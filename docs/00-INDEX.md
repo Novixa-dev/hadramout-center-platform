@@ -14,7 +14,7 @@
 | `08-review` | مراجعة الموقع القديم مقابل الجديد وخطة التحسين |
 | `09-redesign` | **التصميم v3**: خط الأساس والخطة، التغييرات، مشكلات المحتوى للمراجعة، تقرير الجودة، أفكار مؤجّلة |
 | `audit`, `architecture`, `migration`, `research` | **تدقيق 2026-10**: جرد الموقع القديم، المعمارية الفعلية، نموذج البيانات والتصنيف، خطة الترحيل وخريطة التحويلات، مراجعة المنافسين (إنجليزية) |
-| `planning`, `reports` | `planning/PROGRESS.md` نقطة المتابعة · `reports/BASELINE_REPORT.md` خط الأساس · `reports/RELEASE_READINESS.md` جاهزية الإطلاق |
+| `planning`, `reports` | `planning/PROGRESS.md` نقطة المتابعة · `planning/ROADMAP.md` خارطة الطريق · `planning/BACKLOG.md` سجل المهام · `reports/BASELINE_REPORT.md` خط الأساس · `reports/RELEASE_READINESS.md` جاهزية الإطلاق |
 | `archive/v1` | وثائق النسخة الأولى (مرجع تاريخي — لا يُعتمد عليها) |
 
 ## أوامر أساسية
