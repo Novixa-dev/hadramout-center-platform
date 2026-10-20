@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-19 · **Branch:** `claude/audit-and-hardening-20261019` (not merged; `master` deploys on push)
+**Last updated:** 2026-10-20 · **State:** hardening pass merged and deployed on 2026-10-19 (PR #12, #13); follow-up work in PR #14
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -38,7 +38,7 @@ Findings from the finished audits were **not** adversarially re-verified (the ve
 1. PR #13 is open and CI is green on the latest push (install, typecheck, lint, 119 tests, build). Do not merge to `master` until the server-side backup/migration rehearsal is done — merging deploys.
 2. Before deploying: rehearse migrations 3–6 on a copy of the production database (done locally in < 1 s) and confirm `backup.sh` runs on the server with the new `legacy-media` coverage and its size.
 3. Performance: profile the home page (PERF-T1), then cut its RSC payload (PERF-T2) and move search off the event loop (PERF-T3) — see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md).
-4. Still to write: full security review, per-route SEO matrix, manual accessibility test, an integration/e2e test tier, and the consolidated gap analysis, roadmap and backlog.
+4. Still to write: full security review, per-route SEO matrix and manual accessibility test. The consolidated register is [BACKLOG](BACKLOG.md) (101 findings: 63 ready, 6 partial, 18 blocked, 14 done) and the ordering is in [ROADMAP](ROADMAP.md). The runtime test tier now exists (CI seeds a database and smoke-tests the built server).
 5. Data work needing editors: author merges (DATA-006), the 142 uncategorised articles (DATA-004), article dates that are cover-upload months (DATA-001, LEG-002).
 6. Hosting of the 63 PDFs that still point at `files.hadramout.center` (LEG-001/MIG-001) — must be solved before the legacy host is retired.
 
