@@ -149,3 +149,5 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | QA-3 | Redirect matrix test (all seven legacy types, query strings, trailing slash) | READY | see MIG-007 |
 | PERF-T1..T6 | Home page profile, payload, search off the event loop, edge cache, field data | READY / BLOCKED (T4, T6) | see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md) |
 | SEC-1 | Nonce-based CSP to remove `script-src 'unsafe-inline'` | READY | needs dynamic rendering of every page; evaluate cost first |
+| SEC-2..9 | Open security items (public REST internal fields, staff can read all users, admin 2FA, root deploy user, translation budget, off-server backups, dependency advisories, privacy wording) | READY / BLOCKED | see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md) §4 |
+| FEAT | Feature list and build order | see [FEATURE_PLAN](FEATURE_PLAN.md) | the single list of promised features with verified status |

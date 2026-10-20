@@ -35,6 +35,8 @@ items=$(curl -s "http://127.0.0.1:$PORT/feeds/ar/author-146.xml" | grep -o '<ite
 [ "$items" -gt 0 ] && echo "ok   author feed has $items items" || { echo "FAIL author feed is empty"; fail=1; }
 check "/api/hc/catalog?type=books&format=csv" 200
 check "/api/hc/catalog?type=nope" 400
+check "/api/hc/catalog?type=constructor" 400     # inherited object keys are not catalogue types
+check "/api/hc/catalog?type=__proto__" 400
 rows=$(curl -s "http://127.0.0.1:$PORT/api/hc/catalog?type=books&format=csv" | wc -l)
 [ "$rows" -ge 40 ] && echo "ok   catalogue csv has $rows lines" || { echo "FAIL catalogue csv too short ($rows)"; fail=1; }
 curl -s "http://127.0.0.1:$PORT/api/hc/catalog?type=magazines&format=json" | grep -q '"count":4[0-9]' && echo "ok   magazine catalogue json" || { echo "FAIL magazine catalogue json"; fail=1; }

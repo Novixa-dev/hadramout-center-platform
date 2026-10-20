@@ -71,3 +71,9 @@ export function toCsv(rows: CatalogRow[]): string {
   const lines = [CATALOG_COLUMNS.join(','), ...rows.map((r) => CATALOG_COLUMNS.map((c) => cell(r[c])).join(','))];
   return `${UTF8_BOM}${lines.join('\r\n')}\r\n`;
 }
+
+export const CATALOG_TYPES = ['books', 'magazines'] as const;
+export type CatalogType = (typeof CATALOG_TYPES)[number];
+
+/** Only the listed types are accepted; inherited object keys such as "constructor" or "__proto__" are not types. */
+export const parseCatalogType = (raw: string | null): CatalogType | null => (CATALOG_TYPES as readonly string[]).includes(raw ?? 'books') ? ((raw ?? 'books') as CatalogType) : null;

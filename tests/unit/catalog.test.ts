@@ -40,3 +40,11 @@ test('numeric columns are not prefixed even when negative-looking text would be'
   assert.ok(csv.includes(',1999,'));
   assert.ok(csv.includes(',200,'));
 });
+
+test('only books and magazines are catalogue types (inherited object keys are rejected)', async () => {
+  const { parseCatalogType } = await import('../../src/lib/catalog.ts');
+  assert.equal(parseCatalogType(null), 'books', 'default');
+  assert.equal(parseCatalogType('books'), 'books');
+  assert.equal(parseCatalogType('magazines'), 'magazines');
+  for (const bad of ['', 'articles', 'constructor', '__proto__', 'toString', 'hasOwnProperty', 'BOOKS', 'books ']) assert.equal(parseCatalogType(bad), null, bad);
+});

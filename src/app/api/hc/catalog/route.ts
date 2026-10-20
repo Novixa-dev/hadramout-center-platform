@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getPayloadClient } from '../../../../lib/runtime.ts';
 import { absolute } from '../../../../lib/ctx.ts';
-import { toCatalogRows, toCsv } from '../../../../lib/catalog.ts';
+import { parseCatalogType, toCatalogRows, toCsv } from '../../../../lib/catalog.ts';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,10 +13,10 @@ const TYPES = {
 /** Open catalogue of publications: /api/hc/catalog?type=books|magazines&format=csv|json (published items only). */
 export async function GET(req: Request) {
   const u = new URL(req.url);
-  const type = (u.searchParams.get('type') ?? 'books') as keyof typeof TYPES;
+  const type = parseCatalogType(u.searchParams.get('type'));
   const format = u.searchParams.get('format') === 'json' ? 'json' : 'csv';
+  if (!type) return NextResponse.json({ error: 'type must be books or magazines' }, { status: 400 });
   const info = TYPES[type];
-  if (!info) return NextResponse.json({ error: 'type must be books or magazines' }, { status: 400 });
 
   const payload = await getPayloadClient();
   const res = await payload.find({

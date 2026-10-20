@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.3.0] - 2026-10-20
+### Dark default, researcher tools, offline, quality tooling
+- **Defaults:** dark theme rendered by the server (no flash, works without JS; visitor choice persists); Arabic stays the default regardless of the browser language.
+- **Researchers:** copy with attribution, open catalogue export (`/api/hc/catalog`, CSV/JSON), saved list exports RIS/BibTeX/CSL-JSON, per-topic and per-author RSS.
+- **Accessibility:** high-contrast mode (`prefers-contrast: more`, AAA tokens) and forced-colors support.
+- **Operations:** maintenance mode (`MAINTENANCE_MODE=1`), offline support for saved articles (service worker), `npm run quality` editorial report.
+- **Fix:** `/api/hc/catalog?type=constructor` returned a 500 (now 400).
+- **Docs:** feature plan, security review, launch asset drafts.
+
 ## [5.2.0] - 2026-10-20
 ### Runtime test tier, search, dependencies
 - **CI:** seeds a throwaway database from the snapshot, starts the standalone server and runs the smoke script (routes, regression checks, SEO audit) — previously CI only built the app.
