@@ -3,6 +3,7 @@ import { getLanguage, LANGUAGES } from '../i18n/languages.ts';
 import { uiCoverage } from '../i18n/ui-store.ts';
 import { loadConfig } from '../config.ts';
 import { absolute, type Ctx } from './ctx.ts';
+import { isProductionSite } from './site-env.ts';
 import { getSite } from './data.ts';
 import { clip, describe, isoOrUndefined, socialTitle, titlePart, twitterHandle, withPage } from './seo-text.ts';
 
@@ -70,7 +71,8 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
     for (const code of ready) languages[getLanguage(code)?.tag ?? code] = url(code);
     languages['x-default'] = url('ar');
   }
-  const noindex = Boolean(m.noindex || m.incomplete || !isIndexable(lang));
+  const staging = !isProductionSite();
+  const noindex = Boolean(staging || m.noindex || m.incomplete || !isIndexable(lang));
   const baseTitle = m.absoluteTitle ? clip(m.title, 70) : titlePart(withPage(m.title, page, m.pageLabel ?? String(page)));
   const description = describe(m.description, site.description, site.tagline);
   const image = m.image ?? cardUrl(lang, m.card ?? { key: 'home' });
@@ -99,7 +101,9 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
         ],
       },
     },
-    robots: noindex
+    robots: staging
+      ? { index: false, follow: false, noarchive: true }
+      : noindex
       ? { index: false, follow: true }
       : { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
     openGraph:

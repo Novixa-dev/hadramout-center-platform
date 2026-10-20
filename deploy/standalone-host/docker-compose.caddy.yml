@@ -1,0 +1,29 @@
+# Caddy reverse proxy for a standalone host. Lives in /opt/caddy next to the Caddyfile; the app stack stays in /opt/hadramout-center.
+#   SITE_HOST=example.org ACME_EMAIL=ops@example.org docker compose -f docker-compose.caddy.yml up -d
+services:
+  caddy:
+    image: caddy:2
+    container_name: hadramout-center-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_HOST: ${SITE_HOST:?set SITE_HOST to the public domain}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL for certificate notices}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - edge
+
+networks:
+  edge:
+    name: hadramout-center-edge
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:

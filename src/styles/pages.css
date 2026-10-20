@@ -215,7 +215,7 @@
 
 @layer print {
   @media print {
-    .site-header, .site-footer, .tools, .side, .skip-link, .back-top, .tr-banner, .reading-progress, .no-print, .toc-box, .toc-inline, .actions, .pager, .reviews, .filters, .toolbar, .pagination { display: none !important; }
+    .site-header, .site-footer, .tools, .side, .skip-link, .staging-bar, .back-top, .tr-banner, .reading-progress, .no-print, .toc-box, .toc-inline, .actions, .pager, .reviews, .filters, .toolbar, .pagination { display: none !important; }
     /* printing is always on paper: switch the light-dark() tokens to their light values whatever theme is on screen */
     :root, :root[data-theme] { color-scheme: light; }
     body { background: #fff; color: #000; }

@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-20 · **State:** hardening pass deployed 2026-10-19 (PR #12, #13). Open and green: PR #14 (CI runtime tier, search cache, favicon, backlog/roadmap), PR #15 (Payload 3.91.0) and PR #16 (dark default and features), stacked in that order. Merging deploys; the user merges.
+**Last updated:** 2026-10-20 · **State:** PRs #12–#16 merged and deployed to the staging site (2026-10-19/21). Current work: staging safety (noindex + banner, `SITE_ENV`), move runbook and cutover check, client checklist. The site is a **staging copy**; it moves to a new host and domain after the Center approves.
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -57,6 +57,14 @@ Production was re-verified after the first deploy: health, GraphQL 404, REST cla
 | `npm run quality` editorial report + zero-result search analytics | report snapshot in docs/reports/QUALITY_REPORT.md; runs in smoke |
 | [FEATURE_PLAN](FEATURE_PLAN.md), [SECURITY_REVIEW](../security/SECURITY_REVIEW.md), launch asset drafts | docs |
 | Catalogue type validation fix (`?type=constructor` was a 500) | found by the security review, tested |
+
+## Staging → launch (2026-10-21)
+
+| Change | Evidence |
+|---|---|
+| Staging-safe by default (noindex header + meta, banner, robots without sitemap) | smoke asserts both modes; unit tests for the helper |
+| `scripts/cutover-check.mjs` | run against live staging (39 ok, 1 warning: Cloudflare caches `/sw.js` for 4 h) and in CI |
+| Move runbook, Caddy templates, Arabic client checklist | [03-move-to-new-host-and-domain](../05-deploy/03-move-to-new-host-and-domain.md), [client checklist](../06-handover/client-requirements-checklist-ar.md) |
 
 ## Next actionable tasks (in order)
 

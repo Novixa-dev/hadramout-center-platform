@@ -1,0 +1,26 @@
+# Standalone host (no mailcow): Caddy terminates TLS with automatic Let's Encrypt certificates and proxies to the app container.
+# TEMPLATE — not yet exercised on a real host. First run it on a temporary hostname with SITE_ENV=staging
+# (docs/05-deploy/03-move-to-new-host-and-domain.md).
+{
+	email {$ACME_EMAIL}
+}
+
+{$SITE_HOST} {
+	encode zstd gzip
+
+	# The application sets its own security headers (CSP, HSTS, ...): none are added here.
+	request_body {
+		max_size 25MB   # admin media uploads
+	}
+
+	reverse_proxy hadramout-center-app:3000 {
+		# Without Cloudflare, Caddy already sets X-Forwarded-For to the real visitor address.
+		#
+		# BEHIND Cloudflare (proxied DNS) every visitor would appear as a Cloudflare address and share the rate-limit buckets.
+		# Uncomment ONLY if the firewall accepts ports 80/443 from Cloudflare's published ranges and nothing else —
+		# otherwise anyone can forge these headers:
+		#
+		# header_up X-Forwarded-For {header.CF-Connecting-IP}
+		# header_up X-Real-IP {header.CF-Connecting-IP}
+	}
+}

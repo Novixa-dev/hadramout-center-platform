@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.4.0] - 2026-10-21
+### Staging safety and the move to a new host/domain
+- **Staging-safe by default:** `SITE_ENV` (unset = staging) → `X-Robots-Tag: noindex, nofollow, noarchive` on every response, meta robots noindex, robots.txt without sitemap and without `Disallow`, visible "preview version" banner. `SITE_ENV=production` is the explicit launch switch. Both modes are asserted in the smoke tests.
+- **`scripts/cutover-check.mjs`:** verifies a deployment from outside (host consistency of canonical/hreflang/OG/sitemap/RSS, indexing mode, redirects, headers, health, REST cap); runs in CI against the production-mode server.
+- **Docs:** move runbook (Arabic) with decisions, couplings, phases, rollback; `deploy/standalone-host/` Caddy templates (untested until the first real host); client requirements checklist and meeting agenda (Arabic).
+- **Tooling:** the smoke script clears runtime page caches before running.
+
 ## [5.3.0] - 2026-10-20
 ### Dark default, researcher tools, offline, quality tooling
 - **Defaults:** dark theme rendered by the server (no flash, works without JS; visitor choice persists); Arabic stays the default regardless of the browser language.
