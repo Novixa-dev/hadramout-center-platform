@@ -4,7 +4,26 @@
 **Method caveat:** Lighthouse lab runs from one Windows machine, one run per page, simulated mobile throttling. They are indicative, not field data (no CrUX/Search Console data was available). Desktop runs returned no performance metrics (see "Tool issues").
 **Related:** [SYSTEM_ARCHITECTURE](../architecture/SYSTEM_ARCHITECTURE.md) (ARCH-001/002/015) · [PROGRESS](../planning/PROGRESS.md) · [TRACKER](../03-tracking/TRACKER.md) items 3, 4, 7
 
-## 1. Measured baseline — production (`hadramout-center.novixa.dev`, older build than `master`)
+## 0. Latest evidence — read this first (2026-10-21)
+
+Measured on a clean GitHub runner by `.github/workflows/lighthouse.yml` (build + seeded DB + standalone server, **median of 3 runs**, mobile preset). Weekly, on demand, and on any change to the Lighthouse scripts.
+
+| Page | Performance | TBT (ms) | CLS | FCP modeled (ms) | LCP modeled (ms) | **LCP observed (ms)** | A11y |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `/ar` | 93 | 79 | 0 | 926 | 3112 | **≈ 200** | 100 |
+| `/ar/articles/894` | 94 | 50 | 0.001 | 1232 | 2864 | **≈ 210** | 100 |
+| `/ar/books/37` | 92 | 67 | 0 | 1384 | 3351 | **≈ 180** | 100 |
+
+What this changes:
+- **The site is fast in the lab.** The earlier numbers in §1–§2 (home performance 53, TBT ≈ 2 s) came from a loaded developer laptop and the previous build; on a clean runner TBT is under 100 ms and performance is 92–95. The "heavy hydration" hypothesis in §2 is **withdrawn**.
+- **"LCP ≈ 3 s" is a model, not a measurement.** Lighthouse's mobile LCP simulates a slow phone on slow 4G (150 ms RTT, 1.6 Mbps, 4× CPU); Chrome itself measures about 0.2 s. The report shows both and judges neither; the real LCP target (≤ 2.5 s at the 75th percentile) can only be judged on **field data**.
+- **Run-to-run noise is ±150–300 ms** (the unchanged home page measured 3112 and 2977 ms in two runs). Differences smaller than that are not evidence.
+- **Experiments rejected on evidence:** fewer `next/image` widths (−7.6 % HTML, but stale cached pages would 400), moving the skyline SVG to a file (negligible), and preloading the Naskh 400 reading font on detail pages — an A/B on the runner gave FCP −160…−300 ms on article/book pages but a **worse** modeled article LCP (2864 → 3513 ms), i.e. no proven gain.
+- **What can still matter to real visitors in Yemen and the Gulf** is network latency to the server and whether Cloudflare caches HTML (today pages are `no-store`/DYNAMIC except the home page; see [ARCH-002](../planning/BACKLOG.md)). That is the next lever, and it needs the owner's Cloudflare access plus field data.
+
+Revised plan: PERF-T1 (profile on a quiet machine) **done**; PERF-T5 (repeat on CI) **done** by the workflow; PERF-T2 (shrink the RSC payload) **demoted** — no measured benefit; PERF-T3 (search off the event loop) **demoted** — measured: ~165 ms warm for the heaviest term (the earlier 1.2 s was a cold disk cache), ~0.5 s TTFB live, identical to a plain listing; indexed `lang`/`kind` columns would only halve it; PERF-T4 (Cloudflare HTML cache + purge) stays **high** — every page shows ~0.45–0.55 s TTFB from here, which points at network distance and the absence of edge caching, not at the application; PERF-T6 (field data: Search Console Core Web Vitals, Cloudflare Web Analytics) is the way to judge LCP.
+
+## 1. History — baseline measured on production and a laptop (older build; superseded by §0)
 
 Lighthouse mobile, 2026-10-19:
 

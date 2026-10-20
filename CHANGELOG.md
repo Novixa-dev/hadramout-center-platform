@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.5.0] - 2026-10-21
+### Deploy hardening, honest performance reporting, review notices
+- **Fix:** the Docker image build failed because the new `prepare` hook script needed repo files that the `deps` stage does not have (staging was never affected: the build failed before shipping). `prepare` is now self-contained; CI builds the production image on every PR so Docker-only failures are caught before merge.
+- **Preview notices:** About, privacy and terms say they await the Center's approval (preview only).
+- **Workflow:** `CLAUDE.md`, pre-commit gate (`npm run check`), `security-reviewer` and `arabic-ux-reviewer` subagents, `hadramout-release` skill, research note on official Claude Code and Google guidance.
+- **Performance:** Lighthouse workflow on a clean runner (median of 3). Finding: the site scores 92–95 with TBT < 100 ms; the "LCP ≈ 3 s" is Lighthouse's model (observed ≈ 0.2 s) — the report now shows both and judges only measured values. A font-preload experiment was A/B tested and rejected.
+- **Roadmap:** launch gates G1–G11 with owners and verification.
+
 ## [5.4.0] - 2026-10-21
 ### Staging safety and the move to a new host/domain
 - **Staging-safe by default:** `SITE_ENV` (unset = staging) → `X-Robots-Tag: noindex, nofollow, noarchive` on every response, meta robots noindex, robots.txt without sitemap and without `Disallow`, visible "preview version" banner. `SITE_ENV=production` is the explicit launch switch. Both modes are asserted in the smoke tests.

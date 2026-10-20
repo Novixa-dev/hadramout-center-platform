@@ -57,7 +57,8 @@ for (const preset of presets) {
       bestPractices: score('best-practices'),
       seo: score('seo'),
       fcpMs: Math.round(a('first-contentful-paint') ?? 0) || null,
-      lcpMs: Math.round(a('largest-contentful-paint') ?? 0) || null,
+      lcpMs: Math.round(a('largest-contentful-paint') ?? 0) || null, // simulated (Lantern model of a slow phone on slow 4G)
+      observedLcpMs: Math.round(j.audits?.metrics?.details?.items?.[0]?.observedLargestContentfulPaint ?? 0) || null, // what Chrome measured, without the model
       tbtMs: Math.round(a('total-blocking-time') ?? 0),
       cls: a('cumulative-layout-shift') == null ? null : +a('cumulative-layout-shift').toFixed(3),
       transferKB: Math.round((a('total-byte-weight') ?? 0) / 1024),

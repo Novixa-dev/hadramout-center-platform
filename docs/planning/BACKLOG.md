@@ -10,11 +10,11 @@
 | Status | Total | high | medium | low | info |
 |---|---:|---:|---:|---:|---:|
 | READY | 62 | 0 | 15 | 32 | 15 |
-| PARTIAL | 7 | 1 | 5 | 1 | 0 |
+| PARTIAL | 7 | 0 | 6 | 1 | 0 |
 | BLOCKED | 18 | 4 | 9 | 4 | 1 |
 | DONE | 14 | 1 | 10 | 3 | 0 |
 
-Severity is the auditor's claim backed by cited evidence; the planned adversarial re-verification did not run (usage limit). The 6 high-severity items are LEG-001, LEG-002, ARCH-001, DATA-001, MIG-001, MIG-003.
+Severity is the auditor's claim backed by cited evidence; the planned adversarial re-verification did not run (usage limit). The 5 remaining high-severity items are LEG-001, LEG-002, DATA-001, MIG-001, MIG-003 (ARCH-001 was downgraded on measurement).
 
 ## Ready
 
@@ -87,7 +87,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 
 | ID | Severity | Title | Note | Source |
 |---|---|---|---|---|
-| ARCH-001 | high | Synchronous FTS on the single event loop behind public, unlimited search and typeahead | 60 s result cache cleared by every index write (unit-tested) cuts repeats of the slowest query from >1 s of blocked CPU to ~0.2 s page time; typeahead rate-limited (90/min/client) and lang validated. The first uncached request still blocks the event loop: move FTS to a worker thread (PERF-T3) | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
+| ARCH-001 | medium (was high) | Synchronous FTS on the single event loop behind public search and typeahead | **Downgraded on measurement (2026-10-21):** warm, one heavy term costs ~165 ms for count + per-type counts + ranking (the earlier 1.2 s was a cold disk cache on a Windows laptop); indexing `lang`/`kind` as FTS columns would make it ~78 ms (counts 15–20× faster) but changes ranking slightly and needs a rebuild of the index — not justified. Live: search answers in ~0.5 s TTFB, the same as a plain listing (0.53 s) and the cached home page (0.45 s). Cache (60 s) and the typeahead rate limit stay. Revisit if traffic grows | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-006 | medium | No error boundaries, 45 empty catch blocks, no telemetry | route error boundary added; ~45 empty catch blocks and error telemetry remain | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-019 | medium | No tests for translation engine, hooks, rate limit, proxy, routes; no integration tier | CI runtime smoke tier added (PR #14); translation engine, hooks and rate limiter still untested | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | DATA-005 | medium | splitAuthors splits on /, creating authors named الشيخ and أ.م.د; older doc item C1 is wrong | importer fixed; authors 78 and 159 and their articles need an editorial data migration | [doc](../architecture/DATA_MODEL_AND_TAXONOMY.md) |
@@ -147,7 +147,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | QA-1 | Manual keyboard and screen-reader pass on the main journeys | READY | only axe/Lighthouse so far |
 | QA-2 | Full per-route SEO matrix and Search Console readiness | READY | script audit passes; matrix not written |
 | QA-3 | Redirect matrix test (all seven legacy types, query strings, trailing slash) | READY | see MIG-007 |
-| PERF-T1..T6 | Home page profile, payload, search off the event loop, edge cache, field data | READY / BLOCKED (T4, T6) | see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md) |
+| PERF-T1..T6 | T1 profile and T5 CI measurement **done** (clean-runner evidence in the plan); T2 RSC payload demoted (no measured benefit); T3 search off the event loop and T4 Cloudflare HTML cache stay high; T6 field data | READY / BLOCKED (T4, T6) | see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md) §0 |
 | SEC-1 | Nonce-based CSP to remove `script-src 'unsafe-inline'` | READY | needs dynamic rendering of every page; evaluate cost first |
 | SEC-2..9 | Open security items (public REST internal fields, staff can read all users, admin 2FA, root deploy user, translation budget, off-server backups, dependency advisories, privacy wording) | READY / BLOCKED | see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md) §4 |
 | FEAT | Feature list and build order | see [FEATURE_PLAN](FEATURE_PLAN.md) | the single list of promised features with verified status |
