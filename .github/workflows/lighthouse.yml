@@ -73,6 +73,7 @@ jobs:
         if: always()
         with:
           name: lighthouse
+          include-hidden-files: true # the reports live in dot-folders, which upload-artifact@v4 skips by default
           path: |
             .lighthouse-runs/
             .lighthouse/

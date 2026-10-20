@@ -4,6 +4,24 @@
 **Last updated:** 2026-10-20 · **Status:** the platform is live at `hadramout-center.novixa.dev` (redesign v3 + hardening deployed 2026-10-19); the legacy domain has not been switched.
 **Related:** [PROGRESS](PROGRESS.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md)
 
+## Launch gates (the site is a staging preview until every gate is met)
+
+The site moves to the new host and domain only when all gates are green. Each gate has an owner and a way to verify it; "Center" gates cannot be closed by engineering. Procedure after the gates: [move runbook](../05-deploy/03-move-to-new-host-and-domain.md).
+
+| Gate | Condition (measurable) | Verification | Owner | State |
+|---|---|---|---|---|
+| G1 Approved wording | About, leadership, privacy, terms approved in writing by the Center; the preview notice is removed by `SITE_ENV=production`, not by editing | written approval; `/ar/about` has no draft notice on the production-mode server | Center | OPEN — [checklist items 1, 2, 14](../06-handover/client-requirements-checklist-ar.md) |
+| G2 Fresh content | Events and news up to the launch date; latest issues and their contents present | quality report; compare with the legacy site on launch day | Center | OPEN — events stop at 2024-11 |
+| G3 Data quality | Uncategorised articles ≤ 30 (now 142); no published item without author or with an empty body; books carry ISBN/pages where they exist; article dates either true or hidden | `npm run quality` ([report](../reports/QUALITY_REPORT.md)) | Center + editors | OPEN |
+| G4 Files independent of the legacy host | All PDFs (63) and mirrored images served from our own storage | `cutover-check.mjs` warns about `files.hadramout.center` references; none remain | Owner decision, then engineering | OPEN — [LEG-001](BACKLOG.md) |
+| G5 Technical health | CI green; smoke suite green; `seo-audit` 0 errors; `cutover-check` 0 failures on the final host; Lighthouse median on the CI runner: home mobile performance ≥ 80, LCP ≤ 2.5 s, TBT ≤ 600 ms, CLS ≤ 0.1, accessibility ≥ 95 | CI, `.github/workflows/lighthouse.yml` | Engineering | PARTIAL — home page below target ([plan](../quality/PERFORMANCE_PLAN.md)) |
+| G6 Accessibility | axe clean on the main page types; one manual keyboard and screen-reader pass of search, article reading, save/export, language switch, contact form | written test notes | Engineering + a tester | PARTIAL — automated only |
+| G7 Security | [SECURITY_REVIEW](../security/SECURITY_REVIEW.md) open items SEC-004 (admin 2FA decision), SEC-005 (deploy user), SEC-007 (off-server backups) decided and done or accepted in writing | review doc updated | Owner + engineering | OPEN |
+| G8 Infrastructure rehearsed | New host provisioned; data restored from a real backup there; deploy, rollback and restore each exercised once | runbook phase B notes | Engineering | BLOCKED on host decision |
+| G9 SEO cutover prepared | 301 matrix verified for all seven legacy types (incl. query strings, trailing slash); Search Console property ready; `SITE_URL`/`SITE_ENV` plan agreed | `docs/migration/URL_REDIRECT_MAP.md`, `cutover-check` | Engineering + owner | PARTIAL |
+| G10 Operations | Uptime monitor on `/api/hc/health`; error visibility; nightly backup copied off-server; editors trained on the Arabic admin | evidence of each | Owner + engineering | OPEN |
+| G11 Communications | Launch assets approved ([drafts](../07-marketing/02-launch-assets-draft.md)); newsletter provider decision | Center approval | Center | DRAFTED |
+
 ## Phase status
 
 | Phase | Goal | State |
