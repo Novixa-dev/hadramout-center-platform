@@ -40,7 +40,7 @@
 | F-23 | Newsletter | PARTIAL | subscribe/export/unsubscribe done; **sending needs a mail provider** (BLOCKED, F-46) |
 | F-24 | RSS per section and language | DONE (PR #16) | plus per-topic (`topic-{id}.xml`) and per-author (`author-{id}.xml`) feeds with autodiscovery |
 | F-25 | YouTube facade, no cookies | DONE | |
-| F-30 | PWA | PARTIAL | manifest only; **offline page + saved articles offline TODO** |
+| F-30 | PWA | DONE (PR #16) | manifest + conservative service worker (`public/sw.js`): network first for pages, a cached copy only when offline and only for **saved** articles (refreshed on each online visit, max 60), static offline page, immutable build files and fonts cached on first use; 11 sandbox tests. Not caching: API, images, PDFs, ordinary pages |
 | F-31 | Anonymous analytics | PARTIAL | tables exist; **no admin view — TODO** (deferred #7) |
 | F-32 | Audit log, roles, backups, health | PARTIAL | roles, nightly backup, health done; **no audit log** (Payload `versions` not enabled) — DECISION |
 | F-33 | Smart 404, friendly errors, maintenance mode | DONE | 404 with search, route error boundary, and **maintenance mode** (`MAINTENANCE_MODE=1`: public pages 503 + `Retry-After`, admin/API/health stay up; tested on the built server, documented in the deploy guide) |
@@ -68,13 +68,13 @@
 | 7 | Analytics view (zero-result searches, popular topics, 404s) | **TODO** — included in the quality report |
 | 8 | Image alt-text audit | **TODO** — included in the quality report (list only; the writing is editorial) |
 | 9 | Co-citation graph | REJECTED for now (high cost) |
-| 10 | PWA offline for saved articles only | **TODO** — see F-30 |
+| 10 | PWA offline for saved articles only | DONE — see F-30 |
 
 ## 4. Marketing and launch ([launch plan](../07-marketing/01-launch-campaign-plan.md))
 
 | Item | State |
 |---|---|
-| Launch assets: press release (ar/en), newsletter text, first posts, one-page profile | **TODO** — drafts built only from verified facts; the Center must approve before use |
+| Launch assets: press release (ar/en), newsletter text, first posts, one-page profile | DRAFTED — [02-launch-assets-draft.md](../07-marketing/02-launch-assets-draft.md): verified-facts table, press release, newsletter, social templates, WhatsApp text, profile and citation-guide outlines, pre-send checklist. **The Center must approve before use**; placeholders mark everything unverified |
 | Search Console registration and sitemap submission | BLOCKED (owner/domain) |
 | Newsletter provider | BLOCKED |
 | Citation guide page ("how to cite Hadhrami sources") | **TODO** — content page, needs the Center's review |

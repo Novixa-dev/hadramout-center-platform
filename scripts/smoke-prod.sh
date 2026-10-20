@@ -39,6 +39,12 @@ rows=$(curl -s "http://127.0.0.1:$PORT/api/hc/catalog?type=books&format=csv" | w
 [ "$rows" -ge 40 ] && echo "ok   catalogue csv has $rows lines" || { echo "FAIL catalogue csv too short ($rows)"; fail=1; }
 curl -s "http://127.0.0.1:$PORT/api/hc/catalog?type=magazines&format=json" | grep -q '"count":4[0-9]' && echo "ok   magazine catalogue json" || { echo "FAIL magazine catalogue json"; fail=1; }
 check /favicon.ico 200
+# offline support: the worker is served as JavaScript and always revalidated; the offline page is static
+check /sw.js 200
+check /offline.html 200
+sw_headers=$(curl -s -D - -o /dev/null "http://127.0.0.1:$PORT/sw.js" | tr -d '\r')
+case "$sw_headers" in *[Cc]ontent-[Tt]ype:*javascript*) echo "ok   sw.js is JavaScript";; *) echo "FAIL sw.js content-type"; fail=1;; esac
+case "$sw_headers" in *[Cc]ache-[Cc]ontrol:*no-cache*) echo "ok   sw.js is always revalidated";; *) echo "FAIL sw.js cache-control"; fail=1;; esac
 # defaults: Arabic regardless of Accept-Language, dark theme server-rendered (no flash, no JS needed)
 lang_redirect=$(curl -s -o /dev/null -w '%{redirect_url}' -H 'Accept-Language: en-US,en;q=0.9' "http://127.0.0.1:$PORT/")
 case "$lang_redirect" in */ar) echo "ok   default language ar (Accept-Language en ignored)";; *) echo "FAIL default language: $lang_redirect"; fail=1;; esac

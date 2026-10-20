@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Icon } from '../Icon.tsx';
 import { readSaved } from './Tools.tsx';
 import { toBibtex, toCslJson, toRis, type SavedItem } from '../../lib/saved-export.ts';
+import { tellServiceWorker } from '../../lib/sw-client.ts';
 
 type Item = SavedItem;
 
@@ -21,6 +22,8 @@ export function SavedList({ labels }: { labels: { empty: string; remove: string;
     );
   }
   const remove = (id: string) => {
+    const gone = items.find((i) => i.id === id);
+    if (gone) tellServiceWorker({ type: 'unsave', url: gone.url });
     const next = items.filter((i) => i.id !== id);
     try {
       localStorage.setItem('hc-saved', JSON.stringify(next));

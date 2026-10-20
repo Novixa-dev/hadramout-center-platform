@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../Icon.tsx';
+import { savedPageOf, tellServiceWorker } from '../../lib/sw-client.ts';
 
 interface ShareProps {
   label: string;
@@ -82,7 +83,12 @@ export function SaveButton({ id, title, url, type, labels }: SaveProps) {
     } catch {
       /* storage blocked */
     }
-    setOn(next.some((s) => s.id === id));
+    const nowSaved = next.some((s) => s.id === id);
+    setOn(nowSaved);
+    // keep (or drop) an offline copy of the page; the list page is cached with it so it opens offline too
+    tellServiceWorker({ type: nowSaved ? 'save' : 'unsave', url });
+    const listPage = savedPageOf(url);
+    if (nowSaved && listPage) tellServiceWorker({ type: 'save', url: listPage });
   };
   return (
     <button type="button" className="btn btn--secondary btn--sm" onClick={toggle} aria-pressed={on}>

@@ -19,6 +19,11 @@ export default tseslint.config(
     },
   },
   {
+    files: ['public/sw.js'],
+    languageOptions: { sourceType: 'script', globals: { ...globals.serviceworker } },
+    rules: { 'no-var': 'error', 'prefer-const': 'error', eqeqeq: ['error', 'always'] },
+  },
+  {
     files: ['client/**/*.ts'],
     languageOptions: { globals: { ...globals.browser } },
     rules: {

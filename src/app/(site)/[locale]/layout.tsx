@@ -9,6 +9,7 @@ import { loadConfig } from '../../../config.ts';
 import { uiCoverage } from '../../../i18n/ui-store.ts';
 import { Footer, Header, langOptions } from '../../../components/Shell.tsx';
 import { BackToTop } from '../../../components/client/BackToTop.tsx';
+import { PwaRegister } from '../../../components/client/PwaRegister.tsx';
 
 export const dynamicParams = true;
 export const revalidate = 300;
@@ -71,6 +72,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <main id="main" tabIndex={-1}>{children}</main>
         <Footer ctx={ctx} site={site} />
         <BackToTop label={ctx.t('tools.backToTop')} />
+        <PwaRegister />
       </body>
     </html>
   );
