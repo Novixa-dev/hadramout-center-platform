@@ -61,12 +61,12 @@
 |---|---|---|
 | 1 | Cloudflare HTML cache rule + purge | BLOCKED (owner token) |
 | 2 | Text from magazine/book PDFs in the index | BLOCKED (see F-43) |
-| 3 | Editorial quality dashboard | **TODO** — as a read-only report script first (`npm run quality`), admin view later |
+| 3 | Editorial quality dashboard | DONE as a report — `npm run quality` (read-only; missing authors/dates/covers/PDFs, duplicate titles, images without alt, items waiting for a human); snapshot in [QUALITY_REPORT](../reports/QUALITY_REPORT.md). An in-admin view is a later option |
 | 4 | Book classification | BLOCKED (Center cataloguers) |
 | 5 | Per-topic / per-author RSS | **TODO** |
 | 6 | Saved list: BibTeX/CSL-JSON, shareable link | **TODO** (export part) |
-| 7 | Analytics view (zero-result searches, popular topics, 404s) | **TODO** — included in the quality report |
-| 8 | Image alt-text audit | **TODO** — included in the quality report (list only; the writing is editorial) |
+| 7 | Analytics view (zero-result searches, popular topics, 404s) | DONE in the quality report (zero-result searches are stored again, capped at 500 distinct per day) |
+| 8 | Image alt-text audit | DONE in the quality report: lists the documents; writing the alt text is editorial work |
 | 9 | Co-citation graph | REJECTED for now (high cost) |
 | 10 | PWA offline for saved articles only | DONE — see F-30 |
 

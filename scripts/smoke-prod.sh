@@ -60,6 +60,10 @@ sug=$(body "/api/hc/suggest?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA&lang=")
 case "$sug" in *'"href":"/ar/'*) echo "ok   typeahead falls back to ar and returns hits";; *'"href":"//'*) echo "FAIL typeahead produced a protocol-relative href"; fail=1;; *) echo "FAIL typeahead returned no hits: $sug" | cut -c1-160; fail=1;; esac
 body /api/hc/health | grep -q '"users"' && { echo "FAIL health discloses user existence"; fail=1; } || echo "ok   health body"
 body /ar/articles | grep -q "المرجع : مجلة" && { echo "FAIL citation boilerplate leaked into the list"; fail=1; } || echo "ok   no citation boilerplate in cards"
+# the editorial quality report must run against the seeded database
+qr=$(DATA_DIR="$DB_DIR" DATABASE_URL="file:$DB_DIR/payload.db" node "$ROOT/scripts/quality-report.mjs" 2>&1)
+case "$qr" in *"## Articles"*"## Books and issues"*) echo "ok   quality report runs";; *) echo "FAIL quality report: $(echo "$qr" | head -3)"; fail=1;; esac
+case "$qr" in *"## Skipped checks"*) echo "FAIL quality report skipped checks (schema changed?)"; fail=1;; esac
 # metadata, canonical, JSON-LD, robots and sitemap on every route type (fails on errors, not warnings)
 if [ "${SEO_AUDIT:-1}" = 1 ]; then
   (cd "$ROOT" && node scripts/seo-audit.mjs "http://localhost:$PORT" | tail -8) || fail=1
