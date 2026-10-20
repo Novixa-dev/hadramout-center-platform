@@ -16,6 +16,7 @@
 | `audit`, `architecture`, `migration`, `research` | **تدقيق 2026-10**: جرد الموقع القديم، المعمارية الفعلية، نموذج البيانات والتصنيف، خطة الترحيل وخريطة التحويلات، مراجعة المنافسين (إنجليزية) |
 | `05-deploy` (جديد) | `03-move-to-new-host-and-domain.md` — دليل الانتقال إلى الاستضافة والنطاق الجديدين، و`deploy/standalone-host/` (Caddy) |
 | `06-handover` (جديد) | `client-requirements-checklist-ar.md` — ما نحتاجه من المركز + أجندة الاجتماع |
+| `research` (جديد) | `CLAUDE_WORKFLOW_BEST_PRACTICES.md` — كيف نعمل مع Claude بأفضل أسلوب (مصادر رسمية) وما اعتمدناه |
 | `security` | `SECURITY_REVIEW.md` — الضوابط الموثّقة والبنود المفتوحة |
 | `planning`, `reports` | `planning/PROGRESS.md` نقطة المتابعة · `planning/ROADMAP.md` خارطة الطريق · `planning/BACKLOG.md` سجل المهام · `planning/FEATURE_PLAN.md` خطة الميزات ووعودنا · `reports/BASELINE_REPORT.md` خط الأساس · `reports/RELEASE_READINESS.md` جاهزية الإطلاق |
 | `archive/v1` | وثائق النسخة الأولى (مرجع تاريخي — لا يُعتمد عليها) |

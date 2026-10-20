@@ -1,0 +1,81 @@
+name: Lighthouse
+# Lab performance/accessibility/SEO numbers on a clean Linux runner (not on a developer laptop, whose load distorts them).
+# Builds the app, seeds a throwaway database from the committed snapshot, serves the standalone build and runs Lighthouse
+# three times per page; the MEDIAN is reported in the job summary. Report only for now: targets are in docs/quality/PERFORMANCE_PLAN.md.
+on:
+  workflow_dispatch:
+    inputs:
+      desktop:
+        description: "Also measure the desktop preset"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 4 * * 1" # Mondays 04:00 UTC: a weekly trend
+  pull_request:
+    paths:
+      - ".github/workflows/lighthouse.yml"
+      - "scripts/lighthouse.mjs"
+      - "scripts/lighthouse-median.mjs"
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PAYLOAD_SECRET: ci-only-secret-0123456789abcdef0123456789
+      DATABASE_URL: file:${{ github.workspace }}/.smoke-data/payload.db
+      DATA_DIR: ${{ github.workspace }}/.smoke-data
+      SITE_URL: http://localhost:3100
+      SITE_ENV: production # measure the indexable site, without the preview banner
+      TRANSLATION_PROVIDER: none
+      ADMIN_EMAIL: ci@example.org
+      ADMIN_PASSWORD: ci-only-password-123456
+      NEXT_TELEMETRY_DISABLED: "1"
+      LH_NO_SANDBOX: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Seed a throwaway database
+        run: |
+          mkdir -p .smoke-data
+          npm run payload -- migrate
+          npm run db:seed
+      - name: Serve the standalone build
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          cp -r public .next/standalone/public
+          cd .next/standalone
+          NODE_ENV=production PORT=3100 HOSTNAME=127.0.0.1 MEDIA_DIR="$DATA_DIR/media" nohup node server.js > "$GITHUB_WORKSPACE/server.log" 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:3100/api/hc/health > /dev/null && exit 0; sleep 1; done
+          echo "server did not become healthy"; cat "$GITHUB_WORKSPACE/server.log"; exit 1
+      - name: Warm the pages (first render fills the runtime page cache)
+        run: for p in /ar /ar/articles /ar/articles/894 /ar/books/37; do curl -s -o /dev/null "http://127.0.0.1:3100$p"; done
+      - name: Lighthouse x3
+        run: |
+          PRESETS=mobile
+          if [ "${{ github.event.inputs.desktop }}" = "true" ]; then PRESETS=mobile,desktop; fi
+          mkdir -p .lighthouse-runs
+          for i in 1 2 3; do
+            node scripts/lighthouse.mjs http://localhost:3100 --paths /ar,/ar/articles,/ar/articles/894,/ar/books/37 --presets "$PRESETS" --out ".lighthouse-runs/run-$i.json" --port "$((9333 + i))" || true
+          done
+      - name: Report the median
+        run: node scripts/lighthouse-median.mjs .lighthouse-runs | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse
+          include-hidden-files: true # the reports live in dot-folders, which upload-artifact@v4 skips by default
+          path: |
+            .lighthouse-runs/
+            .lighthouse/
+            server.log
+          retention-days: 30

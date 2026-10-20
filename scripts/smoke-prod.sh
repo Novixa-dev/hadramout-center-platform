@@ -81,6 +81,9 @@ case "$(curl -s "http://127.0.0.1:$PORT/ar/nope")" in *'class="staging-bar"'*) e
 case "$prod_home" in *'name="robots" content="index, follow'*) echo "ok   production pages are indexable";; *) echo "FAIL production meta robots"; fail=1;; esac
 case "$(curl -s "http://127.0.0.1:$PORT/robots.txt")" in *"Sitemap: http://localhost:$PORT/sitemap.xml"*) echo "ok   production robots.txt advertises the sitemap";; *) echo "FAIL production robots.txt"; fail=1;; esac
 
+# pages with unapproved wording carry a notice in the preview only
+case "$(curl -s "http://127.0.0.1:$PORT/ar/about")" in *data-review-notice*) echo "FAIL production shows the draft-approval notice"; fail=1;; *) echo "ok   production has no draft-approval notice";; esac
+
 # the cutover check (used for the move to a new host/domain) must pass against this production-mode server
 cc=$(node "$ROOT/scripts/cutover-check.mjs" "http://localhost:$PORT" --expect production 2>&1); cc_status=$?
 [ "$cc_status" = 0 ] && echo "ok   cutover-check: $(echo "$cc" | tail -1)" || { echo "FAIL cutover-check"; echo "$cc" | grep -E "^(FAIL|cutover)"; fail=1; }
@@ -96,6 +99,9 @@ if wait_healthy "$STAGING_PORT"; then
   staging_home=$(curl -s "$S/ar/articles")
   case "$staging_home" in *'name="robots" content="noindex, nofollow'*) echo "ok   staging meta robots noindex";; *) echo "FAIL staging meta robots"; fail=1;; esac
   case "$staging_home" in *'class="staging-bar"'*) echo "ok   staging shows the preview banner";; *) echo "FAIL staging banner missing"; fail=1;; esac
+  for page in about privacy terms; do
+    case "$(curl -s "$S/ar/$page")" in *data-review-notice*) echo "ok   staging marks /ar/$page as awaiting approval";; *) echo "FAIL staging notice missing on /ar/$page"; fail=1;; esac
+  done
   staging_robots=$(curl -s "$S/robots.txt")
   case "$staging_robots" in *[Ss]itemap:*) echo "FAIL staging robots.txt advertises a sitemap"; fail=1;; *) echo "ok   staging robots.txt has no sitemap";; esac
   echo "$staging_robots" | grep -q -i -E '^disallow: */ *$' && { echo "FAIL staging robots.txt blocks everything (noindex would be invisible)"; fail=1; } || echo "ok   staging robots.txt does not disallow the site"
