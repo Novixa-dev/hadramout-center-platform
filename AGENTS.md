@@ -25,6 +25,7 @@ Layout: `src/app` (routes) · `src/collections` · `src/i18n` (languages, transl
 - **Local `next build`:** run with `TRANSLATION_PROVIDER=none` — production mode rejects the `.env.example` value `mock` (`src/config.ts`).
 - **A broken `node_modules`** shows up as hundreds of `TS7016`/"Cannot find module 'next'" errors: run `npm ci`; never commit recovery copies (`.node_modules.recovery-*` is git/docker/eslint-ignored).
 - **`/api/*` reads are capped** (`limit<=100`, `depth<=2`, via `src/proxy.ts`); paginate in scripts. GraphQL is disabled.
+- **npm lifecycle scripts (`prepare`, `postinstall`) run inside Docker's `deps` stage, where only `package*.json` exist and there is no `.git`:** never make them depend on repo files or git; CI builds the production image on every PR for this reason (a `prepare` that called `scripts/setup-hooks.mjs` broke the first deploy attempt).
 - **Not found vs failure:** only Payload 404/403 means "no such page" (`src/lib/errors.ts`); do not catch-all into `null`.
 - **Backups must include `legacy-media`**; `deploy.sh` aborts if the pre-deploy backup fails.
 - Current state, audits and next steps: `docs/planning/PROGRESS.md`.
