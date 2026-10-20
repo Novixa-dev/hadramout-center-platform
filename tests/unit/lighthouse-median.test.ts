@@ -10,7 +10,7 @@ test('median ignores missing values and handles odd and even counts', () => {
   assert.equal(median([null]), null);
 });
 
-const row = (over: Record<string, unknown>) => ({ path: '/ar', preset: 'mobile', performance: 70, accessibility: 100, seo: 100, fcpMs: 1500, lcpMs: 3000, tbtMs: 900, cls: 0.01, ...over });
+const row = (over: Record<string, unknown>) => ({ path: '/ar', preset: 'mobile', performance: 70, accessibility: 100, seo: 100, fcpMs: 1500, lcpMs: 3000, observedLcpMs: 200, tbtMs: 900, cls: 0.01, ...over });
 
 test('aggregate takes the median per page and preset and drops failed runs', () => {
   const runs = [
@@ -24,12 +24,14 @@ test('aggregate takes the median per page and preset and drops failed runs', () 
   assert.equal(home.valid, 2, 'the NO_NAVSTART run is not counted');
   assert.equal(home.performance, 70);
   assert.equal(home.lcpMs, 3500);
+  assert.equal(home.observedLcpMs, 200);
   assert.equal(out.find((r: { path: string }) => r.path === '/ar/articles')!.performance, 92);
 });
 
 test('the markdown report marks pass/fail against the targets and shows n/a for missing data', () => {
   const md = toMarkdown(aggregate([{ rows: [row({ performance: 85, lcpMs: 2000, tbtMs: 700 })] }, { rows: [{ path: '/x', preset: 'mobile', error: 'boom' }] }]));
-  assert.match(md, /\| `\/ar` \| mobile \| 85 ✅ \| 2000 ✅ \| 700 ❌ \|/);
+  assert.match(md, /\| `\/ar` \| mobile \| 85 ✅ \| 2000 \| 200 \| 700 ❌ \|/);
+  assert.doesNotMatch(md, /2000 ❌|2000 ✅/, 'the modeled LCP is shown but never judged');
   assert.match(md, /\| `\/x` \| mobile \| n\/a \|/);
   assert.match(md, /Report only/);
 });

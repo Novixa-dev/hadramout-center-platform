@@ -147,7 +147,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | QA-1 | Manual keyboard and screen-reader pass on the main journeys | READY | only axe/Lighthouse so far |
 | QA-2 | Full per-route SEO matrix and Search Console readiness | READY | script audit passes; matrix not written |
 | QA-3 | Redirect matrix test (all seven legacy types, query strings, trailing slash) | READY | see MIG-007 |
-| PERF-T1..T6 | Home page profile, payload, search off the event loop, edge cache, field data | READY / BLOCKED (T4, T6) | see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md) |
+| PERF-T1..T6 | T1 profile and T5 CI measurement **done** (clean-runner evidence in the plan); T2 RSC payload demoted (no measured benefit); T3 search off the event loop and T4 Cloudflare HTML cache stay high; T6 field data | READY / BLOCKED (T4, T6) | see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md) §0 |
 | SEC-1 | Nonce-based CSP to remove `script-src 'unsafe-inline'` | READY | needs dynamic rendering of every page; evaluate cost first |
 | SEC-2..9 | Open security items (public REST internal fields, staff can read all users, admin 2FA, root deploy user, translation budget, off-server backups, dependency advisories, privacy wording) | READY / BLOCKED | see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md) §4 |
 | FEAT | Feature list and build order | see [FEATURE_PLAN](FEATURE_PLAN.md) | the single list of promised features with verified status |
