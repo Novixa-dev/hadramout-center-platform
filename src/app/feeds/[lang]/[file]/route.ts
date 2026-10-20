@@ -1,4 +1,5 @@
 import { getPayloadClient } from '../../../../lib/runtime.ts';
+import { makeT } from '../../../../i18n/t.ts';
 import { loadConfig } from '../../../../config.ts';
 import { CONTENT, CONTENT_TYPES, typeFromRoute, type ContentType } from '../../../../lib/content-types.ts';
 import { getLanguage } from '../../../../i18n/languages.ts';
@@ -28,6 +29,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ lang: s
     }
   }
   items.sort((a, b) => (b.date ? Date.parse(b.date) : 0) - (a.date ? Date.parse(a.date) : 0));
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>\n<title>مركز حضرموت للدراسات التاريخية والتوثيق والنشر</title>\n<link>${base}/${lang}</link>\n<description>Hadhramout Center</description>\n<language>${language.tag}</language>\n<atom:link href="${base}/feeds/${lang}/${file}" rel="self" type="application/rss+xml"/>\n${items.slice(0, 50).map((i) => `<item><title>${esc(i.title)}</title><link>${esc(i.link)}</link><guid>${esc(i.link)}</guid><description>${esc(i.desc)}</description>${i.date ? `<pubDate>${i.date}</pubDate>` : ''}</item>`).join('\n')}\n</channel></rss>\n`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>\n<title>${esc(makeT(lang)('site.name'))}</title>\n<link>${base}/${lang}</link>\n<description>${esc(makeT(lang)('site.name'))}</description>\n<language>${language.tag}</language>\n<atom:link href="${base}/feeds/${lang}/${file}" rel="self" type="application/rss+xml"/>\n${items.slice(0, 50).map((i) => `<item><title>${esc(i.title)}</title><link>${esc(i.link)}</link><guid>${esc(i.link)}</guid><description>${esc(i.desc)}</description>${i.date ? `<pubDate>${i.date}</pubDate>` : ''}</item>`).join('\n')}\n</channel></rss>\n`;
   return new Response(xml, { headers: { 'content-type': 'application/rss+xml; charset=utf-8', 'cache-control': 'public, max-age=900' } });
 }

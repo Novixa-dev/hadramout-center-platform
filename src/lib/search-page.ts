@@ -81,7 +81,10 @@ export async function runSearch(p: SearchParams): Promise<SearchResult> {
 
 /** Best-effort statistics of what visitors look for (used for the "popular searches" hints). */
 export function recordSearch(q: string, results: number): void {
+  // Only real, short, successful queries are kept: arbitrary strings would grow the table without bound and could seed the public hints.
+  if (results <= 0 || q.length > 64 || /\p{Cc}/u.test(q)) return;
   try {
+    if (Math.random() < 0.01) extras().run("DELETE FROM search_queries WHERE day < date('now', '-120 days')");
     extras().run("INSERT INTO search_queries (day, q, count, results) VALUES (date('now'), ?, 1, ?) ON CONFLICT(day, q) DO UPDATE SET count = count + 1, results = excluded.results", q.toLowerCase(), results);
   } catch {
     /* statistics are best-effort */

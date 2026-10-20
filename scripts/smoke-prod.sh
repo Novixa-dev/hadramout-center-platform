@@ -26,9 +26,11 @@ check /ar/articles/2147483648 404
 check "/ar/articles?page=9999" 404                       # page beyond the last one does not exist
 check /ar/articles/0 404
 check /feeds/zz/all.xml 404
+check /favicon.ico 200
 body() { curl -s "http://127.0.0.1:$PORT$1"; }
 clamp=$(curl -s -o /dev/null -w '%{redirect_url}' "http://127.0.0.1:$PORT/api/news?limit=1000&depth=3")
 case "$clamp" in *limit=100*depth=2*) echo "ok   clamp target $clamp";; *) echo "FAIL clamp target '$clamp'"; fail=1;; esac
+body /feeds/en/all.xml | grep -q '<title>Hadhramout' && echo "ok   English feed channel title" || { echo "FAIL English feed channel title"; fail=1; }
 body /api/hc/health | grep -q '"users"' && { echo "FAIL health discloses user existence"; fail=1; } || echo "ok   health body"
 body /ar/articles | grep -q "المرجع : مجلة" && { echo "FAIL citation boilerplate leaked into the list"; fail=1; } || echo "ok   no citation boilerplate in cards"
 # metadata, canonical, JSON-LD, robots and sitemap on every route type (fails on errors, not warnings)
