@@ -143,7 +143,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 |---|---|---|---|
 | OPS-1 | Copy backups off the server | BLOCKED | needs a destination chosen by the owner |
 | OPS-2 | Exercise `restore.sh` and the rollback path on a scratch host | READY | never exercised in this pass |
-| OPS-3 | Dependabot/Renovate and `npm audit` in CI | PARTIAL | Payload upgraded to 3.91.0 (17 → 10 production advisories, remainder are dev tooling); automated update PRs and an audit step in CI are still missing |
+| OPS-3 | Dependabot/Renovate and `npm audit` in CI | PARTIAL | Payload upgraded to 3.91.0 (17 → 12 production advisories; the rest is dev tooling and two low-severity editor peers); automated update PRs and an audit step in CI are still missing |
 | QA-1 | Manual keyboard and screen-reader pass on the main journeys | READY | only axe/Lighthouse so far |
 | QA-2 | Full per-route SEO matrix and Search Console readiness | READY | script audit passes; matrix not written |
 | QA-3 | Redirect matrix test (all seven legacy types, query strings, trailing slash) | READY | see MIG-007 |

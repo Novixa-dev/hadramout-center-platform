@@ -5,7 +5,7 @@
 - **CI:** seeds a throwaway database from the snapshot, starts the standalone server and runs the smoke script (routes, regression checks, SEO audit) — previously CI only built the app.
 - **Search:** 60 s result cache cleared on every index write; typeahead validates `lang` and is rate-limited.
 - **SEO:** Event JSON-LD only with a start date (+ address), otherwise CreativeWork; real `/favicon.ico`; RSS channel title follows the feed language.
-- **Dependencies:** Payload 3.90.2 → 3.91.0 (production advisories 17 → 10); additive migration for `*_locales(_parent_id)` indexes (up/down tested).
+- **Dependencies:** Payload 3.90.2 → 3.91.0 (production advisories 17 → 12); additive migration for `*_locales(_parent_id)` indexes (up/down tested).
 - **Docs:** consolidated backlog (101 findings) and roadmap; performance profile.
 
 ## [5.1.0] - 2026-10-19
