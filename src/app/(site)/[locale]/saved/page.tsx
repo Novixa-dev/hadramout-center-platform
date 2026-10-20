@@ -23,7 +23,7 @@ export default async function SavedPage({ params }: Props) {
     <>
       <PageHead ctx={ctx} crumbs={[{ name: t('saved.title') }]} title={t('saved.title')} lead={t('saved.note')} />
       <div className="container--narrow section" style={{ paddingBlockStart: 'var(--space-5)' }}>
-        <SavedList labels={{ empty: t('saved.empty'), remove: t('saved.remove'), exportRis: t('saved.exportRis'), local: t('saved.local'), types: { article: t('card.type.article'), news: t('card.type.news'), book: t('card.type.book'), magazine: t('card.type.magazine') } }} />
+        <SavedList labels={{ empty: t('saved.empty'), remove: t('saved.remove'), exportRis: t('saved.exportRis'), exportBibtex: t('saved.exportBibtex'), exportCsl: t('saved.exportCsl'), local: t('saved.local'), types: { article: t('card.type.article'), news: t('card.type.news'), book: t('card.type.book'), magazine: t('card.type.magazine') } }} />
       </div>
     </>
   );

@@ -24,6 +24,7 @@ import { CitePanel } from '../../../../../components/client/CitePanel.tsx';
 import { CopyField, PrintButton, SaveButton, ShareMenu } from '../../../../../components/client/Tools.tsx';
 import { ReaderSettings } from '../../../../../components/client/ReaderSettings.tsx';
 import { ReadingProgress } from '../../../../../components/client/ReadingProgress.tsx';
+import { CopyAttribution } from '../../../../../components/client/CopyAttribution.tsx';
 import { TocSpy } from '../../../../../components/client/Toc.tsx';
 import { TrBanner } from '../../../../../components/client/TrBanner.tsx';
 import { VideoFacade } from '../../../../../components/client/VideoFacade.tsx';
@@ -309,6 +310,7 @@ export default async function DetailPage({ params }: Props) {
         />
       ) : null}
       {reading && prose ? <ReadingProgress targetId="article-body" /> : null}
+      {prose ? <CopyAttribution targetId="article-body" line={`${t('copy.source', { title: doc.title, site: site.name })}\n${url}`} /> : null}
       <div className="container">
         <div style={{ paddingBlockStart: 'var(--space-5)' }}><Breadcrumbs ctx={ctx} items={crumbs} /></div>
 

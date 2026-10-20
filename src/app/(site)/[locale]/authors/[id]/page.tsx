@@ -39,6 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     card: { key: 'authors' },
     readyLangs: ['ar'],
     incomplete: locale !== 'ar',
+    feed: { file: `author-${id}`, title: author.name },
   });
 }
 

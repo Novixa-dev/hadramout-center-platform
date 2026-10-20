@@ -26,6 +26,18 @@ check /ar/articles/2147483648 404
 check "/ar/articles?page=9999" 404                       # page beyond the last one does not exist
 check /ar/articles/0 404
 check /feeds/zz/all.xml 404
+# per-topic and per-author feeds, open catalogue export
+check /feeds/ar/topic-54.xml 200
+check /feeds/ar/author-146.xml 200
+check /feeds/ar/author-99999999.xml 404
+check /feeds/ar/topic-abc.xml 404
+items=$(curl -s "http://127.0.0.1:$PORT/feeds/ar/author-146.xml" | grep -o '<item>' | wc -l)
+[ "$items" -gt 0 ] && echo "ok   author feed has $items items" || { echo "FAIL author feed is empty"; fail=1; }
+check "/api/hc/catalog?type=books&format=csv" 200
+check "/api/hc/catalog?type=nope" 400
+rows=$(curl -s "http://127.0.0.1:$PORT/api/hc/catalog?type=books&format=csv" | wc -l)
+[ "$rows" -ge 40 ] && echo "ok   catalogue csv has $rows lines" || { echo "FAIL catalogue csv too short ($rows)"; fail=1; }
+curl -s "http://127.0.0.1:$PORT/api/hc/catalog?type=magazines&format=json" | grep -q '"count":4[0-9]' && echo "ok   magazine catalogue json" || { echo "FAIL magazine catalogue json"; fail=1; }
 check /favicon.ico 200
 # defaults: Arabic regardless of Accept-Language, dark theme server-rendered (no flash, no JS needed)
 lang_redirect=$(curl -s -o /dev/null -w '%{redirect_url}' -H 'Accept-Language: en-US,en;q=0.9' "http://127.0.0.1:$PORT/")
