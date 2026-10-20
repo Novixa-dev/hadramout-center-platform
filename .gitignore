@@ -53,3 +53,4 @@ tsconfig.tsbuildinfo
 
 # stray npm recovery copies
 .node_modules.recovery-*/
+.smoke-data/
