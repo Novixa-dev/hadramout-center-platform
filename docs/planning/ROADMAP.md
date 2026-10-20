@@ -50,7 +50,7 @@ The site moves to the new host and domain only when all gates are green. Each ga
 
 | Order | Task | Backlog |
 |---|---|---|
-| 1 | Search/typeahead FTS off the event loop (the one high-severity open code finding) | ARCH-001, PERF-T3 |
+| 1 | ~~Search off the event loop~~ — **demoted** after measurement (see ARCH-001 in the backlog); revisit only if traffic grows | ARCH-001, PERF-T3 |
 | 2 | One `translationState()` used by pages, sitemap and the API | ARCH-012 |
 | 3 | Atomic translation budget accounting; retry policy honours `retryable` (verify the Payload jobs API first) | ARCH-009, ARCH-010 |
 | 4 | Use generated Payload types instead of 77 casts | ARCH-008 |
