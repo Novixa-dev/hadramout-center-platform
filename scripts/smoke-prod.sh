@@ -7,6 +7,7 @@ SMOKE="${SMOKE_DIR:-${TMPDIR:-/tmp}/hc-smoke}"; APP="$SMOKE/app"; DB_DIR="${DB_D
 # run in place (copying breaks the symlinks in .next/node_modules on Windows); static assets are build artifacts
 APP="$ROOT/.next/standalone"; mkdir -p "$SMOKE"
 rm -rf "$APP/.next/static" "$APP/public" && cp -r "$ROOT/.next/static" "$APP/.next/static" && cp -r "$ROOT/public" "$APP/public"
+rm -rf "$APP/.next/server/route-cache"   # pages cached at runtime by earlier runs: they bake in the host, port and SITE_ENV they were rendered with
 cd "$APP"
 # start_server PORT [SITE_ENV]: the standalone server exactly as Docker runs it; prints the pid. SITE_ENV unset = staging behaviour.
 start_server() {
@@ -79,6 +80,10 @@ case "$prod_home" in *'class="staging-bar"'*) echo "FAIL production shows the pr
 case "$(curl -s "http://127.0.0.1:$PORT/ar/nope")" in *'class="staging-bar"'*) echo "FAIL preview banner frozen into the 404 page"; fail=1;; *) echo "ok   404 page has no preview banner";; esac
 case "$prod_home" in *'name="robots" content="index, follow'*) echo "ok   production pages are indexable";; *) echo "FAIL production meta robots"; fail=1;; esac
 case "$(curl -s "http://127.0.0.1:$PORT/robots.txt")" in *"Sitemap: http://localhost:$PORT/sitemap.xml"*) echo "ok   production robots.txt advertises the sitemap";; *) echo "FAIL production robots.txt"; fail=1;; esac
+
+# the cutover check (used for the move to a new host/domain) must pass against this production-mode server
+cc=$(node "$ROOT/scripts/cutover-check.mjs" "http://localhost:$PORT" --expect production 2>&1); cc_status=$?
+[ "$cc_status" = 0 ] && echo "ok   cutover-check: $(echo "$cc" | tail -1)" || { echo "FAIL cutover-check"; echo "$cc" | grep -E "^(FAIL|cutover)"; fail=1; }
 
 # staging mode (SITE_ENV unset): noindex everywhere, banner, no sitemap advertised, nothing blocked by Disallow (it would hide the noindex)
 STAGING_PORT=$((PORT + 1)); STAGING_PID=$(start_server "$STAGING_PORT")
