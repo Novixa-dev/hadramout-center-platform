@@ -27,6 +27,13 @@ check "/ar/articles?page=9999" 404                       # page beyond the last 
 check /ar/articles/0 404
 check /feeds/zz/all.xml 404
 check /favicon.ico 200
+# defaults: Arabic regardless of Accept-Language, dark theme server-rendered (no flash, no JS needed)
+lang_redirect=$(curl -s -o /dev/null -w '%{redirect_url}' -H 'Accept-Language: en-US,en;q=0.9' "http://127.0.0.1:$PORT/")
+case "$lang_redirect" in */ar) echo "ok   default language ar (Accept-Language en ignored)";; *) echo "FAIL default language: $lang_redirect"; fail=1;; esac
+home=$(curl -s "http://127.0.0.1:$PORT/ar")
+case "$home" in *'<html lang="ar" dir="rtl" data-theme="dark"'*) echo "ok   dark theme is the server-rendered default";; *) echo "FAIL html element is not dark by default"; fail=1;; esac
+case "$home" in *'id="hc-theme-color" name="theme-color" content="#0e1815"'*) echo "ok   theme-color meta is dark";; *) echo "FAIL theme-color meta"; fail=1;; esac
+curl -s "http://127.0.0.1:$PORT/manifest.webmanifest" | grep -q '"theme_color":"#0e1815"' && echo "ok   manifest colors are dark" || { echo "FAIL manifest colors"; fail=1; }
 body() { curl -s "http://127.0.0.1:$PORT$1"; }
 clamp=$(curl -s -o /dev/null -w '%{redirect_url}' "http://127.0.0.1:$PORT/api/news?limit=1000&depth=3")
 case "$clamp" in *limit=100*depth=2*) echo "ok   clamp target $clamp";; *) echo "FAIL clamp target '$clamp'"; fail=1;; esac
