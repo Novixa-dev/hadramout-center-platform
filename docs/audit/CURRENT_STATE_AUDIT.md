@@ -48,6 +48,14 @@
 | `/api/hc/health` | discloses `users: true` | Fixed on this branch |
 | Headers | CSP has `script-src 'self' 'unsafe-inline'`; `Accept-CH`/`Critical-CH` still sent (older build) | `unsafe-inline` open; client hints already removed in `master` |
 
+## Dependencies (npm audit --omit=dev, 2026-10-20)
+
+| | Before (Payload 3.90.2) | After (Payload 3.91.0) |
+|---|---|---|
+| Total / high / moderate / low | 17 / 5 / 10 / 2 | 12 / 5 / 5 / 2 |
+
+All `undici` advisories are gone. The 2 low ones (`dompurify`, `monaco-editor`) are Payload peer packages, newly installed and used only by the admin editor. The other 10 are build/dev tooling chains (`braces`, `chokidar`, `sass`, `esbuild` dev server, `drizzle-kit`, `@esbuild-kit`) with no runtime path in the standalone server; npm's suggested "fix" (downgrading `@payloadcms/richtext-lexical` to 0.11.4) is wrong and was not applied. Re-check after each Payload release.
+
 ## Open risks worth a decision
 
 1. Merging deploys. Migration 4 merges duplicate categories irreversibly, so take a backup and rehearse on a server copy first (rehearsed locally only).

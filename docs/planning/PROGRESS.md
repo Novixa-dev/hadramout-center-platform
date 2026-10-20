@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-20 · **State:** hardening pass merged and deployed on 2026-10-19 (PR #12, #13); follow-up work in PR #14
+**Last updated:** 2026-10-20 · **State:** hardening pass deployed 2026-10-19 (PR #12, #13). Open and green: PR #14 (CI runtime tier, search cache, favicon, backlog/roadmap) and PR #15 (Payload 3.91.0, stacked on #14). Merging deploys; the user merges.
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -33,9 +33,22 @@ Findings from the finished audits were **not** adversarially re-verified (the ve
 | ARCH-007 | ESLint rules now apply to `.tsx` |
 | SEO | List pages beyond the last page now return 404 (verified on a local build: article list has 46 pages; page 50 → 404) |
 
+## Added after the first deploy (PR #14, #15)
+
+| Change | Evidence |
+|---|---|
+| CI seeds a database from the snapshot, starts the standalone server and runs the smoke script + SEO audit | green on Linux (first run 2m15s); the script also guards the fixed defects |
+| Search result cache (60 s, cleared by index writes) and rate-limited, validated typeahead | 4 unit tests; repeated slowest query ~0.2 s page time (was >1 s of blocked CPU) |
+| `/favicon.ico`, translated RSS channel title, bounded `search_queries` | checked in smoke |
+| Event JSON-LD only with a start date (otherwise CreativeWork) | unit tests |
+| Payload 3.90.2 → 3.91.0 (+ 13-index migration, up/down tested) | check, build, smoke, admin login on the upgraded build; CI green; first CI attempt failed on a lockfile without peer packages and was fixed |
+| Backlog (101 findings) and roadmap | [BACKLOG](BACKLOG.md), [ROADMAP](ROADMAP.md) |
+
+Production was re-verified after the first deploy: health, GraphQL 404, REST clamp redirect on the public host, pagination 404, SEO audit 0 errors, citation fixes visible.
+
 ## Next actionable tasks (in order)
 
-1. PR #13 is open and CI is green on the latest push (install, typecheck, lint, 119 tests, build). Do not merge to `master` until the server-side backup/migration rehearsal is done — merging deploys.
+1. Merge #14 then #15 when ready (each deploy takes a pre-deploy backup and aborts if it fails). After the #15 deploy, check `/admin` login and that the 13 new indexes exist.
 2. Before deploying: rehearse migrations 3–6 on a copy of the production database (done locally in < 1 s) and confirm `backup.sh` runs on the server with the new `legacy-media` coverage and its size.
 3. Performance: profile the home page (PERF-T1), then cut its RSC payload (PERF-T2) and move search off the event loop (PERF-T3) — see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md).
 4. Still to write: full security review, per-route SEO matrix and manual accessibility test. The consolidated register is [BACKLOG](BACKLOG.md) (101 findings: 63 ready, 6 partial, 18 blocked, 14 done) and the ordering is in [ROADMAP](ROADMAP.md). The runtime test tier now exists (CI seeds a database and smoke-tests the built server).
