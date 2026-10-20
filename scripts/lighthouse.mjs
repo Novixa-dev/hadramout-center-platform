@@ -30,7 +30,9 @@ const chrome = candidates.find((p) => existsSync(p));
 if (!chrome) throw new Error('No Chrome found. Set CHROME_PATH.');
 
 const profile = mkdtempSync(join(tmpdir(), 'hc-lh-'));
-const proc = spawn(chrome, ['--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions', 'about:blank'], { stdio: 'ignore' });
+// LH_NO_SANDBOX=1 is for CI containers/runners where the user-namespace sandbox is unavailable (GitHub's Ubuntu images)
+const sandboxFlags = process.env.LH_NO_SANDBOX ? ['--no-sandbox', '--disable-dev-shm-usage'] : [];
+const proc = spawn(chrome, [...sandboxFlags, '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-extensions', 'about:blank'], { stdio: 'ignore' });
 await new Promise((r) => setTimeout(r, 4000));
 
 mkdirSync('.lighthouse', { recursive: true });
