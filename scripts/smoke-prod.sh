@@ -8,10 +8,19 @@ SMOKE="${SMOKE_DIR:-${TMPDIR:-/tmp}/hc-smoke}"; APP="$SMOKE/app"; DB_DIR="${DB_D
 APP="$ROOT/.next/standalone"; mkdir -p "$SMOKE"
 rm -rf "$APP/.next/static" "$APP/public" && cp -r "$ROOT/.next/static" "$APP/.next/static" && cp -r "$ROOT/public" "$APP/public"
 cd "$APP"
-NODE_ENV=production PAYLOAD_SECRET="${PAYLOAD_SECRET:-0123456789abcdef0123456789abcdef0123}" DATABASE_URL="file:$DB_DIR/payload.db" DATA_DIR="$DB_DIR" \
-  MEDIA_DIR="$DB_DIR/media" SITE_URL="http://localhost:$PORT" TRANSLATION_PROVIDER=none PORT=$PORT HOSTNAME=127.0.0.1 node server.js > "$SMOKE/server.log" 2>&1 &
-PID=$!; trap 'kill $PID 2>/dev/null' EXIT
-for i in $(seq 1 30); do curl -s -o /dev/null "http://127.0.0.1:$PORT/api/hc/health" && break; sleep 1; done
+# start_server PORT [SITE_ENV]: the standalone server exactly as Docker runs it; prints the pid. SITE_ENV unset = staging behaviour.
+start_server() {
+  local port="$1" site_env="${2:-}"
+  env NODE_ENV=production PAYLOAD_SECRET="${PAYLOAD_SECRET:-0123456789abcdef0123456789abcdef0123}" DATABASE_URL="file:$DB_DIR/payload.db" DATA_DIR="$DB_DIR" \
+    MEDIA_DIR="$DB_DIR/media" SITE_URL="http://localhost:$port" TRANSLATION_PROVIDER=none PORT="$port" HOSTNAME=127.0.0.1 ${site_env:+SITE_ENV=$site_env} \
+    node server.js > "$SMOKE/server-$port.log" 2>&1 &
+  echo $!
+}
+wait_healthy() { for i in $(seq 1 40); do curl -s -o /dev/null "http://127.0.0.1:$1/api/hc/health" && return 0; sleep 1; done; return 1; }
+# the main run is a production-mode server (indexable): every route/SEO check below assumes it; staging behaviour is asserted at the end
+STAGING_PID=""
+PID=$(start_server "$PORT" production); trap 'kill $PID $STAGING_PID 2>/dev/null' EXIT
+wait_healthy "$PORT"
 fail=0
 check() { code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT$1"); [ "$code" = "$2" ] && echo "ok   $1 $code" || { echo "FAIL $1 $code (want $2)"; fail=1; }; }
 check /api/hc/health 200; check /ar 200; check /en 200; check /ar/articles 200; check /ar/articles/909 200; check "/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA" 200
@@ -62,6 +71,34 @@ sug=$(body "/api/hc/suggest?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA&lang=")
 case "$sug" in *'"href":"/ar/'*) echo "ok   typeahead falls back to ar and returns hits";; *'"href":"//'*) echo "FAIL typeahead produced a protocol-relative href"; fail=1;; *) echo "FAIL typeahead returned no hits: $sug" | cut -c1-160; fail=1;; esac
 body /api/hc/health | grep -q '"users"' && { echo "FAIL health discloses user existence"; fail=1; } || echo "ok   health body"
 body /ar/articles | grep -q "المرجع : مجلة" && { echo "FAIL citation boilerplate leaked into the list"; fail=1; } || echo "ok   no citation boilerplate in cards"
+# production mode is indexable and has no preview banner (also on the prerendered 404 page)
+prod_headers=$(curl -s -D - -o /dev/null "http://127.0.0.1:$PORT/ar" | tr -d '\r')
+case "$prod_headers" in *[Xx]-[Rr]obots-[Tt]ag:*) echo "FAIL production sends X-Robots-Tag"; fail=1;; *) echo "ok   production has no X-Robots-Tag";; esac
+prod_home=$(curl -s "http://127.0.0.1:$PORT/ar")
+case "$prod_home" in *'class="staging-bar"'*) echo "FAIL production shows the preview banner"; fail=1;; *) echo "ok   production has no preview banner";; esac
+case "$(curl -s "http://127.0.0.1:$PORT/ar/nope")" in *'class="staging-bar"'*) echo "FAIL preview banner frozen into the 404 page"; fail=1;; *) echo "ok   404 page has no preview banner";; esac
+case "$prod_home" in *'name="robots" content="index, follow'*) echo "ok   production pages are indexable";; *) echo "FAIL production meta robots"; fail=1;; esac
+case "$(curl -s "http://127.0.0.1:$PORT/robots.txt")" in *"Sitemap: http://localhost:$PORT/sitemap.xml"*) echo "ok   production robots.txt advertises the sitemap";; *) echo "FAIL production robots.txt"; fail=1;; esac
+
+# staging mode (SITE_ENV unset): noindex everywhere, banner, no sitemap advertised, nothing blocked by Disallow (it would hide the noindex)
+STAGING_PORT=$((PORT + 1)); STAGING_PID=$(start_server "$STAGING_PORT")
+if wait_healthy "$STAGING_PORT"; then
+  S="http://127.0.0.1:$STAGING_PORT"
+  for path in /ar /ar/articles/909 /sitemap.xml /feeds/ar/all.xml /api/hc/health /favicon.ico; do
+    case "$(curl -s -D - -o /dev/null "$S$path" | tr -d '\r')" in *[Xx]-[Rr]obots-[Tt]ag:*noindex*) echo "ok   staging X-Robots-Tag on $path";; *) echo "FAIL staging X-Robots-Tag missing on $path"; fail=1;; esac
+  done
+  # a dynamically rendered page: the home page is cached on disk per build directory and both test servers share it
+  staging_home=$(curl -s "$S/ar/articles")
+  case "$staging_home" in *'name="robots" content="noindex, nofollow'*) echo "ok   staging meta robots noindex";; *) echo "FAIL staging meta robots"; fail=1;; esac
+  case "$staging_home" in *'class="staging-bar"'*) echo "ok   staging shows the preview banner";; *) echo "FAIL staging banner missing"; fail=1;; esac
+  staging_robots=$(curl -s "$S/robots.txt")
+  case "$staging_robots" in *[Ss]itemap:*) echo "FAIL staging robots.txt advertises a sitemap"; fail=1;; *) echo "ok   staging robots.txt has no sitemap";; esac
+  echo "$staging_robots" | grep -q -i -E '^disallow: */ *$' && { echo "FAIL staging robots.txt blocks everything (noindex would be invisible)"; fail=1; } || echo "ok   staging robots.txt does not disallow the site"
+else
+  echo "FAIL staging server did not start"; fail=1
+fi
+kill "$STAGING_PID" 2>/dev/null
+
 # the editorial quality report must run against the seeded database
 qr=$(DATA_DIR="$DB_DIR" DATABASE_URL="file:$DB_DIR/payload.db" node "$ROOT/scripts/quality-report.mjs" 2>&1)
 case "$qr" in *"## Articles"*"## Books and issues"*) echo "ok   quality report runs";; *) echo "FAIL quality report: $(echo "$qr" | head -3)"; fail=1;; esac

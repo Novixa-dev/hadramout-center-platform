@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { enabledOrAll, negotiate } from './lib/negotiate.ts';
 import { clampRestQuery } from './lib/rest-limits.ts';
 import { MAINTENANCE_HTML, RETRY_AFTER_SECONDS, isMaintenanceExempt } from './lib/maintenance.ts';
+import { STAGING_ROBOTS_HEADER, isProductionSite } from './lib/site-env.ts';
 
 /**
  * Edge of the site:
@@ -13,7 +14,7 @@ const SKIP = /^\/(admin|api|_next|brand|icons|fonts|og|feeds|sitemap|robots|mani
 const LEGACY = /^\/(news|articles|books|magazines|events|forum|videos)\/(\d+)\/?$/;
 const LEGACY_LIST = /^\/(news|articles|books|magazines|events|forum|videos|about)\/?$/;
 
-export function proxy(req: NextRequest) {
+function route(req: NextRequest): NextResponse {
   const { pathname, search } = req.nextUrl;
 
   // Maintenance mode (MAINTENANCE_MODE=1 in the server .env, then restart the app): public pages answer 503 + Retry-After.
@@ -53,6 +54,13 @@ export function proxy(req: NextRequest) {
 
   const lang = negotiate(req.cookies.get('hc_lang')?.value, req.headers.get('accept-language'));
   return NextResponse.redirect(new URL(`/${lang}${pathname === '/' ? '' : pathname}${search}`, req.url), 307);
+}
+
+export function proxy(req: NextRequest) {
+  const res = route(req);
+  // A staging deployment is never indexable: the header also covers feeds, JSON, images and PDFs, which cannot carry a meta tag.
+  if (!isProductionSite()) res.headers.set('x-robots-tag', STAGING_ROBOTS_HEADER);
+  return res;
 }
 
 export const config = { matcher: ['/((?!_next/static|_next/image).*)'] };
