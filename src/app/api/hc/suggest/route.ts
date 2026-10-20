@@ -3,14 +3,20 @@ import { extras } from '../../../../lib/extras.ts';
 import { suggestTitles } from '../../../../db/search.ts';
 import { getPayloadClient } from '../../../../lib/runtime.ts';
 import { typeFromSlug, type CollectionSlug } from '../../../../lib/content-types.ts';
+import { getLanguage } from '../../../../i18n/languages.ts';
+import { allow, clientKey } from '../../../../lib/ratelimit.ts';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   const u = new URL(req.url);
   const q = (u.searchParams.get('q') ?? '').trim().slice(0, 80);
-  const lang = u.searchParams.get('lang') ?? 'ar';
+  const requested = u.searchParams.get('lang');
+  // an unknown or empty language would end up in the returned hrefs ("//articles/1"), so only real language codes are accepted
+  const lang = (requested && getLanguage(requested)?.code) || 'ar';
   if (q.length < 2) return NextResponse.json({ items: [] });
+  // typeahead fires while typing; each lookup is synchronous full-text work, so one visitor gets a generous but finite budget
+  if (!allow(`sg:${clientKey(req)}`, 90, 60)) return NextResponse.json({ items: [] }, { status: 429, headers: { 'retry-after': '30' } });
   const hits = suggestTitles(extras(), q, lang, 8);
   const payload = await getPayloadClient();
   const items: { title: string; href: string; kind: string }[] = [];

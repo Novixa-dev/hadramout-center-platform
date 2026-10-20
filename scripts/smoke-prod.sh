@@ -31,6 +31,8 @@ body() { curl -s "http://127.0.0.1:$PORT$1"; }
 clamp=$(curl -s -o /dev/null -w '%{redirect_url}' "http://127.0.0.1:$PORT/api/news?limit=1000&depth=3")
 case "$clamp" in *limit=100*depth=2*) echo "ok   clamp target $clamp";; *) echo "FAIL clamp target '$clamp'"; fail=1;; esac
 body /feeds/en/all.xml | grep -q '<title>Hadhramout' && echo "ok   English feed channel title" || { echo "FAIL English feed channel title"; fail=1; }
+sug=$(body "/api/hc/suggest?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA&lang=")
+case "$sug" in *'"href":"/ar/'*) echo "ok   typeahead falls back to ar and returns hits";; *'"href":"//'*) echo "FAIL typeahead produced a protocol-relative href"; fail=1;; *) echo "FAIL typeahead returned no hits: $sug" | cut -c1-160; fail=1;; esac
 body /api/hc/health | grep -q '"users"' && { echo "FAIL health discloses user existence"; fail=1; } || echo "ok   health body"
 body /ar/articles | grep -q "المرجع : مجلة" && { echo "FAIL citation boilerplate leaked into the list"; fail=1; } || echo "ok   no citation boilerplate in cards"
 # metadata, canonical, JSON-LD, robots and sitemap on every route type (fails on errors, not warnings)

@@ -57,7 +57,7 @@ Conclusion: the RSC data is the serialized React tree (191 links, 317 class name
 |---|---|---|---|---|
 | PERF-T1 | Profile the home page (Chrome performance trace, mobile throttling) and record the top 5 long tasks before changing anything | high | Written list of long tasks with their sources | Trace summary committed under `docs/` |
 | PERF-T2 | Reduce the home RSC payload: fewer cards above the fold, pass only the fields cards display (no `body`, no unused relations) | high | Home HTML ≤ 120 KB, inline flight data ≤ 50 KB | `curl` size; Lighthouse TBT ≤ 600 ms |
-| PERF-T3 | Move search/typeahead FTS off the event loop (worker thread) or cap concurrent searches (ARCH-001) | high | p95 search ≤ 150 ms with 10 parallel requests; other pages stay responsive | Parallel `curl` benchmark on a copy |
+| PERF-T3 | Move search/typeahead FTS off the event loop (worker thread). **Partly done:** a 60 s result cache (invalidated by index writes) makes repeats cheap (query "حضرموت": >1 s of blocking → ~0.2 s page time); typeahead is rate-limited. Cold queries still block (1.2 s measured for the slowest) | high | p95 search ≤ 150 ms with 10 parallel requests; other pages stay responsive | Parallel `curl` benchmark on a copy |
 | PERF-T4 | Cloudflare cache rule for anonymous HTML plus purge on publish (needs the owner's token) | high | `cf-cache-status: HIT` on `/ar`, TTFB under 200 ms | `curl -I` twice |
 | PERF-T5 | Re-run Lighthouse on the deployed build, 3 runs per page, take the median | medium | Home mobile perf ≥ 80; search CLS ≤ 0.1 | `scripts/lighthouse.mjs` |
 | PERF-T6 | Collect field data: Search Console Core Web Vitals report and Cloudflare Web Analytics (already allowed by the CSP) | medium | INP, LCP, CLS at p75 recorded | Console screenshots |

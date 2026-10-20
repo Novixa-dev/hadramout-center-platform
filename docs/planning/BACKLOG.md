@@ -9,8 +9,8 @@
 
 | Status | Total | high | medium | low | info |
 |---|---:|---:|---:|---:|---:|
-| READY | 63 | 1 | 15 | 32 | 15 |
-| PARTIAL | 6 | 0 | 5 | 1 | 0 |
+| READY | 62 | 0 | 15 | 32 | 15 |
+| PARTIAL | 7 | 1 | 5 | 1 | 0 |
 | BLOCKED | 18 | 4 | 9 | 4 | 1 |
 | DONE | 14 | 1 | 10 | 3 | 0 |
 
@@ -20,7 +20,6 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 
 | ID | Severity | Title | Note | Source |
 |---|---|---|---|---|
-| ARCH-001 | high | Synchronous FTS on the single event loop behind public, unlimited search and typeahead |  | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-008 | medium | Generated Payload types are unused; 77 casts and an index-signature Doc |  | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-009 | medium | Retry policy ignores retryable; budget-exhausted jobs die permanently | needs a verified Payload jobs API for non-retryable failures before changing | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-010 | medium | Translation budget accounting is racy and can double-bill |  | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
@@ -88,6 +87,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 
 | ID | Severity | Title | Note | Source |
 |---|---|---|---|---|
+| ARCH-001 | high | Synchronous FTS on the single event loop behind public, unlimited search and typeahead | 60 s result cache cleared by every index write (unit-tested) cuts repeats of the slowest query from >1 s of blocked CPU to ~0.2 s page time; typeahead rate-limited (90/min/client) and lang validated. The first uncached request still blocks the event loop: move FTS to a worker thread (PERF-T3) | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-006 | medium | No error boundaries, 45 empty catch blocks, no telemetry | route error boundary added; ~45 empty catch blocks and error telemetry remain | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-019 | medium | No tests for translation engine, hooks, rate limit, proxy, routes; no integration tier | CI runtime smoke tier added (PR #14); translation engine, hooks and rate limiter still untested | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | DATA-005 | medium | splitAuthors splits on /, creating authors named الشيخ and أ.م.د; older doc item C1 is wrong | importer fixed; authors 78 and 159 and their articles need an editorial data migration | [doc](../architecture/DATA_MODEL_AND_TAXONOMY.md) |
