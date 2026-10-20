@@ -3,7 +3,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['.claude/**', '.scratch/**', '.next/**', 'src/migrations/**', 'src/payload-types.ts', 'src/app/(payload)/**', 'node_modules/**', '.node_modules.recovery-*/**', 'public/assets/**', 'public/fonts/**', 'data/**', 'content/**', 'playwright-report/**', 'test-results/**'] },
+  { ignores: ['.claude/**', '.scratch/**', '.next/**', 'src/migrations/**', 'src/payload-types.ts', 'src/app/(payload)/**', 'node_modules/**', '.node_modules.recovery-*/**', '.smoke-data/**', 'public/assets/**', 'public/fonts/**', 'data/**', 'content/**', 'playwright-report/**', 'test-results/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
