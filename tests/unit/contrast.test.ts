@@ -60,3 +60,43 @@ describe('design token contrast (WCAG 2.2 AA)', () => {
     for (const mode of ['light', 'dark'] as const) assert.ok(ratio(resolve('hero-text', mode), resolve('hero-bg', mode)) >= 7, mode);
   });
 });
+
+/** The prefers-contrast: more block overrides some tokens; everything else keeps its base value. */
+function highContrastOverrides(): Map<string, string> {
+  const start = css.indexOf('@media (prefers-contrast: more)');
+  assert.ok(start >= 0, 'high-contrast block exists');
+  const block = css.slice(start, css.indexOf('\n  }\n', start));
+  const out = new Map<string, string>();
+  for (const m of block.matchAll(/--([\w-]+):\s*([^;]+);/g)) out.set(m[1] as string, (m[2] as string).trim());
+  return out;
+}
+
+describe('high-contrast tokens (prefers-contrast: more) reach WCAG AAA', () => {
+  const overrides = highContrastOverrides();
+  const value = (name: string, mode: Mode): string => {
+    const o = overrides.get(name);
+    if (!o) return resolve(name, mode);
+    const ld = o.match(/^light-dark\(\s*(.+?)\s*,\s*(.+?)\s*\)$/);
+    return ld ? ((mode === 'light' ? ld[1] : ld[2]) as string) : o;
+  };
+  const SURFACES = ['bg', 'surface', 'surface-2', 'surface-3'];
+  for (const mode of ['light', 'dark'] as const) {
+    test(`${mode}: text, secondary text, muted text and brand text reach 7:1 on every surface`, () => {
+      const low: string[] = [];
+      for (const fg of ['text', 'text-2', 'muted', 'brand', 'accent-text']) {
+        for (const bg of SURFACES) {
+          const r = ratio(value(fg, mode), value(bg, mode));
+          if (r < 7) low.push(`${fg} on ${bg}: ${r.toFixed(2)}`);
+        }
+      }
+      assert.deepEqual(low, []);
+    });
+    test(`${mode}: borders are visible (3:1) and the focus ring reaches 7:1`, () => {
+      for (const bg of ['bg', 'surface']) {
+        assert.ok(ratio(value('border', mode), value(bg, mode)) >= 3, `border on ${bg}`);
+        assert.ok(ratio(value('border-strong', mode), value(bg, mode)) >= 4.5, `border-strong on ${bg}`);
+        assert.ok(ratio(value('focus', mode), value(bg, mode)) >= 7, `focus on ${bg}`);
+      }
+    });
+  }
+});

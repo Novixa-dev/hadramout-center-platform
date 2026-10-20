@@ -33,6 +33,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     card: { key: 'topics' },
     readyLangs: ['ar'],
     incomplete: locale !== 'ar',
+    feed: { file: `topic-${id}`, title: data.node.name },
     noindex: activeFilters(q).filter((f) => f !== 'topic').length > 0 || isCustomised({ ...q, category: undefined }, 'article'),
     page: q.page,
     pageLabel: ctx.t('list.pageN', { page: q.page }),

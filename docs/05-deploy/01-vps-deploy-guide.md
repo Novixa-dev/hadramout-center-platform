@@ -65,6 +65,18 @@ curl -s https://hadramout-center.novixa.dev/api/hc/health
 ```
 أضف رابط الصحة إلى UptimeRobot أو Better Stack.
 
+### وضع الصيانة
+لإيقاف الصفحات العامة مؤقتاً (يبقى `/admin` والـAPI ونقطة الصحة تعمل، فيستطيع المحررون الدخول):
+```bash
+cd /opt/hadramout-center
+sed -i 's/^MAINTENANCE_MODE=.*/MAINTENANCE_MODE=1/' .env     # أو أضف السطر إن لم يوجد
+docker compose up -d app                                      # يعيد إنشاء الحاوية بالقيمة الجديدة
+curl -sI https://hadramout-center.novixa.dev/ar | head -1      # يجب أن تكون 503
+# ... بعد الانتهاء:
+sed -i 's/^MAINTENANCE_MODE=.*/MAINTENANCE_MODE=0/' .env && docker compose up -d app
+```
+تُرجع الصفحات العامة 503 مع `Retry-After: 600` وصفحة عربية/إنجليزية مستقلة، فلا تعتبرها محركات البحث محتوى محذوفاً.
+
 ## 8. نقاط للانتباه
 - SQLite على قرص واحد ⇒ **نسخة واحدة من التطبيق فقط** (يكفي لمئات آلاف الزيارات شهرياً مع Cloudflare؛ للتوسع لاحقاً يلزم Postgres).
 - إعدادات التخزين المؤقت في Cloudflare: لا تخزّن `/admin` و`/api/*`.

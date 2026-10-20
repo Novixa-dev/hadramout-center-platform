@@ -41,6 +41,8 @@ export interface MetaInput {
   readyLangs?: string[];
   /** true when the visitor's language is only partially available on this page → noindex */
   incomplete?: boolean;
+  /** extra RSS feed to advertise next to the site feed, e.g. `topic-54` or `author-146` (file name without .xml) */
+  feed?: { file: string; title: string };
   noindex?: boolean;
   /** archive page number (≥2 gets its own canonical + title suffix and no hreflang cluster) */
   page?: number;
@@ -90,7 +92,12 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
     alternates: {
       canonical: noindex && lang !== 'ar' ? url('ar') : self,
       languages,
-      types: { 'application/rss+xml': [{ url: absolute(`/feeds/${lang}/all.xml`), title: siteName }] },
+      types: {
+        'application/rss+xml': [
+          ...(m.feed ? [{ url: absolute(`/feeds/${lang}/${m.feed.file}.xml`), title: m.feed.title }] : []),
+          { url: absolute(`/feeds/${lang}/all.xml`), title: siteName },
+        ],
+      },
     },
     robots: noindex
       ? { index: false, follow: true }

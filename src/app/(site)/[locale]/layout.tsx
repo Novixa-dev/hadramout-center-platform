@@ -9,6 +9,7 @@ import { loadConfig } from '../../../config.ts';
 import { uiCoverage } from '../../../i18n/ui-store.ts';
 import { Footer, Header, langOptions } from '../../../components/Shell.tsx';
 import { BackToTop } from '../../../components/client/BackToTop.tsx';
+import { PwaRegister } from '../../../components/client/PwaRegister.tsx';
 
 export const dynamicParams = true;
 export const revalidate = 300;
@@ -42,7 +43,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-const THEME_INIT = `(function(){try{var d=document.documentElement,t=localStorage.getItem('hc-theme'),f=localStorage.getItem('hc-fs');if(t)d.setAttribute('data-theme',t);if(f)d.setAttribute('data-fs',f)}catch(e){}})()`;
+// Dark is the site's default theme (server-rendered as data-theme="dark", so there is no flash and it works without JavaScript).
+// A visitor's explicit choice, stored by the toggle, overrides it before first paint; the browser's own colour-scheme setting is not consulted.
+const THEME_INIT = `(function(){try{var d=document.documentElement,t=localStorage.getItem('hc-theme'),f=localStorage.getItem('hc-fs');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);var m=document.getElementById('hc-theme-color');if(m)m.setAttribute('content',t==='light'?'#fffbf5':'#0e1815')}if(f)d.setAttribute('data-fs',f)}catch(e){}})()`;
 
 export default async function LocaleLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -51,10 +54,9 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const site = await getSite(locale);
   const ready = new Set(['ar', 'en', ...[...enabledOrAll()].filter((c) => uiCoverage(c) >= 0.95)]);
   return (
-    <html lang={ctx.lang.tag} dir={ctx.lang.dir} suppressHydrationWarning>
+    <html lang={ctx.lang.tag} dir={ctx.lang.dir} data-theme="dark" suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#fffbf5" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#0e1815" media="(prefers-color-scheme: dark)" />
+        <meta id="hc-theme-color" name="theme-color" content="#0e1815" />
         {locale === 'ar' ? (
           <>
             <link rel="preload" href="/fonts/plexui-ar-400-v2.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
@@ -70,6 +72,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <main id="main" tabIndex={-1}>{children}</main>
         <Footer ctx={ctx} site={site} />
         <BackToTop label={ctx.t('tools.backToTop')} />
+        <PwaRegister />
       </body>
     </html>
   );

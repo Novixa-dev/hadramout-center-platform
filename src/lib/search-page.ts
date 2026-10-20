@@ -79,11 +79,16 @@ export async function runSearch(p: SearchParams): Promise<SearchResult> {
   return { total: exact, kindCounts, counts, items, pages, page, usedLang: res.lang, authorNames, popular: sorted.length === 0 ? popularQueries(db) : [] };
 }
 
-/** Best-effort statistics of what visitors look for (used for the "popular searches" hints). */
+const MAX_ZERO_RESULT_ROWS_PER_DAY = 500;
+
+/** Best-effort statistics of what visitors look for (used for the "popular searches" hints and the editorial quality report). */
 export function recordSearch(q: string, results: number): void {
-  // Only real, short, successful queries are kept: arbitrary strings would grow the table without bound and could seed the public hints.
-  if (results <= 0 || q.length > 64 || /\p{Cc}/u.test(q)) return;
+  // Short, control-character-free queries only. Searches that found nothing are the editors' most useful signal ("what do readers
+  // want that we do not have?"), but arbitrary strings could grow the table without bound, so they are capped per day.
+  // The public "popular searches" hints use successful queries only.
+  if (q.length > 64 || /\p{Cc}/u.test(q)) return;
   try {
+    if (results <= 0 && (extras().get<{ n: number }>("SELECT count(*) n FROM search_queries WHERE day = date('now') AND results = 0")?.n ?? 0) >= MAX_ZERO_RESULT_ROWS_PER_DAY) return;
     if (Math.random() < 0.01) extras().run("DELETE FROM search_queries WHERE day < date('now', '-120 days')");
     extras().run("INSERT INTO search_queries (day, q, count, results) VALUES (date('now'), ?, 1, ?) ON CONFLICT(day, q) DO UPDATE SET count = count + 1, results = excluded.results", q.toLowerCase(), results);
   } catch {

@@ -36,6 +36,8 @@ const nextConfig: NextConfig = {
     return [
       { source: '/(.*)', headers: SECURITY },
       // brand/icon files are not content-hashed: a week of caching, revalidated afterwards
+      // the service worker file must always be revalidated so a new version reaches visitors promptly
+      { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }, { key: 'Service-Worker-Allowed', value: '/' }] },
       { source: '/:dir(brand|icons|fonts)/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
       { source: '/((?!admin|api).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
     ];
