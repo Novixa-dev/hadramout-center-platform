@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { enabledOrAll, negotiate } from './lib/negotiate.ts';
 import { clampRestQuery } from './lib/rest-limits.ts';
+import { MAINTENANCE_HTML, RETRY_AFTER_SECONDS, isMaintenanceExempt } from './lib/maintenance.ts';
 
 /**
  * Edge of the site:
@@ -14,6 +15,14 @@ const LEGACY_LIST = /^\/(news|articles|books|magazines|events|forum|videos|about
 
 export function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
+
+  // Maintenance mode (MAINTENANCE_MODE=1 in the server .env, then restart the app): public pages answer 503 + Retry-After.
+  if (process.env.MAINTENANCE_MODE === '1' && !isMaintenanceExempt(pathname)) {
+    return new NextResponse(MAINTENANCE_HTML, {
+      status: 503,
+      headers: { 'content-type': 'text/html; charset=utf-8', 'retry-after': String(RETRY_AFTER_SECONDS), 'cache-control': 'no-store', 'x-robots-tag': 'noindex' },
+    });
+  }
 
   // Reads of the REST API get a hard ceiling on page size and relationship depth. There is deliberately no staff exemption:
   // a cookie cannot be validated here, so an exemption would be bypassable with any fake value (the admin UI stays well under the ceiling).

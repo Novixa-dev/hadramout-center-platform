@@ -1,0 +1,12 @@
+/* Accessibility overrides that must beat component rules (utilities layer comes after components and pages). */
+@layer utilities {
+  /* Windows "contrast themes" / forced colors: the browser replaces our colours with the user's palette. Keep boundaries and focus visible. */
+  @media (forced-colors: active) {
+    :focus-visible { outline: 3px solid Highlight; outline-offset: 2px; }
+    .btn, .icon-btn, .input, select, textarea, .chip, .card, .entry, .tile { border: 1px solid ButtonText; }
+    .btn--primary, .btn--gold { forced-color-adjust: none; background: ButtonFace; color: ButtonText; border: 2px solid ButtonText; }
+    /* decorative artwork would otherwise paint over text */
+    .hero__skyline, .hero__pattern, .pattern { display: none; }
+    a { text-decoration: underline; }
+  }
+}

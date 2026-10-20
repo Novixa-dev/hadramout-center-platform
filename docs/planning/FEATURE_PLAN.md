@@ -29,24 +29,24 @@
 | F-12 | Author pages | DONE | author identity clean-up needs editors (DATA-006) |
 | F-13 | Issue page with contents | DONE | issues 38–41 lack a table of contents (DATA-012) |
 | F-14 | Reading experience | DONE | |
-| F-15 | Copy with attribution | **TODO** | not implemented |
+| F-15 | Copy with attribution | DONE (PR #16) | 40+ characters copied from an article body get the source line + URL (plain and HTML) |
 | F-16 | Related content | DONE | 34% of items have none (DATA-009) |
-| F-17 | Saved list | DONE | RIS + JSON export exist; **BibTeX/CSL-JSON** to verify/add (deferred #6) |
+| F-17 | Saved list | DONE (PR #16) | RIS, BibTeX and CSL-JSON export from a tested module; records carry only what was saved (title, URL, access date) |
 | F-18 | Hijri dates | DONE | Arabic, day precision only (`formatHijri`) |
-| F-19 | Open catalogue export (CSV/JSON) | **TODO** | not implemented |
+| F-19 | Open catalogue export (CSV/JSON) | DONE (PR #16) | `/api/hc/catalog?type=books\|magazines&format=csv\|json`; formula-injection safe, UTF-8 BOM |
 | F-20 | Sharing | DONE | WhatsApp, Telegram, X, Facebook, Web Share |
 | F-21 | Events calendar `.ics` | DONE | event data after 2024-11 missing (DATA-007, BLOCKED) |
 | F-22 | Contact + book request | DONE | `kind=book_request` flow + WhatsApp link |
 | F-23 | Newsletter | PARTIAL | subscribe/export/unsubscribe done; **sending needs a mail provider** (BLOCKED, F-46) |
-| F-24 | RSS per section and language | DONE | per-topic and per-author feeds **TODO** (deferred #5) |
+| F-24 | RSS per section and language | DONE (PR #16) | plus per-topic (`topic-{id}.xml`) and per-author (`author-{id}.xml`) feeds with autodiscovery |
 | F-25 | YouTube facade, no cookies | DONE | |
 | F-30 | PWA | PARTIAL | manifest only; **offline page + saved articles offline TODO** |
 | F-31 | Anonymous analytics | PARTIAL | tables exist; **no admin view — TODO** (deferred #7) |
 | F-32 | Audit log, roles, backups, health | PARTIAL | roles, nightly backup, health done; **no audit log** (Payload `versions` not enabled) — DECISION |
-| F-33 | Smart 404, friendly errors, maintenance mode | PARTIAL | 404 with search and the new error boundary exist; **maintenance mode TODO** |
+| F-33 | Smart 404, friendly errors, maintenance mode | DONE | 404 with search, route error boundary, and **maintenance mode** (`MAINTENANCE_MODE=1`: public pages 503 + `Retry-After`, admin/API/health stay up; tested on the built server, documented in the deploy guide) |
 | F-34 | Timeline | DONE | 6 entries need the Center's scientific review (DATA-018, BLOCKED) |
 | F-35 | Image pipeline (sizes, WebP/AVIF, LQIP) | PARTIAL | `next/image` with responsive widths; LQIP not done; fewer widths rejected (see PERFORMANCE_PLAN) |
-| F-36 | Accessibility: statement, shortcuts, high contrast | PARTIAL | statement done; **keyboard shortcuts and a high-contrast mode TODO** |
+| F-36 | Accessibility: statement, shortcuts, high contrast | DONE | statement; `/` opens search (already existed); **high contrast** via `prefers-contrast: more` (text/borders/focus at WCAG AAA, unit-tested) and `forced-colors` support |
 | F-40 | YouTube channel sync | BLOCKED | needs `channel_id` |
 | F-41 | TOTP 2FA for admin | DECISION | not built into Payload; see section 5 |
 | F-42 / deferred #11 | IIIF viewer | REJECTED for now | no verified manuscript content exists |

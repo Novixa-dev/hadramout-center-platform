@@ -100,4 +100,20 @@
   :root[data-lh='loose'] { --lh-read: 2.25; }
   :root[data-rw='narrow'] { --prose: 56ch; }
   :root[data-rw='wide'] { --prose: 78ch; }
+
+  /* High contrast (the visitor's OS "increase contrast" setting): text pairs reach WCAG AAA (7:1, verified in tests/unit/contrast.test.ts),
+     borders become clearly visible and the focus ring gets thicker. Declared after the base tokens so it wins; the AA test reads the base values. */
+  @media (prefers-contrast: more) {
+    :root {
+      --border: light-dark(#6f6a5e, #8fa39a);
+      --border-strong: light-dark(#4a463d, #b4c4bc);
+      --rule: light-dark(#6f6a5e, #8fa39a);
+      --text: light-dark(#000000, #ffffff);
+      --text-2: light-dark(#14170f, #f4f7f5);
+      --muted: light-dark(#2b2f2c, #e6ece8);
+      --brand: light-dark(#0f4a3d, #9be6d0);
+      --accent-text: light-dark(#5a4318, #f2cd85);
+      --focus: light-dark(#0a3d91, #b9d2ff);
+    }
+  }
 }
