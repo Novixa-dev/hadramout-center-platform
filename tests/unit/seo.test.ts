@@ -62,9 +62,13 @@ describe('json-ld builders', () => {
   test('event: attendance mode only when it is known', () => {
     const none = contentJsonLd({ type: 'event', doc: baseDoc, url: 'u', lang: 'ar', org, authorUrl });
     assert.ok(!('eventAttendanceMode' in none) && !('location' in none));
+    assert.equal(none['@type'], 'CreativeWork', 'no start date → not Event markup');
+    assert.ok(!('startDate' in none));
     const venue = contentJsonLd({ type: 'event', doc: { ...(baseDoc as object), venue: 'قاعة المركز', eventDate: '2025-02-01T00:00:00.000Z' } as never, url: 'u', lang: 'ar', org, authorUrl });
     assert.equal(venue.eventAttendanceMode, 'https://schema.org/OfflineEventAttendanceMode');
     assert.equal(venue.startDate, '2025-02-01');
+    assert.equal(venue['@type'], 'Event');
+    assert.deepEqual(venue.location, { '@type': 'Place', name: 'قاعة المركز', address: 'قاعة المركز' });
   });
   test('book keeps ISBN/pages only when present and lists the free PDF', () => {
     const ld = contentJsonLd({ type: 'book', doc: { ...(baseDoc as object), isbn: '978-1', pages: 200, year: 2019 } as never, url: 'u', lang: 'ar', org, authorUrl, pdf: 'https://example.org/b.pdf' });
