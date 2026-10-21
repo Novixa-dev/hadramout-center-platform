@@ -17,7 +17,7 @@
   .icon-btn { display: inline-grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--r-md); color: var(--text-2); touch-action: manipulation; }
   .icon-btn:hover { background: var(--surface-3); color: var(--text); }
   .icon-btn[aria-expanded='true'] { background: var(--brand-soft); color: var(--brand); }
-  .icon { inline-size: 1.25rem; block-size: 1.25rem; flex: none; }
+  .icon { inline-size: 1.25rem; block-size: 1.25rem; flex: none; display: inline-block; vertical-align: -0.2em; } /* the global svg{display:block} reset made icons in running text wrap onto their own line */
   :dir(rtl) .icon--flip { transform: scaleX(-1); }
   :dir(ltr) .icon--flip-ltr { transform: scaleX(-1); }
   .link-arrow { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 600; text-decoration: none; }
@@ -87,7 +87,7 @@
   /* ── cards ──────────────────────────────────────────────────────────────────────────────────── */
   /* stretched link: the whole card is clickable through its title link */
   .stretch a.stretch__link::after, .entry__title a::after, .tile__title a::after, .book__title a::after, .event__title a::after, .vtile__title a::after, .issue__title a::after { content: ''; position: absolute; inset: 0; }
-  .placeholder-cover { display: grid; place-items: center; block-size: 100%; padding: 1rem; text-align: center; font-family: var(--font-display); font-weight: 700; color: var(--green-800); background: linear-gradient(160deg, var(--green-100), var(--gold-100)); }
+  .placeholder-cover { display: grid; place-items: center; block-size: 100%; padding: 1rem; text-align: center; font-family: var(--font-display); font-weight: 700; color: var(--brand-strong); background: linear-gradient(160deg, var(--surface-3), var(--surface-2)); border: 1px solid var(--border); /* theme-aware: the fixed light-green text vanished on the dark gradient */ }
 
   /* list row (articles / studies / search / author works) */
   .entry-list { list-style: none; padding: 0; display: grid; }
