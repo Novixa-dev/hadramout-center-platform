@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.7.0] - 2026-10-21
+### Browser tests run in CI
+- CI's smoke tier now runs `scripts/e2e.mjs` (41 checks in real Chrome) and `scripts/site-sweep.mjs` (77 sampled pages, 120 links) against the built server; server logs are uploaded when it fails. Locally: `RUN_E2E=1 npm run smoke`.
+- e2e page loads allow a cold server 45 s and retry once on a timeout (the first request to a page renders and caches it).
+
 ## [5.6.0] - 2026-10-21
 ### Browser tests, search fix, social previews, book page
 - **Fix:** pressing Enter or the button in the header search panel did nothing (the panel closed and unmounted the form before its native submit). The form now navigates explicitly. Found by the new browser journeys.

@@ -41,10 +41,18 @@ jobs:
           mkdir -p .smoke-data
           npm run payload -- migrate
           npm run db:seed
-      - name: Smoke test the built server (routes, regressions, SEO audit)
+      - name: Smoke test the built server (routes, regressions, SEO audit, browser journeys, sitemap sweep)
         env:
           DB_DIR: ${{ github.workspace }}/.smoke-data
+          RUN_E2E: "1"   # real Chrome (preinstalled on ubuntu-latest): scripts/e2e.mjs and scripts/site-sweep.mjs
         run: bash scripts/smoke-prod.sh
+      - name: Keep the test server logs when the smoke tier fails
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-server-logs
+          path: /tmp/hc-smoke/server-*.log
+          if-no-files-found: ignore
 
   # The deploy workflow builds this image on every push to master. Building it on the PR as well catches failures that only exist
   # inside Docker (e.g. an npm lifecycle script that needs repo files which the `deps` stage does not have yet).

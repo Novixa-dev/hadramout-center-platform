@@ -14,7 +14,7 @@ npm run dev              # http://localhost:3000  (admin at /admin)
 npm run check            # typecheck + lint + unit tests
 node scripts/cutover-check.mjs <url>   # post-deploy / post-move verification of host, indexing mode, sitemap, redirects, headers
 npm run quality                  # read-only editorial report from the databases (DATA_DIR / DATABASE_URL)
-npm run build && npm run smoke   # runtime tier: probes the built standalone server (needs a seeded DB: DB_DIR=...); CI runs it on a fresh snapshot seed
+npm run build && npm run smoke   # runtime tier: probes the built standalone server (needs a seeded DB: DB_DIR=...); CI runs it on a fresh snapshot seed, with real-Chrome journeys and a sitemap sweep (`RUN_E2E=1` locally; needs Chrome)
 ```
 
 Layout: `src/app` (routes) · `src/collections` · `src/i18n` (languages, translation engine) · `src/lib` · `src/components` · `src/styles` · `messages/` (UI strings) · `content/` (legacy snapshot) · `docs/`.

@@ -118,4 +118,9 @@ case "$qr" in *"## Skipped checks"*) echo "FAIL quality report skipped checks (s
 if [ "${SEO_AUDIT:-1}" = 1 ]; then
   (cd "$ROOT" && node scripts/seo-audit.mjs "http://localhost:$PORT" | tail -8) || fail=1
 fi
+# real-browser journeys and a sitemap-sample sweep (needs Chrome: CI runners have it; locally set RUN_E2E=1)
+if [ "${RUN_E2E:-0}" = 1 ]; then
+  (cd "$ROOT" && node scripts/e2e.mjs "http://localhost:$PORT" --expect production | tail -14) || fail=1
+  (cd "$ROOT" && node scripts/site-sweep.mjs "http://localhost:$PORT" --sample 60 --links 120 --expect production | tail -14) || fail=1
+fi
 exit $fail

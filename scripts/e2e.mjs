@@ -60,7 +60,16 @@ async function journey(name, fn, viewport = { width: 1366, height: 900 }) {
     await ctx.close().catch(() => undefined);
   }
 }
-const go = (page, path, extra = {}) => page.goto(base + path, { waitUntil: 'networkidle2', ...extra });
+// A cold server renders and caches each page on first request: allow it more time, and retry once before calling a page broken.
+const go = async (page, path, extra = {}) => {
+  const opts = { waitUntil: 'networkidle2', timeout: 45000, ...extra };
+  try {
+    return await page.goto(base + path, opts);
+  } catch (e) {
+    if (!/timeout/i.test(String(e))) throw e;
+    return page.goto(base + path, opts);
+  }
+};
 const html = (page, attr) => page.$eval('html', (e, a) => e.getAttribute(a), attr);
 const buttonByText = (page, text) => page.evaluateHandle((t) => [...document.querySelectorAll('button')].find((b) => b.textContent.trim().includes(t)) ?? null, text);
 
