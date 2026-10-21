@@ -18,7 +18,7 @@
 | `06-handover` (جديد) | `client-requirements-checklist-ar.md` — ما نحتاجه من المركز + أجندة الاجتماع |
 | `research` (جديد) | `CLAUDE_WORKFLOW_BEST_PRACTICES.md` — كيف نعمل مع Claude بأفضل أسلوب (مصادر رسمية) وما اعتمدناه |
 | `security` | `SECURITY_REVIEW.md` — الضوابط الموثّقة والبنود المفتوحة |
-| `planning`, `reports` | `planning/PROGRESS.md` نقطة المتابعة · `planning/ROADMAP.md` خارطة الطريق · `planning/BACKLOG.md` سجل المهام · `planning/FEATURE_PLAN.md` خطة الميزات ووعودنا · `reports/BASELINE_REPORT.md` خط الأساس · `reports/RELEASE_READINESS.md` جاهزية الإطلاق |
+| `planning`, `reports` | `planning/PROGRESS.md` نقطة المتابعة · `planning/ROADMAP.md` خارطة الطريق · `planning/BACKLOG.md` سجل المهام · `planning/FEATURE_PLAN.md` خطة الميزات ووعودنا · `planning/NEXT_PLAN.md` الخطة القادمة مرتبة بالأولوية · `reports/BASELINE_REPORT.md` خط الأساس · `reports/RELEASE_READINESS.md` جاهزية الإطلاق |
 | `archive/v1` | وثائق النسخة الأولى (مرجع تاريخي — لا يُعتمد عليها) |
 
 ## أوامر أساسية
