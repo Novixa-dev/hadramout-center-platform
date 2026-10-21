@@ -105,11 +105,31 @@ async function auditPage(url) {
     row.ogImage = og['og:image'];
     if (!/^https?:/.test(og['og:image'])) add(path, 'error', 'og:image is not absolute');
     else {
-      const img = await get(og['og:image'].startsWith(origin) ? og['og:image'] : og['og:image'], { method: 'HEAD', redirect: 'follow' }).catch(() => null);
+      // one GET per image (the card route is rate limited, so HEAD + GET would trip it); retry once after a 429
+      let img = await get(og['og:image'], { redirect: 'follow' }).catch(() => null);
+      if (img?.status === 429) {
+        await new Promise((r) => setTimeout(r, 2500));
+        img = await get(og['og:image'], { redirect: 'follow' }).catch(() => null);
+      }
       if (!img || !img.ok) add(path, 'error', `og:image not reachable (${img?.status ?? 'network'})`);
       else if (!/^image\//.test(img.headers.get('content-type') ?? '')) add(path, 'error', `og:image content-type ${img.headers.get('content-type')}`);
+      else if (/\/og\//.test(og['og:image'])) {
+        // generated cards must be real 1200x630 PNGs (what the tags promise); read the IHDR chunk
+        const bytes = Buffer.from(await img.arrayBuffer());
+        const isPng = bytes.length > 24 && bytes.subarray(1, 4).toString() === 'PNG';
+        const [w, h] = isPng ? [bytes.readUInt32BE(16), bytes.readUInt32BE(20)] : [0, 0];
+        if (!isPng) add(path, 'error', 'og:image is not a PNG');
+        else if (w !== 1200 || h !== 630) add(path, 'error', `og:image is ${w}x${h}, expected 1200x630`);
+        if (bytes.length > 600 * 1024) add(path, 'warn', `og:image is ${(bytes.length / 1024).toFixed(0)} KB (messengers may skip >600 KB)`);
+      }
     }
+    if (og['og:image:width'] !== '1200' || og['og:image:height'] !== '630') add(path, 'warn', 'og:image:width/height not 1200/630');
   }
+  const expectedType = /\/books\/\d+$/.test(path) ? 'book' : /\/(articles|news)\/\d+$/.test(path) ? 'article' : /\/videos\/\d+$/.test(path) && html.includes('i.ytimg.com/vi/') ? 'video.other' : null;
+  if (expectedType && og['og:type'] && og['og:type'] !== expectedType) add(path, 'warn', `og:type is ${og['og:type']}, expected ${expectedType}`);
+  if (og['og:type'] === 'video.other' && !og['og:video']) add(path, 'warn', 'video.other without og:video');
+  if (og['og:type'] === 'article' && !root.querySelector('meta[property="article:modified_time"]')) add(path, 'warn', 'article without article:modified_time');
+  if (tw['twitter:card'] && !tw['twitter:image']) add(path, 'error', 'missing twitter:image');
 
   const alts = root.querySelectorAll('link[rel="alternate"][hreflang]').map((l) => [l.getAttribute('hreflang'), l.getAttribute('href')]);
   row.hreflang = alts.length;

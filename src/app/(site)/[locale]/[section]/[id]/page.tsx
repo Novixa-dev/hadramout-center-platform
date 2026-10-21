@@ -84,7 +84,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: describe(doc.excerpt, htmlToText(doc.body ?? '')),
     card: { kind: section, id: doc.id, v: doc.updatedAt ? Date.parse(doc.updatedAt) : undefined },
     imageAlt: cover?.alt,
-    type: info.type === 'book' ? 'book' : info.type === 'article' || info.type === 'news' ? 'article' : 'website',
+    type: info.type === 'book' ? 'book' : info.type === 'article' || info.type === 'news' ? 'article' : info.type === 'video' ? 'video' : 'website',
+    videoUrl: info.type === 'video' && doc.youtubeId ? `https://www.youtube-nocookie.com/embed/${doc.youtubeId}` : null,
     readyLangs: readyLangsOf(doc),
     incomplete: tr.status !== 'source' && tr.status !== 'complete',
     publishedTime: doc.datePrecision === 'day' ? doc.publishedAt : null,
@@ -337,7 +338,7 @@ export default async function DetailPage({ params }: Props) {
                     [t('meta.translator'), doc.translator as string | undefined],
                     [t('meta.publisher'), doc.publisher as string | undefined],
                     [t('meta.edition'), doc.edition as string | undefined],
-                    [t('meta.year'), doc.year ? String(doc.year) : type === 'book' ? t('book.noYear') : date],
+                    [t('meta.year'), doc.year ? String(doc.year) : type === 'book' ? t('book.yearUnknown') : date],
                     [t('meta.pages'), doc.pages ? String(doc.pages) : null],
                     ['ISBN', doc.isbn as string | undefined],
                     [t('meta.season'), type === 'magazine' ? (doc.season as string | undefined) : null],
@@ -399,7 +400,7 @@ export default async function DetailPage({ params }: Props) {
 
             {waNumber && type === 'book' ? (
               <p style={{ marginBlockStart: 'var(--space-5)' }}>
-                <a className="btn btn--secondary" href={`https://wa.me/${waNumber}?text=${encodeURIComponent(t('contact.form.bookRequest', { title: doc.title }))}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                <a className="btn btn--secondary" href={`https://wa.me/${waNumber}?text=${encodeURIComponent(t('contact.form.bookRequest', { title: doc.title }))}`} target="_blank" rel="noopener noreferrer">{t('book.whatsapp')}<span className="sr-only"> ({t('a11y.newWindow')})</span></a>
               </p>
             ) : null}
 

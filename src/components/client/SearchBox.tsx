@@ -140,9 +140,13 @@ export function SearchBox({ action, lang, labels, size = 'md', autoFocus = false
         className="sbox__row"
         role="search"
         action={action}
-        onSubmit={() => {
-          if (term) saveRecent(term);
-          onNavigate?.();
+        onSubmit={(e) => {
+          // Navigate explicitly. Closing the panel (onNavigate) unmounts this form, and a form that is no longer in the document
+          // cannot perform its native submission: relying on the default action made Enter and the search button do nothing in the header panel.
+          // Without JavaScript the plain GET form still works.
+          e.preventDefault();
+          const params = new URLSearchParams({ ...(hiddenFields ?? {}), q: term });
+          go(term ? `${action}?${params.toString()}` : action);
         }}
       >
         <div className="sbox__field">

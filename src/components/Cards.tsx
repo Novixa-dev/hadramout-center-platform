@@ -121,7 +121,7 @@ export function BookCard({ ctx, doc, eager = false }: CardProps) {
           <Link href={docHref(ctx, 'book', doc.id)}>{doc.title}</Link>
         </h3>
         {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => a.name).join('، ')}</p> : null}
-        {year ? <p className="book__meta">{year}</p> : <p className="book__meta">{t('book.noYear')}</p>}
+        {year ? <p className="book__meta">{year}</p> : <p className="book__meta">{t('book.yearUnknown')}</p>}
       </div>
     </article>
   );

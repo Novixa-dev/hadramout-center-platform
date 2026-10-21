@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.6.0] - 2026-10-21
+### Browser tests, search fix, social previews, book page
+- **Fix:** pressing Enter or the button in the header search panel did nothing (the panel closed and unmounted the form before its native submit). The form now navigates explicitly. Found by the new browser journeys.
+- **Browser tests:** `scripts/e2e.mjs` (puppeteer-core, real Chrome): defaults and theme, search, article tools and offline reading through the service worker, mobile menu focus, skip link, language switch, contact and admin login pages, clean console on 12 pages. `scripts/site-sweep.mjs`: stratified sitemap sample (status, title, description, canonical, one h1, lang/dir, alt text, JSON-LD, og:image, leaked text) plus a link check.
+- **Social previews:** video pages are `og:type video.other` with `og:video` (privacy-friendly embed) only when the item really has a YouTube id. `scripts/seo-audit.mjs` now verifies that generated cards are real 1200x630 PNGs, og:type per template, twitter:image and article:modified_time.
+- **Book pages:** a labelled WhatsApp request button, a plain "publication year not stated" text instead of the bibliographic "د.ت." on cards and in the facts list (citations keep "n.d."), smaller cover on phones.
+
 ## [5.5.0] - 2026-10-21
 ### Deploy hardening, honest performance reporting, review notices
 - **Fix:** the Docker image build failed because the new `prepare` hook script needed repo files that the `deps` stage does not have (staging was never affected: the build failed before shipping). `prepare` is now self-contained; CI builds the production image on every PR so Docker-only failures are caught before merge.

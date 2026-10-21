@@ -37,11 +37,13 @@ for (const file of walk('src')) {
 }
 
 // plural forms are looked up as key.one / key.other; the base key may not exist on its own
+// Open Graph type names share the 'video.' prefix with UI keys but are not messages
+const NOT_MESSAGES = new Set(['video.other']);
 const has = (dict: Record<string, string>, key: string) => key in dict || `${key}.other` in dict || `${key}.one` in dict;
 
 describe('UI messages', () => {
   test('every key used in the code exists in messages/ar.json', () => {
-    const missing = [...used].filter((k) => !has(ar, k) && /^[a-z]+\.[A-Za-z0-9_.-]+$/.test(k) && !k.endsWith('.ts') && !k.endsWith('.tsx') && !/\.(css|json|png|svg|xml|ics|ris|bib)$/.test(k)).sort();
+    const missing = [...used].filter((k) => !NOT_MESSAGES.has(k) && !has(ar, k) && /^[a-z]+\.[A-Za-z0-9_.-]+$/.test(k) && !k.endsWith('.ts') && !k.endsWith('.tsx') && !/\.(css|json|png|svg|xml|ics|ris|bib)$/.test(k)).sort();
     assert.deepEqual(missing, [], `missing in ar.json:\n${missing.join('\n')}`);
   });
   test('the curated English file covers every Arabic key', () => {
