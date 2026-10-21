@@ -1,0 +1,38 @@
+# Automated update pull requests. Every one runs the full CI (typecheck, lint, tests, production build, Docker image build, smoke tests),
+# so an update only reaches master after that passes. Merging deploys: a person decides when.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # Payload packages must move together (a mismatched set breaks `npm ci` peer checks and the schema)
+      payload:
+        patterns: ["payload", "@payloadcms/*"]
+      tiptap:
+        patterns: ["@tiptap/*"]
+      lint-and-types:
+        patterns: ["eslint", "@eslint/*", "typescript", "typescript-eslint", "@types/*", "globals"]
+        update-types: ["minor", "patch"]
+    ignore:
+      # framework, runtime and UI-library majors are planned migrations, not automatic updates
+      - dependency-name: next
+        update-types: ["version-update:semver-major"]
+      - dependency-name: react
+        update-types: ["version-update:semver-major"]
+      - dependency-name: react-dom
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly
+    ignore:
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]

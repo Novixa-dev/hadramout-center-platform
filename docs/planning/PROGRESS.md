@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-20 · **State:** PRs #12–#16 merged and deployed to the staging site (2026-10-19/21). Current work: staging safety (noindex + banner, `SITE_ENV`), move runbook and cutover check, client checklist. The site is a **staging copy**; it moves to a new host and domain after the Center approves.
+**Last updated:** 2026-10-20 · **State (2026-10-21):** PRs #12–#20 are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -66,15 +66,28 @@ Production was re-verified after the first deploy: health, GraphQL 404, REST cla
 | `scripts/cutover-check.mjs` | run against live staging (39 ok, 1 warning: Cloudflare caches `/sw.js` for 4 h) and in CI |
 | Move runbook, Caddy templates, Arabic client checklist | [03-move-to-new-host-and-domain](../05-deploy/03-move-to-new-host-and-domain.md), [client checklist](../06-handover/client-requirements-checklist-ar.md) |
 
+## What changed on 2026-10-21
+
+| Change | Evidence |
+|---|---|
+| Staging-safe by default, preview banner, `SITE_ENV=production` as the launch switch | smoke asserts both modes; live: `X-Robots-Tag` on every response, robots.txt without sitemap |
+| About/privacy/terms marked "awaiting the Center's approval" (preview only) | smoke; live |
+| `scripts/cutover-check.mjs` + move runbook + Caddy templates | live staging: 39 ok, 1 warning (Cloudflare caches `/sw.js` 4 h); CI runs it |
+| Docker build broke on a hook script (first deploy attempt of #18 failed before shipping; staging unaffected) → fixed; **CI now builds the production image on every PR** | CI `docker` job; deploy of #19 succeeded |
+| Pre-commit gate, `CLAUDE.md`, review subagents, release skill | gate tested with a broken file; [research note](../research/CLAUDE_WORKFLOW_BEST_PRACTICES.md) |
+| Lighthouse on a clean runner (median of 3): home 93, TBT 79 ms, CLS 0; modeled LCP ≈ 3 s vs **observed ≈ 0.2 s** | [PERFORMANCE_PLAN §0](../quality/PERFORMANCE_PLAN.md); three experiments rejected on evidence |
+| ARCH-001 (search blocking) downgraded: ~165 ms warm, ~0.5 s TTFB live like any page | measured on a database copy and live |
+| Dependabot (grouped Payload updates, weekly) | `.github/dependabot.yml` |
+| Arabic client checklist + meeting agenda | [client-requirements-checklist-ar](../06-handover/client-requirements-checklist-ar.md) |
+
 ## Next actionable tasks (in order)
 
-1. Merge #14, then #15, then #16 when ready (each deploy takes a pre-deploy backup and aborts if it fails). After #15 check `/admin` login and the 13 new indexes; after #16 check the dark default, `/sw.js`, `/offline.html`, `/api/hc/catalog` and the new feeds on the live site.
-2. Before deploying: rehearse migrations 3–6 on a copy of the production database (done locally in < 1 s) and confirm `backup.sh` runs on the server with the new `legacy-media` coverage and its size.
-3. Performance: profile the home page (PERF-T1), then cut its RSC payload (PERF-T2) and move search off the event loop (PERF-T3) — see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md).
-4. Still to write: full security review, per-route SEO matrix and manual accessibility test. The consolidated register is [BACKLOG](BACKLOG.md) (101 findings: 63 ready, 6 partial, 18 blocked, 14 done) and the ordering is in [ROADMAP](ROADMAP.md). The runtime test tier now exists (CI seeds a database and smoke-tests the built server).
-5. Data work needing editors: author merges (DATA-006), the 142 uncategorised articles (DATA-004), article dates that are cover-upload months (DATA-001, LEG-002).
-6. Hosting of the 63 PDFs that still point at `files.hadramout.center` (LEG-001/MIG-001) — must be solved before the legacy host is retired.
+1. **Client meeting:** walk through the staging site and the [checklist](../06-handover/client-requirements-checklist-ar.md); collect the Center's materials and the decisions (domain, host, PDFs, Cloudflare, mail provider, 2FA).
+2. **As materials arrive:** enter them (events 2025–26, news, issues, book metadata, About/leadership, legal texts), re-run `npm run quality`, and track the data gates G2/G3 in the [roadmap](ROADMAP.md).
+3. **Owner decisions unblock engineering:** PDF hosting (G4, LEG-001), host and domain (G8/G9, runbook), Cloudflare cache rule + purge token (PERF-T4 — the likely real-world speed-up), admin 2FA (SEC-004), deploy user (SEC-005), off-server backups (SEC-007).
+4. **Before launch:** manual keyboard and screen-reader pass (G6); restore and rollback rehearsal on the new host (G8); `cutover-check` on the final host (G5/G9).
+5. **After launch:** Search Console, field Core Web Vitals (the only valid LCP judge), `npm run quality` weekly for missing pages and zero-result searches.
 
 ## Blocked on the owner
 
-Cloudflare cache rule and purge token; translation provider credentials; confirmation of the About page and leadership; production domain cutover plan and Search Console; off-server backup destination.
+Cloudflare cache rule and purge token; translation provider credentials; the Center's approval of About/leadership/legal texts and its materials; domain and hosting decision; off-server backup destination; mail provider for the newsletter.
