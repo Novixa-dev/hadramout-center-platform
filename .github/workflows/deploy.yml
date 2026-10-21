@@ -109,7 +109,7 @@ jobs:
 
       - name: Build app image
         if: ${{ github.event.inputs.tag == '' }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: runner
@@ -120,7 +120,7 @@ jobs:
 
       - name: Build tools image
         if: ${{ github.event.inputs.tag == '' && env.WITH_TOOLS == 'true' }}
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           target: tools
