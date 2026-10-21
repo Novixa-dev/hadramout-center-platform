@@ -43,7 +43,7 @@
     "mukalla"
   ],
   "dependencies": {
-    "@anthropic-ai/sdk": "0.134.0",
+    "@anthropic-ai/sdk": "0.135.0",
     "@payloadcms/db-sqlite": "3.91.0",
     "@payloadcms/next": "3.91.0",
     "@payloadcms/richtext-lexical": "3.91.0",
