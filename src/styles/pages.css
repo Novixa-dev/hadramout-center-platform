@@ -158,7 +158,7 @@
   .pager strong { font-family: var(--font-display); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .pager__next { text-align: end; }
   .book-hero { display: grid; gap: var(--space-6) var(--space-8); grid-template-columns: minmax(0, 17rem) 1fr; align-items: start; }
-  @media (max-width: 760px) { .book-hero { grid-template-columns: 1fr; justify-items: center; text-align: start; } .book-hero > .article-header { justify-self: stretch; } }
+  @media (max-width: 760px) { .book-hero { grid-template-columns: 1fr; justify-items: center; text-align: start; } .book-hero__cover { inline-size: min(14rem, 62%); } .book-hero > .article-header { justify-self: stretch; } }
   .book-hero__cover { position: relative; inline-size: min(17rem, 72%); aspect-ratio: 2 / 3; border-radius: var(--r-sm) var(--r-md) var(--r-md) var(--r-sm); overflow: hidden; box-shadow: 0 1px 0 rgb(0 0 0 / 0.05), 0 26px 40px -18px rgb(40 30 10 / 0.55); background: var(--surface-3); }
   :dir(rtl) .book-hero__cover { border-radius: var(--r-md) var(--r-sm) var(--r-sm) var(--r-md); }
   .video-facade { position: relative; aspect-ratio: 16 / 9; border-radius: var(--r-lg); overflow: hidden; background: #000; }

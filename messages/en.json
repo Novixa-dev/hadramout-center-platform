@@ -140,6 +140,8 @@
   "book.download": "Download book (PDF)",
   "book.request": "Request a copy",
   "book.noYear": "n.d.",
+  "book.yearUnknown": "Publication year not stated",
+  "book.whatsapp": "Request via WhatsApp",
   "event.addCalendar": "Add to calendar",
   "event.join": "Join link",
   "video.play": "Play video",

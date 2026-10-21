@@ -37,7 +37,7 @@ export interface MetaInput {
   /** explicit absolute image URL (overrides the generated card) */
   image?: string | null;
   imageAlt?: string;
-  type?: 'website' | 'article' | 'book';
+  type?: 'website' | 'article' | 'book' | 'video';
   /** languages in which this exact page is complete (for hreflang). Defaults to the UI-ready set. */
   readyLangs?: string[];
   /** true when the visitor's language is only partially available on this page → noindex */
@@ -54,6 +54,8 @@ export interface MetaInput {
   section?: string | null;
   tags?: string[];
   isbn?: string | null;
+  /** embeddable player URL (type 'video') */
+  videoUrl?: string | null;
   extra?: Metadata['other'];
 }
 
@@ -111,7 +113,9 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
         ? { ...og, type: 'article', publishedTime: isoOrUndefined(m.publishedTime), modifiedTime: isoOrUndefined(m.modifiedTime), authors: m.authors?.map((a) => a.url), section: m.section ?? undefined, tags: m.tags }
         : ogType === 'book'
           ? { ...og, type: 'book', authors: m.authors?.map((a) => a.url), isbn: m.isbn ?? undefined, releaseDate: isoOrUndefined(m.publishedTime), tags: m.tags }
-          : { ...og, type: 'website' },
+          : ogType === 'video' && m.videoUrl
+            ? { ...og, type: 'video.other', videos: [{ url: m.videoUrl, secureUrl: m.videoUrl, type: 'text/html', width: 1280, height: 720 }] }
+            : { ...og, type: 'website' },
     twitter: { card: 'summary_large_image', title: og.title, description: description || undefined, images: [{ url: image, alt: imageAlt }], ...(handle ? { site: handle } : {}) },
     other: m.extra,
   };

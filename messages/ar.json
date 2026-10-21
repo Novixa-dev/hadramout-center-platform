@@ -141,6 +141,8 @@
   "book.download": "تحميل الكتاب (PDF)",
   "book.request": "اطلب نسخة",
   "book.noYear": "د.ت.",
+  "book.yearUnknown": "سنة النشر غير محدّدة",
+  "book.whatsapp": "اطلب عبر واتساب",
   "event.addCalendar": "أضف إلى التقويم",
   "event.join": "رابط الحضور",
   "video.play": "تشغيل الفيديو",
