@@ -104,7 +104,7 @@ jobs:
             "docker image inspect ${IMAGE}-tools:latest >/dev/null 2>&1 && echo yes || echo no")
           if [ "$have" = "no" ] || [ "${{ github.event.inputs.with_tools }}" = "true" ]; then echo "WITH_TOOLS=true" >> "$GITHUB_ENV"; else echo "WITH_TOOLS=false" >> "$GITHUB_ENV"; fi
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
         if: ${{ github.event.inputs.tag == '' }}
 
       - name: Build app image
