@@ -1,6 +1,7 @@
 import { authorsOf, coverOf, displayDate, makeCtx, isLocale } from './ctx.ts';
 import { typeFromRoute } from './content-types.ts';
-import { getDoc, getSite } from './data.ts';
+import { getAuthor, getDoc, getSite } from './data.ts';
+import { queryArchive } from './facets.ts';
 import { getPayloadClient } from './runtime.ts';
 import { loadConfig } from '../config.ts';
 import { drawable, loadCoverBytes, type OgInput } from './og.ts';
@@ -11,6 +12,7 @@ const isArabicText = (s: string) => /\p{Script=Arabic}/u.test(s);
 /** Card for one document of the archive; null when it does not exist or is not published. */
 export async function docCard(lang: string, kind: string, id: number): Promise<{ input: OgInput; version: string } | null> {
   if (kind === 'pages') return staticPageCard(lang, id);
+  if (kind === 'authors') return authorCard(lang, id);
   const info = typeFromRoute(kind);
   if (!info || !isLocale(lang)) return null;
   let useLang = lang;
@@ -49,6 +51,27 @@ export async function docCard(lang: string, kind: string, id: number): Promise<{
       cover,
       host: host(),
     },
+  };
+}
+
+/** Card for an author page: the name and how much of their work the archive holds; null for authors without published work (they have no page). */
+async function authorCard(lang: string, id: number): Promise<{ input: OgInput; version: string } | null> {
+  if (!isLocale(lang)) return null;
+  let useLang = lang;
+  let author = await getAuthor(id, lang);
+  if (author && !drawable(author.name)) {
+    author = await getAuthor(id, 'ar');
+    useLang = 'ar';
+  }
+  if (!author) return null;
+  const [articles, books] = await Promise.all([queryArchive({ type: 'article', lang: useLang, author: id, limit: 1 }), queryArchive({ type: 'book', lang: useLang, author: id, limit: 1 })]);
+  const works = articles.total + books.total;
+  if (works === 0) return null;
+  const ctx = makeCtx(useLang);
+  const site = await getSite(useLang);
+  return {
+    version: `a${articles.total}-${books.total}`,
+    input: { dir: isArabicText(author.name) ? 'rtl' : ctx.lang.dir, org: drawable(site.name) ? site.name : (await getSite('ar')).name, kicker: ctx.t('og.author'), title: author.name, meta: ctx.t('authors.works', { count: works }), host: host() },
   };
 }
 
