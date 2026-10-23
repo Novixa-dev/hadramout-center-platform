@@ -1,4 +1,4 @@
-/** Decorative skyline of mud-brick towers (Shibam-style). Deterministic so server and client render identically. */
+/** Decorative skyline of mud-brick towers (Shibam-style), as solid silhouettes. Deterministic so server and client render identically. */
 const TOWERS = [
   [0, 46, 30], [32, 70, 26], [60, 54, 34], [96, 86, 28], [126, 62, 24], [152, 94, 30], [184, 58, 26], [212, 78, 32], [246, 50, 28], [276, 90, 26],
   [304, 66, 34], [340, 100, 28], [370, 72, 24], [396, 56, 32], [430, 88, 28], [460, 64, 26], [488, 96, 34], [524, 60, 24], [550, 82, 30], [582, 52, 28],
@@ -10,14 +10,11 @@ export function Skyline({ className }: { className?: string }) {
   const H = 110;
   const d = TOWERS.map(([x, h, w]) => {
     const y = H - h;
-    const windows: string[] = [];
-    for (let row = 0; row < Math.floor((h - 14) / 16); row++) {
-      for (const cx of [w * 0.3, w * 0.7]) windows.push(`M${x + cx - 2} ${y + 12 + row * 16}h4v7h-4z`);
-    }
-    return `M${x} ${H}V${y + 4}h${w}V${H}z ${windows.join('')}`;
+    // Solid towers only: the svg is stretched to a 2-4rem band, which squashed the small window cut-outs into dark smudges.
+    return `M${x} ${H}V${y + 4}h${w}V${H}z`;
   }).join(' ');
   return (
-    <svg className={className} viewBox={`0 0 1200 ${H}`} preserveAspectRatio="none" fill="currentColor" fillRule="evenodd" aria-hidden="true" focusable="false">
+    <svg className={className} viewBox={`0 0 1200 ${H}`} preserveAspectRatio="none" fill="currentColor" aria-hidden="true" focusable="false">
       <path d={d} />
     </svg>
   );

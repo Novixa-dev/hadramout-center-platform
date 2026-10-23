@@ -34,7 +34,7 @@ export default async function ContactPage({ params, searchParams }: Props) {
   return (
     <>
       <PageHead ctx={ctx} crumbs={[{ name: t('contact.title') }]} title={t('contact.title')} lead={t('contact.lead')} />
-      <div className="container section grid grid--wide" style={{ paddingBlockStart: 'var(--space-6)', alignItems: 'start', '--min': '20rem' } as React.CSSProperties}>
+      <div className="container section contact-grid">
         <div className="box stack" style={{ '--stack': '1.1rem' } as React.CSSProperties}>
           {site.address ? <p style={{ display: 'flex', gap: '0.6rem' }}><Icon name="pin" /><span><strong>{t('contact.address')}</strong><br />{site.address}</span></p> : null}
           {site.email ? <p style={{ display: 'flex', gap: '0.6rem' }}><Icon name="mail" /><span><strong>{t('contact.email')}</strong><br /><a href={`mailto:${site.email}`} style={{ direction: 'ltr', unicodeBidi: 'plaintext' }}>{site.email}</a></span></p> : null}

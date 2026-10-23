@@ -131,7 +131,7 @@ export default async function DetailPage({ params }: Props) {
   const date = displayDate(doc, locale);
   const bodyHtml = doc.body ?? '';
   const { html: prose, toc } = withHeadingIds(localizeLegacyMedia(bodyHtml));
-  const minutes = bodyHtml ? readingMinutes(htmlToText(bodyHtml), locale) : 0;
+  const minutes = bodyHtml && (type === 'article' || type === 'news') ? readingMinutes(htmlToText(bodyHtml), locale) : 0;
   const category = typeof doc.category === 'object' && doc.category ? doc.category : null;
   const magazine = typeof doc.magazine === 'object' && doc.magazine ? doc.magazine : null;
   const pdf = typeof doc.pdf === 'string' && doc.pdf ? doc.pdf : null;
@@ -315,7 +315,7 @@ export default async function DetailPage({ params }: Props) {
       <div className="container">
         <div style={{ paddingBlockStart: 'var(--space-5)' }}><Breadcrumbs ctx={ctx} items={crumbs} /></div>
 
-        <div className={`article-layout ${showToc ? 'article-layout--toc' : ''}`}>
+        <div className={`article-layout ${showToc ? 'article-layout--toc' : reading ? 'article-layout--read' : ''}`}>
           {showToc ? (
             <aside className="toc-box no-print" aria-label={t('article.contents')}>
               <h2>{t('article.contents')}</h2>

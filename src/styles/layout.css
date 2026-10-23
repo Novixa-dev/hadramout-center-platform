@@ -43,6 +43,7 @@
     .header-tools .theme-desktop { display: inline-grid; }
     .menu-toggle { display: none; }
   }
+  @media (max-width: 430px) { .brand__name { font-size: var(--step-0); } .brand { gap: 0.5rem; } } /* the longer English name pushed the page 2px wider than a 390px phone */
   @media (max-width: 560px) { .brand__sub { display: none; } .site-header__bar { gap: 0.25rem; } .header-tools { gap: 0.1rem; } .header-tools .icon-btn { inline-size: 2.5rem; block-size: 2.5rem; } }
 
   /* search panel under the header (typeahead) */
