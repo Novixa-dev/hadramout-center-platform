@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-20 · **State (2026-10-21):** PRs #12–#20 are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
+**Last updated:** 2026-10-21 · **Next:** [NEXT_PLAN](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
