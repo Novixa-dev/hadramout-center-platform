@@ -4,6 +4,7 @@
  *
  *   node scripts/seo-audit.mjs https://hadramout-center.novixa.dev            # sample of every template
  *   node scripts/seo-audit.mjs http://localhost:3000 --lang en --json out.json
+ *   node scripts/seo-audit.mjs https://staging.example --expect staging   # staging has no Sitemap line on purpose
  *
  * Checks per page: status, <html lang/dir>, title, description, canonical (same host + self), robots meta,
  * Open Graph + Twitter tags (incl. image reachability), hreflang reciprocity, JSON-LD parse + types, one <h1>,
@@ -20,6 +21,7 @@ const flag = (name, fallback) => {
   return i >= 0 ? args[i + 1] : fallback;
 };
 const lang = flag('lang', 'ar');
+const staging = flag('expect', 'production') === 'staging'; // staging deliberately advertises no sitemap
 const jsonOut = flag('json');
 const origin = new URL(base).origin;
 
@@ -167,7 +169,7 @@ async function auditRobotsAndSitemap() {
   const txt = r?.ok ? await r.text() : '';
   if (!txt) return add('/robots.txt', 'error', `unreachable (${r?.status})`);
   const sm = txt.match(/^Sitemap:\s*(\S+)/im)?.[1];
-  if (!sm) add('/robots.txt', 'error', 'no Sitemap line');
+  if (!sm && staging) { /* expected: noindex preview */ } else if (!sm) add('/robots.txt', 'error', 'no Sitemap line');
   else if (new URL(sm).origin !== origin) add('/robots.txt', 'error', `Sitemap points to ${sm} (expected ${origin})`);
   if (/^Host:/im.test(txt)) {
     const host = txt.match(/^Host:\s*(\S+)/im)?.[1];
