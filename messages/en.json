@@ -140,6 +140,8 @@
   "magazine.contents": "Contents of the issue",
   "book.download": "Download book (PDF)",
   "book.request": "Request a copy",
+  "book.about": "About this book",
+  "magazine.about": "About this issue",
   "book.noYear": "n.d.",
   "book.yearUnknown": "Publication year not stated",
   "book.whatsapp": "Request via WhatsApp",

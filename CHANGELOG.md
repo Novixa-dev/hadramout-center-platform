@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.9.0] - 2026-10-24
+### Books list view, "About" sections, light-theme review, footer and 404 polish
+- **Books:** a list view (rows with cover, author, year, PDF badge and the first lines of the description) next to the grid; book and issue pages get an "About this book / issue" section heading.
+- **Light theme:** every page type reviewed at 390 and 1440 px; no changes needed.
+- **Footer:** the two WhatsApp numbers show their city so they are told apart; the 404 page's English line is quieter.
+
 ## [5.8.0] - 2026-10-24
 ### Search and filters in every section, modern sidebar, loading states, UI review fixes
 - **Search inside every section:** a prominent search bar above the results of news, articles, books, issues, events, forum and videos (issues and videos had no search at all). Enter or the button applies it, a chip and a clear button show it, `/` and the global search are unchanged.

@@ -129,8 +129,9 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
                 </a>
               ))}
               {whatsapp.map((w) => (
-                <a key={w.number} href={`https://wa.me/${w.number.replace(/[^0-9]/g, '').replace(/^0+/, '')}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${w.label ?? ''} ${w.number} (${t('a11y.newWindow')})`} title={`WhatsApp ${w.label ?? ''} ${w.number}`}>
+                <a key={w.number} className="social__wa" href={`https://wa.me/${w.number.replace(/[^0-9]/g, '').replace(/^0+/, '')}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${w.label ?? ''} ${w.number} (${t('a11y.newWindow')})`} title={`WhatsApp ${w.label ?? ''} ${w.number}`}>
                   <SocialIcon name="whatsapp" />
+                  {w.label ? <span aria-hidden="true">{w.label}</span> : null}
                 </a>
               ))}
             </div>

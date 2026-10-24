@@ -127,6 +127,31 @@ export function BookCard({ ctx, doc, eager = false }: CardProps) {
   );
 }
 
+/** Row form of a book (list view): small cover, title, authors, year, PDF badge and the first lines of its description. */
+export function BookRow({ ctx, doc, eager = false }: CardProps) {
+  const { lang, t } = ctx;
+  const tr = trInfo(doc, lang.code);
+  const authors = authorsOf(doc);
+  const year = doc.year ? String(doc.year) : t('book.yearUnknown');
+  const pdf = typeof doc.pdf === 'string' && doc.pdf;
+  const excerpt = stripReferenceLine(doc.excerpt);
+  return (
+    <article className="book-row">
+      <div className="book__cover">
+        <Cover doc={doc} sizes="96px" priority={eager} fallbackLabel={doc.title} decorative />
+      </div>
+      <div className="book-row__body">
+        <h3 className="book__title" {...textAttrs(tr.titleLang, lang.code)}>
+          <Link href={docHref(ctx, 'book', doc.id)}>{doc.title}</Link>
+        </h3>
+        {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => a.name).join('، ')}</p> : null}
+        {excerpt ? <p className="book-row__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{excerpt}</p> : null}
+        <p className="book__meta"><span>{year}</span>{pdf ? <span className="badge"><Icon name="file" />PDF</span> : null}</p>
+      </div>
+    </article>
+  );
+}
+
 export function IssueCard({ ctx, doc, eager = false }: CardProps) {
   const { lang, t } = ctx;
   const date = displayDate(doc, lang.code) || (doc.season as string | undefined) || '';

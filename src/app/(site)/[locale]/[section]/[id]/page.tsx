@@ -290,9 +290,14 @@ export default async function DetailPage({ params }: Props) {
     </section>
   ) : null;
 
-  const proseBlock = prose ? (
+  const proseBlock = prose ? (type === 'book' || type === 'magazine' ? (
+    <section aria-labelledby="about-h" style={{ marginBlockStart: 'var(--space-2)' }}>
+      <SectionHead title={t(type === 'book' ? 'book.about' : 'magazine.about')} id="about-h" as="h2" />
+      <div id="article-body" className="prose" lang={tr.bodyLang === 'ar' ? 'ar' : locale} dir={tr.bodyLang === 'ar' ? 'rtl' : ctx.lang.dir} dangerouslySetInnerHTML={{ __html: prose }} />
+    </section>
+  ) : (
     <div id="article-body" className="prose" lang={tr.bodyLang === 'ar' ? 'ar' : locale} dir={tr.bodyLang === 'ar' ? 'rtl' : ctx.lang.dir} dangerouslySetInnerHTML={{ __html: prose }} />
-  ) : null;
+  )) : null;
 
   return (
     <>

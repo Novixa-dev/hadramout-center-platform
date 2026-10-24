@@ -8,7 +8,7 @@ import { queryArchive } from '../lib/facets.ts';
 import type { TopicNode } from '../lib/facet-core.ts';
 import { FACETS, VIEWS, activeFilters, effectiveSort, parseListQuery, perPage, queryParams, sidebarFacets, toSearch, type FacetName, type ListQuery, type View } from '../lib/list-query.ts';
 import { breadcrumbJsonLd, collectionJsonLd, jsonLdString } from '../lib/jsonld.ts';
-import { BookCard, EventRow, EntryList, IssueCard, Tile, VideoTile } from './Cards.tsx';
+import { BookCard, BookRow, EventRow, EntryList, IssueCard, Tile, VideoTile } from './Cards.tsx';
 import { Pagination } from './Pagination.tsx';
 import { Icon } from './Icon.tsx';
 import { FacetFind, FilterBehavior, FiltersClose, FiltersToggle } from './client/FilterControls.tsx';
@@ -283,6 +283,8 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
             <EntryList ctx={ctx} docs={items} type="article" compact={q.view === 'compact'} />
           ) : type === 'event' || type === 'forum' ? (
             <div className="event-list">{items.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type={type} />)}</div>
+          ) : type === 'book' && q.view === 'list' ? (
+            <div className="stack-list book-rows" style={{ marginBlockStart: '1rem' }}>{items.map((d, i) => <BookRow key={d.id} ctx={ctx} doc={d} eager={i < 3 && q.page === 1} />)}</div>
           ) : type === 'news' && q.view === 'list' ? (
             <div className="stack-list" style={{ marginBlockStart: '1rem' }}>{items.map((d, i) => <Tile key={d.id} ctx={ctx} doc={d} type="news" row eager={i < 2 && q.page === 1} />)}</div>
           ) : (

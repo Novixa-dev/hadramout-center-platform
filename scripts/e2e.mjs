@@ -249,6 +249,11 @@ await journey('section search, sort and filters', async (page) => {
   await go(page, '/ar/books');
   await Promise.all([page.waitForFunction(() => location.search.includes('sort=title'), { timeout: 20000 }), page.select('#sort', 'title')]);
   check(new URL(page.url()).searchParams.get('sort') === 'title', 'choosing a sort applies immediately');
+  // the books list view and the details page structure
+  await go(page, '/ar/books?view=list');
+  check((await page.$$('.book-row')).length >= 10, 'books can be shown as a list of rows');
+  await go(page, '/ar/books/37');
+  check(Boolean(await page.$('#about-h')), 'a book page has an "About this book" section');
   // find-in-facet: only options containing the typed text stay visible, the form is not submitted
   await go(page, '/ar/articles');
   const urlBefore = page.url();

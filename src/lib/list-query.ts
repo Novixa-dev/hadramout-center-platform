@@ -26,7 +26,7 @@ export const sidebarFacets = (facets: readonly FacetName[]): FacetName[] => face
 export const VIEWS: Record<ContentType, readonly View[]> = {
   news: ['grid', 'list'],
   article: ['list', 'compact'],
-  book: ['grid'],
+  book: ['grid', 'list'],
   magazine: ['grid'],
   event: ['list'],
   forum: ['list'],
