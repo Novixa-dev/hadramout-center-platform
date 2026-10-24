@@ -60,9 +60,9 @@ Every item has an acceptance test; none needs the Center.
 
 ## 3c. Next up (in order)
 
-1. Light theme review page by page; mixed Arabic/English 404; distinct WhatsApp icons in the footer.
+1. ~~Light theme review; 404; WhatsApp labels~~ — done 2026-10-24 (light theme needed no change).
 2. `buildMetadata` unit tests per type; JSON-LD gaps (RES-004/005).
-3. Book list view (rows with cover, author, year, PDF) and "About this book" heading on details pages.
+3. ~~Book list view and "About this book" heading~~ — done 2026-10-24.
 4. Bidi/tatweel cleanup (hook + migration), redirect matrix test.
 5. Typeahead inside the section search; saved searches.
 
