@@ -114,7 +114,9 @@
     position: relative;
     background-color: #f7f3ec;
     overflow: hidden;
-    min-block-size: clamp(480px, 50vw, 560px);
+    margin-block-start: -4.5rem;
+    padding-block-start: 4.5rem;
+    min-block-size: clamp(520px, 52vw, 620px);
     display: flex;
     flex-direction: column;
     justify-content: center;

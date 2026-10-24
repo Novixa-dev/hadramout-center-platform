@@ -12,7 +12,16 @@
   .grid--2 { --min: 26rem; }
 
   /* ── header ─────────────────────────────────────────────────────────────────────────────────── */
-  .site-header { position: sticky; inset-block-start: 0; z-index: var(--z-header); background: rgba(247, 243, 236, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-block-end: 1px solid rgba(0, 0, 0, 0.06); }
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    background: linear-gradient(to left, #f7f3ec 0% 36%, #f7f3ecc4 48%, #f7f3ec40 60%, #f7f3ec00 76%, #00000000 100%);
+    border-block-end: none;
+  }
+  [dir="ltr"] .site-header {
+    background: linear-gradient(to right, #f7f3ec 0% 36%, #f7f3ecc4 48%, #f7f3ec40 60%, #f7f3ec00 76%, #00000000 100%);
+  }
   .site-header__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-block-size: 4.5rem; }
   .brand { display: inline-flex; align-items: center; gap: 0.7rem; text-decoration: none; color: var(--text); min-inline-size: 0; flex: none; }
   .brand:hover { color: var(--text); }
