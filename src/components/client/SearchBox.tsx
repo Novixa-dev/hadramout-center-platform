@@ -45,7 +45,7 @@ const saveRecent = (q: string) => {
  * Search field with typeahead (WAI-ARIA combobox). Works as a plain GET form without JavaScript;
  * with it, suggestions come from /api/hc/suggest and recent searches are offered on focus.
  */
-export function SearchBox({ action, lang, labels, size = 'md', autoFocus = false, defaultValue = '', hiddenFields, onNavigate }: { action: string; lang: string; labels: SearchLabels; size?: 'md' | 'lg'; autoFocus?: boolean; defaultValue?: string; hiddenFields?: Record<string, string>; onNavigate?: () => void }) {
+export function SearchBox({ action, lang, labels, size = 'md', variant = 'default', autoFocus = false, defaultValue = '', hiddenFields, onNavigate }: { action: string; lang: string; labels: SearchLabels; size?: 'md' | 'lg'; variant?: 'default' | 'hero'; autoFocus?: boolean; defaultValue?: string; hiddenFields?: Record<string, string>; onNavigate?: () => void }) {
   const router = useRouter();
   const uid = useId();
   const listId = `${uid}-list`;
@@ -135,7 +135,7 @@ export function SearchBox({ action, lang, labels, size = 'md', autoFocus = false
   };
 
   return (
-    <div className={`sbox sbox--${size}`} ref={wrap}>
+    <div className={`sbox sbox--${size} ${variant === 'hero' ? 'sbox--hero' : ''}`} ref={wrap}>
       <form
         className="sbox__row"
         role="search"
@@ -150,7 +150,7 @@ export function SearchBox({ action, lang, labels, size = 'md', autoFocus = false
         }}
       >
         <div className="sbox__field">
-          <Icon name="search" className="icon sbox__icon" />
+          <Icon name={variant === 'hero' ? 'sliders' : 'search'} className="icon sbox__icon" />
           <label className="sr-only" htmlFor={`${uid}-q`}>{labels.label}</label>
           <input
             ref={input}
@@ -179,7 +179,14 @@ export function SearchBox({ action, lang, labels, size = 'md', autoFocus = false
           />
         </div>
         {hiddenFields ? Object.entries(hiddenFields).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />) : null}
-        <button className="btn btn--gold" type="submit">{labels.submit}</button>
+        {variant === 'hero' ? (
+          <button className="sbox__hero-btn" type="submit">
+            <Icon name="search" className="sbox__hero-btn-icon" />
+            <span>{labels.submit}</span>
+          </button>
+        ) : (
+          <button className="btn btn--gold" type="submit">{labels.submit}</button>
+        )}
       </form>
       {options.length > 0 || (open && term.length >= 2 && (busy || done)) ? (
         <div className="sbox__panel">

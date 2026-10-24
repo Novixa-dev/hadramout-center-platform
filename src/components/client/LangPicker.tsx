@@ -10,6 +10,7 @@ interface Props {
   currentNative: string;
   options: LangOption[];
   labels: { pick: string; title: string; search: string; popular: string; all: string; note: string; close: string; none: string; machine: string };
+  badge?: boolean;
 }
 
 /** Switch the URL's language prefix, keeping the rest of the path and the query string. */
@@ -28,7 +29,7 @@ const hue = (code: string) => {
   return h;
 };
 
-export function LangPicker({ current, currentNative, options, labels }: Props) {
+export function LangPicker({ current, currentNative, options, labels, badge = false }: Props) {
   const pathname = usePathname();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -110,7 +111,7 @@ export function LangPicker({ current, currentNative, options, labels }: Props) {
   };
 
   return (
-    <div className="lang" onKeyDown={onKeyDown}>
+    <div className={`lang ${badge ? 'lang--badge' : ''}`} onKeyDown={onKeyDown}>
       <button
         ref={triggerRef}
         type="button"
@@ -122,8 +123,14 @@ export function LangPicker({ current, currentNative, options, labels }: Props) {
         aria-label={`${labels.title}: ${currentNative}`}
       >
         <Icon name="globe" />
-        <span className="lang-trigger__text" lang={current}>{currentNative}</span>
-        <Icon name="down" className="icon lang-trigger__chev" />
+        {badge ? (
+          <span className="lang-trigger__badge">| {current === 'ar' ? 'EN' : 'AR'}</span>
+        ) : (
+          <>
+            <span className="lang-trigger__text" lang={current}>{currentNative}</span>
+            <Icon name="down" className="icon lang-trigger__chev" />
+          </>
+        )}
       </button>
 
       {open && mounted

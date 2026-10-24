@@ -3,6 +3,7 @@ import type { Ctx } from '../lib/ctx.ts';
 import { LANGUAGES, POPULAR_CODES } from '../i18n/languages.ts';
 import { clip } from '../lib/seo-text.ts';
 import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
+import { Skyline } from './Skyline.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
@@ -31,6 +32,15 @@ const SECONDARY = [
   { key: 'nav.timeline', path: '/timeline' },
   { key: 'nav.about', path: '/about' },
   { key: 'nav.contact', path: '/contact' },
+] as const;
+
+export const HEADER_NAV = [
+  { key: 'nav.home', path: '/' },
+  { key: 'nav.archive', path: '/search' },
+  { key: 'nav.magazinesScientific', path: '/magazines' },
+  { key: 'nav.studiesAndBooks', path: '/books' },
+  { key: 'nav.aboutProject', path: '/about' },
+  { key: 'nav.contactUs', path: '/contact' },
 ] as const;
 
 export const NAV = [...PRIMARY, ...SECONDARY] as const;
@@ -71,24 +81,33 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
   return (
     <header className="site-header">
       <div className="container site-header__bar">
-        <Link className="brand" href={href('/')}>
-          <img className="brand__mark" src="/brand/logo-icon.svg" alt="" width={32} height={57} />
-          <span className="brand__text">
-            <span className="brand__name">{site.shortName || site.name}</span>
-            <span className="brand__sub">{t('header.sub')}</span>
-          </span>
+        <Link className="brand" href={href('/')} aria-label={site.name}>
+          <img className="brand__logo-img" src="/brand/logo.svg" alt="منارة حضرموت" width={160} height={37} />
         </Link>
-        <nav className="nav" aria-label={t('nav.main')}>
-          <PriorityNav items={PRIMARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} more={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} moreLabel={t('nav.more')} />
+        <nav className="nav header-nav" aria-label={t('nav.main')}>
+          <PriorityNav
+            items={HEADER_NAV.map((n) => ({ href: href(n.path), label: t(n.key) }))}
+            more={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))}
+            moreLabel={t('nav.more')}
+          />
         </nav>
         <div className="header-tools">
+          <Link href={href('/contact')} className="header-btn header-btn--outline">
+            {t('header.register')}
+          </Link>
+          <Link href={href('/admin')} className="header-btn header-btn--solid">
+            {t('header.login')}
+          </Link>
+          <Link href={href('/admin')} className="header-icon-btn" aria-label={t('header.login')} title={t('header.login')}>
+            <Icon name="user" />
+          </Link>
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
-          <LangPicker current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
+          <LangPicker badge current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
           <span className="theme-desktop"><ThemeToggle label={t('theme.toggle')} /></span>
           <MobileMenu
             label={t('nav.menu')}
             closeLabel={t('nav.close')}
-            items={[{ href: href('/'), label: t('nav.home') }, ...NAV.map((n) => ({ href: href(n.path), label: t(n.key) })), { href: href('/saved'), label: t('saved.title') }]}
+            items={[{ href: href('/'), label: t('nav.home') }, ...NAV.map((n) => ({ href: href(n.path), label: t(n.key) })), { href: href('/admin'), label: t('header.login') }, { href: href('/saved'), label: t('saved.title') }]}
             footer={<ThemeToggle label={t('theme.toggle')} />}
           />
         </div>
@@ -110,6 +129,7 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
   const whatsapp = (site.whatsapp ?? []).filter((w) => w.number);
   return (
     <footer className="site-footer pattern">
+      <Skyline className="site-footer__skyline" />
       <div className="container">
         <div className="footer-news">
           <div>

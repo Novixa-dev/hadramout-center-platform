@@ -1,17 +1,16 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { absolute, isLocale, makeCtx, docHref } from '../../../lib/ctx.ts';
+import { absolute, isLocale, makeCtx } from '../../../lib/ctx.ts';
 import { getSite, listTimeline } from '../../../lib/data.ts';
 import { getTopics, latest, rowCount, topAuthors } from '../../../lib/facets.ts';
 import { buildMetadata } from '../../../lib/seo.ts';
 import { describe } from '../../../lib/seo-text.ts';
 import { jsonLdString, siteJsonLd } from '../../../lib/jsonld.ts';
 import { isSocialName } from '../../../components/Icon.tsx';
-import { BookCard, Cover, EntryList, EventRow, IssueCard, SectionHead, Tile, VideoTile } from '../../../components/Cards.tsx';
+import { BookCard, EntryList, EventRow, IssueCard, SectionHead, Tile, VideoTile } from '../../../components/Cards.tsx';
 import { searchLabels } from '../../../components/Shell.tsx';
 import { SearchBox } from '../../../components/client/SearchBox.tsx';
-import { Skyline } from '../../../components/Skyline.tsx';
 import { Icon } from '../../../components/Icon.tsx';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -46,7 +45,6 @@ export default async function Home({ params }: Props) {
     listTimeline(locale),
   ]);
   const [nArticles, nBooks, nIssues, nEvents, nForum, nNews] = counts;
-  const issue = issues[0];
   const events = upcoming.length ? upcoming : recentEvents;
   const roots = topics.roots.filter((r) => r.total > 0 && r.children.length > 0).slice(0, 8);
   const fmt = new Intl.NumberFormat('en');
@@ -64,31 +62,77 @@ export default async function Home({ params }: Props) {
 
   return (
     <>
-      <section className="hero pattern" aria-labelledby="hero-h">
-        <div className="container hero__grid">
-          <div className="hero__inner">
-            <p className="eyebrow">{t('home.hero.eyebrow')}</p>
-            <h1 id="hero-h">{t('home.hero.title')}</h1>
-            <p className="hero__lead">{t('home.hero.lead')}</p>
-            <SearchBox action={href('/search')} lang={lang.code} labels={searchLabels(ctx)} size="lg" />
-            <nav className="hero__chips" aria-label={t('home.quick.title')}>
-              {([['/articles', 'nav.articles'], ['/books', 'nav.books'], ['/magazines', 'nav.magazines'], ['/topics', 'nav.topics'], ['/timeline', 'nav.timeline']] as const).map(([path, key]) => (
-                <Link key={path} className="chip chip--glass" href={href(path)}>{t(key)}</Link>
-              ))}
-            </nav>
-          </div>
-          {issue ? (
-            <Link className="hero__feature" href={docHref(ctx, 'magazine', issue.id)}>
-              <span className="hero__feature-cover"><Cover doc={issue} sizes="104px" priority decorative /></span>
-              <span className="hero__feature-text">
-                <span className="eyebrow">{t('home.latestIssue')}</span>
-                <strong>{t('meta.issue', { n: Number(issue.issueNumber ?? 0) })}</strong>
-                <span className="hero__feature-cta">{t('home.readIssue')} <Icon name="arrow" /></span>
-              </span>
-            </Link>
-          ) : null}
+      <section className="hero-custom" aria-labelledby="hero-h">
+        <div className="hero-custom__bg" aria-hidden="true">
+          <div className="hero-custom__overlay" />
+          <div className="hero-custom__mandala" />
         </div>
-        <Skyline className="hero__skyline" />
+        <div className="container hero-custom__container">
+          <div className="hero-custom__content">
+            <p className="hero-custom__kicker">
+              <span className="hero-custom__flourish" aria-hidden="true">❖</span>
+              {t('home.hero.kicker')}
+              <span className="hero-custom__flourish" aria-hidden="true">❖</span>
+            </p>
+            <h1 id="hero-h" className="hero-custom__title">
+              <span className="hero-custom__title-1">{t('home.hero.titlePart1')}</span>
+              <span className="hero-custom__title-2">{t('home.hero.titlePart2')}</span>
+            </h1>
+            <p className="hero-custom__lead">
+              {t('home.hero.leadCustom')}
+            </p>
+
+            <div className="hero-custom__search">
+              <SearchBox
+                action={href('/search')}
+                lang={lang.code}
+                variant="hero"
+                labels={{
+                  ...searchLabels(ctx),
+                  placeholder: t('home.hero.searchPlaceholder'),
+                  submit: t('home.search.submit'),
+                }}
+                size="lg"
+              />
+            </div>
+
+            <div className="hero-custom__stats" aria-label={t('footer.explore')}>
+              <Link href={href('/search')} className="hero-custom__stat">
+                <div className="hero-custom__stat-head">
+                  <span className="hero-custom__stat-num">{t('home.hero.stat1.val')}</span>
+                  <Icon name="manuscript" className="hero-custom__stat-icon" />
+                </div>
+                <span className="hero-custom__stat-label">{t('home.hero.stat1.label')}</span>
+              </Link>
+
+              <div className="hero-custom__stat-divider" aria-hidden="true" />
+
+              <Link href={href('/authors')} className="hero-custom__stat">
+                <div className="hero-custom__stat-head">
+                  <span className="hero-custom__stat-num">{t('home.hero.stat2.val')}</span>
+                  <Icon name="users" className="hero-custom__stat-icon" />
+                </div>
+                <span className="hero-custom__stat-label">{t('home.hero.stat2.label')}</span>
+              </Link>
+
+              <div className="hero-custom__stat-divider" aria-hidden="true" />
+
+              <Link href={href('/magazines')} className="hero-custom__stat">
+                <div className="hero-custom__stat-head">
+                  <span className="hero-custom__stat-num">{t('home.hero.stat3.val')}</span>
+                  <Icon name="layers" className="hero-custom__stat-icon" />
+                </div>
+                <span className="hero-custom__stat-label">{t('home.hero.stat3.label')}</span>
+              </Link>
+            </div>
+
+            <div className="hero-custom__divider" aria-hidden="true">
+              <span className="hero-custom__divider-line" />
+              <Icon name="rosette" className="hero-custom__divider-rosette" />
+              <span className="hero-custom__divider-line" />
+            </div>
+          </div>
+        </div>
       </section>
 
       <div className="strip">
