@@ -33,13 +33,13 @@ Every item has an acceptance test; none needs the Center.
 
 | # | Work | Why | Acceptance (how we know it is done) | Backlog |
 |---|---|---|---|---|
-| 1 | **Browser tests in CI**: a job that installs Chrome (`browser-actions/setup-chrome` or the runner's Chrome), seeds, starts the standalone server and runs `e2e.mjs` and `site-sweep.mjs` | the search-submit bug shipped unnoticed; unit tests cannot see it | CI fails if any journey fails; run time under 6 min; artifacts keep screenshots on failure | QA |
-| 2 | **Post-deploy verification workflow**: after each deploy run `cutover-check`, `seo-audit` and `site-sweep --sample 60` against the live URL and open an issue on failure | merging deploys; we should learn about a bad deploy from CI, not a visitor | workflow runs on `workflow_run` of Deploy; a deliberately broken check fails it | OPS |
+| 1 | **DONE (PR #35, in #40)** — **Browser tests in CI**: a job that installs Chrome (`browser-actions/setup-chrome` or the runner's Chrome), seeds, starts the standalone server and runs `e2e.mjs` and `site-sweep.mjs` | the search-submit bug shipped unnoticed; unit tests cannot see it | CI fails if any journey fails; run time under 6 min; the server logs are kept as an artifact on failure | QA |
+| 2 | **DONE (PR #36, in #40; runs after the first merge)** — **Post-deploy verification workflow**: after each deploy run `cutover-check`, `seo-audit` and `site-sweep --sample 60` against the live URL and open an issue on failure | merging deploys; we should learn about a bad deploy from CI, not a visitor | workflow runs on `workflow_run` of Deploy; a deliberately broken check fails it | OPS |
 | 3 | **Redirect matrix test** for all seven legacy URL types (query strings, trailing slash, case) | the SEO cutover depends on it | `tests` or smoke asserts every row of [URL_REDIRECT_MAP](../migration/URL_REDIRECT_MAP.md) gives one 301 to the right target | QA-3, MIG-007 |
 | 4 | **Bidi controls and tatweel**: hook on title fields that strips direction controls and kashida runs on write + an idempotent migration for the 5 affected titles | site-sweep reports them; they break search matching and copy | `site-sweep` shows 0 `bidi-in-title`/`tatweel-in-h1`; migration up/down/up tested on a DB copy; backup first | RES-008 |
-| 5 | **Sitemap hygiene**: drop `priority`/`changefreq`, sitemap index per type, `lastmod` from `updatedAt`, image entries for covers | Google ignores priority/changefreq; per-type files make coverage reports readable | `seo-audit` validates index + children; `cutover-check` host consistency still green | RES-007 |
-| 6 | **OG/SEO second pass**: a per-author card (name + number of works) instead of the generic authors card; `article:publisher`, `og:updated_time`; unit tests for `buildMetadata` per type (title/description limits, og:type, absolute URLs, image alt) | author/topic shares currently look generic | unit tests cover every `type`; `seo-audit` still 0/0; cards viewed and approved | RES-004/005 |
-| 7 | **Book catalogue upgrade**: filters for "has PDF", year range and language; sort by year; ISBN found by search; related books by author and topic; availability note when no PDF | the books page is the most browsed collection | e2e journey for the facets; facet counts equal the result counts (existing unit property) | — |
+| 5 | **PARTLY DONE (priority removed, builder tested; no per-type index on purpose)** — **Sitemap hygiene**: drop `priority`/`changefreq`, sitemap index per type, `lastmod` from `updatedAt`, image entries for covers | Google ignores priority/changefreq; per-type files make coverage reports readable | `seo-audit` validates index + children; `cutover-check` host consistency still green | RES-007 |
+| 6 | **PARTLY DONE (per-author card; buildMetadata unit tests still open)** — **OG/SEO second pass**: a per-author card (name + number of works) instead of the generic authors card; `article:publisher`, `og:updated_time`; unit tests for `buildMetadata` per type (title/description limits, og:type, absolute URLs, image alt) | author/topic shares currently look generic | unit tests cover every `type`; `seo-audit` still 0/0; cards viewed and approved | RES-004/005 |
+| 7 | **PARTLY DONE (search bar, find-in-facet, modern filters panel); category facet blocked: 0 of 52 books have a category** — **Book catalogue upgrade**: filters for "has PDF", year range and language; sort by year; ISBN found by search; related books by author and topic; availability note when no PDF | the books page is the most browsed collection | e2e journey for the facets; facet counts equal the result counts (existing unit property) | — |
 | 8 | **One translation-readiness rule** used by pages, sitemap and API; atomic budget accounting; retry honours `retryable` | four copies of one rule can disagree (sitemap lists pages that noindex) | single function with unit tests; sitemap and page agree for all sampled items | ARCH-012, ARCH-009/010 |
 | 9 | **Typed Payload access** instead of 77 casts; tests for translation engine, hooks, rate limiter, legacy media | safer refactors | `tsc` clean with the casts removed in `lib/data.ts`; new tests in `tests/unit` | ARCH-008, ARCH-019 |
 | 10 | **Accessibility automation**: axe on 8 page types inside the e2e run; then the manual keyboard + screen-reader pass (needs a tester) | G6 is only partly automated | axe reports 0 serious/critical; written test notes in `docs/04-qa/` | QA-1 |
@@ -48,6 +48,24 @@ Every item has an acceptance test; none needs the Center.
 | 13 | **Related content** rules for the 34% of items with none (same author/category/period, never random) | engagement | share of items without related content measured before/after (`npm run quality`) | DATA-009 |
 | 14 | **LQIP / blur placeholders** for covers; confirm no CLS regression | perceived speed on slow phones | Lighthouse median CLS stays 0 | F-35 |
 | 15 | **Branch cleanup** of merged branches | clarity | `git branch -r` shows only live work | process |
+
+## 3b. Done on 2026-10-23/24 (all in PR #40)
+
+| Work | Evidence |
+|---|---|
+| Search bar inside every section (news, articles, books, issues, events, forum, videos) | e2e: each section has `#list-q`; Enter filters, chip + clear work |
+| Filters panel redesign, find-in-list, sort menu bug (outside the form) | e2e: sort applies at once with a clean URL; facet find narrows without reload |
+| UI review of 26 page types at 390/1440 px | before/after screenshots; no horizontal overflow at 390 px |
+| Rejected: `loading.tsx` skeleton | smoke caught soft 404s (status 200 before `notFound()`); do not reintroduce without a different approach |
+
+## 3c. Next up (in order)
+
+1. Light theme review page by page; mixed Arabic/English 404; distinct WhatsApp icons in the footer.
+2. `buildMetadata` unit tests per type; JSON-LD gaps (RES-004/005).
+3. Book list view (rows with cover, author, year, PDF) and "About this book" heading on details pages.
+4. Bidi/tatweel cleanup (hook + migration), redirect matrix test.
+5. Typeahead inside the section search; saved searches.
+
 
 ## 4. Tier 2 — blocked on the owner or the Center
 
