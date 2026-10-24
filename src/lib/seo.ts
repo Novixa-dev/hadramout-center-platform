@@ -20,9 +20,15 @@ export function isIndexable(lang: string): boolean {
 /** Social card source: a generated page card (`/og/{lang}/{key}.png`) or a document card (`/og/{lang}/{kind}/{id}.png`). */
 export type CardRef = { key: string } | { kind: string; id: number; v?: string | number };
 
+/**
+ * Revision of the card design. It is part of every card URL because shared caches (Cloudflare, messengers) keep a card for up to 30 days:
+ * bump it whenever the look of the cards changes so every page points at fresh images.
+ */
+export const OG_DESIGN = 2;
+
 export function cardUrl(lang: string, card: CardRef): string {
-  if ('key' in card) return absolute(`/og/${lang}/${card.key}.png`);
-  return absolute(`/og/${lang}/${card.kind}/${card.id}.png${card.v ? `?v=${card.v}` : ''}`);
+  if ('key' in card) return absolute(`/og/${lang}/${card.key}.png?d=${OG_DESIGN}`);
+  return absolute(`/og/${lang}/${card.kind}/${card.id}.png?d=${OG_DESIGN}${card.v ? `&v=${card.v}` : ''}`);
 }
 
 export interface MetaInput {
