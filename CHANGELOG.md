@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.11.0] - 2026-10-25
+### Undated bucket in the year facet, social cards v3, parity and peer review
+- **Year facet:** an "Undated" option (with its count) so documents without a reliable date no longer vanish from the filter (RES-011); `?year=undated`.
+- **Social cards v3:** over a photo the title is confined to the lower two or three lines so the picture stays visible; card URLs carry the design revision (`?d=3`) so 30-day edge caches fetch the new look.
+- **Docs:** [parity and peer review](docs/research/PARITY_AND_PEER_REVIEW_2026-10-24.md) — legacy-site parity, what peers do, guard rails, next ideas.
+
 ## [5.10.0] - 2026-10-24
 ### Clearer social cards, loading feedback, responsive guard, dead-code clean-up
 - **Social cards (OG):** photos are no longer blurred or dimmed (only the header and the title area are shaded) and the title sits at the bottom so the picture stays visible; book and issue covers are larger (318×477).

@@ -5,7 +5,7 @@ import { absolute } from '../lib/ctx.ts';
 import { CONTENT, type ContentType } from '../lib/content-types.ts';
 import { getSite } from '../lib/data.ts';
 import { queryArchive } from '../lib/facets.ts';
-import type { TopicNode } from '../lib/facet-core.ts';
+import { UNDATED, type TopicNode } from '../lib/facet-core.ts';
 import { FACETS, VIEWS, activeFilters, effectiveSort, parseListQuery, perPage, queryParams, sidebarFacets, toSearch, type FacetName, type ListQuery, type View } from '../lib/list-query.ts';
 import { breadcrumbJsonLd, collectionJsonLd, jsonLdString } from '../lib/jsonld.ts';
 import { BookCard, BookRow, EventRow, EntryList, IssueCard, Tile, VideoTile } from './Cards.tsx';
@@ -112,7 +112,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
   const chips: { key: string; label: string; remove: string }[] = [];
   if (q.q && userActive.includes('q')) chips.push({ key: 'q', label: t('list.chip.q', { v: q.q }), remove: link({ q: undefined }) });
   if (q.category && userActive.includes('topic')) chips.push({ key: 'topic', label: t('list.chip.topic', { v: topics?.byId.get(q.category)?.name ?? String(q.category) }), remove: link({ category: undefined }) });
-  if (q.year) chips.push({ key: 'year', label: t('list.chip.year', { v: q.year }), remove: link({ year: undefined }) });
+  if (q.year) chips.push({ key: 'year', label: q.year === UNDATED ? t('list.undated') : t('list.chip.year', { v: q.year }), remove: link({ year: undefined }) });
   if (q.author) chips.push({ key: 'author', label: t('list.chip.author', { v: res.authorNames.get(q.author) ?? String(q.author) }), remove: link({ author: undefined }) });
   if (q.pdf) chips.push({ key: 'pdf', label: t('list.pdfOnly'), remove: link({ pdf: undefined }) });
   if (q.when) chips.push({ key: 'when', label: q.when === 'upcoming' ? t('list.upcoming') : t('list.past'), remove: link({ when: undefined }) });
@@ -174,7 +174,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
                   </details>
                 ) : null}
                 {facets.includes('topic') && topics ? <TopicFacet ctx={ctx} roots={topics.roots} counts={counts.categories} selected={q.category} /> : null}
-                {facets.includes('year') && years.length ? (
+                {facets.includes('year') && (years.length || counts.undated > 0) ? (
                   <details className="facet" open={Boolean(q.year) || years.length <= 14}>
                     <summary>{t('list.year')}</summary>
                     <div className="facet__list">
@@ -182,6 +182,9 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
                       {years.map(([y, n]) => (
                         <label key={y} className="check"><input type="radio" name="year" value={y} defaultChecked={q.year === y} /><span>{y}</span><span className="count">{n}</span></label>
                       ))}
+                      {counts.undated > 0 || q.year === UNDATED ? (
+                        <label className="check"><input type="radio" name="year" value="undated" defaultChecked={q.year === UNDATED} /><span>{t('list.undated')}</span><span className="count">{counts.undated}</span></label>
+                      ) : null}
                     </div>
                   </details>
                 ) : null}

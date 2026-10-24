@@ -274,6 +274,7 @@
   "list.remove": "Remove filter",
   "list.search": "Search in this section",
   "list.search.placeholder": "A word or title…",
+  "list.undated": "Undated",
   "list.search.in": "Search in {section}…",
   "list.search.clear": "Clear search",
   "list.facet.find": "Filter this list",

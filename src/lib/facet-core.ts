@@ -37,12 +37,15 @@ export interface Filters {
   today?: string;
 }
 
+/** `Filters.year` value meaning "documents without a reliable date" (shown as `year=undated` in URLs). */
+export const UNDATED = -1;
+
 export type FacetKey = 'year' | 'category' | 'author' | 'pdf' | 'when';
 export type Sort = 'newest' | 'oldest' | 'title' | 'relevance';
 
 export function matches(r: Row, f: Filters, skip?: FacetKey): boolean {
   if (f.ids && !f.ids.has(r.id)) return false;
-  if (skip !== 'year' && f.year && r.year !== f.year) return false;
+  if (skip !== 'year' && f.year && (f.year === UNDATED ? r.year !== null : r.year !== f.year)) return false;
   if (skip !== 'category' && f.categories && !(r.category !== null && f.categories.has(r.category))) return false;
   if (skip !== 'author' && f.author && !r.authors.includes(f.author)) return false;
   if (f.magazine && r.magazine !== f.magazine) return false;
@@ -79,6 +82,8 @@ export function sortRows(rows: readonly Row[], sort: Sort, rank?: ReadonlyMap<nu
 
 export interface Counts {
   years: Map<number, number>;
+  /** documents with no reliable date: they would otherwise vanish from the year facet */
+  undated: number;
   categories: Map<number, number>;
   authors: Map<number, number>;
   pdf: number;
@@ -90,10 +95,13 @@ const bump = (m: Map<number, number>, k: number) => m.set(k, (m.get(k) ?? 0) + 1
 
 /** Disjunctive facet counts: each facet is counted over the rows that match every OTHER active filter. */
 export function countFacets(rows: readonly Row[], f: Filters): Counts {
-  const c: Counts = { years: new Map(), categories: new Map(), authors: new Map(), pdf: 0, upcoming: 0, past: 0 };
+  const c: Counts = { years: new Map(), undated: 0, categories: new Map(), authors: new Map(), pdf: 0, upcoming: 0, past: 0 };
   const today = f.today ?? new Date().toISOString().slice(0, 10);
   for (const r of rows) {
-    if (matches(r, f, 'year') && r.year) bump(c.years, r.year);
+    if (matches(r, f, 'year')) {
+      if (r.year) bump(c.years, r.year);
+      else c.undated++;
+    }
     if (matches(r, f, 'category') && r.category !== null) bump(c.categories, r.category);
     if (matches(r, f, 'author')) for (const a of r.authors) bump(c.authors, a);
     if (matches(r, f, 'pdf') && r.hasPdf) c.pdf++;

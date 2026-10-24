@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildTopicTree, categoryScope, countFacets, filterRows, neighbours, relatedRows, sortRows, type Row } from '../../src/lib/facet-core.ts';
+import { UNDATED, buildTopicTree, categoryScope, countFacets, filterRows, neighbours, relatedRows, sortRows, type Row } from '../../src/lib/facet-core.ts';
 
 const row = (id: number, o: Partial<Row> = {}): Row => ({ id, title: `t${id}`, date: null, year: null, category: null, authors: [], magazine: null, issue: null, hasPdf: false, hasCover: false, featured: false, ...o });
 
@@ -45,6 +45,16 @@ describe('sorting', () => {
     const copy = rows.map((r) => r.id);
     sortRows(rows, 'title');
     assert.deepEqual(rows.map((r) => r.id), copy);
+  });
+});
+
+describe('undated documents', () => {
+  test('are counted and can be filtered, so they do not silently vanish from the year facet', () => {
+    assert.equal(countFacets(rows, {}).undated, 1);
+    assert.deepEqual(filterRows(rows, { year: UNDATED }).map((r) => r.id), [4]);
+    // the count ignores the year filter itself but respects the others
+    assert.equal(countFacets(rows, { pdf: true }).undated, 0);
+    assert.equal(countFacets(rows, { year: 2021 }).undated, 1);
   });
 });
 

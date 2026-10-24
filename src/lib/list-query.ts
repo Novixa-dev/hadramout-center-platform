@@ -1,5 +1,5 @@
 import type { ContentType } from './content-types.ts';
-import type { Sort } from './facet-core.ts';
+import { UNDATED, type Sort } from './facet-core.ts';
 
 /**
  * URL state of an archive list. Every filter lives in the query string (shareable, back/forward-safe);
@@ -67,7 +67,7 @@ export function parseListQuery(sp: Raw, type: ContentType): ListQuery {
   const whenRaw = one(sp.when);
   return {
     q,
-    year: facets.includes('year') ? posInt(one(sp.year), 3000) : undefined,
+    year: facets.includes('year') ? (one(sp.year) === 'undated' ? UNDATED : posInt(one(sp.year), 3000)) : undefined,
     category: facets.includes('topic') ? posInt(one(sp.category)) : undefined,
     author: facets.includes('author') ? posInt(one(sp.author)) : undefined,
     pdf: facets.includes('pdf') && one(sp.pdf) === '1' ? true : undefined,
@@ -94,7 +94,7 @@ export function queryParams(q: ListQuery, type: ContentType, patch: Partial<Reco
   return {
     q: m.q,
     category: m.category ? String(m.category) : undefined,
-    year: m.year ? String(m.year) : undefined,
+    year: m.year === UNDATED ? 'undated' : m.year ? String(m.year) : undefined,
     author: m.author ? String(m.author) : undefined,
     pdf: m.pdf ? '1' : undefined,
     when: m.when,

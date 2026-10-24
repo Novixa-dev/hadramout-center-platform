@@ -275,6 +275,7 @@
   "list.remove": "إزالة التصفية",
   "list.search": "بحث داخل القسم",
   "list.search.placeholder": "كلمة أو عنوان…",
+  "list.undated": "بلا تاريخ محدّد",
   "list.search.in": "ابحث في {section}…",
   "list.search.clear": "مسح البحث",
   "list.facet.find": "ابحث في القائمة",

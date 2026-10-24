@@ -77,7 +77,7 @@ function latticeSvg(opacity: number): string {
 function backgroundSvg(dir: 'rtl' | 'ltr', photo: boolean): Buffer {
   const edge = dir === 'rtl' ? OG_WIDTH - 14 : 0;
   const overlay = photo
-    ? `<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${BRAND.green950}" stop-opacity="0.62"/><stop offset="0.2" stop-color="${BRAND.green950}" stop-opacity="0.08"/><stop offset="0.42" stop-color="${BRAND.green950}" stop-opacity="0.18"/><stop offset="0.68" stop-color="${BRAND.green950}" stop-opacity="0.82"/><stop offset="1" stop-color="${BRAND.green950}" stop-opacity="0.97"/></linearGradient>`
+    ? `<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${BRAND.green950}" stop-opacity="0.62"/><stop offset="0.2" stop-color="${BRAND.green950}" stop-opacity="0.08"/><stop offset="0.4" stop-color="${BRAND.green950}" stop-opacity="0.2"/><stop offset="0.54" stop-color="${BRAND.green950}" stop-opacity="0.62"/><stop offset="0.7" stop-color="${BRAND.green950}" stop-opacity="0.86"/><stop offset="1" stop-color="${BRAND.green950}" stop-opacity="0.97"/></linearGradient>`
     : '';
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_WIDTH}" height="${OG_HEIGHT}">
 <defs>
@@ -160,7 +160,8 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
   layers.push({ input: host.input, left: hostX, top: OG_HEIGHT - 58 });
 
   // kicker + title block, vertically placed between header and footer
-  const top = 190;
+  // over a photo the title block is confined to the lower part (two or three lines) so faces and subjects stay visible
+  const top = photo ? 318 : 190;
   const bottom = OG_HEIGHT - 76 - (metaHeight ? metaHeight + 34 : 0);
   const kicker = input.kicker ? await textImg(input.kicker, { size: 30, weight: 700, color: BRAND.gold500, width: colWidth, align }) : null;
   const kickerBlock = kicker ? kicker.height + 18 : 0;

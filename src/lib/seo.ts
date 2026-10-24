@@ -24,7 +24,7 @@ export type CardRef = { key: string } | { kind: string; id: number; v?: string |
  * Revision of the card design. It is part of every card URL because shared caches (Cloudflare, messengers) keep a card for up to 30 days:
  * bump it whenever the look of the cards changes so every page points at fresh images.
  */
-export const OG_DESIGN = 2;
+export const OG_DESIGN = 3;
 
 export function cardUrl(lang: string, card: CardRef): string {
   if ('key' in card) return absolute(`/og/${lang}/${card.key}.png?d=${OG_DESIGN}`);

@@ -27,6 +27,12 @@ describe('list query parsing', () => {
     assert.equal(parseListQuery({ q: 'x', year: '2024' }, 'video').q, 'x');
     assert.equal(parseListQuery({ q: 'x', year: '2024' }, 'video').year, undefined, 'videos only offer the text search');
   });
+  test('year=undated selects the undated bucket and round-trips through the URL', () => {
+    const q = parseListQuery({ year: 'undated' }, 'article');
+    assert.equal(q.year, -1);
+    assert.equal(queryParams(q, 'article').year, 'undated');
+    assert.equal(parseListQuery({ year: '-1' }, 'article').year, undefined);
+  });
   test('views: default per type, unsupported views fall back', () => {
     assert.equal(parseListQuery({}, 'article').view, 'list');
     assert.equal(parseListQuery({ view: 'compact' }, 'article').view, 'compact');
