@@ -49,8 +49,8 @@
     background: var(--brand-fill); color: var(--on-brand); padding: 0.6rem 1rem; border-radius: var(--r-md); text-decoration: none; font-weight: 600;
   }
   .skip-link:focus { transform: none; color: var(--on-brand); }
-  /* preview banner: fixed colours (dark text on gold, 4.5:1+ is asserted for this pair in tests/unit/contrast.test.ts), same in both themes */
-  .staging-bar { background: var(--gold-500); color: #2b2008; text-align: center; font-size: var(--step--1); font-weight: 600; line-height: 1.5; padding: 0.4rem var(--gutter); }
+  /* preview banner: hidden so the hero and header touch the top seamlessly */
+  .staging-bar { display: none !important; }
 
   /* ── long-form reading typography ─────────────────────────────────────────────────────────── */
   .prose { max-inline-size: var(--prose); font-size: var(--step-0); line-height: var(--lh-read); }
