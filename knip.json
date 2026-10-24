@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/app/**/{page,layout,route,loading,error,not-found,default}.{ts,tsx}",
+    "src/app/{manifest,robots}.ts",
+    "src/migrations/*.ts",
+    "scripts/*.{ts,mjs}",
+    "tests/**/*.test.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}", "scripts/**/*.{ts,mjs}", "tests/**/*.ts"],
+  "ignoreDependencies": ["tsx"],
+  "ignoreExportsUsedInFile": true
+}

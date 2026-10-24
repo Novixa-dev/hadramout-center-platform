@@ -116,8 +116,6 @@ const PAGE_TITLES: Record<string, { title: string; lead?: string }> = {
   saved: { title: 'saved.title' },
 };
 
-export const PAGE_CARD_KEYS = Object.keys(PAGE_TITLES);
-
 /** Card for a list/landing page (home, a section, authors…). */
 export async function pageCard(lang: string, key: string): Promise<{ input: OgInput; version: string } | null> {
   const spec = PAGE_TITLES[key];

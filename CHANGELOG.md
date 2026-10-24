@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.10.0] - 2026-10-24
+### Clearer social cards, loading feedback, responsive guard, dead-code clean-up
+- **Social cards (OG):** photos are no longer blurred or dimmed (only the header and the title area are shaded) and the title sits at the bottom so the picture stays visible; book and issue covers are larger (318×477).
+- **Loading feedback:** every busy button (contact, newsletter, review forms) shows a spinner and `aria-busy`.
+- **Responsive guard:** a browser journey checks 20 pages at 320, 360, 768 and 1024 px for horizontal overflow; it found and fixed the English header at 320 px.
+- **Clean-up:** knip (configured entry points) finds no unused files or dependencies; 17 dead exports/types and their imports removed (language negotiation duplicate, engine factory, unused date/html helpers…); `npm run knip` runs in CI.
+- **Tooling:** `scripts/sync-branches.sh` fast-forwards every `claude/*` branch to `master` and refuses to touch unmerged work.
+
 ## [5.9.0] - 2026-10-24
 ### Books list view, "About" sections, light-theme review, footer and 404 polish
 - **Books:** a list view (rows with cover, author, year, PDF badge and the first lines of the description) next to the grid; book and issue pages get an "About this book / issue" section heading.

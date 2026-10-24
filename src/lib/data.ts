@@ -213,12 +213,6 @@ export async function getAuthor(id: number, lang: string) {
   }
 }
 
-export async function listCategories(lang: string, kind: 'article' | 'book') {
-  const payload = await getPayloadClient();
-  const res = await payload.find({ collection: 'categories', where: { kind: { equals: kind } }, limit: 200, pagination: false, depth: 0, locale: lang as never, fallbackLocale: 'ar' });
-  return res.docs as unknown as { id: number; name: string }[];
-}
-
 export interface TimelineEntry {
   id: number;
   title: string;

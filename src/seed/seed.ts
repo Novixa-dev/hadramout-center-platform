@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import type { Payload } from 'payload';
-import { authorKey, splitAuthors } from '../lib/arabic.ts';
+import { authorKey } from '../lib/arabic.ts';
 import { sanitizeText } from '../lib/sanitize.ts';
 import { CONTENT, type ContentType } from '../lib/content-types.ts';
 import { DEFAULT_GLOSSARY, DEFAULT_PAGES, DEFAULT_TIMELINE } from './defaults.ts';
@@ -192,4 +192,3 @@ export async function seedDefaults(payload: Payload): Promise<void> {
   });
 }
 
-export { splitAuthors };

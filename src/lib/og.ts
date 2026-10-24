@@ -77,7 +77,7 @@ function latticeSvg(opacity: number): string {
 function backgroundSvg(dir: 'rtl' | 'ltr', photo: boolean): Buffer {
   const edge = dir === 'rtl' ? OG_WIDTH - 14 : 0;
   const overlay = photo
-    ? `<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${BRAND.green950}" stop-opacity="0.55"/><stop offset="0.38" stop-color="${BRAND.green950}" stop-opacity="0.45"/><stop offset="1" stop-color="${BRAND.green950}" stop-opacity="0.96"/></linearGradient>`
+    ? `<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${BRAND.green950}" stop-opacity="0.62"/><stop offset="0.2" stop-color="${BRAND.green950}" stop-opacity="0.08"/><stop offset="0.42" stop-color="${BRAND.green950}" stop-opacity="0.18"/><stop offset="0.68" stop-color="${BRAND.green950}" stop-opacity="0.82"/><stop offset="1" stop-color="${BRAND.green950}" stop-opacity="0.97"/></linearGradient>`
     : '';
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_WIDTH}" height="${OG_HEIGHT}">
 <defs>
@@ -125,7 +125,7 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
   const layers: Layer[] = [];
   let base: Sharp;
   if (photo && input.cover) {
-    base = sharp(input.cover).resize(OG_WIDTH, OG_HEIGHT, { fit: 'cover', position: 'attention' }).modulate({ brightness: 0.8 }).blur(0.6);
+    base = sharp(input.cover).resize(OG_WIDTH, OG_HEIGHT, { fit: 'cover', position: 'attention' }).modulate({ brightness: 0.96, saturation: 1.05 }); // the photo stays sharp: only the top (header) and the bottom (title) are shaded
     layers.push({ input: backgroundSvg(input.dir, true) });
   } else {
     base = sharp({ create: { width: OG_WIDTH, height: OG_HEIGHT, channels: 4, background: BRAND.green900 } });
@@ -133,8 +133,8 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
   }
 
   // text column: full width, or narrowed beside a portrait cover
-  const coverW = 292;
-  const coverH = 438;
+  const coverW = 318;
+  const coverH = 477;
   const innerStart = PAD + 14;
   const colWidth = portrait ? OG_WIDTH - innerStart - PAD - coverW - 56 : OG_WIDTH - innerStart - PAD;
 
@@ -166,7 +166,8 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
   const kickerBlock = kicker ? kicker.height + 18 : 0;
   const titleImg = await fitTitle(input.title, { width: colWidth, maxHeight: Math.max(160, bottom - top - kickerBlock), align, color: '#ffffff', leading: rtl ? 0.18 : -0.06 });
   const blockHeight = kickerBlock + titleImg.height;
-  let y = Math.max(top, Math.round((top + bottom - blockHeight) / 2) + 8);
+  // over a photo the title sits at the bottom so the picture stays visible; beside a cover or on plain green it is centred
+  let y = photo ? Math.max(top, bottom - blockHeight) : Math.max(top, Math.round((top + bottom - blockHeight) / 2) + 8);
   if (kicker) {
     layers.push({ input: kicker.input, left: rtl ? OG_WIDTH - innerStart - kicker.width : innerStart, top: y });
     y += kickerBlock;

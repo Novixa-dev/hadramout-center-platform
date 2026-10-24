@@ -1,6 +1,6 @@
 import { DatabaseSync, type StatementSync, type SQLInputValue } from 'node:sqlite';
-import { mkdirSync, readdirSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 export type Param = SQLInputValue;
 
@@ -84,32 +84,4 @@ export class Store {
     this.cache.clear();
     this.db.close();
   }
-}
-
-export interface MigrationResult {
-  applied: string[];
-  skipped: number;
-}
-
-/** Apply `migrations/NNNN_name.sql` files in order, each in its own transaction. */
-export function migrate(store: Store, dir: string): MigrationResult {
-  store.exec(`CREATE TABLE IF NOT EXISTS schema_migrations (
-    version    TEXT PRIMARY KEY,
-    applied_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-  )`);
-  const done = new Set(store.all<{ version: string }>('SELECT version FROM schema_migrations').map((r) => r.version));
-  const files = readdirSync(dir)
-    .filter((f) => /^\d{4}_.+\.sql$/.test(f))
-    .sort();
-  const applied: string[] = [];
-  for (const file of files) {
-    if (done.has(file)) continue;
-    const sql = readFileSync(join(dir, file), 'utf8');
-    store.tx(() => {
-      store.exec(sql);
-      store.run('INSERT INTO schema_migrations (version) VALUES (?)', file);
-    });
-    applied.push(file);
-  }
-  return { applied, skipped: done.size };
 }

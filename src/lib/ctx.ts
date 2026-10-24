@@ -1,4 +1,4 @@
-import { getLanguage, LANGUAGES, type Language } from '../i18n/languages.ts';
+import { getLanguage, type Language } from '../i18n/languages.ts';
 import { makeT, type T } from '../i18n/t.ts';
 import { CONTENT, type ContentType } from './content-types.ts';
 import { formatDate, formatMonthYear, yearOf } from './dates.ts';
@@ -62,5 +62,3 @@ export function displayDate(doc: Pick<Doc, 'publishedAt' | 'datePrecision'>, lan
 }
 
 export const authorsOf = (doc: Doc): { id: number; name: string }[] => (doc.authors ?? []).filter((a): a is { id: number; name: string } => typeof a === 'object');
-
-export const LANG_BY_CODE = new Map(LANGUAGES.map((l) => [l.code, l]));

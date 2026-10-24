@@ -268,6 +268,26 @@ await journey('section search, sort and filters', async (page) => {
   } else check(false, 'the author facet offers a find box');
 });
 
+// 7c ── responsive: no horizontal scrolling and no clipped page at phone, tablet and laptop widths ───
+await journey('responsive layout', async (page) => {
+  const pages = ['/ar', '/ar/articles', '/ar/articles/894', '/ar/books', '/ar/books/37', '/ar/books?view=list', '/ar/magazines/40', '/ar/news', '/ar/events/53', '/ar/videos', '/ar/authors', '/ar/authors/146', '/ar/topics', '/ar/timeline', '/ar/contact', '/ar/about', '/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA', '/en', '/en/books/37', '/en/articles'];
+  const bad = [];
+  for (const width of [320, 360, 768, 1024]) {
+    await page.setViewport({ width, height: 900 });
+    for (const p of pages) {
+      await go(page, p);
+      const over = await page.evaluate(() => {
+        const doc = document.documentElement;
+        if (doc.scrollWidth <= window.innerWidth + 1) return null;
+        const wide = [...document.querySelectorAll('body *')].filter((e) => !e.closest('.hp') && e.getBoundingClientRect().right > window.innerWidth + 1 && getComputedStyle(e).position !== 'fixed');
+        return `${doc.scrollWidth}px: ${wide.slice(0, 2).map((e) => `${e.tagName.toLowerCase()}.${String(e.className).slice(0, 30)}`).join(', ')}`;
+      });
+      if (over) bad.push(`${width}px ${p} → ${over}`);
+    }
+  }
+  check(bad.length === 0, `no horizontal overflow on ${pages.length} pages at 320, 360, 768 and 1024 px`, bad.slice(0, 5).join(' | '));
+});
+
 // 8 ── no console errors, failed requests or CSP violations on the main page types ───────────
 await journey('clean console and network', async (page) => {
   const problems = [];

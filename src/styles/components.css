@@ -13,7 +13,9 @@
   .btn--sm { min-block-size: 2.5rem; padding: 0.3rem 0.85rem; }
   .btn--lg { min-block-size: 3.25rem; padding-inline: 1.6rem; font-size: var(--step-0); }
   .btn[disabled], .btn[aria-disabled='true'] { opacity: 0.55; pointer-events: none; }
-  .btn[aria-busy='true'] { opacity: 0.75; cursor: progress; }
+  .btn[aria-busy='true'] { opacity: 0.8; cursor: progress; }
+  .btn[aria-busy='true']::before { content: ''; flex: none; inline-size: 1em; block-size: 1em; border: 2px solid currentColor; border-inline-end-color: transparent; border-radius: 50%; animation: btn-spin 0.7s linear infinite; }
+  @keyframes btn-spin { to { transform: rotate(360deg); } }
   .icon-btn { display: inline-grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--r-md); color: var(--text-2); touch-action: manipulation; }
   .icon-btn:hover { background: var(--surface-3); color: var(--text); }
   .icon-btn[aria-expanded='true'] { background: var(--brand-soft); color: var(--brand); }

@@ -98,11 +98,3 @@ export function monthShort(iso: string, lang: string): string {
 export function dayOf(iso: string): string {
   return String(Number.parseInt(iso.slice(8, 10), 10) || '');
 }
-
-export function nowIso(): string {
-  return new Date().toISOString();
-}
-
-export function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}

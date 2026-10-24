@@ -1,6 +1,5 @@
 import type { Access, CollectionConfig, Field, FieldAccess, TextField } from 'payload';
 import { sanitizeBody } from '../lib/sanitize.ts';
-import { TRANSLATABLE_EXTRA, type CollectionSlug } from '../lib/content-types.ts';
 
 /** Admin labels are bilingual: the admin UI itself is Arabic-first with English available. */
 export const L = (ar: string, en: string): Record<string, string> => ({ ar, en });
@@ -15,8 +14,6 @@ const roleOf = (user: unknown): Role | undefined => (user as StaffUser | null | 
 export const isStaff: Access = ({ req }) => Boolean(req.user);
 export const isAdmin: Access = ({ req }) => roleOf(req.user) === 'admin';
 export const isEditorOrAdmin: Access = ({ req }) => ['admin', 'editor'].includes(roleOf(req.user) ?? '');
-/** reviewers may fix translations but never touch the Arabic source */
-export const isStaffNotReviewer: Access = ({ req }) => Boolean(req.user) && roleOf(req.user) !== 'reviewer';
 
 /** Anonymous visitors only ever see published documents. */
 export const readPublished: Access = ({ req }) => (req.user ? true : { status: { equals: 'published' } });
@@ -179,8 +176,3 @@ export const markEdited: NonNullable<CollectionConfig['hooks']>['beforeChange'] 
     return data;
   },
 ];
-
-/** Names of the localized fields the translation engine must handle for a collection. */
-export function translatableFields(slug: CollectionSlug): string[] {
-  return ['title', 'excerpt', 'body', ...TRANSLATABLE_EXTRA[slug]];
-}

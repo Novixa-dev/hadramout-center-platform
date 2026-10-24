@@ -33,7 +33,7 @@ export function ContactForm({ lang, kind, subject, pageUrl, bookId, labels }: Pr
       <div className="field field--full"><label htmlFor="c-msg">{labels.message}</label><textarea id="c-msg" className="textarea" name="body" required minLength={5} maxLength={5000} /></div>
       <input className="hp" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <div className="field--full">
-        <button className="btn btn--primary" type="submit" disabled={state === 'busy'}>{labels.send}</button>
+        <button className="btn btn--primary" type="submit" disabled={state === 'busy'} aria-busy={state === 'busy'}>{labels.send}</button>
         {state === 'error' ? <p className="notice notice--err" role="alert" style={{ marginBlockStart: '0.75rem' }}>{labels.error}</p> : null}
         {state === 'limit' ? <p className="notice notice--warn" role="alert" style={{ marginBlockStart: '0.75rem' }}>{labels.limit}</p> : null}
       </div>

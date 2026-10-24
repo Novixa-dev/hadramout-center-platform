@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      - run: npm run knip   # dead code (unused files, dependencies, exports) stays out
       - run: npm test
       - run: npm run build
       # Runtime tier: fresh database from the committed snapshot, then the standalone server (as in Docker) is probed.

@@ -28,10 +28,6 @@ function memo<T>(key: string, make: () => Promise<T>): Promise<T> {
   return value;
 }
 
-export function clearFacets(): void {
-  g.__hcFacets?.clear();
-}
-
 type Raw = Record<string, unknown> & { id: number; title?: string; publishedAt?: string | null; datePrecision?: string | null };
 const id = (v: unknown): number | null => (typeof v === 'number' ? v : v && typeof v === 'object' && typeof (v as { id?: unknown }).id === 'number' ? (v as { id: number }).id : null);
 

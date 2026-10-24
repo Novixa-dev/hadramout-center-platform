@@ -215,25 +215,6 @@ export function VideoTile({ ctx, doc }: { ctx: Ctx; doc: Doc }) {
   );
 }
 
-/** Picks the right card for a content type (used by generic lists and search). */
-export function ContentCard({ ctx, doc, type, eager = false }: CardProps & { type: ContentType }) {
-  switch (type) {
-    case 'book':
-      return <BookCard ctx={ctx} doc={doc} eager={eager} />;
-    case 'magazine':
-      return <IssueCard ctx={ctx} doc={doc} eager={eager} />;
-    case 'event':
-    case 'forum':
-      return <EventRow ctx={ctx} doc={doc} type={type} />;
-    case 'video':
-      return <VideoTile ctx={ctx} doc={doc} />;
-    case 'news':
-      return <Tile ctx={ctx} doc={doc} type="news" eager={eager} />;
-    default:
-      return <Entry ctx={ctx} doc={doc} type={type} eager={eager} />;
-  }
-}
-
 export function SectionHead({ title, href, more, lead, id, as: Tag = 'h2' }: { title: string; href?: string; more?: string; lead?: ReactNode; id?: string; as?: 'h2' | 'h3' }) {
   return (
     <div className="section-head">

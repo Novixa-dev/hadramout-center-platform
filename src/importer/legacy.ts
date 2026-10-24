@@ -45,12 +45,6 @@ export interface SnapshotPost {
   terms: { taxonomy: string; name: string }[];
 }
 
-export interface ParseWarning {
-  id: number;
-  type: PostType;
-  message: string;
-}
-
 export interface ParseResult {
   post: SnapshotPost | null;
   warnings: string[];

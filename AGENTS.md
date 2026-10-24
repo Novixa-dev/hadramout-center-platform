@@ -12,6 +12,7 @@ npm run payload migrate  # create the database
 npm run db:seed          # content snapshot + admin (ADMIN_EMAIL / ADMIN_PASSWORD)
 npm run dev              # http://localhost:3000  (admin at /admin)
 npm run check            # typecheck + lint + unit tests
+npm run knip             # unused files / dependencies / exports (CI runs it)
 node scripts/cutover-check.mjs <url>   # post-deploy / post-move verification of host, indexing mode, sitemap, redirects, headers
 npm run quality                  # read-only editorial report from the databases (DATA_DIR / DATABASE_URL)
 npm run build && npm run smoke   # runtime tier: probes the built standalone server (needs a seeded DB: DB_DIR=...); CI runs it on a fresh snapshot seed, with real-Chrome journeys and a sitemap sweep (`RUN_E2E=1` locally; needs Chrome)

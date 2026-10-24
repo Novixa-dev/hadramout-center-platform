@@ -52,11 +52,6 @@ export function html(strings: TemplateStringsArray, ...values: Renderable[]): Sa
   return new SafeHtml(out);
 }
 
-/** Join renderables with a separator (separator is trusted markup). */
-export function join(items: Renderable[], separator = ''): SafeHtml {
-  return new SafeHtml(items.map(render).join(separator));
-}
-
 /** Build a space-separated class string from truthy entries. */
 export function cx(...parts: (string | false | null | undefined)[]): string {
   return parts.filter(Boolean).join(' ');
@@ -76,8 +71,4 @@ export function attrs(map: Record<string, string | number | boolean | null | und
 /** Safe JSON for embedding inside <script type="application/ld+json"> or data blocks. */
 export function jsonForScript(data: unknown): SafeHtml {
   return new SafeHtml(JSON.stringify(data).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029'));
-}
-
-export function render_(value: Renderable): string {
-  return render(value);
 }

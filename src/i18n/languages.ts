@@ -136,47 +136,6 @@ const BY_CODE = new Map(LANGUAGES.map((l) => [l.code, l]));
 /** Languages shown first in the picker. */
 export const POPULAR_CODES = ['ar', 'en', 'fr', 'id', 'ms', 'ur', 'tr', 'fa', 'ru', 'de', 'es', 'so', 'sw', 'hi', 'zh'] as const;
 
-/** Languages whose UI is hand-written by Novixa (never machine-translated). */
-export const CURATED_CODES = ['ar', 'en'] as const;
-
 export function getLanguage(code: string): Language | undefined {
   return BY_CODE.get(code.toLowerCase());
-}
-
-export function isRtl(code: string): boolean {
-  return getLanguage(code)?.dir === 'rtl';
-}
-
-/** Languages the site offers, honoring the ENABLED_LANGS setting. `ar` is always included. */
-export function enabledLanguages(enabled: '*' | string[]): Language[] {
-  if (enabled === '*') return [...LANGUAGES];
-  const set = new Set(['ar', ...enabled]);
-  return LANGUAGES.filter((l) => set.has(l.code));
-}
-
-/** Pick the best supported language from an Accept-Language header. */
-export function negotiateLanguage(header: string | undefined, available: Language[], fallback: string): string {
-  if (!header) return fallback;
-  const codes = new Set(available.map((l) => l.code));
-  const ranked = header
-    .split(',')
-    .map((part) => {
-      const [tag, ...params] = part.trim().split(';');
-      const q = Number.parseFloat(params.find((p) => p.trim().startsWith('q='))?.split('=')[1] ?? '1');
-      return { tag: (tag ?? '').toLowerCase(), q: Number.isFinite(q) ? q : 0 };
-    })
-    .filter((x) => x.tag && x.q > 0)
-    .sort((a, b) => b.q - a.q);
-  for (const { tag } of ranked) {
-    if (codes.has(tag)) return tag;
-    if (tag === 'zh-hant' || tag === 'zh-hk' || tag === 'zh-tw') {
-      if (codes.has('zh-tw')) return 'zh-tw';
-    }
-    const primary = tag.split('-')[0] as string;
-    if (codes.has(primary)) return primary;
-    if (primary === 'nb' || primary === 'nn') {
-      if (codes.has('no')) return 'no';
-    }
-  }
-  return fallback;
 }
