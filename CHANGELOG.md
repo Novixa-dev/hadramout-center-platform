@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.8.0] - 2026-10-24
+### Search and filters in every section, modern sidebar, loading states, UI review fixes
+- **Search inside every section:** a prominent search bar above the results of news, articles, books, issues, events, forum and videos (issues and videos had no search at all). Enter or the button applies it, a chip and a clear button show it, `/` and the global search are unchanged.
+- **Filters panel:** a card with an active-filter badge and a "clear" link, highlighted selected options, count pills, find-as-you-type inside long lists (authors, now the top 40), phone bottom sheet unchanged. Fix: the sort menu and search box live outside the filter form and are now handled through their `form` attribute (clean URLs, no `sort=newest`).
+- **Motion and loading:** result cards rise in with a short stagger, a progress bar at the top while a page or filter loads (disabled by the reduced-motion rule). A `loading.tsx` skeleton was tried and rejected: streaming sends status 200 before `notFound()` runs, which made missing pages soft 404s (caught by the smoke tier).
+- **UI review of 26 page types (390/1440 px):** article byline icons, centred reading column, videos list layout, contact form width, theme-aware cover placeholder, authors index, topics card, hero skyline, `/en` phone overflow.
+- **SEO/OG:** per-author social card; sitemap without `<priority>` (tested builder); video pages `og:type video.other`.
+- **Tests and CI:** browser journeys (52 checks incl. section search) and a sitemap sweep run in CI; a live-check workflow after every deploy and daily.
+- Books still have no category facet: none of the 52 books has a category yet (editorial input needed).
+
 ## [5.7.0] - 2026-10-21
 ### Browser tests run in CI
 - CI's smoke tier now runs `scripts/e2e.mjs` (41 checks in real Chrome) and `scripts/site-sweep.mjs` (77 sampled pages, 120 links) against the built server; server logs are uploaded when it fails. Locally: `RUN_E2E=1 npm run smoke`.

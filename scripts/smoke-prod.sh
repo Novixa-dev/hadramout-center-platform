@@ -68,7 +68,9 @@ curl -s "http://127.0.0.1:$PORT/manifest.webmanifest" | grep -q '"theme_color":"
 body() { local r; r=$(curl -s "http://127.0.0.1:$PORT$1"); if [ -z "$r" ]; then sleep 2; r=$(curl -s "http://127.0.0.1:$PORT$1"); fi; printf '%s' "$r"; }
 clamp=$(curl -s -o /dev/null -w '%{redirect_url}' "http://127.0.0.1:$PORT/api/news?limit=1000&depth=3")
 case "$clamp" in *limit=100*depth=2*) echo "ok   clamp target $clamp";; *) echo "FAIL clamp target '$clamp'"; fail=1;; esac
-body /feeds/en/all.xml | grep -q '<title>Hadhramout' && echo "ok   English feed channel title" || { echo "FAIL English feed channel title"; fail=1; }
+# capture first: `grep -q` quits at the first match, the 34 KB feed then hits a closed pipe and `pipefail` reported a failure at random
+en_feed=$(body /feeds/en/all.xml)
+case "$en_feed" in *'<title>Hadhramout'*) echo "ok   English feed channel title";; *) echo "FAIL English feed channel title"; fail=1;; esac
 sug=$(body "/api/hc/suggest?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA&lang=")
 case "$sug" in *'"href":"/ar/'*) echo "ok   typeahead falls back to ar and returns hits";; *'"href":"//'*) echo "FAIL typeahead produced a protocol-relative href"; fail=1;; *) echo "FAIL typeahead returned no hits: $sug" | cut -c1-160; fail=1;; esac
 body /api/hc/health | grep -q '"users"' && { echo "FAIL health discloses user existence"; fail=1; } || echo "ok   health body"

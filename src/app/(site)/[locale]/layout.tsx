@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import type { ReactNode } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import '../../../styles/index.css';
 import { isLocale, makeCtx } from '../../../lib/ctx.ts';
@@ -10,6 +10,7 @@ import { uiCoverage } from '../../../i18n/ui-store.ts';
 import { Footer, Header, langOptions } from '../../../components/Shell.tsx';
 import { BackToTop } from '../../../components/client/BackToTop.tsx';
 import { PwaRegister } from '../../../components/client/PwaRegister.tsx';
+import { NavProgress } from '../../../components/client/NavProgress.tsx';
 import { StagingBar } from '../../../components/StagingBar.tsx';
 import { isProductionSite } from '../../../lib/site-env.ts';
 
@@ -76,6 +77,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <Footer ctx={ctx} site={site} />
         <BackToTop label={ctx.t('tools.backToTop')} />
         <PwaRegister />
+        <Suspense fallback={null}><NavProgress /></Suspense>
       </body>
     </html>
   );

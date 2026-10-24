@@ -6,12 +6,12 @@ import { CONTENT, type ContentType } from '../lib/content-types.ts';
 import { getSite } from '../lib/data.ts';
 import { queryArchive } from '../lib/facets.ts';
 import type { TopicNode } from '../lib/facet-core.ts';
-import { FACETS, VIEWS, activeFilters, effectiveSort, parseListQuery, perPage, queryParams, toSearch, type FacetName, type ListQuery, type View } from '../lib/list-query.ts';
+import { FACETS, VIEWS, activeFilters, effectiveSort, parseListQuery, perPage, queryParams, sidebarFacets, toSearch, type FacetName, type ListQuery, type View } from '../lib/list-query.ts';
 import { breadcrumbJsonLd, collectionJsonLd, jsonLdString } from '../lib/jsonld.ts';
 import { BookCard, EventRow, EntryList, IssueCard, Tile, VideoTile } from './Cards.tsx';
 import { Pagination } from './Pagination.tsx';
 import { Icon } from './Icon.tsx';
-import { FilterBehavior, FiltersClose, FiltersToggle } from './client/FilterControls.tsx';
+import { FacetFind, FilterBehavior, FiltersClose, FiltersToggle } from './client/FilterControls.tsx';
 
 type Raw = Record<string, string | string[] | undefined>;
 
@@ -30,7 +30,9 @@ interface Props {
   description?: string;
 }
 
-const TOP_AUTHORS = 12;
+const TOP_AUTHORS = 40;
+/** a facet list longer than this gets its own find-as-you-type box */
+const FIND_FROM = 8;
 
 function TopicFacet({ ctx, roots, counts, selected }: { ctx: Ctx; roots: TopicNode[]; counts: Map<number, number>; selected?: number }) {
   const { t } = ctx;
@@ -101,7 +103,9 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
   const link = (patch: Partial<Record<keyof ListQuery, unknown>>) => `${base}${toSearch(params(patch))}`;
   // filters the visitor chose (a fixed topic is part of the page, not a removable chip)
   const userActive = activeFilters(parsed).filter((f) => !(fixed?.category && f === 'topic'));
-  const hasFacets = facets.length > 0;
+  const sidebar = sidebarFacets(facets);
+  const hasFacets = sidebar.length > 0;
+  const hasSearch = facets.includes('q');
   const topics = res.topics;
   const counts = res.counts;
 
@@ -153,17 +157,12 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
           <>
             <aside className="filters" id="filters" tabIndex={-1} aria-label={t('list.filters')}>
               <div className="filters__head">
-                <h2>{t('list.filters')}</h2>
+                <h2>{t('list.filters')}{userActive.length ? <span className="badge" aria-label={t('list.active')}>{userActive.length}</span> : null}</h2>
+                {userActive.length ? <Link className="filters__reset" href={clearHref}>{t('list.clear')}</Link> : null}
                 <FiltersClose label={t('nav.close')} />
               </div>
               <form id="filter-form" className="filters__form" method="get" action={base}>
                 {q.view !== views[0] ? <input type="hidden" name="view" value={q.view} /> : null}
-                {facets.includes('q') ? (
-                  <div className="field" style={{ paddingBlockEnd: '0.6rem' }}>
-                    <label htmlFor="f-q">{t('list.search')}</label>
-                    <input id="f-q" className="input" type="search" name="q" defaultValue={q.q ?? ''} placeholder={t('list.search.placeholder')} autoComplete="off" enterKeyHint="search" />
-                  </div>
-                ) : null}
                 {facets.includes('when') ? (
                   <details className="facet" open>
                     <summary>{t('meta.date')}</summary>
@@ -189,6 +188,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
                 {facets.includes('author') && authorOptions.length ? (
                   <details className="facet" open={Boolean(q.author)}>
                     <summary>{t('list.author')}</summary>
+                    {authorOptions.length > FIND_FROM ? <FacetFind label={t('list.facet.find')} none={t('list.facet.none')} /> : null}
                     <div className="facet__list">
                       <label className="check"><input type="radio" name="author" value="" defaultChecked={!q.author} /><span>{t('list.all')}</span></label>
                       {authorOptions.map((a) => (
@@ -214,16 +214,32 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
             </aside>
             <div className="filters-scrim" aria-hidden="true" />
           </>
+        ) : hasSearch ? (
+          // sections without a sidebar still get the search bar and the sort menu: they submit this (hidden) form through their form attribute
+          <form id="filter-form" method="get" action={base} hidden>
+            {q.view !== views[0] ? <input type="hidden" name="view" value={q.view} /> : null}
+          </form>
         ) : null}
 
         <section aria-labelledby="results-h" className="results">
+          {hasSearch ? (
+            <div className="list-search" role="search">
+              <div className="list-search__field">
+                <Icon name="search" className="icon list-search__icon" />
+                <label className="sr-only" htmlFor="list-q">{t('list.search')}</label>
+                <input id="list-q" form="filter-form" className="input" type="search" name="q" defaultValue={q.q ?? ''} placeholder={t('list.search.in', { section: title })} autoComplete="off" enterKeyHint="search" />
+                {q.q ? <Link className="list-search__clear" href={link({ q: undefined })} aria-label={t('list.search.clear')}><Icon name="close" /></Link> : null}
+              </div>
+              <button className="btn btn--primary" type="submit" form="filter-form">{t('nav.search')}</button>
+            </div>
+          ) : null}
           <div className="toolbar">
             <div className="cluster" style={{ '--gap': '0.6rem' } as React.CSSProperties}>
               {hasFacets ? <FiltersToggle label={t('list.filters')} count={userActive.length} /> : null}
               <h2 id="results-h" className="toolbar__count" aria-live="polite" style={{ fontFamily: 'var(--font-ui)', fontSize: 'var(--step--1)' }}>{showCount}</h2>
             </div>
             <div className="toolbar__tools">
-              {hasFacets && type !== 'video' ? (
+              {(hasFacets || hasSearch) && (type !== 'video' || q.q) ? (
                 <>
                   <label className="sr-only" htmlFor="sort">{t('list.sort')}</label>
                   <select id="sort" name="sort" form="filter-form" className="select" defaultValue={sort} data-default={q.q ? 'relevance' : q.when === 'upcoming' ? 'oldest' : 'newest'}>
@@ -266,7 +282,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
           ) : type === 'article' ? (
             <EntryList ctx={ctx} docs={items} type="article" compact={q.view === 'compact'} />
           ) : type === 'event' || type === 'forum' ? (
-            <div>{items.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type={type} />)}</div>
+            <div className="event-list">{items.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type={type} />)}</div>
           ) : type === 'news' && q.view === 'list' ? (
             <div className="stack-list" style={{ marginBlockStart: '1rem' }}>{items.map((d, i) => <Tile key={d.id} ctx={ctx} doc={d} type="news" row eager={i < 2 && q.page === 1} />)}</div>
           ) : (
@@ -279,7 +295,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
           )}
           <Pagination ctx={ctx} page={res.page} pages={res.pages} basePath={basePath} query={params({})} />
         </section>
-        {hasFacets ? <FilterBehavior formId="filter-form" /> : null}
+        {hasFacets || hasSearch ? <FilterBehavior formId="filter-form" /> : null}
       </div>
       {hasFacets ? <noscript><style>{'.filters{position:static!important;transform:none!important;visibility:visible!important}.filters-toggle,.filters__close{display:none!important}'}</style></noscript> : null}
       {jsonLd.map((j, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(j) }} />)}

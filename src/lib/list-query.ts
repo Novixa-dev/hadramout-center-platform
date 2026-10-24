@@ -13,11 +13,14 @@ export const FACETS: Record<ContentType, readonly FacetName[]> = {
   news: ['q', 'year'],
   article: ['q', 'topic', 'year', 'author'],
   book: ['q', 'year', 'author', 'pdf'],
-  magazine: ['year', 'pdf'],
+  magazine: ['q', 'year', 'pdf'],
   event: ['q', 'when', 'year'],
   forum: ['q', 'when', 'year'],
-  video: [],
+  video: ['q'],
 };
+
+/** Facets that need the sidebar (the text search lives in its own bar above the results). */
+export const sidebarFacets = (facets: readonly FacetName[]): FacetName[] => facets.filter((f) => f !== 'q');
 
 /** Views a type offers (first = default). */
 export const VIEWS: Record<ContentType, readonly View[]> = {

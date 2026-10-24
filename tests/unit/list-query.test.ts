@@ -23,7 +23,9 @@ describe('list query parsing', () => {
     assert.equal(parseListQuery({ pdf: '1' }, 'book').pdf, true);
     assert.equal(parseListQuery({ when: 'upcoming' }, 'event').when, 'upcoming');
     assert.equal(parseListQuery({ when: 'upcoming' }, 'book').when, undefined);
-    assert.equal(parseListQuery({ q: 'x' }, 'magazine').q, undefined);
+    assert.equal(parseListQuery({ q: 'x' }, 'magazine').q, 'x', 'issues can be searched');
+    assert.equal(parseListQuery({ q: 'x', year: '2024' }, 'video').q, 'x');
+    assert.equal(parseListQuery({ q: 'x', year: '2024' }, 'video').year, undefined, 'videos only offer the text search');
   });
   test('views: default per type, unsupported views fall back', () => {
     assert.equal(parseListQuery({}, 'article').view, 'list');

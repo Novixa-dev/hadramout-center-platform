@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Icon } from '../Icon.tsx';
 
 const OPEN = 'data-filters-open';
@@ -47,34 +47,39 @@ export function FilterBehavior({ formId }: { formId: string }) {
     if (!form) return;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const wide = window.matchMedia('(min-width: 1000px)');
+    // controls may sit outside the <form> element (sort menu, search bar) and join it through their form attribute, so listen on the document
     const onChange = (e: Event) => {
-      const t = e.target as HTMLElement;
+      const t = e.target as HTMLElement & { form?: HTMLFormElement | null };
+      if (t.form !== form || t.hasAttribute('data-no-submit')) return;
+      // the search box submits with Enter or its button, not on every blur
+      if (t instanceof HTMLInputElement && t.type === 'search') return;
       // facets inside the phone sheet are applied with the button; the sort menu (outside the sheet) always applies at once
       if (t.closest('.filters') && !wide.matches) return;
       clearTimeout(timer);
       timer = setTimeout(() => form.requestSubmit(), 250);
     };
-    // keep URLs clean: empty fields ("All") are not sent
+    // keep URLs clean: empty fields ("All") and defaults are not sent
     const onSubmit = () => {
-      for (const el of form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input[name],select[name]')) {
+      for (const el of Array.from(form.elements)) {
+        if (!(el instanceof HTMLInputElement || el instanceof HTMLSelectElement) || !el.name) continue;
         if ((el instanceof HTMLInputElement && (el.type === 'radio' || el.type === 'checkbox') && !el.checked) || el.value === '' || el.value === el.dataset.default) el.disabled = true;
       }
     };
-    const onShow = () => form.querySelectorAll<HTMLInputElement | HTMLSelectElement>(':disabled').forEach((el) => (el.disabled = false));
+    const onShow = () => Array.from(form.elements).forEach((el) => ((el as HTMLInputElement).disabled = false));
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && root()?.hasAttribute(OPEN)) setOpen(false, document.querySelector<HTMLElement>('.filters-toggle'));
     };
     const onScrim = (e: MouseEvent) => {
       if ((e.target as HTMLElement).classList.contains('filters-scrim')) setOpen(false, document.querySelector<HTMLElement>('.filters-toggle'));
     };
-    form.addEventListener('change', onChange);
+    document.addEventListener('change', onChange);
     form.addEventListener('submit', onSubmit);
     window.addEventListener('pageshow', onShow);
     document.addEventListener('keydown', onKey);
     document.addEventListener('click', onScrim);
     return () => {
       clearTimeout(timer);
-      form.removeEventListener('change', onChange);
+      document.removeEventListener('change', onChange);
       form.removeEventListener('submit', onSubmit);
       window.removeEventListener('pageshow', onShow);
       document.removeEventListener('keydown', onKey);
@@ -83,4 +88,40 @@ export function FilterBehavior({ formId }: { formId: string }) {
     };
   }, [formId]);
   return null;
+}
+
+/**
+ * Find-as-you-type for a long facet list (authors): hides the options that do not contain the typed text.
+ * The box has no name, so it is never submitted; its change events are ignored by the form behaviour.
+ */
+export function FacetFind({ label, none }: { label: string; none: string }) {
+  const empty = useRef<HTMLParagraphElement>(null);
+  return (
+    <div className="facet__find">
+      <input
+        type="search"
+        className="input input--sm"
+        data-no-submit=""
+        aria-label={label}
+        placeholder={label}
+        autoComplete="off"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') e.preventDefault(); // Enter must not submit the whole filter form
+        }}
+        onChange={(e) => {
+          const needle = e.target.value.trim().toLowerCase();
+          const facet = e.target.closest('.facet');
+          let shown = 0;
+          facet?.querySelectorAll<HTMLElement>('.facet__list > .check').forEach((el, i) => {
+            // the first option is "All": always visible
+            const match = i === 0 || !needle || (el.textContent ?? '').toLowerCase().includes(needle);
+            el.hidden = !match;
+            if (match && i > 0) shown++;
+          });
+          if (empty.current) empty.current.hidden = Boolean(shown) || !needle;
+        }}
+      />
+      <p ref={empty} className="facet__none" role="status" hidden>{none}</p>
+    </div>
+  );
 }

@@ -46,6 +46,45 @@
     .facet__list, .facet__list--tall { max-block-size: none; overflow: visible; }
     .filters__actions { position: sticky; inset-block-end: -1rem; background: var(--surface); padding-block: 0.75rem 0.25rem; }
   }
+  /* ── filters panel as a card, find-in-facet, in-section search bar ──────────────────────────── */
+  @media (min-width: 1000px) {
+    .filters { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 0.9rem 1rem 1rem; box-shadow: var(--shadow-1); scrollbar-width: thin; }
+  }
+  .filters__head { gap: 0.6rem; padding-block-end: 0.55rem; border-block-end: 1px solid var(--border); margin-block-end: 0.15rem; }
+  .filters__head h2 { display: inline-flex; align-items: center; gap: 0.5rem; margin-inline-end: auto; }
+  .filters__head h2 .badge { background: var(--brand-fill); color: var(--on-brand); border-color: transparent; }
+  .filters__reset { font-size: var(--step--1); font-weight: 600; color: var(--accent-text); text-decoration: none; padding-block: 0.4rem; }
+  .filters__reset:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+  .facet:last-of-type { border-block-end: 0; }
+  .facet .check { padding-inline: 0.5rem; border-radius: var(--r-md); transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
+  .facet .check:not(:has(input:disabled)):hover { background: var(--surface-3); }
+  .facet .check:has(input:checked) { background: var(--brand-soft); color: var(--brand-strong); font-weight: 600; }
+  .facet .check span.count { padding: 0.05rem 0.5rem; border-radius: 999px; background: var(--surface-3); min-inline-size: 1.7rem; text-align: center; }
+  .facet .check:has(input:checked) span.count { background: var(--brand-fill); color: var(--on-brand); }
+  .facet__find { padding-block: 0.15rem 0.4rem; }
+  .facet__find .input { min-block-size: 2.4rem; padding-block: 0.3rem; font-size: var(--step--1); }
+  .facet__none { color: var(--muted); font-size: var(--step--1); padding: 0.4rem 0.5rem; }
+  .list-search { display: flex; align-items: stretch; gap: 0.5rem; margin-block-end: var(--space-4); }
+  .list-search__field { position: relative; flex: 1; min-inline-size: 0; }
+  .list-search__field .input { inline-size: 100%; min-block-size: 3rem; border-radius: 999px; font-size: var(--step-0); padding-inline: 2.9rem 2.7rem; background: var(--surface); box-shadow: var(--shadow-1); transition: box-shadow var(--t-med) var(--ease), border-color var(--t-med) var(--ease); }
+  .list-search__field .input:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent); }
+  .list-search__icon { position: absolute; inset-inline-start: 1.05rem; inset-block-start: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  .list-search__clear { position: absolute; inset-inline-end: 0.4rem; inset-block-start: 50%; transform: translateY(-50%); display: grid; place-items: center; inline-size: 2.25rem; block-size: 2.25rem; border-radius: 50%; color: var(--text-2); }
+  .list-search__clear:hover { background: var(--surface-3); color: var(--text); }
+  .list-search > .btn { border-radius: 999px; padding-inline: 1.4rem; }
+  @media (max-width: 480px) { .list-search > .btn { padding-inline: 1rem; } }
+
+  /* ── motion: results rise in, progress bar (neutralised by the global reduced-motion rule). No loading.tsx skeleton on purpose: streaming flushes a 200 status before notFound() runs, which turns every missing page into a soft 404. ── */
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .results .results-grid > *, .results .stack-list > *, .results .entry-list > li, .results .event-list > * { animation: rise var(--t-slow) var(--ease) both; }
+  .results :is(.results-grid, .stack-list, .entry-list) > :nth-child(2) { animation-delay: 40ms; }
+  .results :is(.results-grid, .stack-list, .entry-list) > :nth-child(3) { animation-delay: 80ms; }
+  .results :is(.results-grid, .stack-list, .entry-list) > :nth-child(4) { animation-delay: 120ms; }
+  .results :is(.results-grid, .stack-list, .entry-list) > :nth-child(5) { animation-delay: 160ms; }
+  .results :is(.results-grid, .stack-list, .entry-list) > :nth-child(n + 6) { animation-delay: 200ms; }
+  .nav-progress { position: fixed; inset-block-start: 0; inset-inline: 0; block-size: 3px; z-index: calc(var(--z-dialog) + 5); pointer-events: none; opacity: 0; transform-origin: inline-start; transform: scaleX(0); background: linear-gradient(90deg, var(--accent), var(--brand-fill)); transition: opacity var(--t-med) var(--ease); }
+  .nav-progress[data-active='true'] { opacity: 1; animation: nav-grow 9s cubic-bezier(0.1, 0.7, 0.2, 1) forwards; }
+  @keyframes nav-grow { from { transform: scaleX(0.04); } to { transform: scaleX(0.92); } }
   .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; padding-block-end: 0.75rem; border-block-end: 1px solid var(--border); margin-block-end: 0.5rem; }
   .toolbar__count { font-size: var(--step--1); color: var(--text-2); font-weight: 600; }
   .toolbar__tools { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }

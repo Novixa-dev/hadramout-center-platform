@@ -228,6 +228,41 @@ await journey('contact form and admin login page', async (page) => {
   check(Boolean(await page.$('input[type=password]')) && Boolean(await page.$('input[type=email], input[name=email]')), 'the admin login form renders');
 });
 
+// 7b ── searching and filtering inside a section ────────────────────────────────────────────────
+await journey('section search, sort and filters', async (page) => {
+  for (const path of ['/ar/books', '/ar/news', '/ar/magazines', '/ar/videos', '/ar/events']) {
+    await go(page, path);
+    check(Boolean(await page.$('#list-q')), `${path} has its own search bar`);
+  }
+  await go(page, '/ar/books');
+  const before = await page.$eval('#results-h', (e) => e.textContent.trim());
+  await page.type('#list-q', 'حضرموت', { delay: 30 });
+  await Promise.all([page.waitForFunction(() => location.search.includes('q='), { timeout: 20000 }), page.keyboard.press('Enter')]);
+  await page.waitForNetworkIdle({ idleTime: 400, timeout: 20000 }).catch(() => undefined);
+  const after = await page.$eval('#results-h', (e) => e.textContent.trim());
+  check(new URL(page.url()).searchParams.get('q') === 'حضرموت' && after !== before, 'Enter in the search bar filters the list and keeps the term in the URL', `${before} -> ${after}`);
+  check(Boolean(await page.$('.active-filters')), 'the active search is shown as a removable chip');
+  check((await page.$eval('#list-q', (e) => e.value)) === 'حضرموت', 'the search bar keeps the term');
+  await Promise.all([page.waitForFunction(() => !location.search.includes('q='), { timeout: 20000 }), page.click('.list-search__clear')]);
+  check(!new URL(page.url()).searchParams.has('q'), 'the clear button removes the search');
+  // the sort menu lives outside the filter form and must still apply at once, without leaving "newest" in the URL
+  await go(page, '/ar/books');
+  await Promise.all([page.waitForFunction(() => location.search.includes('sort=title'), { timeout: 20000 }), page.select('#sort', 'title')]);
+  check(new URL(page.url()).searchParams.get('sort') === 'title', 'choosing a sort applies immediately');
+  // find-in-facet: only options containing the typed text stay visible, the form is not submitted
+  await go(page, '/ar/articles');
+  const urlBefore = page.url();
+  const find = await page.$('.facet__find input');
+  if (find) {
+    await find.evaluate((el) => { el.closest('details').open = true; }); // the author facet starts collapsed
+    const total = await page.$$eval('.facet__find ~ .facet__list > .check', (l) => l.length);
+    await find.type('أحمد', { delay: 30 });
+    await new Promise((r) => setTimeout(r, 700));
+    const visible = await page.$$eval('.facet__find ~ .facet__list > .check:not([hidden])', (l) => l.length);
+    check(visible > 1 && visible < total && page.url() === urlBefore, 'typing in a long facet narrows its options without reloading', `${visible}/${total}`);
+  } else check(false, 'the author facet offers a find box');
+});
+
 // 8 ── no console errors, failed requests or CSP violations on the main page types ───────────
 await journey('clean console and network', async (page) => {
   const problems = [];
