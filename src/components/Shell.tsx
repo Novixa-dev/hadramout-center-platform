@@ -82,12 +82,12 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
     <header className="site-header">
       <div className="container site-header__bar">
         <Link className="brand" href={href('/')} aria-label={site.name}>
-          <img className="brand__logo-img" src="/brand/logo.svg" alt="منارة حضرموت" width={160} height={37} />
+          <img className="brand__logo-img" src="/brand/manarat-logo.png" alt="منارة حضرموت" width={186} height={38} />
         </Link>
         <nav className="nav header-nav" aria-label={t('nav.main')}>
           <PriorityNav
             items={HEADER_NAV.map((n) => ({ href: href(n.path), label: t(n.key) }))}
-            more={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))}
+            more={[]}
             moreLabel={t('nav.more')}
           />
         </nav>
@@ -102,8 +102,9 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
             <Icon name="user" />
           </Link>
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
+          <span className="header-tools__sep" aria-hidden="true" />
           <LangPicker badge current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
-          <span className="theme-desktop"><ThemeToggle label={t('theme.toggle')} /></span>
+          <span className="theme-desktop" style={{ display: 'none' }}><ThemeToggle label={t('theme.toggle')} /></span>
           <MobileMenu
             label={t('nav.menu')}
             closeLabel={t('nav.close')}

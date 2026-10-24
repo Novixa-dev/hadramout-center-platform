@@ -70,9 +70,9 @@ export default async function Home({ params }: Props) {
         <div className="container hero-custom__container">
           <div className="hero-custom__content">
             <p className="hero-custom__kicker">
-              <span className="hero-custom__flourish" aria-hidden="true">❖</span>
-              {t('home.hero.kicker')}
-              <span className="hero-custom__flourish" aria-hidden="true">❖</span>
+              <span className="hero-custom__kicker-line" aria-hidden="true" />
+              <span>{t('home.hero.kicker')}</span>
+              <span className="hero-custom__kicker-line" aria-hidden="true" />
             </p>
             <h1 id="hero-h" className="hero-custom__title">
               <span className="hero-custom__title-1">{t('home.hero.titlePart1')}</span>

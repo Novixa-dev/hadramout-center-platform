@@ -122,11 +122,14 @@ export function LangPicker({ current, currentNative, options, labels, badge = fa
         aria-controls={panelId}
         aria-label={`${labels.title}: ${currentNative}`}
       >
-        <Icon name="globe" />
         {badge ? (
-          <span className="lang-trigger__badge">| {current === 'ar' ? 'EN' : 'AR'}</span>
+          <>
+            <span className="lang-trigger__badge">{current === 'ar' ? 'EN' : 'AR'}</span>
+            <Icon name="globe" />
+          </>
         ) : (
           <>
+            <Icon name="globe" />
             <span className="lang-trigger__text" lang={current}>{currentNative}</span>
             <Icon name="down" className="icon lang-trigger__chev" />
           </>
