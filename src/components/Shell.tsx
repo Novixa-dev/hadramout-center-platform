@@ -5,7 +5,6 @@ import { clip } from '../lib/seo-text.ts';
 import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { Skyline } from './Skyline.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
-import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
 import { PriorityNav } from './client/PriorityNav.tsx';
 import { SearchToggle } from './client/SearchToggle.tsx';
@@ -104,12 +103,10 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
           <span className="header-tools__sep" aria-hidden="true" />
           <LangPicker badge current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
-          <span className="theme-desktop" style={{ display: 'none' }}><ThemeToggle label={t('theme.toggle')} /></span>
           <MobileMenu
             label={t('nav.menu')}
             closeLabel={t('nav.close')}
             items={[{ href: href('/'), label: t('nav.home') }, ...NAV.map((n) => ({ href: href(n.path), label: t(n.key) })), { href: href('/admin'), label: t('header.login') }, { href: href('/saved'), label: t('saved.title') }]}
-            footer={<ThemeToggle label={t('theme.toggle')} />}
           />
         </div>
       </div>

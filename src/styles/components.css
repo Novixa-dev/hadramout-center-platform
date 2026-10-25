@@ -305,7 +305,6 @@
   .lang-list a[data-active='true'], .lang-list a:hover { background: var(--brand-soft); }
   .lang-list a[aria-current='true'] { background: var(--brand-fill); color: var(--on-brand); }
   .lang-badge { flex: none; display: grid; place-items: center; inline-size: 2.1rem; block-size: 2.1rem; border-radius: var(--r-full); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.02em; line-height: 1; background: hsl(var(--h) 55% 90%); color: hsl(var(--h) 60% 26%); }
-  :root[data-theme='dark'] .lang-badge, :root:not([data-theme='light']) .lang-badge { background: hsl(var(--h) 35% 24%); color: hsl(var(--h) 70% 85%); }
   .lang-list a[aria-current='true'] .lang-badge { background: rgb(255 255 255 / 0.22); color: inherit; }
   .lang-names { display: flex; flex-direction: column; align-items: flex-start; min-inline-size: 0; flex: 1; line-height: 1.35; }
   .lang-names__native { font-weight: 600; }

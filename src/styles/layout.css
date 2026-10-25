@@ -27,7 +27,11 @@
       rgba(184, 195, 204, 0.15) 85%,
       transparent 100%
     );
+    border: none;
+    border-block-start: none;
     border-block-end: none;
+    outline: none;
+    box-shadow: none;
     padding: 14px clamp(1rem, 3.5vw, 50px);
   }
   [dir="ltr"] .site-header,

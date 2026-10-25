@@ -12,33 +12,33 @@
     --gold-50: #fbf6ec; --gold-100: #f4e8cf; --gold-200: #e8d1a0; --gold-300: #dbb775; --gold-400: #cfa860;
     --gold-500: #c49952; --gold-600: #a97f37; --gold-700: #86632b; --gold-800: #644a22; --gold-900: #423119;
 
-    /* semantic colors: light | dark  (text pairs verified ≥ 4.5:1, see docs/09-redesign) */
-    --bg: light-dark(#fffbf5, #0e1815);
-    --surface: light-dark(#ffffff, #14211d);
-    --surface-2: light-dark(#faf4ea, #1a2b26);
-    --surface-3: light-dark(#f3eadb, #223630);
-    --border: light-dark(#e8dfd0, #2a3c36);
-    --border-strong: light-dark(#d2c6b0, #3c534b);
-    --rule: light-dark(#dccfb8, #34493f);
-    --text: light-dark(#1f2421, #ece8df);
-    --text-2: light-dark(#3c423d, #cfd5cd);
-    --muted: light-dark(#5b5f58, #a8b1aa);
-    --brand: light-dark(var(--green-700), #5cc4a9);
-    --brand-strong: light-dark(var(--green-800), #8adbc4);
-    --brand-fill: light-dark(var(--green-700), var(--green-600));
-    --brand-soft: light-dark(var(--green-50), #173229);
+    /* semantic colors: light theme (#f6f5ef background across the entire site) */
+    --bg: #f6f5ef;
+    --surface: #ffffff;
+    --surface-2: #faf4ea;
+    --surface-3: #f3eadb;
+    --border: #e8dfd0;
+    --border-strong: #d2c6b0;
+    --rule: #dccfb8;
+    --text: #1f2421;
+    --text-2: #3c423d;
+    --muted: #5b5f58;
+    --brand: var(--green-700);
+    --brand-strong: var(--green-800);
+    --brand-fill: var(--green-700);
+    --brand-soft: var(--green-50);
     --on-brand: #ffffff;
-    --accent: light-dark(var(--gold-500), #e0b96a);
-    --accent-text: light-dark(var(--gold-700), #e0b96a);
-    --accent-soft: light-dark(var(--gold-50), #2b2616);
+    --accent: var(--gold-500);
+    --accent-text: var(--gold-700);
+    --accent-soft: var(--gold-50);
     --link: var(--brand);
-    --focus: light-dark(#1a5fb4, #8ab4f8);
-    --success: light-dark(#1e7a4a, #6fd39a);
-    --warning: light-dark(#9a6700, #e6b450);
-    --danger: light-dark(#b3261e, #ff8a80);
-    --hero-bg: light-dark(var(--green-900), #0a1411);
+    --focus: #1a5fb4;
+    --success: #1e7a4a;
+    --warning: #9a6700;
+    --danger: #b3261e;
+    --hero-bg: var(--green-900);
     --hero-text: #f6f1e7;
-    --pattern: light-dark(var(--green-700), var(--gold-400));
+    --pattern: var(--green-700);
     --scrim: rgb(10 20 16 / 0.55);
 
     /* type — display = Naskh/Serif (titles), ui = Plex (everything else), read = Naskh/Serif (long text) */
@@ -80,12 +80,11 @@
     --font-display: 'Naskh', 'Plex AR', 'Plex Arabic', 'Noto Naskh Arabic', 'Traditional Arabic', serif;
   }
 
-  :root[data-theme='light'] { color-scheme: light; }
-  :root[data-theme='dark'] { color-scheme: dark; }
+  :root, :root[data-theme='light'] { color-scheme: light; }
 
   @supports not (color: light-dark(#000, #fff)) {
     :root {
-      --bg: #fffbf5; --surface: #fff; --surface-2: #faf4ea; --surface-3: #f3eadb; --border: #e8dfd0; --border-strong: #d2c6b0; --rule: #dccfb8;
+      --bg: #f6f5ef; --surface: #fff; --surface-2: #faf4ea; --surface-3: #f3eadb; --border: #e8dfd0; --border-strong: #d2c6b0; --rule: #dccfb8;
       --text: #1f2421; --text-2: #3c423d; --muted: #5b5f58; --brand: #226a5a; --brand-strong: #1c5547; --brand-fill: #226a5a; --brand-soft: #eef7f4;
       --accent: #c49952; --accent-text: #86632b; --accent-soft: #fbf6ec; --focus: #1a5fb4; --success: #1e7a4a; --warning: #9a6700; --danger: #b3261e;
       --hero-bg: #174438; --pattern: #226a5a;
@@ -105,15 +104,15 @@
      borders become clearly visible and the focus ring gets thicker. Declared after the base tokens so it wins; the AA test reads the base values. */
   @media (prefers-contrast: more) {
     :root {
-      --border: light-dark(#6f6a5e, #8fa39a);
-      --border-strong: light-dark(#4a463d, #b4c4bc);
-      --rule: light-dark(#6f6a5e, #8fa39a);
-      --text: light-dark(#000000, #ffffff);
-      --text-2: light-dark(#14170f, #f4f7f5);
-      --muted: light-dark(#2b2f2c, #e6ece8);
-      --brand: light-dark(#0f4a3d, #9be6d0);
-      --accent-text: light-dark(#5a4318, #f2cd85);
-      --focus: light-dark(#0a3d91, #b9d2ff);
+      --border: #6f6a5e;
+      --border-strong: #4a463d;
+      --rule: #6f6a5e;
+      --text: #000000;
+      --text-2: #14170f;
+      --muted: #2b2f2c;
+      --brand: #0f4a3d;
+      --accent-text: #5a4318;
+      --focus: #0a3d91;
     }
   }
 }
