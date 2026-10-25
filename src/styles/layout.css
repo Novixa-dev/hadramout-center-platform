@@ -171,13 +171,4 @@
   .social a { display: inline-grid; place-items: center; inline-size: 2.75rem; block-size: 2.75rem; border-radius: var(--r-full); background: rgb(255 255 255 / 0.1); text-decoration: none; }
   .social a:hover { background: rgb(255 255 255 / 0.22); }
   .social a.social__wa { inline-size: auto; padding-inline: 0.85rem; gap: 0.4rem; display: inline-flex; align-items: center; font-size: var(--step--1); color: inherit; } /* two numbers: the city tells them apart */
-
-  /* decorative pattern: diamond lattice inspired by the logo's mashrabiya window */
-  .pattern { position: relative; isolation: isolate; }
-  .pattern::before {
-    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.09;
-    background-color: var(--pattern);
-    -webkit-mask-image: url('/brand/pattern.svg'); mask-image: url('/brand/pattern.svg');
-    -webkit-mask-size: 44px; mask-size: 44px;
-  }
 }

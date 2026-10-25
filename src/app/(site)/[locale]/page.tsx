@@ -65,7 +65,6 @@ export default async function Home({ params }: Props) {
       <section className="hero-custom" aria-labelledby="hero-h">
         <div className="hero-custom__bg" aria-hidden="true">
           <div className="hero-custom__overlay" />
-          <div className="hero-custom__mandala" />
         </div>
         <div className="container hero-custom__container">
           <div className="hero-custom__content">

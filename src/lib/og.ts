@@ -70,7 +70,7 @@ async function fitTitle(title: string, o: { width: number; maxHeight: number; al
 }
 
 function latticeSvg(opacity: number): string {
-  // same diamond lattice as /brand/pattern.svg (the Center's mashrabiya motif)
+  // diamond lattice (the Center's mashrabiya motif)
   return `<pattern id="lat" width="44" height="44" patternUnits="userSpaceOnUse"><g fill="none" stroke="${BRAND.gold500}" stroke-width="1.3" opacity="${opacity}"><path d="M22 6 38 22 22 38 6 22Z"/><path d="M22 14 30 22 22 30 14 22Z"/><path d="M0 -10 10 0 0 10-10 0Z"/><path d="M44 -10 54 0 44 10 34 0Z"/><path d="M0 34 10 44 0 54-10 44Z"/><path d="M44 34 54 44 44 54 34 44Z"/></g></pattern>`;
 }
 
