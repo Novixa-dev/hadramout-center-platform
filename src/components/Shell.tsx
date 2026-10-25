@@ -81,7 +81,7 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
     <header className="site-header main-header">
       <div className="container site-header__bar">
         <Link className="brand" href={href('/')} aria-label={site.name}>
-          <img className="brand__logo-img" src="/brand/manarat-logo.png" alt="منارة حضرموت" width={186} height={38} />
+          <img className="brand__logo-img" src="/brand/logo.svg" alt={site.name} width={160} height={37} />
         </Link>
         <nav className="nav header-nav" aria-label={t('nav.main')}>
           <PriorityNav
