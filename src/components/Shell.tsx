@@ -79,7 +79,7 @@ export function searchLabels(ctx: Ctx): SearchLabels {
 export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: LangOption[] }) {
   const { t, href } = ctx;
   return (
-    <header className="site-header">
+    <header className="site-header main-header">
       <div className="container site-header__bar">
         <Link className="brand" href={href('/')} aria-label={site.name}>
           <img className="brand__logo-img" src="/brand/manarat-logo.png" alt="منارة حضرموت" width={186} height={38} />

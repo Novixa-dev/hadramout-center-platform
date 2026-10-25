@@ -12,15 +12,19 @@
   .grid--2 { --min: 26rem; }
 
   /* ── header ─────────────────────────────────────────────────────────────────────────────────── */
-  .site-header {
+  .site-header,
+  .main-header {
     position: sticky;
     inset-block-start: 0;
     z-index: var(--z-header);
-    background: transparent;
+    /* تدرج لوني خطي يبدأ من اليمين (بيج فاتح) إلى اليسار (رمادي/أزرق فاتح) */
+    background: linear-gradient(to left, #f6f5ef 0%, #e2e6e9 50%, #b8c3cc 100%);
     border-block-end: none;
+    padding: 14px clamp(1rem, 3.5vw, 50px);
   }
-  [dir="ltr"] .site-header {
-    background: transparent;
+  [dir="ltr"] .site-header,
+  [dir="ltr"] .main-header {
+    background: linear-gradient(to right, #f6f5ef 0%, #e2e6e9 50%, #b8c3cc 100%);
   }
   .site-header .container {
     inline-size: min(100% - 2rem, var(--container));
