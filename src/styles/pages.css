@@ -116,7 +116,7 @@
     overflow: hidden;
     margin-block-start: -3.75rem;
     padding-block-start: 3.75rem;
-    min-block-size: clamp(500px, 40vw, 620px);
+    min-block-size: clamp(540px, 44vw, 660px);
     display: flex;
     flex-direction: column;
     justify-content: center;
