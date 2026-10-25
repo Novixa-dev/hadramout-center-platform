@@ -395,7 +395,7 @@
   .strip .stats a {
     display: flex;
     align-items: baseline;
-    gap: 0.55rem;
+    gap: 0.65rem;
     text-decoration: none;
     color: inherit;
     min-block-size: 3.5rem;
@@ -403,16 +403,27 @@
     transition: color var(--t-fast) var(--ease);
   }
   .strip .stats strong {
-    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    font-size: clamp(1.5rem, 2.2vw, 1.95rem);
     font-weight: 700;
     line-height: 1;
+    color: #173d30;
+    transition: color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
   }
   .strip .stats span {
-    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
-    font-weight: 500;
+    font-family: var(--font-ui), var(--font-body), sans-serif;
+    font-size: clamp(1.02rem, 1.15vw, 1.12rem);
+    font-weight: 600;
+    color: #2b332d;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    transition: color var(--t-fast) var(--ease);
   }
   .strip .stats a:hover strong {
-    color: var(--accent-text);
+    color: #8c6721;
+    transform: translateY(-1px);
+  }
+  .strip .stats a:hover span {
+    color: #173d30;
   }
   .split { display: grid; gap: var(--space-6) var(--space-8); align-items: start; }
   @media (min-width: 900px) { .split { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); } .split--even { grid-template-columns: 1fr 1fr; } }
