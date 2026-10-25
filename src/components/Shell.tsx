@@ -4,6 +4,7 @@ import { LANGUAGES, POPULAR_CODES } from '../i18n/languages.ts';
 import { clip } from '../lib/seo-text.ts';
 import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { Skyline } from './Skyline.tsx';
+import { HeaderScroll } from './client/HeaderScroll.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
 import { PriorityNav } from './client/PriorityNav.tsx';
@@ -79,6 +80,7 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
   const { t, href } = ctx;
   return (
     <header className="site-header main-header">
+      <HeaderScroll />
       <div className="container site-header__bar">
         <Link className="brand" href={href('/')} aria-label={site.name}>
           <img className="brand__logo-img" src="/brand/logo.svg" alt={site.name} width={160} height={37} />

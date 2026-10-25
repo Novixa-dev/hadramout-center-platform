@@ -21,10 +21,11 @@
     background: linear-gradient(to left, #f6f5ef 0% 25%, #f6f5efd9 45%, #e2e6e9c9 65%, #ffffffad 85%, #ffffff63 100%);
     border: none;
     border-block-start: none;
-    border-block-end: none;
+    border-block-end: 1px solid transparent;
     outline: none;
     box-shadow: none;
     padding: 12px 0;
+    transition: background 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   }
   :not(:lang(ar)) .site-header,
   :not(:lang(ar)) .main-header,
@@ -35,6 +36,24 @@
   [dir="ltr"] .site-header,
   [dir="ltr"] .main-header {
     background: linear-gradient(to right, #f6f5ef 0% 25%, #f6f5efd9 45%, #e2e6e9c9 65%, #ffffffad 85%, #ffffff63 100%);
+  }
+
+  /* عند النزول وتخطي الهيرو: يصبح لون الهيدر بالكامل #fbf9f4 */
+  .site-header.site-header--scrolled,
+  .main-header.site-header--scrolled,
+  :not(:lang(ar)) .site-header.site-header--scrolled,
+  :not(:lang(ar)) .main-header.site-header--scrolled,
+  html:not([lang="ar"]) .site-header.site-header--scrolled,
+  html:not([lang="ar"]) .main-header.site-header--scrolled,
+  html:not([lang^="ar"]) .site-header.site-header--scrolled,
+  html:not([lang^="ar"]) .main-header.site-header--scrolled,
+  [dir="ltr"] .site-header.site-header--scrolled,
+  [dir="ltr"] .main-header.site-header--scrolled {
+    background: #fbf9f4 !important;
+    background-color: #fbf9f4 !important;
+    background-image: none !important;
+    box-shadow: 0 4px 20px rgba(23, 61, 48, 0.05) !important;
+    border-block-end: 1px solid rgba(196, 153, 82, 0.2) !important;
   }
   .site-header .container {
     inline-size: min(100% - 2 * var(--gutter), var(--container));
