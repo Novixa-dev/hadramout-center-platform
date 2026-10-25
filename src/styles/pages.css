@@ -137,28 +137,22 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(
-      to left,
-      #f6f5ef 0%,
-      #f6f5ef 22%,
-      rgba(246, 245, 239, 0.94) 32%,
-      rgba(246, 245, 239, 0.72) 42%,
-      rgba(246, 245, 239, 0.22) 52%,
-      transparent 62%,
-      transparent 100%
+      to left, 
+      rgba(238, 235, 226, 1) 0%,      /* لون بيج صلب في أقصى اليمين (نفس لون الهيدر) */
+      rgba(238, 235, 226, 0.9) 30%,   /* بداية التلاشي التدريجي */
+      rgba(238, 235, 226, 0.4) 55%,   /* شبه شفاف في المنتصف */
+      rgba(238, 235, 226, 0) 80%      /* شفافية كاملة لإظهار الصورة بوضوح في اليسار */
     );
     z-index: 1;
     pointer-events: none;
   }
   [dir="ltr"] .hero-custom__overlay {
     background: linear-gradient(
-      to right,
-      #f6f5ef 0%,
-      #f6f5ef 22%,
-      rgba(246, 245, 239, 0.94) 32%,
-      rgba(246, 245, 239, 0.72) 42%,
-      rgba(246, 245, 239, 0.22) 52%,
-      transparent 62%,
-      transparent 100%
+      to right, 
+      rgba(238, 235, 226, 1) 0%,
+      rgba(238, 235, 226, 0.9) 30%,
+      rgba(238, 235, 226, 0.4) 55%,
+      rgba(238, 235, 226, 0) 80%
     );
   }
   .hero-custom__mandala {
@@ -325,8 +319,8 @@
     .hero-custom__overlay {
       background: linear-gradient(
         to bottom,
-        rgba(246, 245, 239, 0.94) 0%,
-        rgba(246, 245, 239, 0.98) 100%
+        rgba(238, 235, 226, 0.94) 0%,
+        rgba(238, 235, 226, 0.98) 100%
       );
     }
     .hero-custom__container {
