@@ -125,13 +125,13 @@
     position: absolute;
     inset: 0;
     background-image: url('/img.jpg');
-    background-position: left bottom;
+    background-position: left top;
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1;
   }
   [dir="ltr"] .hero-custom__bg {
-    background-position: right bottom;
+    background-position: right top;
   }
   .hero-custom__overlay {
     position: absolute;
@@ -163,20 +163,20 @@
   }
   .hero-custom__mandala {
     position: absolute;
-    inset-inline-end: 0;
+    inset-inline-start: 0;
     inset-block-start: 6%;
     inline-size: 70px;
     block-size: 220px;
     background-image: url('/brand/mandala-extracted.png');
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: center right;
+    background-position: center left;
     opacity: 0.6;
     pointer-events: none;
     z-index: 1;
   }
   [dir="ltr"] .hero-custom__mandala {
-    background-position: center left;
+    background-position: center right;
     transform: scaleX(-1);
   }
   .hero-custom__container {
