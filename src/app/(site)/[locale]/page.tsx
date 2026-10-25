@@ -63,7 +63,11 @@ export default async function Home({ params }: Props) {
   return (
     <>
       <section className="hero-custom" aria-labelledby="hero-h">
-        <div className="hero-custom__bg" aria-hidden="true">
+        <div
+          className="hero-custom__bg"
+          aria-hidden="true"
+          style={{ backgroundImage: `url('${lang.code === 'ar' ? '/img.jpg' : '/img-1.jpg'}')` }}
+        >
           <div className="hero-custom__overlay" />
         </div>
         <div className="container hero-custom__container">
