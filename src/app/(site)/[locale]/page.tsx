@@ -8,7 +8,11 @@ import { buildMetadata } from '../../../lib/seo.ts';
 import { describe } from '../../../lib/seo-text.ts';
 import { jsonLdString, siteJsonLd } from '../../../lib/jsonld.ts';
 import { isSocialName } from '../../../components/Icon.tsx';
-import { BookCard, EntryList, EventRow, IssueCard, SectionHead, Tile, VideoTile } from '../../../components/Cards.tsx';
+import { EntryList, SectionHead, VideoTile } from '../../../components/Cards.tsx';
+import { HomeEditorial } from '../../../components/HomeEditorial.tsx';
+import { TopicsSection } from '../../../components/TopicsSection.tsx';
+import { LatestIssuesSection } from '../../../components/LatestIssuesSection.tsx';
+import { PublicationsSection } from '../../../components/PublicationsSection.tsx';
 import { searchLabels } from '../../../components/Shell.tsx';
 import { SearchBox } from '../../../components/client/SearchBox.tsx';
 import { Icon } from '../../../components/Icon.tsx';
@@ -32,10 +36,10 @@ export default async function Home({ params }: Props) {
   const [site, counts, issues, articles, news, books, upcoming, recentEvents, forum, videos, topics, authors, timeline] = await Promise.all([
     getSite(locale),
     Promise.all((['article', 'book', 'magazine', 'event', 'forum', 'news'] as const).map(rowCount)),
-    latest('magazine', locale, 8),
+    latest('magazine', locale, 10),
     latest('article', locale, 6),
     latest('news', locale, 4),
-    latest('book', locale, 10),
+    latest('book', locale, 12),
     latest('event', locale, 3, { when: 'upcoming', sort: 'oldest' }),
     latest('event', locale, 3),
     latest('forum', locale, 3),
@@ -46,7 +50,18 @@ export default async function Home({ params }: Props) {
   ]);
   const [nArticles, nBooks, nIssues, nEvents, nForum, nNews] = counts;
   const events = upcoming.length ? upcoming : recentEvents;
-  const roots = topics.roots.filter((r) => r.total > 0 && r.children.length > 0).slice(0, 8);
+  const PRIORITY_ORDER = [21, 15, 26, 38, 31, 39, 35, 10, 16, 42, 23, 14];
+  const featuredTopics = [...topics.roots]
+    .filter((r) => r.total > 0)
+    .sort((a, b) => {
+      const pA = PRIORITY_ORDER.indexOf(a.id);
+      const pB = PRIORITY_ORDER.indexOf(b.id);
+      if (pA !== -1 && pB !== -1) return pA - pB;
+      if (pA !== -1) return -1;
+      if (pB !== -1) return 1;
+      return b.total - a.total;
+    })
+    .slice(0, 12);
   const fmt = new Intl.NumberFormat('en');
 
   const stats: [string, number, string][] = [
@@ -152,46 +167,9 @@ export default async function Home({ params }: Props) {
         </div>
       </div>
 
-      <section className="section section--tight">
-        <div className="container split">
-          <div>
-            <SectionHead title={t('home.latestNews')} href={href('/news')} more={t('home.news.more')} />
-            {news.length ? (
-              <div className="stack-list">
-                <Tile ctx={ctx} doc={news[0]!} type="news" lead eager />
-                {news.slice(1).map((d) => <Tile key={d.id} ctx={ctx} doc={d} type="news" row />)}
-              </div>
-            ) : null}
-          </div>
-          <div>
-            <SectionHead title={upcoming.length ? t('home.upcoming') : t('home.events')} href={href('/events')} more={t('section.viewAll')} as="h2" />
-            <div>{events.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type="event" />)}</div>
-            {forum.length ? (
-              <div style={{ marginBlockStart: 'var(--space-6)' }}>
-                <SectionHead title={t('home.forum')} href={href('/forum')} more={t('section.viewAll')} />
-                <div>{forum.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type="forum" />)}</div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </section>
+      <HomeEditorial ctx={ctx} news={news} events={events} forum={forum} upcoming={upcoming} />
 
-      <section className="section section--tight cv section--tint">
-        <div className="container">
-          <SectionHead title={t('home.topics')} href={href('/topics')} more={t('home.topics.more')} lead={t('home.topics.lead')} />
-          <div className="topic-grid">
-            {roots.map((r) => (
-              <article key={r.id} className="topic-card">
-                <p className="topic-card__count">{t('topics.count', { count: r.total })}</p>
-                <h3><Link href={href(`/topics/${r.id}`)}>{r.name}</Link></h3>
-                <ul aria-label={t('topics.sub')}>
-                  {r.children.filter((c) => c.own > 0).slice(0, 4).map((c) => <li key={c.id}><Link href={href(`/topics/${c.id}`)}>{c.name}</Link></li>)}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TopicsSection ctx={ctx} topics={featuredTopics} limit={12} />
 
       <section className="section section--tight cv">
         <div className="container split split--even">
@@ -223,23 +201,9 @@ export default async function Home({ params }: Props) {
         </div>
       </section>
 
-      <section className="section section--tight cv section--tint">
-        <div className="container">
-          <SectionHead title={t('home.issues')} href={href('/magazines')} more={t('section.viewAll')} />
-          <div className="shelf shelf--issues">
-            {issues.map((d) => <IssueCard key={d.id} ctx={ctx} doc={d} />)}
-          </div>
-        </div>
-      </section>
+      <LatestIssuesSection ctx={ctx} issues={issues} />
 
-      <section className="section section--tight cv">
-        <div className="container">
-          <SectionHead title={t('home.books')} href={href('/books')} more={t('section.viewAll')} />
-          <div className="shelf">
-            {books.map((d) => <BookCard key={d.id} ctx={ctx} doc={d} />)}
-          </div>
-        </div>
-      </section>
+      <PublicationsSection ctx={ctx} books={books} />
 
       {videos.length ? (
         <section className="section section--tight cv section--tint">

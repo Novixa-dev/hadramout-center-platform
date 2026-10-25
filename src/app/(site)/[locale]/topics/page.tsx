@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { absolute, isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { getSite } from '../../../../lib/data.ts';
@@ -7,6 +6,7 @@ import { getTopics } from '../../../../lib/facets.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
 import { breadcrumbJsonLd, collectionJsonLd, jsonLdString } from '../../../../lib/jsonld.ts';
 import { PageHead } from '../../../../components/PageHead.tsx';
+import { TopicsHub } from '../../../../components/TopicsHub.tsx';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -23,7 +23,7 @@ export default async function TopicsPage({ params }: Props) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const ctx = makeCtx(locale);
-  const { t, href, lang } = ctx;
+  const { t, lang } = ctx;
   const [topics, site] = await Promise.all([getTopics(locale), getSite(locale)]);
   // curated topics have sub-categories; stray single categories are listed together under "other"
   const roots = topics.roots.filter((r) => r.total > 0 && r.children.length > 0);
@@ -35,33 +35,8 @@ export default async function TopicsPage({ params }: Props) {
   return (
     <>
       <PageHead ctx={ctx} crumbs={[{ name: t('topics.title') }]} title={t('topics.title')} lead={t('topics.lead')} />
-      <div className="container section" style={{ paddingBlockStart: 'var(--space-6)' }}>
-        <div className="topic-grid">
-          {roots.map((r) => (
-            <article key={r.id} className="topic-card">
-              <p className="topic-card__count">{t('topics.count', { count: r.total })}</p>
-              <h2 style={{ fontSize: 'var(--step-1)' }}><Link href={href(`/topics/${r.id}`)} style={{ color: 'var(--text)', textDecoration: 'none' }} className="stretch__link">{r.name}</Link></h2>
-              {r.description ? <p style={{ color: 'var(--text-2)', fontSize: 'var(--step--1)' }}>{r.description}</p> : null}
-              {r.children.length ? (
-                <ul aria-label={t('topics.sub')}>
-                  {r.children.filter((c) => c.own > 0).slice(0, 8).map((c) => (
-                    <li key={c.id}><Link href={href(`/topics/${c.id}`)}>{c.name}</Link> <span aria-hidden="true">({c.own})</span></li>
-                  ))}
-                </ul>
-              ) : null}
-            </article>
-          ))}
-          {others.length ? (
-            <article className="topic-card">
-              <p className="topic-card__count">{t('topics.count', { count: others.reduce((s, r) => s + r.total, 0) })}</p>
-              <h2 style={{ fontSize: 'var(--step-1)' }}>{t('topics.other')}</h2>
-              <ul aria-label={t('topics.sub')}>
-                {others.map((c) => <li key={c.id}><Link href={href(`/topics/${c.id}`)}>{c.name}</Link> <span aria-hidden="true">({c.total})</span></li>)}
-              </ul>
-            </article>
-          ) : null}
-        </div>
-        {topics.uncategorised > 0 ? <p className="notice" style={{ marginBlockStart: 'var(--space-6)' }}>{t('topics.uncategorised', { count: topics.uncategorised })} <Link href={href('/articles')}>{t('topics.browseAll')}</Link></p> : null}
+      <div className="container" style={{ paddingBlockStart: 'var(--space-6)', paddingBlockEnd: 'var(--space-8)' }}>
+        <TopicsHub ctx={ctx} roots={roots} others={others} uncategorised={topics.uncategorised} />
       </div>
       {ld.map((j, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(j) }} />)}
     </>

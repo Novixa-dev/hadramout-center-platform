@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import type { Ctx } from '../lib/ctx.ts';
 import { LANGUAGES, POPULAR_CODES } from '../i18n/languages.ts';
-import { clip } from '../lib/seo-text.ts';
 import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { Skyline } from './Skyline.tsx';
 import { HeaderScroll } from './client/HeaderScroll.tsx';
@@ -125,74 +124,269 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
     { name: 'youtube', label: 'YouTube', url: social.youtube },
   ];
   const whatsapp = (site.whatsapp ?? []).filter((w) => w.number);
+
+  // Exact 8 links for Column 2: Browse
+  const browseLinks = [
+    { label: t('nav.news'), path: '/news' },
+    { label: t('nav.articles'), path: '/articles' },
+    { label: t('nav.books'), path: '/books' },
+    { label: t('nav.magazines'), path: '/magazines' },
+    { label: t('nav.events'), path: '/events' },
+    { label: t('nav.videos'), path: '/videos' },
+    { label: t('nav.topics'), path: '/topics' },
+    { label: t('nav.forum'), path: '/forum' },
+  ];
+
+  // Exact 5 links for Column 3: Research Tools
+  const researchLinks = [
+    { label: t('nav.search'), path: '/search', isRss: false },
+    { label: t('nav.authors'), path: '/authors', isRss: false },
+    { label: t('nav.timeline'), path: '/timeline', isRss: false },
+    { label: t('saved.title'), path: '/saved', isRss: false },
+    { label: t('footer.rss'), path: `/feeds/${ctx.lang.code}/all.xml`, isRss: true },
+  ];
+
+  // Exact 5 links for Column 4: Center Information
+  const centerLinks = [
+    { label: t('nav.about'), path: '/about' },
+    { label: t('nav.contact'), path: '/contact' },
+    { label: t('footer.privacy'), path: '/privacy' },
+    { label: t('footer.terms'), path: '/terms' },
+    { label: t('footer.accessibility'), path: '/accessibility' },
+  ];
+
+  const fullDescription = ctx.lang.code === 'ar'
+    ? (site.description || 'يعد مركز حضرموت للدراسات التاريخية والتوثيق والنشر من المراكز العلمية المستقلة، يمارس نشاطه في مجالات الدراسات والبحوث التاريخية والترجمة والتوثيق والنشر، ويخصص حيزاً كبيراً من نشاطه العلمي لدراسة تاريخ حضرموت وحضارتها وأعلامها.')
+    : (site.tagline && !/[\u0600-\u06FF]/.test(site.tagline)
+      ? site.tagline
+      : 'The Hadramout Center for Historical Studies, Documentation and Publishing is an independent scientific research institution dedicated to historical studies, documentation, translation, and preserving Hadramout heritage.');
+
   return (
-    <footer className="site-footer pattern">
-      <Skyline className="site-footer__skyline" />
-      <div className="container">
-        <div className="footer-news">
-          <div>
-            <h2>{t('newsletter.title')}</h2>
-            <p>{t('newsletter.text')}</p>
-          </div>
-          <NewsletterForm lang={ctx.lang.code} variant="inline" labels={{ email: t('newsletter.email'), submit: t('newsletter.submit'), ok: t('newsletter.ok'), error: t('newsletter.error') }} />
-        </div>
-        <div className="site-footer__grid">
-          <div>
-            <h2>{site.name}</h2>
-            {site.description ? <p className="site-footer__about">{clip(site.description, 230)}</p> : null}
-            <div className="social" style={{ marginBlockStart: '1rem' }}>
-              {links.filter((l) => l.url).map((l) => (
-                <a key={l.label} href={l.url} target="_blank" rel="noopener noreferrer" aria-label={`${l.label} (${t('a11y.newWindow')})`} title={l.label}>
-                  <SocialIcon name={l.name} />
-                </a>
-              ))}
-              {whatsapp.map((w) => (
-                <a key={w.number} className="social__wa" href={`https://wa.me/${w.number.replace(/[^0-9]/g, '').replace(/^0+/, '')}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${w.label ?? ''} ${w.number} (${t('a11y.newWindow')})`} title={`WhatsApp ${w.label ?? ''} ${w.number}`}>
-                  <SocialIcon name="whatsapp" />
-                  {w.label ? <span aria-hidden="true">{w.label}</span> : null}
-                </a>
-              ))}
+    <footer className="hc-footer" role="contentinfo">
+      {/* ── 1. Newsletter Subscription Section ────────────────────────────── */}
+      <section className="hc-footer__newsletter-section" aria-labelledby="hc-nl-title">
+        <div className="container">
+          <div className="hc-nl-card">
+            <div className="hc-nl-card__bg-pattern" aria-hidden="true">
+              <Icon name="rosette" className="hc-nl-card__rosette" />
+            </div>
+
+            <div className="hc-nl-card__header">
+              <div className="hc-nl-card__badge">
+                <Icon name="mail" className="hc-nl-card__badge-icon" />
+                <span>{ctx.lang.code === 'ar' ? 'التحديثات والمستجدات' : 'Stay Updated'}</span>
+              </div>
+              <h2 id="hc-nl-title" className="hc-nl-card__title">
+                {t('newsletter.title')}
+              </h2>
+              <p className="hc-nl-card__text">
+                {t('newsletter.text')}
+              </p>
+            </div>
+
+            <div className="hc-nl-card__form-area">
+              <NewsletterForm
+                lang={ctx.lang.code}
+                variant="premium"
+                labels={{
+                  email: t('newsletter.email'),
+                  submit: t('newsletter.submit'),
+                  ok: t('newsletter.ok'),
+                  error: t('newsletter.error'),
+                }}
+              />
             </div>
           </div>
-          <nav aria-label={t('footer.explore')}>
-            <h3>{t('footer.explore')}</h3>
-            <ul>
-              {[...PRIMARY, SECONDARY[0], SECONDARY[1]].map((n) => (
-                <li key={n.path}><Link href={href(n.path)}>{t(n.key)}</Link></li>
-              ))}
-            </ul>
-          </nav>
-          <nav aria-label={t('footer.research')}>
-            <h3>{t('footer.research')}</h3>
-            <ul>
-              <li><Link href={href('/search')}>{t('nav.search')}</Link></li>
-              <li><Link href={href('/authors')}>{t('nav.authors')}</Link></li>
-              <li><Link href={href('/timeline')}>{t('nav.timeline')}</Link></li>
-              <li><Link href={href('/saved')}>{t('saved.title')}</Link></li>
-              <li><a href={`/feeds/${ctx.lang.code}/all.xml`}>{t('footer.rss')}</a></li>
-            </ul>
-          </nav>
-          <nav aria-label={t('footer.about')}>
-            <h3>{t('footer.about')}</h3>
-            <ul>
-              <li><Link href={href('/about')}>{t('nav.about')}</Link></li>
-              <li><Link href={href('/contact')}>{t('nav.contact')}</Link></li>
-              <li><Link href={href('/privacy')}>{t('footer.privacy')}</Link></li>
-              <li><Link href={href('/terms')}>{t('footer.terms')}</Link></li>
-              <li><Link href={href('/accessibility')}>{t('footer.accessibility')}</Link></li>
-            </ul>
-          </nav>
-          <div>
-            <h3>{t('contact.title')}</h3>
-            <ul>
-              {site.address ? <li style={{ display: 'flex', gap: '0.5rem', alignItems: 'start' }}><Icon name="pin" /><span>{site.address}</span></li> : null}
-              {site.email ? <li><a href={`mailto:${site.email}`} style={{ direction: 'ltr', unicodeBidi: 'plaintext' }}><Icon name="mail" />&nbsp;{site.email}</a></li> : null}
-            </ul>
+        </div>
+      </section>
+
+      {/* Decorative Skyline of Shibam Towers */}
+      <div className="hc-footer__skyline-wrapper" aria-hidden="true">
+        <Skyline className="hc-footer__skyline" />
+      </div>
+
+      {/* ── 2. Main Footer Content (5 Columns) ────────────────────────────── */}
+      <div className="hc-footer__main">
+        <div className="container">
+          <div className="hc-footer__grid">
+            {/* Column 1: Center Identity */}
+            <div className="hc-footer__col hc-footer__col--identity">
+              <Link href={href('/')} className="hc-footer__logo-badge" aria-label={site.name}>
+                <img
+                  src="/brand/logo.svg"
+                  alt={site.name}
+                  width={180}
+                  height={42}
+                  className="hc-footer__logo-img"
+                />
+              </Link>
+
+              <h3 className="hc-footer__brand-title">
+                {site.name}
+              </h3>
+
+              <p className="hc-footer__brand-desc">
+                {fullDescription}
+              </p>
+
+              <div className="hc-footer__social-block">
+                <div className="hc-footer__social-list">
+                  {links.filter((l) => l.url).map((l) => (
+                    <a
+                      key={l.label}
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hc-footer__social-btn"
+                      aria-label={`${l.label} (${t('a11y.newWindow')})`}
+                      title={l.label}
+                    >
+                      <SocialIcon name={l.name} />
+                    </a>
+                  ))}
+                </div>
+
+                {whatsapp.length > 0 && (
+                  <div className="hc-footer__wa-list">
+                    {whatsapp.map((w) => (
+                      <a
+                        key={w.number}
+                        className="hc-footer__wa-pill"
+                        href={`https://wa.me/${w.number.replace(/[^0-9]/g, '').replace(/^0+/, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`WhatsApp ${w.label ?? ''} ${w.number} (${t('a11y.newWindow')})`}
+                        title={`WhatsApp ${w.label ?? ''} ${w.number}`}
+                      >
+                        <SocialIcon name="whatsapp" className="hc-footer__wa-icon" />
+                        <span>{w.label ? `واتساب ${w.label}` : w.number}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Column 2: Browse (تصفّح) */}
+            <nav className="hc-footer__col hc-footer__col--nav" aria-label={t('footer.explore')}>
+              <h3 className="hc-footer__col-heading">
+                <span className="hc-footer__col-heading-line" aria-hidden="true" />
+                <span>{t('footer.explore')}</span>
+              </h3>
+              <ul className="hc-footer__links-menu">
+                {browseLinks.map((item) => (
+                  <li key={item.path} className="hc-footer__links-item">
+                    <Link href={href(item.path)} className="hc-footer__nav-link">
+                      <span className="hc-footer__nav-dot" aria-hidden="true" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Column 3: Research Tools (أدوات الباحث) */}
+            <nav className="hc-footer__col hc-footer__col--nav" aria-label={t('footer.research')}>
+              <h3 className="hc-footer__col-heading">
+                <span className="hc-footer__col-heading-line" aria-hidden="true" />
+                <span>{t('footer.research')}</span>
+              </h3>
+              <ul className="hc-footer__links-menu">
+                {researchLinks.map((item) => (
+                  <li key={item.path} className="hc-footer__links-item">
+                    {item.isRss ? (
+                      <a href={item.path} className="hc-footer__nav-link hc-footer__nav-link--rss">
+                        <Icon name="rss" className="hc-footer__rss-icon" />
+                        <span>{item.label}</span>
+                      </a>
+                    ) : (
+                      <Link href={href(item.path)} className="hc-footer__nav-link">
+                        <span className="hc-footer__nav-dot" aria-hidden="true" />
+                        <span>{item.label}</span>
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Column 4: Center Info (المركز) */}
+            <nav className="hc-footer__col hc-footer__col--nav" aria-label={t('footer.about')}>
+              <h3 className="hc-footer__col-heading">
+                <span className="hc-footer__col-heading-line" aria-hidden="true" />
+                <span>{t('footer.about')}</span>
+              </h3>
+              <ul className="hc-footer__links-menu">
+                {centerLinks.map((item) => (
+                  <li key={item.path} className="hc-footer__links-item">
+                    <Link href={href(item.path)} className="hc-footer__nav-link">
+                      <span className="hc-footer__nav-dot" aria-hidden="true" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* Column 5: Contact Info (تواصل معنا) */}
+            <div className="hc-footer__col hc-footer__col--contact">
+              <h3 className="hc-footer__col-heading">
+                <span className="hc-footer__col-heading-line" aria-hidden="true" />
+                <span>{t('contact.title')}</span>
+              </h3>
+              <div className="hc-footer__contact-items">
+                {/* Address */}
+                <div className="hc-footer__contact-card">
+                  <div className="hc-footer__contact-icon" aria-hidden="true">
+                    <Icon name="pin" />
+                  </div>
+                  <div className="hc-footer__contact-body">
+                    <span className="hc-footer__contact-tag">{ctx.lang.code === 'ar' ? 'المقر والعنوان' : t('contact.address')}</span>
+                    <address className="hc-footer__contact-text">
+                      {site.address || 'عمارة باشريف، بجانب مسجد الغالبي، حي الشهيد خالد، المكلا، الجمهورية اليمنية'}
+                    </address>
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div className="hc-footer__contact-card">
+                  <div className="hc-footer__contact-icon" aria-hidden="true">
+                    <Icon name="mail" />
+                  </div>
+                  <div className="hc-footer__contact-body">
+                    <span className="hc-footer__contact-tag">{ctx.lang.code === 'ar' ? 'البريد الإلكتروني الرسمي' : t('contact.email')}</span>
+                    <a
+                      href={`mailto:${site.email || 'info@hadramout.center'}`}
+                      className="hc-footer__contact-email-link"
+                      dir="ltr"
+                    >
+                      {site.email || 'info@hadramout.center'}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="site-footer__legal">
-          <span>© {new Date().getFullYear()} {site.name} — {t('footer.rights')}</span>
-          <span>{t('footer.built')} <a href="https://novixa.dev" target="_blank" rel="noopener noreferrer">Novixa</a></span>
+      </div>
+
+      {/* ── 3. Copyright and Bottom Legal Bar ──────────────────────────────── */}
+      <div className="hc-footer__bottom-bar">
+        <div className="container hc-footer__bottom-container">
+          <p className="hc-footer__copy-text">
+            © {new Date().getFullYear()} {site.name} — {t('footer.rights')}
+          </p>
+          <p className="hc-footer__dev-text">
+            <span>{t('footer.built')}</span>{' '}
+            <a
+              href="https://novixa.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hc-footer__dev-link"
+            >
+              Novixa
+            </a>
+          </p>
         </div>
       </div>
     </footer>

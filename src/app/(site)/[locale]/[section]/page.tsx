@@ -9,6 +9,7 @@ import { buildMetadata } from '../../../../lib/seo.ts';
 import { describe } from '../../../../lib/seo-text.ts';
 import { activeFilters, isCustomised, parseListQuery } from '../../../../lib/list-query.ts';
 import { Listing } from '../../../../components/Listing.tsx';
+import { NewsListing } from '../../../../components/NewsListing.tsx';
 import { PageHead } from '../../../../components/PageHead.tsx';
 
 type Props = { params: Promise<{ locale: string; section: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
@@ -59,7 +60,11 @@ export default async function SectionPage({ params, searchParams }: Props) {
   return (
     <>
       <PageHead ctx={ctx} crumbs={[{ name: title }]} title={title} lead={t(LEAD_KEY[info.type])} />
-      <Listing ctx={ctx} type={info.type} basePath={`/${section}`} searchParams={sp} title={title} crumbs={[]} description={t(LEAD_KEY[info.type])} />
+      {info.type === 'news' ? (
+        <NewsListing ctx={ctx} basePath={`/${section}`} searchParams={sp} title={title} description={t(LEAD_KEY[info.type])} />
+      ) : (
+        <Listing ctx={ctx} type={info.type} basePath={`/${section}`} searchParams={sp} title={title} crumbs={[]} description={t(LEAD_KEY[info.type])} />
+      )}
     </>
   );
 }
