@@ -69,7 +69,6 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>
       <body>
-        <a className="skip-link" href="#main">{ctx.t('site.skip')}</a>
         {isProductionSite() ? null : <StagingBar text={ctx.t('staging.banner')} />}
         <Header ctx={ctx} site={site} langs={langOptions(ready)} />
         <main id="main" tabIndex={-1}>{children}</main>
