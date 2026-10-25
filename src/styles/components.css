@@ -92,16 +92,17 @@
     display: flex;
     align-items: center;
     background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--r-full);
-    box-shadow: 0 6px 24px -4px rgba(40, 30, 20, 0.07);
-    padding: 4px;
-    gap: 0.4rem;
+    box-shadow: 0 8px 24px -4px rgba(40, 30, 20, 0.09), 0 2px 6px rgba(40, 30, 20, 0.04);
+    padding: 5px 6px;
+    gap: 0.5rem;
+    min-block-size: 3.25rem;
     transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
   }
   .sbox--hero .sbox__row:focus-within {
-    border-color: #b59a68;
-    box-shadow: 0 8px 28px -4px rgba(40, 30, 20, 0.12), 0 0 0 2px rgba(181, 154, 104, 0.2);
+    border-color: #c49952;
+    box-shadow: 0 10px 28px -4px rgba(40, 30, 20, 0.14), 0 0 0 3px rgba(196, 153, 82, 0.18);
   }
   .sbox--hero .sbox__field {
     display: flex;
@@ -113,9 +114,9 @@
   .sbox--hero .sbox__field::after {
     content: '';
     position: absolute;
-    inset-inline-start: 2.25rem;
-    inset-block-start: 22%;
-    block-size: 56%;
+    inset-inline-start: 2.5rem;
+    inset-block-start: 20%;
+    block-size: 60%;
     inline-size: 1px;
     background-color: #e5ded3;
     pointer-events: none;
@@ -125,54 +126,63 @@
     border: none;
     box-shadow: none;
     font-family: var(--font-ui);
-    font-size: 0.82rem;
+    font-size: 0.95rem;
     color: #1e2822;
     inline-size: 100%;
-    min-block-size: 2.2rem;
-    padding-inline-start: 2.85rem;
-    padding-inline-end: 0.5rem;
+    min-block-size: 2.6rem;
+    padding-inline-start: 3.1rem;
+    padding-inline-end: 0.75rem;
     outline: none;
   }
   .sbox--hero .sbox__field .input::placeholder {
-    color: #8c9690;
-    font-size: 0.8rem;
+    color: #7b8580;
+    font-size: 0.92rem;
   }
   .sbox--hero .sbox__icon {
     position: absolute;
-    inset-inline-start: 0.75rem;
+    inset-inline-start: 0.85rem;
     inset-block-start: 50%;
     transform: translateY(-50%);
-    width: 1.05rem;
-    height: 1.05rem;
-    color: #7d8780;
-    stroke-width: 1.8;
+    width: 1.15rem;
+    height: 1.15rem;
+    color: #6e7972;
+    stroke-width: 1.9;
   }
   .sbox__hero-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    background-color: #243f33;
+    gap: 0.45rem;
+    background-color: #173d30;
     color: #ffffff;
     border: none;
     border-radius: var(--r-full);
-    padding: 0.38rem 1.15rem;
+    padding: 0.5rem 1.4rem;
     font-family: var(--font-ui);
-    font-size: 0.82rem;
+    font-size: 0.92rem;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
-    transition: background-color var(--t-fast) var(--ease);
+    transition: background-color var(--t-fast) var(--ease),
+                box-shadow var(--t-fast) var(--ease),
+                transform var(--t-fast) var(--ease);
     flex-shrink: 0;
-    min-block-size: 2.2rem;
+    min-block-size: 2.6rem;
+    box-shadow: 0 2px 6px rgba(23, 61, 48, 0.22);
   }
   .sbox__hero-btn:hover {
-    background-color: #1a2f26;
+    background-color: #102d23;
     color: #ffffff;
+    box-shadow: 0 4px 10px rgba(23, 61, 48, 0.3);
+    transform: translateY(-1px);
+  }
+  .sbox__hero-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(23, 61, 48, 0.2);
   }
   .sbox__hero-btn-icon {
-    width: 0.95rem;
-    height: 0.95rem;
+    width: 1rem;
+    height: 1rem;
     stroke-width: 2.2;
   }
 
