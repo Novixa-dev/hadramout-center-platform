@@ -95,7 +95,8 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
             {t('header.register')}
           </Link>
           <Link href={href('/admin')} className="header-btn header-btn--solid">
-            {t('header.login')}
+            <Icon name="user" className="header-btn__icon" />
+            <span>{t('header.login')}</span>
           </Link>
           <Link href={href('/admin')} className="header-icon-btn" aria-label={t('header.login')} title={t('header.login')}>
             <Icon name="user" />
