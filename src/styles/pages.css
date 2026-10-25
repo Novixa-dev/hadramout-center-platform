@@ -114,9 +114,9 @@
     position: relative;
     background-color: #f7f3ec;
     overflow: hidden;
-    margin-block-start: -4.5rem;
-    padding-block-start: 4.5rem;
-    min-block-size: clamp(480px, 48vw, 560px);
+    margin-block-start: -3.75rem;
+    padding-block-start: 3.75rem;
+    min-block-size: clamp(500px, 40vw, 620px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -124,7 +124,7 @@
   .hero-custom__bg {
     position: absolute;
     inset: 0;
-    background-image: url('/brand/hero-bg.jpg');
+    background-image: url('/img.jpg');
     background-position: left bottom;
     background-size: cover;
     background-repeat: no-repeat;
@@ -138,42 +138,45 @@
     inset: 0;
     background: linear-gradient(
       to left,
-      #f7f3ec 0% 36%,
-      #f7f3ecc4 48%,
-      #f7f3ec40 60%,
-      #f7f3ec00 76%,
-      #00000000 100%
+      #f7f3ec 0%,
+      #f7f3ec 22%,
+      rgba(247, 243, 236, 0.94) 32%,
+      rgba(247, 243, 236, 0.72) 42%,
+      rgba(247, 243, 236, 0.22) 52%,
+      transparent 62%,
+      transparent 100%
     );
     z-index: 1;
+    pointer-events: none;
   }
   [dir="ltr"] .hero-custom__overlay {
     background: linear-gradient(
       to right,
-      #f7f3ec 0% 36%,
-      #f7f3ecc4 48%,
-      #f7f3ec40 60%,
-      #f7f3ec00 76%,
-      #00000000 100%
+      #f7f3ec 0%,
+      #f7f3ec 22%,
+      rgba(247, 243, 236, 0.94) 32%,
+      rgba(247, 243, 236, 0.72) 42%,
+      rgba(247, 243, 236, 0.22) 52%,
+      transparent 62%,
+      transparent 100%
     );
   }
   .hero-custom__mandala {
     position: absolute;
-    right: 0;
-    top: 0;
-    inline-size: 75px;
-    block-size: 200px;
+    inset-inline-end: 0;
+    inset-block-start: 6%;
+    inline-size: 70px;
+    block-size: 220px;
     background-image: url('/brand/mandala-extracted.png');
     background-size: contain;
     background-repeat: no-repeat;
-    background-position: top right;
-    opacity: 0.65;
+    background-position: center right;
+    opacity: 0.6;
     pointer-events: none;
     z-index: 1;
   }
   [dir="ltr"] .hero-custom__mandala {
-    right: auto;
-    left: 0;
-    background-position: top left;
+    background-position: center left;
     transform: scaleX(-1);
   }
   .hero-custom__container {
@@ -181,10 +184,10 @@
     z-index: 2;
     display: flex;
     justify-content: flex-start;
-    padding-block: clamp(2rem, 3.5vw, 3.5rem);
+    padding-block: clamp(1.5rem, 3.5vh, 2.75rem);
   }
   .hero-custom__content {
-    max-inline-size: 29rem;
+    max-inline-size: clamp(21rem, 24vw, 25rem);
     inline-size: 100%;
     display: flex;
     flex-direction: column;
@@ -195,50 +198,48 @@
   .hero-custom__kicker {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
-    color: #a88c5d;
-    font-size: 0.88rem;
+    gap: 0.5rem;
+    color: #a6824c;
+    font-size: clamp(0.78rem, 0.9vw, 0.86rem);
     font-weight: 600;
-    margin-block: 0 0.5rem;
+    margin-block: 0 0.35rem;
     letter-spacing: 0.3px;
     align-self: flex-start;
   }
   .hero-custom__kicker-line {
     display: inline-block;
-    inline-size: 40px;
+    inline-size: 30px;
     block-size: 1px;
-    background: linear-gradient(to left, rgba(168, 140, 93, 0.6), transparent);
-  }
-  .hero-custom__kicker-line:first-child {
-    background: linear-gradient(to right, rgba(168, 140, 93, 0.6), transparent);
+    background-color: #c9b99e;
+    opacity: 0.8;
   }
   .hero-custom__title {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.15rem;
     font-family: var(--font-display);
-    font-size: clamp(1.65rem, 2.35vw, 2.35rem);
-    line-height: 1.32;
+    font-size: clamp(1.65rem, 2.1vw, 2.35rem);
+    line-height: 1.28;
     font-weight: 800;
-    margin-block: 0 0.85rem;
+    margin-block: 0 0.65rem;
   }
   .hero-custom__title-1 {
-    color: #1d3b2f;
+    color: #17261f;
   }
   .hero-custom__title-2 {
-    color: #ab8b55;
+    color: #a88243;
   }
   .hero-custom__lead {
-    color: #4e5852;
-    font-size: clamp(0.85rem, 1.05vw, 0.94rem);
-    line-height: 1.75;
-    margin-block: 0 1.5rem;
-    max-inline-size: 28rem;
+    color: #48534d;
+    font-size: clamp(0.82rem, 0.95vw, 0.92rem);
+    line-height: 1.7;
+    margin-block: 0 1.2rem;
+    max-inline-size: 24rem;
   }
   .hero-custom__search {
     inline-size: 100%;
-    max-inline-size: 29rem;
-    margin-block-end: 1.75rem;
+    max-inline-size: 100%;
+    margin-block-end: 1.15rem;
   }
   .hero-custom__search .sbox,
   .hero-custom__search .sbox__row {
@@ -250,9 +251,9 @@
     align-items: center;
     justify-content: space-between;
     inline-size: 100%;
-    max-inline-size: 28.5rem;
-    padding-inline: 0.25rem;
-    margin-block-end: 1.25rem;
+    max-inline-size: 100%;
+    padding-inline: 0.15rem;
+    margin-block-end: 0.9rem;
   }
   .hero-custom__stat {
     display: flex;
@@ -268,40 +269,40 @@
   .hero-custom__stat-head {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
   }
   .hero-custom__stat-num {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: clamp(1.15rem, 1.4vw, 1.35rem);
     font-weight: 700;
-    color: #1b2820;
+    color: #17261f;
     direction: ltr;
     letter-spacing: -0.3px;
   }
   .hero-custom__stat-icon {
-    inline-size: 1.15rem;
-    block-size: 1.15rem;
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
     color: #243f33;
     stroke-width: 2;
     flex-shrink: 0;
   }
   .hero-custom__stat-label {
-    font-size: 0.82rem;
-    color: #4e5852;
+    font-size: 0.78rem;
+    color: #556059;
     font-weight: 500;
   }
   .hero-custom__stat-divider {
     inline-size: 1px;
-    block-size: 32px;
+    block-size: 26px;
     background-color: #d8cfbe;
   }
   .hero-custom__divider {
     display: flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.75rem;
     inline-size: 100%;
-    max-inline-size: 28.5rem;
-    margin-block-start: 0.15rem;
+    max-inline-size: 100%;
+    margin-block-start: 0;
   }
   .hero-custom__divider-line {
     flex: 1;
@@ -309,14 +310,18 @@
     background-color: #d8cfbe;
   }
   .hero-custom__divider-rosette {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
+    inline-size: 1.2rem;
+    block-size: 1.2rem;
     color: #a88243;
     stroke-width: 1.5;
     flex-shrink: 0;
   }
 
   @media (max-width: 860px) {
+    .hero-custom {
+      min-block-size: auto;
+      padding-block: 5.5rem 3rem;
+    }
     .hero-custom__overlay {
       background: linear-gradient(
         to bottom,
@@ -330,6 +335,7 @@
     .hero-custom__content {
       align-items: center;
       text-align: center;
+      max-inline-size: 28rem;
     }
     .hero-custom__kicker {
       align-self: center;
