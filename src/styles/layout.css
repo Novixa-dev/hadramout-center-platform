@@ -26,9 +26,15 @@
     box-shadow: none;
     padding: 12px 0;
   }
+  :not(:lang(ar)) .site-header,
+  :not(:lang(ar)) .main-header,
+  html:not([lang="ar"]) .site-header,
+  html:not([lang="ar"]) .main-header,
+  html:not([lang^="ar"]) .site-header,
+  html:not([lang^="ar"]) .main-header,
   [dir="ltr"] .site-header,
   [dir="ltr"] .main-header {
-    background: linear-gradient(to right, #ffffff63 0%, #ffffffad 15%, #e2e6e9c9 35%, #f6f5efd9 55%, #f6f5ef 75% 100%);
+    background: linear-gradient(to right, #f6f5ef 0% 25%, #f6f5efd9 45%, #e2e6e9c9 65%, #ffffffad 85%, #ffffff63 100%);
   }
   .site-header .container {
     inline-size: min(100% - 2 * var(--gutter), var(--container));
