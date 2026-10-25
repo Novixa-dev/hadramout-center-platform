@@ -91,9 +91,9 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           />
         </nav>
         <div className="header-tools">
-          <Link href={href('/contact')} className="header-btn header-btn--outline">
-            {t('header.register')}
-          </Link>
+          <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
+          <span className="header-tools__sep" aria-hidden="true" />
+          <LangPicker badge current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
           <Link href={href('/admin')} className="header-btn header-btn--solid">
             <Icon name="user" className="header-btn__icon" />
             <span>{t('header.login')}</span>
@@ -101,9 +101,6 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           <Link href={href('/admin')} className="header-icon-btn" aria-label={t('header.login')} title={t('header.login')}>
             <Icon name="user" />
           </Link>
-          <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
-          <span className="header-tools__sep" aria-hidden="true" />
-          <LangPicker badge current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
           <MobileMenu
             label={t('nav.menu')}
             closeLabel={t('nav.close')}
