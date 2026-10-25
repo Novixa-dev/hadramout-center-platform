@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Icon } from '../Icon.tsx';
+import { Icon, type IconName } from '../Icon.tsx';
 
 export interface SearchLabels {
   label: string;
@@ -56,8 +56,30 @@ export function SearchBox({ action, lang, labels, size = 'md', variant = 'defaul
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [active, setActive] = useState(-1);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedSort, setSelectedSort] = useState('');
   const wrap = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  const isAr = lang === 'ar';
+
+  const typeOptions: { value: string; label: string; icon: IconName }[] = [
+    { value: '', label: isAr ? 'الكل (جميع الأقسام)' : 'All Sections', icon: 'grid' },
+    { value: 'articles', label: isAr ? 'المقالات والدراسات' : 'Articles & Studies', icon: 'manuscript' },
+    { value: 'books', label: isAr ? 'الكتب والمؤلفات' : 'Books & Publications', icon: 'book' },
+    { value: 'magazines', label: isAr ? 'المجلات العلمية' : 'Scientific Journals', icon: 'layers' },
+    { value: 'news', label: isAr ? 'الأخبار والتقارير' : 'News & Reports', icon: 'file' },
+    { value: 'events', label: isAr ? 'الفعاليات والندوات' : 'Events & Seminars', icon: 'calendar' },
+    { value: 'videos', label: isAr ? 'المرئيات والتسجيلات' : 'Videos & Media', icon: 'play' },
+  ];
+
+  const sortOptions = [
+    { value: 'relevance', label: isAr ? 'الأكثر صلة' : 'Most Relevant' },
+    { value: 'newest', label: isAr ? 'الأحدث تاريخاً' : 'Newest' },
+    { value: 'oldest', label: isAr ? 'الأقدم تاريخاً' : 'Oldest' },
+  ];
 
   useEffect(() => {
     if (autoFocus) input.current?.focus();
@@ -93,13 +115,16 @@ export function SearchBox({ action, lang, labels, size = 'md', variant = 'defaul
   }, [q, lang]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open && !filterOpen) return;
     const onDown = (e: MouseEvent) => {
-      if (!wrap.current?.contains(e.target as Node)) setOpen(false);
+      if (!wrap.current?.contains(e.target as Node)) {
+        setOpen(false);
+        setFilterOpen(false);
+      }
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [open]);
+  }, [open, filterOpen]);
 
   const term = q.trim();
   const showRecent = open && term.length < 2 && recent.length > 0;
@@ -127,6 +152,11 @@ export function SearchBox({ action, lang, labels, size = 'md', variant = 'defaul
       e.preventDefault();
       go(options[active].href);
     } else if (e.key === 'Escape') {
+      if (filterOpen) {
+        e.stopPropagation();
+        setFilterOpen(false);
+        return;
+      }
       if (open) {
         e.stopPropagation();
         setOpen(false);
@@ -145,12 +175,36 @@ export function SearchBox({ action, lang, labels, size = 'md', variant = 'defaul
           // cannot perform its native submission: relying on the default action made Enter and the search button do nothing in the header panel.
           // Without JavaScript the plain GET form still works.
           e.preventDefault();
-          const params = new URLSearchParams({ ...(hiddenFields ?? {}), q: term });
-          go(term ? `${action}?${params.toString()}` : action);
+          const params = new URLSearchParams({
+            ...(hiddenFields ?? {}),
+            ...(selectedType ? { type: selectedType } : {}),
+            ...(selectedSort ? { sort: selectedSort } : {}),
+            q: term,
+          });
+          go(term || selectedType || selectedSort ? `${action}?${params.toString()}` : action);
         }}
       >
         <div className="sbox__field">
-          <Icon name={variant === 'hero' ? 'sliders' : 'search'} className="icon sbox__icon" />
+          {variant === 'hero' ? (
+            <button
+              type="button"
+              className={`sbox__filter-toggle ${filterOpen ? 'sbox__filter-toggle--open' : ''} ${selectedType || selectedSort ? 'sbox__filter-toggle--active' : ''}`}
+              aria-label={isAr ? 'خيارات تصفية البحث' : 'Search filter options'}
+              aria-expanded={filterOpen}
+              title={isAr ? 'خيارات تصفية البحث' : 'Search filter options'}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen(false);
+                setFilterOpen((v) => !v);
+              }}
+            >
+              <Icon name="sliders" className="icon sbox__icon" />
+              {selectedType || selectedSort ? <span className="sbox__filter-badge" aria-hidden="true" /> : null}
+            </button>
+          ) : (
+            <Icon name="search" className="icon sbox__icon" />
+          )}
           <label className="sr-only" htmlFor={`${uid}-q`}>{labels.label}</label>
           <input
             ref={input}
@@ -164,6 +218,7 @@ export function SearchBox({ action, lang, labels, size = 'md', variant = 'defaul
               setOpen(true);
             }}
             onFocus={() => {
+              setFilterOpen(false);
               setRecent(readRecent());
               setOpen(true);
             }}
@@ -179,6 +234,8 @@ export function SearchBox({ action, lang, labels, size = 'md', variant = 'defaul
           />
         </div>
         {hiddenFields ? Object.entries(hiddenFields).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />) : null}
+        {selectedType ? <input type="hidden" name="type" value={selectedType} /> : null}
+        {selectedSort ? <input type="hidden" name="sort" value={selectedSort} /> : null}
         {variant === 'hero' ? (
           <button className="sbox__hero-btn" type="submit">
             <Icon name="search" className="sbox__hero-btn-icon" />
@@ -188,6 +245,107 @@ export function SearchBox({ action, lang, labels, size = 'md', variant = 'defaul
           <button className="btn btn--gold" type="submit">{labels.submit}</button>
         )}
       </form>
+      {variant === 'hero' && filterOpen ? (
+        <>
+          <div
+            className="sbox__filter-backdrop"
+            aria-hidden="true"
+            onClick={() => setFilterOpen(false)}
+          />
+          <div
+            className="sbox__filter-menu"
+            ref={filterRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={isAr ? 'خيارات تصفية البحث' : 'Search filter options'}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sbox__filter-sheet-bar" aria-hidden="true" />
+            <div className="sbox__filter-head">
+              <div className="sbox__filter-title">
+                <Icon name="sliders" className="sbox__filter-title-icon" />
+                <span>{isAr ? 'تصفية نتائج البحث' : 'Filter Search Results'}</span>
+              </div>
+              <div className="sbox__filter-actions">
+                {selectedType || selectedSort ? (
+                  <button
+                    type="button"
+                    className="sbox__filter-reset"
+                    onClick={() => {
+                      setSelectedType('');
+                      setSelectedSort('');
+                    }}
+                  >
+                    {isAr ? 'إعادة ضبط' : 'Reset'}
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className="sbox__filter-close"
+                  aria-label={isAr ? 'إغلاق' : 'Close'}
+                  onClick={() => setFilterOpen(false)}
+                >
+                  <Icon name="close" className="sbox__filter-close-icon" />
+                </button>
+              </div>
+            </div>
+
+            <div className="sbox__filter-section">
+              <span className="sbox__filter-section-title">{isAr ? 'نوع المحتوى' : 'Content Type'}</span>
+              <div className="sbox__filter-chips">
+                {typeOptions.map((opt) => {
+                  const isSelected = selectedType === opt.value || (!selectedType && opt.value === '');
+                  const isAll = opt.value === '';
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      className={`sbox__filter-chip ${isAll ? 'sbox__filter-chip--all' : ''} ${isSelected ? 'sbox__filter-chip--selected' : ''}`}
+                      onClick={() => setSelectedType(opt.value)}
+                    >
+                      <Icon name={opt.icon} className="sbox__filter-chip-icon" />
+                      <span>{opt.label}</span>
+                      {isSelected ? <Icon name="check" className="sbox__filter-chip-check" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="sbox__filter-section">
+              <span className="sbox__filter-section-title">{isAr ? 'الترتيب حسب' : 'Sort by'}</span>
+              <div className="sbox__filter-sorts">
+                {sortOptions.map((opt) => {
+                  const isSelected = (selectedSort || 'relevance') === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      className={`sbox__filter-sort-btn ${isSelected ? 'sbox__filter-sort-btn--selected' : ''}`}
+                      onClick={() => setSelectedSort(opt.value === 'relevance' ? '' : opt.value)}
+                    >
+                      <span>{opt.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="sbox__filter-foot">
+              <button
+                type="button"
+                className="sbox__filter-apply-btn"
+                onClick={() => {
+                  setFilterOpen(false);
+                  input.current?.focus();
+                }}
+              >
+                {isAr ? 'تطبيق التصفية' : 'Apply Filter'}
+              </button>
+            </div>
+          </div>
+        </>
+      ) : null}
       {options.length > 0 || (open && term.length >= 2 && (busy || done)) ? (
         <div className="sbox__panel">
           {showRecent ? <p className="sbox__group" aria-hidden="true">{labels.recent}</p> : null}
