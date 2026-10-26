@@ -59,7 +59,7 @@
     "next": "16.4.1",
     "payload": "3.91.0",
     "react": "19.3.1",
-    "react-dom": "19.2.6",
+    "react-dom": "19.3.1",
     "sanitize-html": "2.18.1",
     "sharp": "0.35.5"
   },
@@ -68,7 +68,7 @@
     "@types/jsdom": "30.0.0",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",
-    "@types/react-dom": "19.2.3",
+    "@types/react-dom": "19.3.0",
     "@types/sanitize-html": "2.16.2",
     "axe-core": "4.14.0",
     "eslint": "10.13.0",
