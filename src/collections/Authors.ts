@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { contentAccess, L, localizedText, lockForReviewers } from './shared.ts';
+import { contentAccess, L, lockForReviewers, titleText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Authors: CollectionConfig = {
@@ -16,7 +16,7 @@ export const Authors: CollectionConfig = {
     ],
   },
   fields: lockForReviewers([
-    localizedText('name', L('الاسم', 'Name'), { required: true, admin: { description: L('يُنقحر تلقائياً للغات الأخرى.', 'Transliterated automatically for other languages.') } }),
+    titleText('name', L('الاسم', 'Name'), { required: true, admin: { description: L('يُنقحر تلقائياً للغات الأخرى.', 'Transliterated automatically for other languages.') } }),
     {
       name: 'nameKey',
       type: 'text',

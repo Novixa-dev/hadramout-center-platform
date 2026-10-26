@@ -130,6 +130,20 @@ export function splitAuthors(line: string): string[] {
   return out;
 }
 
+/**
+ * Titles and names as stored: no invisible direction controls (LRM/RLM, embeddings, isolates — pasted from Word/PDF),
+ * no decorative kashida runs inside words ("روايـــة" → "رواية"), a single tatweel kept where it is a mark ("1000هـ"),
+ * collapsed whitespace. Idempotent.
+ */
+export function cleanTitle(text: string): string {
+  return text
+    .replace(/[‎‏‪-‮⁦-⁩]/g, '')
+    .replace(/ـ{2,}(?=\p{Script=Arabic})/gu, '')
+    .replace(/ـ{2,}/g, 'ـ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function wordCount(text: string): number {
   return tokenize(normalizeArabic(text)).length;
 }

@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { cleanBody, contentAccess, L, localizedText, lockForReviewers } from './shared.ts';
+import { cleanBody, contentAccess, L, lockForReviewers, titleText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Pages: CollectionConfig = {
@@ -16,7 +16,7 @@ export const Pages: CollectionConfig = {
     ],
   },
   fields: lockForReviewers([
-    localizedText('title', L('العنوان', 'Title'), { required: true }),
+    titleText('title', L('العنوان', 'Title'), { required: true }),
     {
       name: 'slug',
       type: 'text',

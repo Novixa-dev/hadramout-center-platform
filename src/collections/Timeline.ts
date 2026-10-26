@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { contentAccess, L, localizedText, lockForReviewers } from './shared.ts';
+import { contentAccess, L, localizedText, lockForReviewers, titleText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Timeline: CollectionConfig = {
@@ -17,7 +17,7 @@ export const Timeline: CollectionConfig = {
     ],
   },
   fields: lockForReviewers([
-    localizedText('title', L('العنوان', 'Title'), { required: true }),
+    titleText('title', L('العنوان', 'Title'), { required: true }),
     { name: 'body', type: 'textarea', localized: true, label: L('الوصف', 'Description') },
     localizedText('era', L('العصر', 'Era')),
     {

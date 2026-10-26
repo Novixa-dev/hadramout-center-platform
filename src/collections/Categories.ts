@@ -1,5 +1,5 @@
 import type { CollectionConfig, Where } from 'payload';
-import { contentAccess, L, localizedText, lockForReviewers } from './shared.ts';
+import { contentAccess, L, lockForReviewers, titleText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Categories: CollectionConfig = {
@@ -17,7 +17,7 @@ export const Categories: CollectionConfig = {
     ],
   },
   fields: lockForReviewers([
-    localizedText('name', L('الاسم', 'Name'), { required: true }),
+    titleText('name', L('الاسم', 'Name'), { required: true }),
     {
       name: 'kind',
       type: 'select',

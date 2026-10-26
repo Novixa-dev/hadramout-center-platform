@@ -1,4 +1,5 @@
 import type { Access, CollectionConfig, Field, FieldAccess, TextField } from 'payload';
+import { cleanTitle } from '../lib/arabic.ts';
 import { sanitizeBody } from '../lib/sanitize.ts';
 
 /** Admin labels are bilingual: the admin UI itself is Arabic-first with English available. */
@@ -73,6 +74,13 @@ const localizedText = (name: string, label: Record<string, string>, extra: Parti
 
 export { localizedText };
 
+/** Every stored title/name is tidied (direction controls, kashida runs, whitespace) so search, cards and copy behave. */
+export const tidyTitle = ({ value }: { value?: unknown }) => (typeof value === 'string' ? cleanTitle(value) : value);
+
+/** A localized title or name field: like localizedText, tidied on every write. */
+export const titleText = (name: string, label: Record<string, string>, extra: Partial<Omit<TextField, 'hasMany'>> = {}): Field =>
+  localizedText(name, label, { ...extra, hooks: { ...extra.hooks, beforeChange: [...(extra.hooks?.beforeChange ?? []), tidyTitle] } });
+
 /** Fields every content type shares: title/excerpt/body, cover, status, dates and import bookkeeping. */
 /** Every stored body passes the same allow-list as imported/translated text (editor input is never trusted). */
 export const cleanBody = ({ value }: { value?: unknown }) => (typeof value === 'string' ? sanitizeBody(value) : value);
@@ -80,7 +88,7 @@ export const cleanBody = ({ value }: { value?: unknown }) => (typeof value === '
 export function baseFields(opts: { body?: boolean; cover?: boolean; date?: boolean } = {}): Field[] {
   const { body = true, cover = true, date = true } = opts;
   const fields: Field[] = [
-    localizedText('title', L('العنوان', 'Title'), { required: true }),
+    titleText('title', L('العنوان', 'Title'), { required: true }),
     {
       name: 'excerpt',
       type: 'textarea',

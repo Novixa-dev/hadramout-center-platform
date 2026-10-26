@@ -5,6 +5,7 @@ import * as migration_20261015_222500_curate_topics from './20261015_222500_cura
 import * as migration_20261015_223000_editorial_fixes from './20261015_223000_editorial_fixes';
 import * as migration_20261015_224000_accessibility_statement from './20261015_224000_accessibility_statement';
 import * as migration_20261020_164115_locales_parent_id_indexes from './20261020_164115_locales_parent_id_indexes';
+import * as migration_20261027_120000_tidy_titles from './20261027_120000_tidy_titles';
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20261020_164115_locales_parent_id_indexes.up,
     down: migration_20261020_164115_locales_parent_id_indexes.down,
     name: '20261020_164115_locales_parent_id_indexes'
+  },
+  {
+    up: migration_20261027_120000_tidy_titles.up,
+    down: migration_20261027_120000_tidy_titles.down,
+    name: '20261027_120000_tidy_titles',
   },
 ];

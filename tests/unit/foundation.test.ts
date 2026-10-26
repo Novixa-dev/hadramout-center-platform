@@ -1,7 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { html, raw, esc, attrs, cx, jsonForScript } from '../../src/lib/html.ts';
-import { normalizeArabic, stripClitics, toFtsQuery, authorKey, cleanPersonName, splitAuthors, toLatinDigits, readingMinutes } from '../../src/lib/arabic.ts';
+import { normalizeArabic, stripClitics, toFtsQuery, authorKey, cleanPersonName, cleanTitle, splitAuthors, toLatinDigits, readingMinutes } from '../../src/lib/arabic.ts';
 import { parseArabicDate, toIsoDate, formatDate, formatHijri } from '../../src/lib/dates.ts';
 import { openExtras } from '../../src/lib/extras.ts';
 import { indexDocument, removeFromIndex, searchIndex, suggestTitles, toIndexText } from '../../src/db/search.ts';
@@ -31,6 +31,17 @@ describe('html template', () => {
 });
 
 describe('arabic utilities', () => {
+  test('cleanTitle drops direction controls and kashida runs, keeps the hijri mark, is idempotent', () => {
+    assert.equal(cleanTitle('‎⁨السلطنة القعيطية⁩'), 'السلطنة القعيطية');
+    assert.equal(cleanTitle('حضرموت أرض العلماء‬‬‬ .. ابن عبيد الله'), 'حضرموت أرض العلماء .. ابن عبيد الله');
+    assert.equal(cleanTitle('سفر النجوم .. من روايـــة (العَنِيْن )'), 'سفر النجوم .. من رواية (العَنِيْن )');
+    assert.equal(cleanTitle('الأسبــاب والنتــائج (1000هـ/ 1500م – 1143هـ)'), 'الأسباب والنتائج (1000هـ/ 1500م – 1143هـ)');
+    assert.equal(cleanTitle('سنة 1200هـــ  تقريباً'), 'سنة 1200هـ تقريباً');
+    assert.equal(cleanTitle('Plain title'), 'Plain title');
+    const once = cleanTitle('اسم المــــولـــود‏');
+    assert.equal(once, 'اسم المولود');
+    assert.equal(cleanTitle(once), once);
+  });
   test('normalizeArabic unifies letters and strips marks', () => {
     assert.equal(normalizeArabic('أَحْمَد إبراهيم آل'), normalizeArabic('احمد ابراهيم ال'));
     assert.equal(normalizeArabic('مدرسة'), 'مدرسه');
