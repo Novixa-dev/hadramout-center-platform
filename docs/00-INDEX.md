@@ -19,6 +19,7 @@
 | `research` (جديد) | `CLAUDE_WORKFLOW_BEST_PRACTICES.md` — كيف نعمل مع Claude بأفضل أسلوب (مصادر رسمية) وما اعتمدناه |
 | `security` | `SECURITY_REVIEW.md` — الضوابط الموثّقة والبنود المفتوحة |
 | `planning`, `reports` | `planning/PROGRESS.md` نقطة المتابعة · `planning/ROADMAP.md` خارطة الطريق · `planning/BACKLOG.md` سجل المهام · `planning/FEATURE_PLAN.md` خطة الميزات ووعودنا · `planning/NEXT_PLAN.md` الخطة القادمة مرتبة بالأولوية · `research/PARITY_AND_PEER_REVIEW_2026-10-24.md` مطابقة الموقع القديم ومقارنة المواقع المشابهة · `reports/BASELINE_REPORT.md` خط الأساس · `reports/RELEASE_READINESS.md` جاهزية الإطلاق |
+| **ابدأ هنا (2026-10-27)** | `reports/REVIEW_2026-10-27.md` آخر مراجعة شاملة والحكم على الجاهزية · `reports/RELEASE_READINESS.md` · `06-handover/ACCESS_AND_ACCOUNTS.md` الحسابات والأدوار وأين كلمات المرور (بلا أسرار — المستودع عام) · `04-qa/02-test-runbook.md` كل مستويات الاختبار وأوامرها |
 | `archive/v1` | وثائق النسخة الأولى (مرجع تاريخي — لا يُعتمد عليها) |
 
 ## أوامر أساسية

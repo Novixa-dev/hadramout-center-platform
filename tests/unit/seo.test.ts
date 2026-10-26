@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import sharp from 'sharp';
 import { clip, cleanDescription, describe as describeText, isoOrUndefined, twitterHandle, withPage, titlePart } from '../../src/lib/seo-text.ts';
 import { breadcrumbJsonLd, collectionJsonLd, contentJsonLd, jsonLdString, personJsonLd, siteJsonLd } from '../../src/lib/jsonld.ts';
-import { drawable, OG_HEIGHT, OG_WIDTH, renderOgCard } from '../../src/lib/og.ts';
+import { bodyImageSources, cardWorthy, drawable, OG_HEIGHT, OG_WIDTH, renderOgCard } from '../../src/lib/og.ts';
 
 const org = { name: 'مركز حضرموت', origin: 'https://example.org', logo: 'https://example.org/icons/icon-512.png' };
 const authorUrl = (id: number) => `https://example.org/ar/authors/${id}`;
@@ -115,6 +115,32 @@ describe('social cards', () => {
   test('an unreadable cover does not break the card', async () => {
     const png = await renderOgCard({ dir: 'rtl', org: 'مركز حضرموت', title: 'عنوان', host: 'example.org', cover: Buffer.from('not an image') });
     assert.equal((await sharp(png).metadata()).width, OG_WIDTH);
+  });
+  test('a framed landscape illustration keeps the photo off the title area', async () => {
+    const photo = await sharp({ create: { width: 1024, height: 517, channels: 3, background: '#d04040' } }).jpeg().toBuffer();
+    const red = async (png: Buffer, x: number, y: number) => {
+      const { data } = await sharp(png).extract({ left: x, top: y, width: 1, height: 1 }).raw().toBuffer({ resolveWithObject: true });
+      return data[0]! > 150 && data[1]! < 110;
+    };
+    const framed = await renderOgCard({ dir: 'rtl', org: 'مركز حضرموت', title: 'عنوان', host: 'example.org', cover: photo, frame: true });
+    const bleed = await renderOgCard({ dir: 'rtl', org: 'مركز حضرموت', title: 'عنوان', host: 'example.org', cover: photo });
+    assert.ok(await red(framed, 300, 315), 'the illustration is inside the frame on the inline-end side');
+    assert.ok(!(await red(framed, 900, 315)), 'the title side stays on the branded background');
+    assert.ok(await red(bleed, 900, 250), 'without frame the photo fills the card');
+  });
+  test('bodyImageSources returns the first real images in reading order', () => {
+    const html = '<p>نص</p><img src="data:image/gif;base64,R0lG"><img alt="x" src="https://files.hadramout.center/media/2016/09/a.jpg"><img src="/icons/i.svg"><img src=\'/b.png\'><img src="/c.png">';
+    assert.deepEqual(bodyImageSources(html), ['https://files.hadramout.center/media/2016/09/a.jpg', '/b.png']);
+    assert.deepEqual(bodyImageSources(null), []);
+  });
+  test('cardWorthy accepts a photo and rejects divider strips, tall scans, thumbnails and junk', async () => {
+    const img = (width: number, height: number) => sharp({ create: { width, height, channels: 3, background: '#888' } }).jpeg().toBuffer();
+    assert.ok(await cardWorthy(await img(1024, 517)));
+    assert.ok(await cardWorthy(await img(600, 800)));
+    assert.ok(!(await cardWorthy(await img(1024, 75))), 'divider strip');
+    assert.ok(!(await cardWorthy(await img(600, 1400))), 'tall scan');
+    assert.ok(!(await cardWorthy(await img(300, 300))), 'thumbnail');
+    assert.ok(!(await cardWorthy(Buffer.from('not an image'))));
   });
 });
 

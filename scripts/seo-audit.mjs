@@ -127,7 +127,7 @@ async function auditPage(url) {
     }
     if (og['og:image:width'] !== '1200' || og['og:image:height'] !== '630') add(path, 'warn', 'og:image:width/height not 1200/630');
   }
-  const expectedType = /\/books\/\d+$/.test(path) ? 'book' : /\/(articles|news)\/\d+$/.test(path) ? 'article' : /\/videos\/\d+$/.test(path) && html.includes('i.ytimg.com/vi/') ? 'video.other' : null;
+  const expectedType = /\/books\/\d+$/.test(path) ? 'book' : /\/authors\/\d+$/.test(path) ? 'profile' : /\/(articles|news)\/\d+$/.test(path) ? 'article' : /\/videos\/\d+$/.test(path) && html.includes('i.ytimg.com/vi/') ? 'video.other' : null;
   if (expectedType && og['og:type'] && og['og:type'] !== expectedType) add(path, 'warn', `og:type is ${og['og:type']}, expected ${expectedType}`);
   if (og['og:type'] === 'video.other' && !og['og:video']) add(path, 'warn', 'video.other without og:video');
   if (og['og:type'] === 'article' && !root.querySelector('meta[property="article:modified_time"]')) add(path, 'warn', 'article without article:modified_time');

@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { cleanBody, contentAccess, L, localizedText } from './shared.ts';
+import { cleanBody, contentAccess, L, localizedText, lockForReviewers } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Pages: CollectionConfig = {
@@ -15,7 +15,7 @@ export const Pages: CollectionConfig = {
       },
     ],
   },
-  fields: [
+  fields: lockForReviewers([
     localizedText('title', L('العنوان', 'Title'), { required: true }),
     {
       name: 'slug',
@@ -47,5 +47,5 @@ export const Pages: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     { name: 'translationMeta', type: 'json', admin: { hidden: true } },
-  ],
+  ]),
 };

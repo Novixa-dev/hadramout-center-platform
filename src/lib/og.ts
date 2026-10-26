@@ -29,6 +29,8 @@ export interface OgInput {
   meta?: string;
   /** raw image bytes of the cover/photo, when the page has one */
   cover?: Buffer | null;
+  /** show the image framed beside the text instead of full-bleed (article illustrations often carry their own lettering) */
+  frame?: boolean;
   /** host shown at the bottom, e.g. hadramout-center.novixa.dev */
   host: string;
 }
@@ -119,7 +121,8 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
       input = { ...input, cover: null };
     }
   }
-  const portrait = Boolean(coverMeta && coverMeta.height / coverMeta.width > 1.15);
+  const ratio = coverMeta ? coverMeta.height / coverMeta.width : 0;
+  const portrait = Boolean(coverMeta && (ratio > 1.15 || input.frame)); // "portrait" = the image sits in a frame beside the text
   const photo = Boolean(coverMeta && !portrait);
 
   const layers: Layer[] = [];
@@ -133,8 +136,9 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
   }
 
   // text column: full width, or narrowed beside a portrait cover
-  const coverW = 318;
-  const coverH = 477;
+  // a book cover keeps its 2:3 frame; a framed landscape illustration gets a wider frame close to its own shape
+  const coverW = ratio > 1.15 || !portrait ? 318 : 430;
+  const coverH = ratio > 1.15 || !portrait ? 477 : Math.round(Math.min(477, Math.max(300, coverW * ratio)));
   const innerStart = PAD + 14;
   const colWidth = portrait ? OG_WIDTH - innerStart - PAD - coverW - 56 : OG_WIDTH - innerStart - PAD;
 
@@ -143,7 +147,9 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
   const markMeta = await sharp(mark).metadata();
   const markW = markMeta.width ?? 58;
   layers.push({ input: mark, left: edgeStart(markW, innerStart), top: 54 });
-  const org = await textImg(input.org, { size: 28, weight: 400, color: BRAND.gold100, width: colWidth - markW - 24, align });
+  // the header keeps the book-card width: a wider framed illustration starts below it
+  const headerWidth = portrait ? OG_WIDTH - innerStart - PAD - 318 - 56 : colWidth;
+  const org = await textImg(input.org, { size: 28, weight: 400, color: BRAND.gold100, width: headerWidth - markW - 24, align });
   const orgX = innerStart + markW + 24;
   layers.push({ input: org.input, left: rtl ? OG_WIDTH - orgX - org.width : orgX, top: 54 + Math.round((104 - org.height) / 2) });
 
@@ -177,7 +183,7 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
 
   // portrait cover (book / magazine issue), on the inline-end side
   if (portrait && input.cover) {
-    const cover = await sharp(input.cover).resize(coverW, coverH, { fit: 'cover', position: 'top' }).composite([{ input: roundedMask(coverW, coverH, 14), blend: 'dest-in' }]).png().toBuffer();
+    const cover = await sharp(input.cover).resize(coverW, coverH, { fit: 'cover', position: ratio > 1.15 ? 'top' : 'attention' }).composite([{ input: roundedMask(coverW, coverH, 14), blend: 'dest-in' }]).png().toBuffer();
     const x = rtl ? PAD + 6 : OG_WIDTH - PAD - 6 - coverW;
     const cy = Math.round((OG_HEIGHT - coverH) / 2) - 6;
     layers.push({ input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${coverW + 24}" height="${coverH + 24}"><rect x="12" y="16" width="${coverW}" height="${coverH}" rx="16" fill="#000" opacity="0.38"/></svg>`), left: x - 12, top: cy - 8 });
@@ -212,6 +218,40 @@ export async function loadCoverBytes(src: string | null | undefined): Promise<Bu
     }
   } catch {
     /* fall through */
+  }
+  return null;
+}
+
+/** `src` of the first images inside an HTML body, in reading order (data: URIs and icons skipped). */
+export function bodyImageSources(html: string | null | undefined, max = 2): string[] {
+  const out: string[] = [];
+  for (const m of (html ?? '').matchAll(/<img\b[^>]*?\ssrc=["']([^"']+)["']/gi)) {
+    const src = m[1]!.trim();
+    if (/^data:|\.svg(\?|$)|\/(emoji|icons?|smilies)\//i.test(src)) continue;
+    out.push(src);
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
+/** A body image may illustrate a card when it is big enough to stay sharp and is not a divider strip or a tall scan. */
+export async function cardWorthy(bytes: Buffer): Promise<boolean> {
+  try {
+    const { width = 0, height = 0 } = await sharp(bytes).metadata();
+    const ratio = height / (width || 1);
+    return width >= 480 && height >= 300 && ratio >= 0.4 && ratio <= 1.6;
+  } catch {
+    return false;
+  }
+}
+
+/** The first card-worthy image of an article body (mirrored copy first, else the old host); null when there is none. */
+export async function loadBodyPhoto(html: string | null | undefined): Promise<Buffer | null> {
+  // three candidates: the first image is often an author thumbnail or a title strip, the photo comes next
+  for (const src of bodyImageSources(html, 3)) {
+    const local = src.replace(/^https?:\/\/files\.hadramout\.center\/media\//i, '/legacy-media/');
+    const bytes = (await loadCoverBytes(local)) ?? (local !== src ? await loadCoverBytes(src) : null);
+    if (bytes && (await cardWorthy(bytes))) return bytes;
   }
   return null;
 }

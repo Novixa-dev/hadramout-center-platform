@@ -42,6 +42,11 @@ const nextConfig: NextConfig = {
       { source: '/((?!admin|api).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
     ];
   },
+  // Legacy item URLs (/articles/9597) are rewritten to the id-mapping handler here, not in proxy.ts: a rewrite returned by the proxy is
+  // fetched over HTTP by the server itself and a reset connection ("Failed to proxy … ECONNRESET") answered 500 now and then.
+  async rewrites() {
+    return { beforeFiles: [{ source: '/:section(news|articles|books|magazines|events|forum|videos)/:id(\\d+)', destination: '/legacy/:section/:id' }], afterFiles: [], fallback: [] };
+  },
   output: 'standalone',
   outputFileTracingExcludes: { '*': ['./docs/**', './tests/**', './data/**', './content/**', './deploy/**', './.git/**', './.next/cache/**'] },
   agentRules: false,

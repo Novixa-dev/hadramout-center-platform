@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-21 · **Next:** [NEXT_PLAN](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
+**Last updated:** 2026-10-27 · **Latest review:** [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -79,6 +79,17 @@ Production was re-verified after the first deploy: health, GraphQL 404, REST cla
 | ARCH-001 (search blocking) downgraded: ~165 ms warm, ~0.5 s TTFB live like any page | measured on a database copy and live |
 | Dependabot (grouped Payload updates, weekly) | `.github/dependabot.yml` |
 | Arabic client checklist + meeting agenda | [client-requirements-checklist-ar](../06-handover/client-requirements-checklist-ar.md) |
+
+## 2026-10-27 — review, OG pass, redirect matrix, role hardening
+
+| Change | Evidence |
+|---|---|
+| Redirect matrix for every legacy id, inside `npm run smoke` (CI); legacy rewrite moved to `next.config.ts` (proxy rewrite hit `ECONNRESET` 500s); `/magazine` → 308 | 1,603–1,663 checks, 0 failed |
+| Article social cards use the article's own illustration (framed), ~42% of articles; JSON-LD image on every article; `og:type profile` on authors; card revision `?d=4` | unit tests; cards inspected; smoke SEO audit 0/0 |
+| Reviewer role limited to translatable fields (SEC-010); staff read only their own user (SEC-003) | unit tests + Payload local-API checks |
+| Docs: access/roles guide, git-ignored local credentials file (repo is public), test runbook, review, readiness | — |
+
+Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0, e2e 56/56.
 
 ## Next actionable tasks (in order)
 

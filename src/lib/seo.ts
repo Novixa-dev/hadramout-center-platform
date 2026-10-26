@@ -24,7 +24,7 @@ export type CardRef = { key: string } | { kind: string; id: number; v?: string |
  * Revision of the card design. It is part of every card URL because shared caches (Cloudflare, messengers) keep a card for up to 30 days:
  * bump it whenever the look of the cards changes so every page points at fresh images.
  */
-export const OG_DESIGN = 3;
+export const OG_DESIGN = 4;
 
 export function cardUrl(lang: string, card: CardRef): string {
   if ('key' in card) return absolute(`/og/${lang}/${card.key}.png?d=${OG_DESIGN}`);
@@ -43,7 +43,7 @@ export interface MetaInput {
   /** explicit absolute image URL (overrides the generated card) */
   image?: string | null;
   imageAlt?: string;
-  type?: 'website' | 'article' | 'book' | 'video';
+  type?: 'website' | 'article' | 'book' | 'video' | 'profile';
   /** languages in which this exact page is complete (for hreflang). Defaults to the UI-ready set. */
   readyLangs?: string[];
   /** true when the visitor's language is only partially available on this page → noindex */
@@ -121,7 +121,9 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
           ? { ...og, type: 'book', authors: m.authors?.map((a) => a.url), isbn: m.isbn ?? undefined, releaseDate: isoOrUndefined(m.publishedTime), tags: m.tags }
           : ogType === 'video' && m.videoUrl
             ? { ...og, type: 'video.other', videos: [{ url: m.videoUrl, secureUrl: m.videoUrl, type: 'text/html', width: 1280, height: 720 }] }
-            : { ...og, type: 'website' },
+            : ogType === 'profile'
+              ? { ...og, type: 'profile' }
+              : { ...og, type: 'website' },
     twitter: { card: 'summary_large_image', title: og.title, description: description || undefined, images: [{ url: image, alt: imageAlt }], ...(handle ? { site: handle } : {}) },
     other: m.extra,
   };

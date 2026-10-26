@@ -54,3 +54,6 @@ tsconfig.tsbuildinfo
 # stray npm recovery copies
 .node_modules.recovery-*/
 .smoke-data/
+
+# local-only notes with real credentials (the repository is public)
+*.local.md

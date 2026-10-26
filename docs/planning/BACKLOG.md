@@ -1,7 +1,7 @@
 # Backlog
 
 **Purpose:** the single register of open and closed findings from the 2026-10 audit, with status. Detail (evidence, acceptance criteria, verification) stays in the source document linked per row.
-**Last updated:** 2026-10-20 · **Compiled** once from the finding tables of the audit documents; from now on this file is maintained by hand. Update the status here, not in the source documents.
+**Last updated:** 2026-10-27 (MIG-007/QA-3 done; security items SEC-003 and SEC-010 closed — see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md)) · **Compiled** once from the finding tables of the audit documents; from now on this file is maintained by hand. Update the status here, not in the source documents.
 **Statuses:** READY (can be done without outside input) · PARTIAL (started, remainder listed) · BLOCKED (needs the Center, an editor, or owner credentials) · DONE (changed and verified; evidence in the note).
 **Related:** [ROADMAP](ROADMAP.md) · [PROGRESS](PROGRESS.md)
 
@@ -10,9 +10,9 @@
 | Status | Total | high | medium | low | info |
 |---|---:|---:|---:|---:|---:|
 | READY | 62 | 0 | 15 | 32 | 15 |
-| PARTIAL | 7 | 0 | 6 | 1 | 0 |
+| PARTIAL | 6 | 0 | 5 | 1 | 0 |
 | BLOCKED | 18 | 4 | 9 | 4 | 1 |
-| DONE | 14 | 1 | 10 | 3 | 0 |
+| DONE | 15 | 1 | 11 | 3 | 0 |
 
 Severity is the auditor's claim backed by cited evidence; the planned adversarial re-verification did not run (usage limit). The 5 remaining high-severity items are LEG-001, LEG-002, DATA-001, MIG-001, MIG-003 (ARCH-001 was downgraded on measurement).
 
@@ -91,7 +91,6 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | ARCH-006 | medium | No error boundaries, 45 empty catch blocks, no telemetry | route error boundary added; ~45 empty catch blocks and error telemetry remain | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-019 | medium | No tests for translation engine, hooks, rate limit, proxy, routes; no integration tier | CI runtime smoke tier added (PR #14); translation engine, hooks and rate limiter still untested | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | DATA-005 | medium | splitAuthors splits on /, creating authors named الشيخ and أ.م.د; older doc item C1 is wrong | importer fixed; authors 78 and 159 and their articles need an editorial data migration | [doc](../architecture/DATA_MODEL_AND_TAXONOMY.md) |
-| MIG-007 | medium | No automated test of the legacy redirect map | smoke covers one legacy redirect; a full redirect-matrix test is still missing | [doc](../migration/CONTENT_MIGRATION_PLAN.md) |
 | RES-002 | medium | VideoObject markup has a malformed image URL and misses a required property | thumbnail URL fixed and verified live; uploadDate still absent (date unknown, not invented) | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
 | ARCH-026 | low | CI duplication and missing gates | CI now seeds a DB and probes the built server; duplication between ci.yml and deploy.yml remains | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 
@@ -136,6 +135,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | ARCH-023 | low | Health endpoint leaks error text and whether any user exists; first-user bootstrap is open when users = 0 | health no longer discloses user existence or error text | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-024 | low | search_queries grows without bound and feeds public "popular searches" | search_queries: only successful short queries stored, 120-day pruning | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | RES-009 | low | RSS feeds are not language-aware and carry little metadata | RSS channel title follows the feed language; checked in CI smoke | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
+| MIG-007 | medium | No automated test of the legacy redirect map | 2026-10-27: `scripts/redirect-matrix.mjs` checks every legacy id (1,454) plus listings, trailing slash, cookie language and unknown URLs; runs inside `npm run smoke` (CI); 0 failures | [doc](../migration/CONTENT_MIGRATION_PLAN.md) |
 
 ## Tasks that are not audit findings
 
@@ -146,7 +146,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | OPS-3 | Dependabot and `npm audit` in CI | PARTIAL | Payload upgraded (17 → 12 advisories; the rest is dev tooling); **Dependabot added** (weekly, Payload packages grouped, majors of next/react/node ignored; every update PR runs full CI). A non-blocking `npm audit` step is not added: the 5 remaining high advisories are build-tool chains with no runtime path |
 | QA-1 | Manual keyboard and screen-reader pass on the main journeys | READY | only axe/Lighthouse so far |
 | QA-2 | Full per-route SEO matrix and Search Console readiness | READY | script audit passes; matrix not written |
-| QA-3 | Redirect matrix test (all seven legacy types, query strings, trailing slash) | READY | see MIG-007 |
+| QA-3 | Redirect matrix test (all seven legacy types, query strings, trailing slash) | DONE 2026-10-27 | see MIG-007 |
 | PERF-T1..T6 | T1 profile and T5 CI measurement **done** (clean-runner evidence in the plan); T2 RSC payload demoted (no measured benefit); T3 search off the event loop and T4 Cloudflare HTML cache stay high; T6 field data | READY / BLOCKED (T4, T6) | see [PERFORMANCE_PLAN](../quality/PERFORMANCE_PLAN.md) §0 |
 | SEC-1 | Nonce-based CSP to remove `script-src 'unsafe-inline'` | READY | needs dynamic rendering of every page; evaluate cost first |
 | SEC-2..9 | Open security items (public REST internal fields, staff can read all users, admin 2FA, root deploy user, translation budget, off-server backups, dependency advisories, privacy wording) | READY / BLOCKED | see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md) §4 |

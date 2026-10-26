@@ -121,6 +121,8 @@ case "$qr" in *"## Skipped checks"*) echo "FAIL quality report skipped checks (s
 if [ "${SEO_AUDIT:-1}" = 1 ]; then
   (cd "$ROOT" && node scripts/seo-audit.mjs "http://localhost:$PORT" | tail -8) || fail=1
 fi
+# every legacy id of the old site must 301 to its new page (MIG-007); the other old URL shapes must not soft-404
+(cd "$ROOT" && node scripts/redirect-matrix.mjs "http://127.0.0.1:$PORT" --db "$DB_DIR/payload.db" --follow 40 | tail -6) || fail=1
 # real-browser journeys and a sitemap-sample sweep (needs Chrome: CI runners have it; locally set RUN_E2E=1)
 if [ "${RUN_E2E:-0}" = 1 ]; then
   (cd "$ROOT" && node scripts/e2e.mjs "http://localhost:$PORT" --expect production | tail -14) || fail=1

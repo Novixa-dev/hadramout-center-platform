@@ -20,7 +20,12 @@ export const Users: CollectionConfig = {
       const { totalDocs } = await req.payload.count({ collection: 'users', overrideAccess: true });
       return totalDocs === 0;
     },
-    read: ({ req }) => Boolean(req.user),
+    // admins see every account; editors and reviewers only their own (SEC-003: staff emails are not shared across roles)
+    read: ({ req }) => {
+      const user = req.user as StaffUser;
+      if (!user) return false;
+      return user.role === 'admin' ? true : { id: { equals: user.id } };
+    },
     update: ({ req, id }) => {
       const user = req.user as StaffUser;
       return user?.role === 'admin' || String(user?.id) === String(id);

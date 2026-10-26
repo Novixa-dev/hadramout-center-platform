@@ -25,6 +25,21 @@ export const localizedUpdate: FieldAccess = ({ req }) => {
   return req.locale !== 'ar';
 };
 
+const notReviewer: FieldAccess = ({ req }) => roleOf(req.user) !== 'reviewer';
+
+/**
+ * Reviewers fix translations only: every field that is not localized (status, featured, dates, authors, category, files…)
+ * becomes read-only for them, so the role cannot publish, unpublish or re-file a document. Rows/collapsibles are walked.
+ */
+export function lockForReviewers(fields: Field[]): Field[] {
+  return fields.map((f): Field => {
+    if ((f.type === 'row' || f.type === 'collapsible') && 'fields' in f) return { ...f, fields: lockForReviewers(f.fields) } as Field;
+    if (!('name' in f) || ('localized' in f && f.localized)) return f;
+    const access = ('access' in f ? f.access : undefined) ?? {};
+    return { ...f, access: { ...access, update: access.update ?? notReviewer } } as Field;
+  });
+}
+
 export const contentAccess = {
   read: readPublished,
   create: isEditorOrAdmin,

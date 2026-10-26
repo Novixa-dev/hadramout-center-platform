@@ -45,8 +45,13 @@ function route(req: NextRequest): NextResponse {
     return NextResponse.next({ request: { headers } });
   }
 
-  const legacy = pathname.match(LEGACY);
-  if (legacy) return NextResponse.rewrite(new URL(`/legacy/${legacy[1]}/${legacy[2]}`, req.url));
+  // legacy item URLs: rewritten to the id-mapping handler by next.config.ts (rewrites), so the proxy only lets them through
+  if (LEGACY.test(pathname)) return NextResponse.next();
+  // the legacy sitemap listed the singular "/magazine"
+  if (/^\/magazine\/?$/.test(pathname)) {
+    const lang = negotiate(req.cookies.get('hc_lang')?.value, req.headers.get('accept-language'));
+    return NextResponse.redirect(new URL(`/${lang}/magazines${search}`, req.url), 308);
+  }
   if (LEGACY_LIST.test(pathname)) {
     const lang = negotiate(req.cookies.get('hc_lang')?.value, req.headers.get('accept-language'));
     return NextResponse.redirect(new URL(`/${lang}${pathname.replace(/\/$/, '')}${search}`, req.url), 308);

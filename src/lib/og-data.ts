@@ -4,7 +4,7 @@ import { getAuthor, getDoc, getSite } from './data.ts';
 import { queryArchive } from './facets.ts';
 import { getPayloadClient } from './runtime.ts';
 import { loadConfig } from '../config.ts';
-import { drawable, loadCoverBytes, type OgInput } from './og.ts';
+import { drawable, loadBodyPhoto, loadCoverBytes, type OgInput } from './og.ts';
 
 const host = () => new URL(loadConfig().siteUrl).host;
 const isArabicText = (s: string) => /\p{Script=Arabic}/u.test(s);
@@ -33,12 +33,16 @@ export async function docCard(lang: string, kind: string, id: number): Promise<{
   const eventDate = (doc.eventDate as string | undefined) ?? doc.publishedAt ?? undefined;
   const isEvent = info.type === 'event' || info.type === 'forum';
   const date = isEvent ? displayDate({ publishedAt: eventDate, datePrecision: 'day' }, useLang) : displayDate(doc, useLang);
-  const issue = info.type === 'magazine' && doc.issueNumber ? t('meta.issue', { n: Number(doc.issueNumber) }) : '';
+  // the issue number is left out when the title already carries it ("مجلة حضرموت الثقافية العدد 41")
+  const issue = info.type === 'magazine' && doc.issueNumber && !new RegExp(`(^|\\D)${Number(doc.issueNumber)}(\\D|$)`).test(doc.title) ? t('meta.issue', { n: Number(doc.issueNumber) }) : '';
   const who = isEvent ? (doc.speaker as string | undefined) : authors.join('، ');
   const meta = [issue, who, info.type === 'book' && doc.year ? String(doc.year) : date].filter(Boolean).join(' · ');
   const c = coverOf(doc, 'large');
   const coverSrc = c?.src ?? (doc.youtubeId ? `https://i.ytimg.com/vi/${doc.youtubeId}/hqdefault.jpg` : null);
-  const cover = await loadCoverBytes(coverSrc);
+  // articles rarely have a cover; their first real illustration makes a far better preview than plain text
+  const own = await loadCoverBytes(coverSrc);
+  const bodyPhoto = !own && !coverSrc && typeof doc.body === 'string' ? await loadBodyPhoto(doc.body) : null;
+  const cover = own ?? bodyPhoto;
   const title = doc.title;
   return {
     version: `${doc.updatedAt ?? ''}`,
@@ -49,6 +53,7 @@ export async function docCard(lang: string, kind: string, id: number): Promise<{
       title,
       meta: meta || undefined,
       cover,
+      frame: Boolean(bodyPhoto),
       host: host(),
     },
   };

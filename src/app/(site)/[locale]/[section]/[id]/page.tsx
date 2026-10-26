@@ -5,7 +5,7 @@ import { absolute, authorsOf, coverOf, displayDate, docHref, isLocale, makeCtx }
 import { typeFromRoute, type ContentType } from '../../../../../lib/content-types.ts';
 import { getDoc, getDocsByIds, getSite, trInfo, type Doc } from '../../../../../lib/data.ts';
 import { neighboursAndRelated, queryArchive } from '../../../../../lib/facets.ts';
-import { buildMetadata } from '../../../../../lib/seo.ts';
+import { buildMetadata, cardUrl } from '../../../../../lib/seo.ts';
 import { describe } from '../../../../../lib/seo-text.ts';
 import { appConfig } from '../../../../../lib/runtime-light.ts';
 import { withHeadingIds } from '../../../../../lib/html-utils.ts';
@@ -172,7 +172,8 @@ export default async function DetailPage({ params }: Props) {
       doc,
       url,
       lang: ctx.lang.tag,
-      image: cover ? absolute(cover.src) : null,
+      // without a cover the social card (1200×630, the article's own illustration when it has one) is the representative image
+      image: cover ? absolute(cover.src) : cardUrl(locale, { kind: section, id: doc.id, v: doc.updatedAt ? Date.parse(doc.updatedAt) : undefined }),
       org: { name: site.name, origin: absolute(''), logo: absolute('/icons/icon-512.png') },
       authorUrl: (aid) => absolute(`/${locale}/authors/${aid}`),
       pdf,

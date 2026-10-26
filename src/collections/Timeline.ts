@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { contentAccess, L, localizedText } from './shared.ts';
+import { contentAccess, L, localizedText, lockForReviewers } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Timeline: CollectionConfig = {
@@ -16,7 +16,7 @@ export const Timeline: CollectionConfig = {
       },
     ],
   },
-  fields: [
+  fields: lockForReviewers([
     localizedText('title', L('العنوان', 'Title'), { required: true }),
     { name: 'body', type: 'textarea', localized: true, label: L('الوصف', 'Description') },
     localizedText('era', L('العصر', 'Era')),
@@ -59,5 +59,5 @@ export const Timeline: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     { name: 'translationMeta', type: 'json', admin: { hidden: true } },
-  ],
+  ]),
 };

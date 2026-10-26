@@ -1,5 +1,5 @@
 import type { CollectionConfig, Where } from 'payload';
-import { contentAccess, L, localizedText } from './shared.ts';
+import { contentAccess, L, localizedText, lockForReviewers } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Categories: CollectionConfig = {
@@ -16,7 +16,7 @@ export const Categories: CollectionConfig = {
       },
     ],
   },
-  fields: [
+  fields: lockForReviewers([
     localizedText('name', L('الاسم', 'Name'), { required: true }),
     {
       name: 'kind',
@@ -41,5 +41,5 @@ export const Categories: CollectionConfig = {
     { name: 'order', type: 'number', defaultValue: 100, label: L('الترتيب', 'Order'), admin: { position: 'sidebar', description: L('الأصغر أولاً.', 'Lower comes first.') } },
     { name: 'description', type: 'textarea', localized: true, label: L('وصف الموضوع', 'Description'), admin: { description: L('يظهر في صفحة الموضوع ومحركات البحث. اكتبه بالعربية فقط.', 'Shown on the topic page and in search results. Write in Arabic only.') } },
     { name: 'translationMeta', type: 'json', admin: { hidden: true } },
-  ],
+  ]),
 };

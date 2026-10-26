@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.12.0] - 2026-10-27
+### Article cards with their own illustration, redirect matrix in CI, role hardening
+- **Social cards:** an article without a cover shows its first card-worthy illustration (framed beside the title; thumbnails, title strips and tall scans skipped); article JSON-LD always has an image; author pages are `og:type profile`; the magazine card no longer repeats the issue number; card revision `?d=4`.
+- **Legacy URLs:** `scripts/redirect-matrix.mjs` checks every legacy id and the other old URL shapes and runs inside `npm run smoke`; the legacy rewrite moved to `next.config.ts` (the proxy rewrite occasionally answered 500); `/magazine` redirects to the issues list.
+- **Security:** the translation reviewer role can no longer publish, unpublish or re-file documents (SEC-010); editors and reviewers can read only their own user account (SEC-003).
+- **Docs:** access and roles guide, test runbook, project review and release readiness of 2026-10-27.
+
 ## [5.11.0] - 2026-10-25
 ### Undated bucket in the year facet, social cards v3, parity and peer review
 - **Year facet:** an "Undated" option (with its count) so documents without a reliable date no longer vanish from the filter (RES-011); `?year=undated`.

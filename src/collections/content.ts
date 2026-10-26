@@ -1,5 +1,5 @@
 import type { CollectionConfig, Field } from 'payload';
-import { baseFields, contentAccess, L, localizedText, markEdited } from './shared.ts';
+import { baseFields, contentAccess, L, localizedText, lockForReviewers, markEdited } from './shared.ts';
 import { contentHooks } from '../hooks/content.ts';
 import type { CollectionSlug } from '../lib/content-types.ts';
 
@@ -23,7 +23,7 @@ function contentCollection(
     defaultSort: '-publishedAt',
     access: contentAccess,
     hooks: { ...hooks, beforeChange: [...(markEdited ?? []), ...(hooks.beforeChange ?? [])] },
-    fields: [...baseFields(opts), ...extra],
+    fields: lockForReviewers([...baseFields(opts), ...extra]),
   };
 }
 

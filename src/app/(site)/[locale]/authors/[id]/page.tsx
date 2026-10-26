@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: author.bio ?? ctx.t('authors.page.meta', { name: author.name, articles: articles.total, books: books.total }),
     card: { kind: 'authors', id: author.id, v: `${articles.total}-${books.total}` },
     imageAlt: author.name,
+    type: 'profile',
     readyLangs: ['ar'],
     incomplete: locale !== 'ar',
     feed: { file: `author-${id}`, title: author.name },
