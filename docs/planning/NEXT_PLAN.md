@@ -60,6 +60,8 @@ Every item has an acceptance test; none needs the Center.
 
 ## 3c. Next up (in order) — updated 2026-10-27
 
+The longer-range work (motion/loading, command palette, quote cards, staff versions/scheduling, optional reader accounts, curated collections) is planned in sprints S1–S6 in [MODERNIZATION_PLAN](MODERNIZATION_PLAN.md); the list below is what comes first.
+
 Done on 2026-10-27 ([review](../reports/REVIEW_2026-10-27.md)): redirect matrix in CI, article cards with their own illustration, `profile` on authors, reviewer role locked to translations (SEC-010), staff cannot read other users (SEC-003).
 
 1. ~~Bidi/tatweel cleanup~~ — **done 2026-10-27** (titles/names on write + migration, rehearsed up/down/up).
