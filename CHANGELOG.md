@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.13.0] - 2026-10-27
+### Editorial dashboard, article lead image, tidy titles, dependency updates
+- **Admin dashboard:** a "what needs attention" panel per role — pending reader reviews, new messages, published articles without a topic, drafts per section, latest event date; every number opens the filtered list. Counts run with the user's own access; reviewers see only reported translation errors. Arabic RTL, light/dark and phone checked.
+- **Articles:** an optional lead image (sidebar "Image"), shown at the top of the article and used first by its share card and JSON-LD. Migration `20261026_234603_article_lead_image` (rehearsed up/down/up).
+- **Titles and names** are tidied on every write: invisible direction controls and decorative kashida runs removed, the hijri «هـ» kept. Migration `20261027_120000_tidy_titles` cleans the 11 stored ones (RES-008).
+- **Dependencies:** Payload 3.92.0 (no migration needed), Anthropic SDK 1.1.0, react-dom 19.3.1 (now matches react), typescript-eslint 8.72, node-html-parser 9.0.5 (Dependabot #41–#45).
+
 ## [5.12.0] - 2026-10-27
 ### Article cards with their own illustration, redirect matrix in CI, role hardening
 - **Social cards:** an article without a cover shows its first card-worthy illustration (framed beside the title; thumbnails, title strips and tall scans skipped); article JSON-LD always has an image; author pages are `og:type profile`; the magazine card no longer repeats the issue number; card revision `?d=4`.

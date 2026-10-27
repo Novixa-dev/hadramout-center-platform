@@ -30,6 +30,7 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: ' — مركز حضرموت' },
+    components: { beforeDashboard: ['/admin/EditorialDashboard#EditorialDashboard'] },
   },
   i18n: { supportedLanguages: { ar, en }, fallbackLanguage: 'ar' },
   localization: { locales: PAYLOAD_LOCALES, defaultLocale: DEFAULT_LOCALE, fallback: true },

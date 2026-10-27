@@ -91,6 +91,15 @@ Production was re-verified after the first deploy: health, GraphQL 404, REST cla
 
 Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0, e2e 56/56.
 
+## 2026-10-27 (second pass) — dashboard, lead image, tidy titles, dependencies
+
+| Change | Evidence |
+|---|---|
+| Editorial dashboard per role (admin `beforeDashboard`) | signed in as admin/editor/reviewer on a production build: right cards per role; filters return the shown counts (142 uncategorised, 1 translation report); screenshots light/dark/phone/Arabic |
+| Article lead image + migration | editor uploads and attaches an image over REST: page header, JSON-LD and card version use it; migration up/down/up, 909 rows kept |
+| Titles tidied on write + migration (RES-008) | unit tests; migration up/down/up; «1000هـ» kept |
+| Dependabot #41–#45 integrated (Payload 3.92, SDK 1.1, react-dom 19.3.1) | check 173/173, build, smoke 72 ok, redirect matrix 1,603/0, e2e 55/55, sweep 77/0, knip clean; the server applied both new migrations itself on start |
+
 ## Next actionable tasks (in order)
 
 1. **Client meeting:** walk through the staging site and the [checklist](../06-handover/client-requirements-checklist-ar.md); collect the Center's materials and the decisions (domain, host, PDFs, Cloudflare, mail provider, 2FA).

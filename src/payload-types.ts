@@ -478,6 +478,9 @@ export interface News {
    * Write in Arabic only — other languages are translated automatically.
    */
   body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
   cover?: (number | null) | Media;
   /**
    * Image from the legacy site, used until it is mirrored locally.
@@ -575,6 +578,15 @@ export interface Article {
    * Write in Arabic only — other languages are translated automatically.
    */
   body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
+  cover?: (number | null) | Media;
+  /**
+   * Image from the legacy site, used until it is mirrored locally.
+   */
+  coverUrl?: string | null;
+  coverAlt?: string | null;
   status: 'draft' | 'published' | 'archived';
   featured?: boolean | null;
   publishedAt?: string | null;
@@ -677,6 +689,9 @@ export interface Magazine {
    * Write in Arabic only — other languages are translated automatically.
    */
   body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
   cover?: (number | null) | Media;
   /**
    * Image from the legacy site, used until it is mirrored locally.
@@ -727,6 +742,9 @@ export interface Book {
    * Write in Arabic only — other languages are translated automatically.
    */
   body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
   cover?: (number | null) | Media;
   /**
    * Image from the legacy site, used until it is mirrored locally.
@@ -787,6 +805,9 @@ export interface Event {
    * Write in Arabic only — other languages are translated automatically.
    */
   body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
   cover?: (number | null) | Media;
   /**
    * Image from the legacy site, used until it is mirrored locally.
@@ -839,6 +860,9 @@ export interface ForumEvent {
    * Write in Arabic only — other languages are translated automatically.
    */
   body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
   cover?: (number | null) | Media;
   /**
    * Image from the legacy site, used until it is mirrored locally.
@@ -891,6 +915,9 @@ export interface Video {
    * Write in Arabic only — other languages are translated automatically.
    */
   body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
   cover?: (number | null) | Media;
   /**
    * Image from the legacy site, used until it is mirrored locally.
@@ -1460,6 +1487,9 @@ export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
   excerpt?: T;
   body?: T;
+  cover?: T;
+  coverUrl?: T;
+  coverAlt?: T;
   status?: T;
   featured?: T;
   publishedAt?: T;

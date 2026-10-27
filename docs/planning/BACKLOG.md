@@ -9,8 +9,8 @@
 
 | Status | Total | high | medium | low | info |
 |---|---:|---:|---:|---:|---:|
-| READY | 62 | 0 | 15 | 32 | 15 |
-| PARTIAL | 6 | 0 | 5 | 1 | 0 |
+| READY | 61 | 0 | 15 | 31 | 15 |
+| PARTIAL | 7 | 0 | 5 | 2 | 0 |
 | BLOCKED | 18 | 4 | 9 | 4 | 1 |
 | DONE | 15 | 1 | 11 | 3 | 0 |
 
@@ -66,7 +66,6 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | RES-005 | low | JSON-LD author.name includes honorifics |  | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
 | RES-006 | low | citation_pdf_url points to another host, which Scholar ignores |  | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
 | RES-007 | low | Sitemap hygiene |  | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
-| RES-008 | low | Kashida (tatweel) runs survive in migrated text |  | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
 | ARCH-028 | info | Capacity: web, admin, worker, OG and FTS share one 1 GB process with no runtime heap cap |  | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-029 | info | node:sqlite is a second SQLite stack with its own stability status |  | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-030 | info | Conformance summary: what is already good |  | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
@@ -90,6 +89,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 | ARCH-001 | medium (was high) | Synchronous FTS on the single event loop behind public search and typeahead | **Downgraded on measurement (2026-10-21):** warm, one heavy term costs ~165 ms for count + per-type counts + ranking (the earlier 1.2 s was a cold disk cache on a Windows laptop); indexing `lang`/`kind` as FTS columns would make it ~78 ms (counts 15–20× faster) but changes ranking slightly and needs a rebuild of the index — not justified. Live: search answers in ~0.5 s TTFB, the same as a plain listing (0.53 s) and the cached home page (0.45 s). Cache (60 s) and the typeahead rate limit stay. Revisit if traffic grows | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-006 | medium | No error boundaries, 45 empty catch blocks, no telemetry | route error boundary added; ~45 empty catch blocks and error telemetry remain | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
 | ARCH-019 | medium | No tests for translation engine, hooks, rate limit, proxy, routes; no integration tier | CI runtime smoke tier added (PR #14); translation engine, hooks and rate limiter still untested | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |
+| RES-008 | low | Kashida (tatweel) runs survive in migrated text | 2026-10-27: titles and names are tidied on every write (`titleText` hook) and the 11 stored ones by migration `20261027_120000_tidy_titles` (also strips bidi controls); article **bodies** (200) keep their kashida on purpose — it is typographic in prose and search already ignores it | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
 | DATA-005 | medium | splitAuthors splits on /, creating authors named الشيخ and أ.م.د; older doc item C1 is wrong | importer fixed; authors 78 and 159 and their articles need an editorial data migration | [doc](../architecture/DATA_MODEL_AND_TAXONOMY.md) |
 | RES-002 | medium | VideoObject markup has a malformed image URL and misses a required property | thumbnail URL fixed and verified live; uploadDate still absent (date unknown, not invented) | [doc](../research/COMPETITOR_AND_BEST_PRACTICES_REVIEW.md) |
 | ARCH-026 | low | CI duplication and missing gates | CI now seeds a DB and probes the built server; duplication between ci.yml and deploy.yml remains | [doc](../architecture/SYSTEM_ARCHITECTURE.md) |

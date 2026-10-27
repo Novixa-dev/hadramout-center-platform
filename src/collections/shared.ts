@@ -116,7 +116,10 @@ export function baseFields(opts: { body?: boolean; cover?: boolean; date?: boole
         type: 'upload',
         relationTo: 'media',
         label: L('الصورة', 'Image'),
-        admin: { position: 'sidebar' },
+        admin: {
+          position: 'sidebar',
+          description: L('عرض 1200 بكسل فأكثر، بلا نص مكتوب عليها إن أمكن. تظهر أعلى الصفحة وفي بطاقة المشاركة على وسائل التواصل.', 'At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.'),
+        },
       },
       {
         name: 'coverUrl',

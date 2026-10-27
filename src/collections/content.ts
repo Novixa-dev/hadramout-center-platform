@@ -50,7 +50,8 @@ export const Articles = contentCollection(
     categoryField,
     { name: 'magazine', type: 'relationship', relationTo: 'magazines', label: L('العدد المنشور فيه', 'Published in issue'), admin: { position: 'sidebar' } },
   ],
-  { cover: false, columns: ['title', 'authors', 'status'] },
+  // the cover is an optional lead image (1200 px wide or more): the article header, its share card and JSON-LD use it first
+  { columns: ['title', 'authors', 'status'] },
 );
 
 export const Books = contentCollection(

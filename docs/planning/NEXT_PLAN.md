@@ -62,8 +62,9 @@ Every item has an acceptance test; none needs the Center.
 
 Done on 2026-10-27 ([review](../reports/REVIEW_2026-10-27.md)): redirect matrix in CI, article cards with their own illustration, `profile` on authors, reviewer role locked to translations (SEC-010), staff cannot read other users (SEC-003).
 
-1. **Bidi/tatweel cleanup** (hook + idempotent migration; backup first) — Tier 1 #4.
-2. **Optional "lead image" field on articles** (1200 px, alt text required) used first by the card, JSON-LD and the article header — lets editors fix the ~58% of articles whose cards stay text-only.
+1. ~~Bidi/tatweel cleanup~~ — **done 2026-10-27** (titles/names on write + migration, rehearsed up/down/up).
+2. ~~Optional "lead image" on articles~~ — **done 2026-10-27** (migration `article_lead_image`; page header, card, JSON-LD use it).
+2b. ~~Editorial dashboard~~ — **done 2026-10-27** ("what needs attention" panel per role in the admin).
 3. `buildMetadata` unit tests per type (needs a `getSite` seam); JSON-LD gaps RES-004/005.
 4. One translation-readiness rule (Tier 1 #8), then typed Payload access (#9).
 5. Typeahead inside the section search; saved searches.

@@ -382,7 +382,7 @@ export default async function DetailPage({ params }: Props) {
               </div>
             ) : null}
 
-            {type === 'news' && cover ? (
+            {(type === 'news' || type === 'article') && cover ? (
               <div className="tile__media" style={{ aspectRatio: '16 / 9', marginBlockEnd: 'var(--space-5)' }}>
                 <Cover doc={doc} sizes="(max-width: 1000px) 100vw, 760px" priority />
               </div>
