@@ -2,13 +2,14 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { absolute, isLocale, makeCtx } from '../../../lib/ctx.ts';
-import { getSite, listTimeline } from '../../../lib/data.ts';
-import { getTopics, latest, rowCount, topAuthors } from '../../../lib/facets.ts';
+import { getSite } from '../../../lib/data.ts';
+import { getTopics, latest, rowCount } from '../../../lib/facets.ts';
 import { buildMetadata } from '../../../lib/seo.ts';
 import { describe } from '../../../lib/seo-text.ts';
 import { jsonLdString, siteJsonLd } from '../../../lib/jsonld.ts';
 import { isSocialName } from '../../../components/Icon.tsx';
-import { EntryList, SectionHead, VideoTile } from '../../../components/Cards.tsx';
+import { PlatformShowcase } from '../../../components/PlatformShowcase.tsx';
+import { VideosSection } from '../../../components/VideosSection.tsx';
 import { HomeEditorial } from '../../../components/HomeEditorial.tsx';
 import { TopicsSection } from '../../../components/TopicsSection.tsx';
 import { LatestIssuesSection } from '../../../components/LatestIssuesSection.tsx';
@@ -33,11 +34,10 @@ export default async function Home({ params }: Props) {
   if (!isLocale(locale)) notFound();
   const ctx = makeCtx(locale);
   const { t, href, lang } = ctx;
-  const [site, counts, issues, articles, news, books, upcoming, recentEvents, forum, videos, topics, authors, timeline] = await Promise.all([
+  const [site, counts, issues, news, books, upcoming, recentEvents, forum, videos, topics] = await Promise.all([
     getSite(locale),
     Promise.all((['article', 'book', 'magazine', 'event', 'forum', 'news'] as const).map(rowCount)),
     latest('magazine', locale, 10),
-    latest('article', locale, 6),
     latest('news', locale, 4),
     latest('book', locale, 12),
     latest('event', locale, 3, { when: 'upcoming', sort: 'oldest' }),
@@ -45,8 +45,6 @@ export default async function Home({ params }: Props) {
     latest('forum', locale, 3),
     latest('video', locale, 3),
     getTopics(locale),
-    topAuthors(locale, 14),
-    listTimeline(locale),
   ]);
   const [nArticles, nBooks, nIssues, nEvents, nForum, nNews] = counts;
   const events = upcoming.length ? upcoming : recentEvents;
@@ -73,7 +71,6 @@ export default async function Home({ params }: Props) {
   ];
   const sameAs = Object.entries(site.social ?? {}).filter(([k, v]) => v && isSocialName(k)).map(([, v]) => v as string);
   const ld = siteJsonLd({ name: site.name, alternateName: site.shortName, origin: absolute(''), logo: absolute('/icons/icon-512.png'), description: describe(site.description), email: site.email, address: site.address, sameAs, lang: lang.code });
-  const fmtYear = (y: number) => (y < 0 ? `${Math.abs(y)} ${t('timeline.bce')}` : String(y));
 
   return (
     <>
@@ -167,54 +164,17 @@ export default async function Home({ params }: Props) {
         </div>
       </div>
 
-      <HomeEditorial ctx={ctx} news={news} events={events} forum={forum} upcoming={upcoming} />
-
       <TopicsSection ctx={ctx} topics={featuredTopics} limit={12} />
 
-      <section className="section section--tight cv">
-        <div className="container split split--even">
-          <div>
-            <SectionHead title={t('home.latestArticles')} href={href('/articles')} more={t('section.viewAll')} />
-            <EntryList ctx={ctx} docs={articles} type="article" />
-          </div>
-          <div>
-            <SectionHead title={t('home.authors')} href={href('/authors')} more={t('home.authors.more')} />
-            <ul className="authors-cloud">
-              {authors.map((a) => (
-                <li key={a.id}><Link className="chip chip--lg chip--outline" href={href(`/authors/${a.id}`)}>{a.name} <small>{a.count}</small></Link></li>
-              ))}
-            </ul>
-            {timeline.length ? (
-              <div style={{ marginBlockStart: 'var(--space-8)' }}>
-                <SectionHead title={t('home.timeline')} href={href('/timeline')} more={t('home.timeline.more')} />
-                <ol className="stack-list" style={{ listStyle: 'none', padding: 0 }}>
-                  {timeline.slice(0, 3).map((e) => (
-                    <li key={e.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(5.5rem, auto) 1fr', gap: '1rem', alignItems: 'baseline' }}>
-                      <strong style={{ color: 'var(--accent-text)', fontVariantNumeric: 'tabular-nums' }}>{fmtYear(e.yearFrom)}</strong>
-                      <span>{e.title}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </section>
+      <HomeEditorial ctx={ctx} news={news} events={events} forum={forum} upcoming={upcoming} />
+
+      <PlatformShowcase ctx={ctx} />
 
       <LatestIssuesSection ctx={ctx} issues={issues} />
 
       <PublicationsSection ctx={ctx} books={books} />
 
-      {videos.length ? (
-        <section className="section section--tight cv section--tint">
-          <div className="container">
-            <SectionHead title={t('home.videos')} href={href('/videos')} more={t('section.viewAll')} />
-            <div className="grid">
-              {videos.map((d) => <VideoTile key={d.id} ctx={ctx} doc={d} />)}
-            </div>
-          </div>
-        </section>
-      ) : null}
+      <VideosSection ctx={ctx} videos={videos} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(ld) }} />
     </>
   );

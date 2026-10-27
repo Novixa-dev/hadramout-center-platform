@@ -10,6 +10,8 @@ import { describe } from '../../../../lib/seo-text.ts';
 import { activeFilters, isCustomised, parseListQuery } from '../../../../lib/list-query.ts';
 import { Listing } from '../../../../components/Listing.tsx';
 import { NewsListing } from '../../../../components/NewsListing.tsx';
+import { MagazineListing } from '../../../../components/MagazineListing.tsx';
+import { VideosListing } from '../../../../components/VideosListing.tsx';
 import { PageHead } from '../../../../components/PageHead.tsx';
 
 type Props = { params: Promise<{ locale: string; section: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
@@ -57,6 +59,31 @@ export default async function SectionPage({ params, searchParams }: Props) {
   const { t } = ctx;
   const sp = await searchParams;
   const title = t(TITLE_KEY[info.type]);
+
+  if (info.type === 'magazine') {
+    return (
+      <MagazineListing
+        ctx={ctx}
+        basePath={`/${section}`}
+        searchParams={sp}
+        title={title}
+        description={t(LEAD_KEY[info.type])}
+      />
+    );
+  }
+
+  if (info.type === 'video') {
+    return (
+      <VideosListing
+        ctx={ctx}
+        basePath={`/${section}`}
+        searchParams={sp}
+        title={title}
+        description={t(LEAD_KEY[info.type])}
+      />
+    );
+  }
+
   return (
     <>
       <PageHead ctx={ctx} crumbs={[{ name: title }]} title={title} lead={t(LEAD_KEY[info.type])} />

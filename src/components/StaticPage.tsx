@@ -7,6 +7,7 @@ import { PageHead } from './PageHead.tsx';
 import { TrBanner } from './client/TrBanner.tsx';
 import { Icon } from './Icon.tsx';
 import { isProductionSite } from '../lib/site-env.ts';
+import { AboutView } from './AboutView.tsx';
 
 /** Pages whose wording the Center has not approved yet. In the preview they say so; the notice disappears with SITE_ENV=production, so approval is a launch checklist item. */
 const PENDING_APPROVAL = new Set(['about', 'privacy', 'terms']);
@@ -43,14 +44,18 @@ export async function StaticPage({ locale, slug }: { locale: string; slug: strin
         />
       ) : null}
       <PageHead ctx={ctx} crumbs={[{ name: page.title }]} title={page.title} titleAttrs={tr.titleLang === 'ar' && locale !== 'ar' ? { lang: 'ar', dir: 'rtl' } : undefined} />
-      <div className="container--narrow section" style={{ paddingBlockStart: 'var(--space-6)' }}>
-        {!isProductionSite() && PENDING_APPROVAL.has(slug) ? (
-          <p className="notice notice--warn" role="note" data-review-notice style={{ marginBlockEnd: 'var(--space-5)' }}>
-            <Icon name="info" /> {t('review.pendingApproval')}
-          </p>
-        ) : null}
-        <div className="prose" lang={tr.bodyLang === 'ar' ? 'ar' : locale} dir={tr.bodyLang === 'ar' ? 'rtl' : ctx.lang.dir} dangerouslySetInnerHTML={{ __html: page.body ?? '' }} />
-      </div>
+      {slug === 'about' ? (
+        <AboutView ctx={ctx} page={page} pendingApproval={!isProductionSite() && PENDING_APPROVAL.has(slug)} />
+      ) : (
+        <div className="container--narrow section" style={{ paddingBlockStart: 'var(--space-6)' }}>
+          {!isProductionSite() && PENDING_APPROVAL.has(slug) ? (
+            <p className="notice notice--warn" role="note" data-review-notice style={{ marginBlockEnd: 'var(--space-5)' }}>
+              <Icon name="info" /> {t('review.pendingApproval')}
+            </p>
+          ) : null}
+          <div className="prose" lang={tr.bodyLang === 'ar' ? 'ar' : locale} dir={tr.bodyLang === 'ar' ? 'rtl' : ctx.lang.dir} dangerouslySetInnerHTML={{ __html: page.body ?? '' }} />
+        </div>
+      )}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(ld) }} />
     </>
   );

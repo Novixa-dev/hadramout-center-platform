@@ -10,6 +10,7 @@ const PATHS = {
   quote: <path d="M9 7H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h3v2a3 3 0 0 1-3 3M20 7h-4a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h3v2a3 3 0 0 1-3 3" />,
   share: <><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></>,
   bookmark: <path d="M6 3h12v18l-6-4-6 4V3Z" />,
+  save: <path d="M6 3h12v18l-6-4-6 4V3Z" />,
   print: <><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2" /><path d="M6 14h12v7H6z" /></>,
   download: <><path d="M12 3v12m0 0-4-4m4 4 4-4" /><path d="M4 19h16" /></>,
   calendar: <><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M8 2v4M16 2v4M3 10h18" /></>,
@@ -41,6 +42,7 @@ const PATHS = {
   layers: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>,
   manuscript: <><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /><path d="M7 6h8M7 10h8M7 14h5" /><path d="M16 2v6l2-1.5 2 1.5V2" /></>,
   rosette: <><path d="M12 2.5l2.4 3.7 4.3-.8.8 4.3 3.7 2.4-3.7 2.4-.8 4.3-4.3-.8-2.4 3.7-2.4-3.7-4.3.8-.8-4.3-3.7-2.4 3.7-2.4.8-4.3 4.3.8z" /><circle cx="12" cy="12" r="3" /></>,
+  briefcase: <><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></>,
 } as const;
 
 export type IconName = keyof typeof PATHS;

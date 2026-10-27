@@ -52,7 +52,7 @@
   .prose:lang(ar), .prose:lang(fa), .prose:lang(ur) { font-family: var(--font-read-ar); font-size: calc(var(--step-0) * 1.1); }
   .prose:not(:lang(ar)):not(:lang(fa)):not(:lang(ur)):not(:lang(ps)):not(:lang(sd)):not(:lang(ug)):not(:lang(ckb)):not(:lang(ku)):not(:lang(he)) { font-family: var(--font-read-latin); }
   .prose :where(p, ul, ol, blockquote, table, figure, pre) { margin-block: 0 1.15em; }
-  .prose :where(h2, h3, h4) { margin-block: 1.9em 0.6em; font-family: var(--font-display); line-height: 1.5; scroll-margin-block-start: calc(var(--header-h) + 1rem); }
+  .prose :where(h2, h3, h4) { margin-block: 1.9em 0.6em; font-family: var(--font-display); line-height: 1.5; color: #173d30; scroll-margin-block-start: calc(var(--header-h) + 1rem); }
   .prose h2 { font-size: var(--step-2); } .prose h3 { font-size: var(--step-1); } .prose h4 { font-size: var(--step-0); }
   .prose :where(ul, ol) { padding-inline-start: 1.6em; }
   .prose li + li { margin-block-start: 0.35em; }

@@ -25,10 +25,6 @@ export function LatestIssuesSection({ ctx, issues }: LatestIssuesSectionProps) {
           id="latest-issues"
           isRtl={isAr}
           theme="light"
-          badge={{
-            label: isAr ? 'مجلة علمية محكّمة' : 'Peer-Reviewed Journal',
-            icon: 'layers',
-          }}
           title={isAr ? 'أحدث الأعداد' : 'Latest Issues'}
           description={
             isAr

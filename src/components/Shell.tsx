@@ -2,11 +2,11 @@ import Link from 'next/link';
 import type { Ctx } from '../lib/ctx.ts';
 import { LANGUAGES, POPULAR_CODES } from '../i18n/languages.ts';
 import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
-import { Skyline } from './Skyline.tsx';
 import { HeaderScroll } from './client/HeaderScroll.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
 import { PriorityNav } from './client/PriorityNav.tsx';
+import { getHeaderNavigation } from '../lib/navigation.ts';
 import { SearchToggle } from './client/SearchToggle.tsx';
 import { NewsletterForm } from './client/NewsletterForm.tsx';
 import type { SearchLabels } from './client/SearchBox.tsx';
@@ -86,12 +86,20 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
         </Link>
         <nav className="nav header-nav" aria-label={t('nav.main')}>
           <PriorityNav
-            items={HEADER_NAV.map((n) => ({ href: href(n.path), label: t(n.key) }))}
+            items={getHeaderNavigation(ctx)}
             more={[]}
             moreLabel={t('nav.more')}
           />
         </nav>
         <div className="header-tools">
+          <Link
+            href={href('/saved')}
+            className="header-save-btn"
+            aria-label={t('saved.title')}
+            title={t('saved.title')}
+          >
+            <Icon name="bookmark" />
+          </Link>
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
           <span className="header-tools__sep" aria-hidden="true" />
           <LangPicker badge current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
@@ -199,11 +207,6 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
           </div>
         </div>
       </section>
-
-      {/* Decorative Skyline of Shibam Towers */}
-      <div className="hc-footer__skyline-wrapper" aria-hidden="true">
-        <Skyline className="hc-footer__skyline" />
-      </div>
 
       {/* ── 2. Main Footer Content (5 Columns) ────────────────────────────── */}
       <div className="hc-footer__main">

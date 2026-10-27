@@ -6,301 +6,248 @@ import { trInfo } from '../lib/data.ts';
 import { coverOf, displayDate, docHref } from '../lib/ctx.ts';
 import { dayOf, monthShort } from '../lib/dates.ts';
 import { stripReferenceLine } from '../lib/seo-text.ts';
-import { Icon, type IconName } from './Icon.tsx';
+import { Icon } from './Icon.tsx';
 import { textAttrs } from './Cards.tsx';
 
-export function EditorialSectionHead({
-  title,
-  href,
-  more,
-  icon,
-}: {
-  title: string;
-  href?: string;
-  more?: string;
-  icon?: IconName;
-}) {
-  return (
-    <div className="editorial-head">
-      <div className="editorial-head__title-group">
-        {icon ? (
-          <span className="editorial-head__icon" aria-hidden="true">
-            <Icon name={icon} />
-          </span>
-        ) : null}
-        <h2 className="editorial-head__title">{title}</h2>
-      </div>
-      {href && more ? (
-        <Link href={href} className="editorial-head__more">
-          <span>{more}</span>
-          <Icon name="arrow" className="editorial-head__arrow" />
-        </Link>
-      ) : null}
-    </div>
-  );
-}
-
-export function FeaturedNewsCard({
-  ctx,
-  doc,
-  eager = false,
-}: {
-  ctx: Ctx;
-  doc: Doc;
-  eager?: boolean;
-}) {
-  const { lang } = ctx;
-  const tr = trInfo(doc, lang.code);
-  const date = displayDate(doc, lang.code);
-  const cover = coverOf(doc);
-  const excerpt = stripReferenceLine(doc.excerpt);
-  const cat = doc.category && typeof doc.category === 'object' ? doc.category.name : ctx.t('card.type.news');
-  const link = docHref(ctx, 'news', doc.id);
-
-  return (
-    <article className="editorial-featured">
-      <div className="editorial-featured__media">
-        {cover ? (
-          <Image
-            src={cover.src}
-            alt=""
-            fill
-            sizes="(max-width: 992px) 100vw, 750px"
-            priority={eager}
-            className="editorial-featured__img"
-          />
-        ) : (
-          <div className="editorial-placeholder-cover" aria-hidden="true">
-            {doc.title}
-          </div>
-        )}
-        <span className="editorial-featured__badge">{cat}</span>
-      </div>
-      <div className="editorial-featured__body">
-        <div className="editorial-meta-row">
-          {date ? (
-            <time dateTime={doc.publishedAt ?? undefined} className="editorial-meta-date">
-              <Icon name="calendar" className="editorial-meta-icon" />
-              <span>{date}</span>
-            </time>
-          ) : null}
-        </div>
-        <h3 className="editorial-featured__title" {...textAttrs(tr.titleLang, lang.code)}>
-          <Link href={link}>{doc.title}</Link>
-        </h3>
-        {excerpt ? (
-          <p className="editorial-featured__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>
-            {excerpt}
-          </p>
-        ) : null}
-        <div className="editorial-featured__footer">
-          <Link href={link} className="editorial-read-more">
-            <span>{lang.code === 'ar' ? 'اقرأ المزيد' : 'Read more'}</span>
-            <Icon name="arrow" className="editorial-arrow" />
-          </Link>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-export function SupportingNewsCard({ ctx, doc }: { ctx: Ctx; doc: Doc }) {
-  const { lang } = ctx;
-  const tr = trInfo(doc, lang.code);
-  const date = displayDate(doc, lang.code);
-  const cover = coverOf(doc);
-  const cat = doc.category && typeof doc.category === 'object' ? doc.category.name : ctx.t('card.type.news');
-  const link = docHref(ctx, 'news', doc.id);
-
-  return (
-    <article className="editorial-row">
-      <div className="editorial-row__media">
-        {cover ? (
-          <Image
-            src={cover.src}
-            alt=""
-            fill
-            sizes="(max-width: 600px) 105px, 135px"
-            className="editorial-row__img"
-          />
-        ) : (
-          <div className="editorial-placeholder-thumb" aria-hidden="true" />
-        )}
-      </div>
-      <div className="editorial-row__body">
-        <div className="editorial-meta-row">
-          <span className="editorial-row__badge">{cat}</span>
-          {date ? (
-            <time dateTime={doc.publishedAt ?? undefined} className="editorial-meta-date">
-              <Icon name="calendar" className="editorial-meta-icon" />
-              <span>{date}</span>
-            </time>
-          ) : null}
-        </div>
-        <h4 className="editorial-row__title" {...textAttrs(tr.titleLang, lang.code)}>
-          <Link href={link}>{doc.title}</Link>
-        </h4>
-      </div>
-    </article>
-  );
-}
-
-export function DateBadge({
-  iso,
-  lang,
-  past,
-}: {
-  iso?: string;
-  lang: string;
-  past?: boolean;
-}) {
-  if (!iso) return null;
-  const day = dayOf(iso);
-  const month = monthShort(iso, lang);
-  return (
-    <div className={`editorial-date-badge ${past ? 'editorial-date-badge--past' : ''}`} aria-hidden="true">
-      <strong className="editorial-date-badge__day">{day}</strong>
-      <span className="editorial-date-badge__month">{month}</span>
-    </div>
-  );
-}
-
-export function EventCard({
-  ctx,
-  doc,
-  type = 'event',
-}: {
-  ctx: Ctx;
-  doc: Doc;
-  type?: 'event' | 'forum';
-}) {
-  const { lang, t } = ctx;
-  const tr = trInfo(doc, lang.code);
-  const d = (doc.eventDate as string | undefined) ?? doc.publishedAt ?? undefined;
-  const today = new Date().toISOString().slice(0, 10);
-  const past = d ? d.slice(0, 10) < today : true;
-  const link = docHref(ctx, type, doc.id);
-  const speaker = doc.speaker ? String(doc.speaker) : null;
-  const venue = doc.venue ? String(doc.venue) : null;
-  const timeText = doc.timeText ? String(doc.timeText) : null;
-  const fullDate = d ? displayDate({ publishedAt: d, datePrecision: 'day' }, lang.code) : null;
-
-  return (
-    <article className={`editorial-event-card ${past ? 'editorial-event-card--past' : ''}`}>
-      <DateBadge iso={d} lang={lang.code} past={past} />
-      <div className="editorial-event-card__body">
-        <h4 className="editorial-event-card__title" {...textAttrs(tr.titleLang, lang.code)}>
-          <Link href={link}>{doc.title}</Link>
-        </h4>
-        <div className="editorial-event-card__meta">
-          {speaker ? (
-            <span className="editorial-event-card__meta-item">
-              <Icon name="user" className="editorial-event-card__meta-icon" />
-              <span>{t('meta.speaker')}: {speaker}</span>
-            </span>
-          ) : null}
-          {venue ? (
-            <span className="editorial-event-card__meta-item">
-              <Icon name="pin" className="editorial-event-card__meta-icon" />
-              <span>{venue}</span>
-            </span>
-          ) : null}
-          {timeText ? (
-            <span className="editorial-event-card__meta-item">
-              <Icon name="clock" className="editorial-event-card__meta-icon" />
-              <span>{timeText}</span>
-            </span>
-          ) : null}
-          {fullDate ? (
-            <span className="editorial-event-card__meta-item">
-              <Icon name="calendar" className="editorial-event-card__meta-icon" />
-              <time dateTime={d?.slice(0, 10)}>{fullDate}</time>
-            </span>
-          ) : null}
-        </div>
-      </div>
-    </article>
-  );
-}
-
-export function HomeEditorial({
-  ctx,
-  news,
-  events,
-  forum,
-  upcoming,
-}: {
+interface HomeEditorialProps {
   ctx: Ctx;
   news: Doc[];
   events: Doc[];
   forum: Doc[];
   upcoming: Doc[];
-}) {
-  const { t, href } = ctx;
+}
+
+export function HomeEditorial({ ctx, news, events, forum }: HomeEditorialProps) {
+  const { lang, href } = ctx;
+  const isAr = lang.code === 'ar';
+
   const leadNews = news[0];
-  const supportingNews = news.slice(1);
-  const eventsList = events.slice(0, 3);
-  const forumList = forum.slice(0, 3);
+  const leadNewsTr = leadNews ? trInfo(leadNews, lang.code) : null;
+  const leadNewsDate = leadNews ? displayDate(leadNews, lang.code) : null;
+  const leadNewsCover = leadNews ? coverOf(leadNews, 'large') : null;
+  const leadNewsExcerpt = leadNews ? stripReferenceLine(leadNews.excerpt) : null;
+  const leadNewsCategory =
+    leadNews?.category && typeof leadNews.category === 'object'
+      ? leadNews.category.name
+      : isAr
+      ? 'خبر'
+      : 'News';
+  const leadNewsHref = leadNews ? docHref(ctx, 'news', leadNews.id) : href('/news');
+
+  // Combine latest events and forum items up to 4 items for balanced visual height
+  const combinedEvents: (Doc & { isForum?: boolean })[] = [
+    ...events.slice(0, 3).map((e) => ({ ...e, isForum: false })),
+    ...forum.slice(0, 2).map((f) => ({ ...f, isForum: true })),
+  ].slice(0, 4);
 
   return (
-    <section className="editorial-section" aria-label={t('home.latestNews')}>
+    <section className="news-events-section" aria-labelledby="news-events-heading">
       <div className="container">
-        <div className="editorial-grid">
-          {/* Column 1: Latest News */}
-          <div className="editorial-col-news">
-            <EditorialSectionHead
-              title={t('home.latestNews')}
-              href={href('/news')}
-              more={t('home.news.more')}
-              icon="file"
-            />
-            {leadNews ? (
-              <div className="editorial-news-stack">
-                <FeaturedNewsCard ctx={ctx} doc={leadNews} eager />
-                {supportingNews.length ? (
-                  <div className="editorial-supporting-list">
-                    {supportingNews.map((doc) => (
-                      <SupportingNewsCard key={doc.id} ctx={ctx} doc={doc} />
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+        {/* Section Header */}
+        <div className="news-events-head">
+          <div className="news-events-head__info">
+            <span className="news-events-head__badge">
+              <Icon name="file" className="news-events-head__badge-icon" />
+              <span>{isAr ? 'الأخبار والأنشطة' : 'News & Activities'}</span>
+            </span>
+            <h2 id="news-events-heading" className="news-events-head__title">
+              {isAr ? 'آخر الأخبار والفعاليات' : 'Latest News & Events'}
+            </h2>
+            <p className="news-events-head__lead">
+              {isAr
+                ? 'متابعة شاملة لجديد أنشطة المركز، الزيارات والندوات واللقاءات العلمية والثقافية'
+                : 'Comprehensive coverage of Center activities, symposiums, and cultural milestones'}
+            </p>
           </div>
+          <div className="news-events-head__actions">
+            <Link href={href('/news')} className="news-events-head__btn">
+              <span>{isAr ? 'كافة الأخبار' : 'All News'}</span>
+              <Icon name="arrow" className="news-events-head__btn-arrow" />
+            </Link>
+            <Link href={href('/events')} className="news-events-head__btn news-events-head__btn--secondary">
+              <span>{isAr ? 'كافة الفعاليات' : 'All Events'}</span>
+              <Icon name="arrow" className="news-events-head__btn-arrow" />
+            </Link>
+          </div>
+        </div>
 
-          {/* Column 2: Latest Events & Cultural Forum */}
-          <div className="editorial-col-events">
-            {eventsList.length ? (
-              <div className="editorial-events-block">
-                <EditorialSectionHead
-                  title={upcoming.length ? t('home.upcoming') : t('home.events')}
-                  href={href('/events')}
-                  more={t('section.viewAll')}
-                  icon="calendar"
-                />
-                <div className="editorial-events-list">
-                  {eventsList.map((doc) => (
-                    <EventCard key={doc.id} ctx={ctx} doc={doc} type="event" />
-                  ))}
+        {/* 2-Column Desktop Grid Layout */}
+        <div className="news-events-layout">
+          {/* Column 1 (Right in RTL): Featured News Card */}
+          {leadNews ? (
+            <div className="news-col-featured">
+              <article className="featured-news-card">
+                <div className="featured-news-card__media">
+                  {leadNewsCover ? (
+                    <Image
+                      src={leadNewsCover.src}
+                      alt={leadNewsCover.alt || leadNews.title}
+                      fill
+                      sizes="(max-width: 960px) 100vw, 680px"
+                      priority
+                      className="featured-news-card__img"
+                    />
+                  ) : (
+                    <div className="featured-news-card__placeholder" aria-hidden="true" />
+                  )}
+                  <div className="featured-news-card__badge-wrap">
+                    <span className="featured-news-card__badge">{leadNewsCategory}</span>
+                  </div>
+                </div>
+
+                <div className="featured-news-card__content">
+                  <h3
+                    className="featured-news-card__title"
+                    {...(leadNewsTr ? textAttrs(leadNewsTr.titleLang, lang.code) : {})}
+                  >
+                    <Link href={leadNewsHref}>{leadNews.title}</Link>
+                  </h3>
+
+                  {leadNewsExcerpt ? (
+                    <p
+                      className="featured-news-card__summary"
+                      {...(leadNewsTr ? textAttrs(leadNewsTr.excerptLang, lang.code) : {})}
+                    >
+                      {leadNewsExcerpt}
+                    </p>
+                  ) : null}
+
+                  <div className="featured-news-card__footer">
+                    {leadNewsDate ? (
+                      <time
+                        dateTime={leadNews.publishedAt ?? undefined}
+                        className="featured-news-card__date"
+                      >
+                        <Icon name="calendar" className="featured-news-card__date-icon" />
+                        <span>{leadNewsDate}</span>
+                      </time>
+                    ) : null}
+
+                    <Link
+                      href={leadNewsHref}
+                      className="featured-news-card__cta"
+                      aria-label={isAr ? `قراءة الخبر: ${leadNews.title}` : `Read news: ${leadNews.title}`}
+                      title={isAr ? 'قراءة الخبر' : 'Read article'}
+                    >
+                      <Icon name="arrow" className="featured-news-card__cta-arrow" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            </div>
+          ) : null}
+
+          {/* Column 2 (Left in RTL): Events List */}
+          <div className="news-col-events">
+            <div className="events-list-wrapper">
+              <div className="events-list-head">
+                <div className="events-list-head__title-wrap">
+                  <Icon name="calendar" className="events-list-head__icon" />
+                  <h3 className="events-list-head__title">
+                    {isAr ? 'أحدث الفعاليات والمؤتمرات' : 'Upcoming & Recent Events'}
+                  </h3>
                 </div>
               </div>
-            ) : null}
 
-            {forumList.length ? (
-              <div className="editorial-forum-block">
-                <EditorialSectionHead
-                  title={t('home.forum')}
-                  href={href('/forum')}
-                  more={t('section.viewAll')}
-                  icon="rosette"
-                />
-                <div className="editorial-events-list">
-                  {forumList.map((doc) => (
-                    <EventCard key={doc.id} ctx={ctx} doc={doc} type="forum" />
-                  ))}
-                </div>
+              <div className="events-list-items">
+                {combinedEvents.map((item) => {
+                  const itemTr = trInfo(item, lang.code);
+                  const d = (item.eventDate as string | undefined) ?? item.publishedAt ?? undefined;
+                  const itemHref = docHref(ctx, item.isForum ? 'forum' : 'event', item.id);
+                  const itemCover = coverOf(item, 'thumb');
+                  const day = d ? dayOf(d) : '';
+                  const month = d ? monthShort(d, lang.code) : '';
+                  const speaker = item.speaker ? String(item.speaker) : null;
+                  const venue = item.venue ? String(item.venue) : null;
+                  const timeText = item.timeText ? String(item.timeText) : null;
+
+                  return (
+                    <article key={item.id} className="event-item">
+                      {/* Thumbnail Column */}
+                      <div className="event-item__thumb-col">
+                        {itemCover ? (
+                          <div className="event-item__thumb">
+                            <Image
+                              src={itemCover.src}
+                              alt=""
+                              fill
+                              sizes="112px"
+                              className="event-item__img"
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className="event-item__thumb event-item__thumb--placeholder"
+                            aria-hidden="true"
+                          >
+                            <Icon
+                              name={item.isForum ? 'users' : 'calendar'}
+                              className="event-item__placeholder-icon"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content Column */}
+                      <div className="event-item__content-col">
+                        <span className="event-item__category">
+                          {item.isForum
+                            ? isAr
+                              ? 'منتدى عميد الوفاء'
+                              : 'Cultural Forum'
+                            : isAr
+                            ? 'فعالية علمية'
+                            : 'Academic Event'}
+                        </span>
+                        <h4
+                          className="event-item__title"
+                          {...textAttrs(itemTr.titleLang, lang.code)}
+                        >
+                          <Link href={itemHref}>{item.title}</Link>
+                        </h4>
+                        <div className="event-item__meta">
+                          {speaker ? (
+                            <span className="event-item__meta-item">
+                              <Icon name="user" className="event-item__meta-icon" />
+                              <span>{speaker}</span>
+                            </span>
+                          ) : null}
+                          {venue ? (
+                            <span className="event-item__meta-item">
+                              <Icon name="pin" className="event-item__meta-icon" />
+                              <span>{venue}</span>
+                            </span>
+                          ) : null}
+                          {timeText ? (
+                            <span className="event-item__meta-item">
+                              <Icon name="clock" className="event-item__meta-icon" />
+                              <span>{timeText}</span>
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {/* Date Badge Column */}
+                      {d && day && month ? (
+                        <div className="event-item__date-col">
+                          <div className="event-date-badge" aria-hidden="true">
+                            <span className="event-date-badge__day">{day}</span>
+                            <span className="event-date-badge__month">{month}</span>
+                          </div>
+                        </div>
+                      ) : null}
+                    </article>
+                  );
+                })}
               </div>
-            ) : null}
+
+              <div className="events-list-footer">
+                <Link href={href('/events')} className="events-list-all-link">
+                  <span>{isAr ? 'استعراض كافة الفعاليات والمؤتمرات' : 'View all events & conferences'}</span>
+                  <Icon name="arrow" className="events-list-all-link__arrow" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>

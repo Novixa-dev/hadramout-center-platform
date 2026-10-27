@@ -27,7 +27,7 @@ const TOPIC_HUB_METAS: { match: string; meta: HubMeta }[] = [
     meta: {
       image: '/legacy-media/2025/12/غلاف-المؤتمر-الخامس-التاريخ-والمؤرخون-الحضارمة3-scaled.jpg',
       icon: 'manuscript',
-      color: '#1677B8',
+      color: '#173d30',
       descAr: 'بحوث محكّمة وأوراق أكاديمية وملفات توثيقية متخصصة',
       descEn: 'Peer-reviewed research and scholarly documented studies',
     },
@@ -47,7 +47,7 @@ const TOPIC_HUB_METAS: { match: string; meta: HubMeta }[] = [
     meta: {
       image: '/legacy-media/2025/12/غلاف-محاضرات-انجرامز3-scaled.jpg',
       icon: 'users',
-      color: '#102B46',
+      color: '#173d30',
       descAr: 'سِيَر الأعلام والرواد ومؤرخي حضرموت واليمن عبر العصور',
       descEn: 'Biographies of prominent historical figures and scholars',
     },
@@ -77,7 +77,7 @@ const TOPIC_HUB_METAS: { match: string; meta: HubMeta }[] = [
     meta: {
       image: '/legacy-media/2025/09/العلاقات-السياسية-مركز-حضرموت3-scaled.jpg',
       icon: 'quote',
-      color: '#22B8D5',
+      color: '#173d30',
       descAr: 'لقاءات فكرية، استطلاعات ميدانية وحوارات مع الباحثين',
       descEn: 'Intellectual dialogues, cultural field surveys, and interviews',
     },
@@ -97,7 +97,7 @@ const TOPIC_HUB_METAS: { match: string; meta: HubMeta }[] = [
     meta: {
       image: '/legacy-media/2026/03/Issue-39-flat.jpg',
       icon: 'file',
-      color: '#2980B9',
+      color: '#173d30',
       descAr: 'مقالات فكرية، إضاءات مجتمعية ودراسات مترجمة',
       descEn: 'Intellectual essays, cultural spotlights, and translations',
     },
@@ -107,7 +107,7 @@ const TOPIC_HUB_METAS: { match: string; meta: HubMeta }[] = [
 const DEFAULT_HUB_META: HubMeta = {
   image: '/legacy-media/2024/03/غلاف-المجلة-موك-اب-1.jpg',
   icon: 'layers',
-  color: '#1677B8',
+  color: '#173d30',
   descAr: 'استكشف المقالات والدراسات المنشورة في هذا الباب',
   descEn: 'Explore published articles and studies in this section',
 };
