@@ -145,7 +145,7 @@ export default async function SearchPage({ params, searchParams }: Props) {
 
       {/* ── Content Section (Secondary Background #F7F5EF) ── */}
       {!result ? (
-        <section className="search-archive-section">
+        <section className="search-archive-section" data-aos="fade-up">
           <div className="container">
             <div className="search-archive-intro">
               <div className="search-archive-intro__badge" aria-hidden="true">

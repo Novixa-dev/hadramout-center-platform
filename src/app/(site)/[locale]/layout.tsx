@@ -11,6 +11,7 @@ import { Footer, Header, langOptions } from '../../../components/Shell.tsx';
 import { BackToTop } from '../../../components/client/BackToTop.tsx';
 import { PwaRegister } from '../../../components/client/PwaRegister.tsx';
 import { NavProgress } from '../../../components/client/NavProgress.tsx';
+import { AOSInit } from '../../../components/client/AOSInit.tsx';
 import { StagingBar } from '../../../components/StagingBar.tsx';
 import { isProductionSite } from '../../../lib/site-env.ts';
 
@@ -75,6 +76,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <Footer ctx={ctx} site={site} />
         <BackToTop label={ctx.t('tools.backToTop')} />
         <PwaRegister />
+        <AOSInit />
         <Suspense fallback={null}><NavProgress /></Suspense>
       </body>
     </html>

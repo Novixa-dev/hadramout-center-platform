@@ -152,7 +152,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
 
   return (
     <>
-      <div className={`container listing ${hasFacets ? '' : 'listing--plain'}`}>
+      <div className={`container listing ${hasFacets ? '' : 'listing--plain'}`} data-aos="fade-up">
         {hasFacets ? (
           <>
             <aside className="filters" id="filters" tabIndex={-1} aria-label={t('list.filters')}>

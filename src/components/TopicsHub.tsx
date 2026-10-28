@@ -214,7 +214,7 @@ export function TopicsHub({
     roots.reduce((s, r) => s + r.total, 0) + others.reduce((s, r) => s + r.total, 0);
 
   return (
-    <div className="topics-hub-wrapper">
+    <div className="topics-hub-wrapper" data-aos="fade-up">
       {/* A. Summary Bar */}
       <div className="topics-page-summary">
         <div className="topics-page-summary__start">
@@ -241,7 +241,7 @@ export function TopicsHub({
       </div>
 
       {/* B. Grid of 8 Curated Cards */}
-      <div className="topics-hub-grid">
+      <div className="topics-hub-grid" data-aos="fade-up" data-aos-delay="100">
         {roots.map((r, i) => (
           <TopicHubCard key={r.id} ctx={ctx} topic={r} priority={i < 4} />
         ))}
@@ -249,7 +249,7 @@ export function TopicsHub({
 
       {/* C. Other Topics */}
       {others.length > 0 ? (
-        <section className="topics-hub-others" aria-labelledby="topics-others-title">
+        <section className="topics-hub-others" aria-labelledby="topics-others-title" data-aos="fade-up" data-aos-delay="150">
           <div className="topics-hub-others__header">
             <div className="topics-hub-others__title-group">
               <span className="topics-hub-others__icon" aria-hidden="true">

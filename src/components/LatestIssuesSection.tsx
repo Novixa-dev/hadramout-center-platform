@@ -19,7 +19,7 @@ export function LatestIssuesSection({ ctx, issues }: LatestIssuesSectionProps) {
   if (!issues.length) return null;
 
   return (
-    <section className="latest-issues-section" aria-labelledby="latest-issues-title">
+    <section className="latest-issues-section" aria-labelledby="latest-issues-title" data-aos="fade-up">
       <div className="container">
         <EditorialCarousel
           id="latest-issues"

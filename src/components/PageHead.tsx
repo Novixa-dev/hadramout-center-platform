@@ -25,12 +25,11 @@ export function Breadcrumbs({ ctx, items }: { ctx: Ctx; items: Crumb[] }) {
 /** Heading band of an inner page: breadcrumbs, the one <h1>, an optional lead and extra content (actions, stats). */
 export function PageHead({ ctx, crumbs, title, lead, children, titleAttrs }: { ctx: Ctx; crumbs: Crumb[]; title: string; lead?: ReactNode; children?: ReactNode; titleAttrs?: { lang?: string; dir?: 'rtl' | 'ltr' } }) {
   return (
-    <div className="page-head">
+    <div className="page-head" data-aos="fade-up">
       <div className="container page-head__container">
         {crumbs.length ? <Breadcrumbs ctx={ctx} items={crumbs} /> : null}
         <div className="page-head__title-wrap">
           <h1 className="page-head__title" {...titleAttrs}>{title}</h1>
-          <span className="page-head__underline" aria-hidden="true" />
         </div>
         {lead ? <p className="page-head__lead">{lead}</p> : null}
         {children}

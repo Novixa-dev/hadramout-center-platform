@@ -87,7 +87,7 @@ export async function VideosListing({
   return (
     <div className="media-gallery-page" dir="rtl">
       {/* ── Breadcrumbs & Hero Header ── */}
-      <section className="media-gallery-hero">
+      <section className="media-gallery-hero" data-aos="fade-up">
         <div className="container">
           <nav className="media-gallery-breadcrumbs" aria-label={t('a11y.breadcrumb')}>
             <ol className="media-gallery-breadcrumbs__list">
@@ -120,7 +120,7 @@ export async function VideosListing({
       </section>
 
       {/* ── Gallery Content ── */}
-      <div className="container media-gallery-content">
+      <div className="container media-gallery-content" data-aos="fade-up" data-aos-delay="100">
         {/* Search & Meta Bar */}
         <div className="media-gallery-toolbar">
           <form className="media-gallery-search" method="get" action={base}>

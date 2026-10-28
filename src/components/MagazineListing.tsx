@@ -112,7 +112,7 @@ export async function MagazineListing({
   return (
     <div className="magazine-archive-page">
       {/* ── Section A, B, C & 6: Premium Hero Section ── */}
-      <section className="magazine-hero" aria-label={title}>
+      <section className="magazine-hero" aria-label={title} data-aos="fade-up">
         <div className="container">
           {/* Breadcrumb Navigation */}
           <nav className="magazine-hero__crumbs" aria-label={t('a11y.breadcrumb')}>
@@ -162,7 +162,7 @@ export async function MagazineListing({
       </section>
 
       {/* ── Section 7: Main Archive Browsing Area ── */}
-      <section className="magazine-archive-section">
+      <section className="magazine-archive-section" data-aos="fade-up" data-aos-delay="100">
         <div className="container">
           <div className="magazine-archive__layout">
             {/* ── Section 11: Dedicated Filter Sidebar (RTL Right Column) ── */}

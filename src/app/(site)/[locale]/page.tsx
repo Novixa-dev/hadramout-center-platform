@@ -16,6 +16,7 @@ import { LatestIssuesSection } from '../../../components/LatestIssuesSection.tsx
 import { PublicationsSection } from '../../../components/PublicationsSection.tsx';
 import { searchLabels } from '../../../components/Shell.tsx';
 import { SearchBox } from '../../../components/client/SearchBox.tsx';
+import { AnimatedCounter } from '../../../components/client/AnimatedCounter.tsx';
 import { Icon } from '../../../components/Icon.tsx';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -150,13 +151,16 @@ export default async function Home({ params }: Props) {
         </div>
       </section>
 
-      <div className="strip">
+      <div className="strip" data-aos="fade-up">
         <div className="container">
           <ul className="stats" aria-label={site.shortName ?? site.name}>
             {stats.map(([path, n, label]) => (
               <li key={path}>
                 <Link href={href(path)}>
-                  <strong>{fmt.format(n)}</strong> <span>{label}</span>
+                  <strong>
+                    <AnimatedCounter value={Number(n)} locale={lang.code} />
+                  </strong>{' '}
+                  <span>{label}</span>
                 </Link>
               </li>
             ))}

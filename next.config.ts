@@ -47,7 +47,7 @@ const nextConfig: NextConfig = {
   agentRules: false,
   poweredByHeader: false,
   images: {
-    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/legacy-media/**' }],
+    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/legacy-media/**' }, { pathname: '/brand/**' }],
     remotePatterns: [{ protocol: 'https', hostname: 'i.ytimg.com' }],
   },
   webpack: (webpackConfig) => {

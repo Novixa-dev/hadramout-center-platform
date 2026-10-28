@@ -317,7 +317,7 @@ export default async function DetailPage({ params }: Props) {
       ) : null}
       {reading && prose ? <ReadingProgress targetId="article-body" /> : null}
       {prose ? <CopyAttribution targetId="article-body" line={`${t('copy.source', { title: doc.title, site: site.name })}\n${url}`} /> : null}
-      <div className="container">
+      <div className="container" data-aos="fade-up">
         <div style={{ paddingBlockStart: 'var(--space-5)' }}><Breadcrumbs ctx={ctx} items={crumbs} /></div>
 
         <div className={`article-layout ${showToc ? 'article-layout--toc' : reading ? 'article-layout--read' : ''}`}>

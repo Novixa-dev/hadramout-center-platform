@@ -61,7 +61,7 @@ export default async function AuthorsPage({ params, searchParams }: Props) {
           </div>
         </form>
       </PageHead>
-      <div className="container section" style={{ paddingBlockStart: 'var(--space-5)' }}>
+      <div className="container section" data-aos="fade-up" style={{ paddingBlockStart: 'var(--space-5)' }}>
         <p className="toolbar__count" style={{ marginBlockEnd: '0.75rem' }} aria-live="polite">{t('authors.count', { count: authors.length })}</p>
         {letters.length > 1 ? (
           <nav className="az" aria-label={t('authors.index')}>

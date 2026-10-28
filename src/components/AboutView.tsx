@@ -177,7 +177,7 @@ export function AboutView({ ctx, pendingApproval }: AboutViewProps) {
       ) : null}
 
       {/* Component 1 — The Intro Statement (Kept intact as requested) */}
-      <section className="about-intro-section" aria-label={isAr ? 'عن المركز' : 'About the Center'}>
+      <section className="about-intro-section" aria-label={isAr ? 'عن المركز' : 'About the Center'} data-aos="fade-up">
         <div className="about-intro-card">
           <div className="about-intro-accent-bar" aria-hidden="true" />
           <p className="about-intro-lead">
@@ -195,7 +195,7 @@ export function AboutView({ ctx, pendingApproval }: AboutViewProps) {
       </section>
 
       {/* Components 2 & 3 — Side by Side in ONE ROW */}
-      <div className="about-row">
+      <div className="about-row" data-aos="fade-up" data-aos-delay="100">
         {/* Column 1: مجالات العمل */}
         <section className="about-col" aria-labelledby="about-domains-heading">
           <div className="about-col__head">

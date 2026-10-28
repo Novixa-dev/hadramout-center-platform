@@ -212,7 +212,7 @@ export function TopicsSection({
   if (!list.length) return null;
 
   return (
-    <section className="topics-section" aria-labelledby="topics-section-title">
+    <section className="topics-section" aria-labelledby="topics-section-title" data-aos="fade-up">
       <div className="container">
         <div className="editorial-head topics-section__head">
           <div className="topics-section__head-main">

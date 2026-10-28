@@ -22,7 +22,7 @@ export function VideosSection({ ctx, videos }: VideosSectionProps) {
   const isDuo = videos.length === 2;
 
   return (
-    <section className="videos-section cv" aria-labelledby="videos-section-title">
+    <section className="videos-section cv" aria-labelledby="videos-section-title" data-aos="fade-up">
       <div className="container videos-section__container">
         {/* ── Section Header ────────────────────────────────────────── */}
         <div className="videos-section__header">

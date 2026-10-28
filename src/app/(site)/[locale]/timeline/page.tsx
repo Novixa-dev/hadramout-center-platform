@@ -43,7 +43,7 @@ export default async function TimelinePage({ params }: Props) {
   return (
     <>
       <PageHead ctx={ctx} crumbs={[{ name: t('timeline.title') }]} title={t('timeline.title')} lead={t('timeline.lead')} />
-      <div className="container--narrow section" style={{ paddingBlockStart: 'var(--space-6)' }}>
+      <div className="container--narrow section" data-aos="fade-up" style={{ paddingBlockStart: 'var(--space-6)' }}>
         {pending > 0 ? <p className="notice notice--warn" style={{ marginBlockEnd: 'var(--space-5)' }}><Icon name="info" /> {t('timeline.review')}</p> : null}
         {groups.length > 1 ? (
           <nav aria-label={t('timeline.eras')} style={{ marginBlockEnd: 'var(--space-5)' }}>

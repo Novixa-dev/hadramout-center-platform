@@ -47,7 +47,7 @@ export async function StaticPage({ locale, slug }: { locale: string; slug: strin
       {slug === 'about' ? (
         <AboutView ctx={ctx} page={page} pendingApproval={!isProductionSite() && PENDING_APPROVAL.has(slug)} />
       ) : (
-        <div className="container--narrow section" style={{ paddingBlockStart: 'var(--space-6)' }}>
+        <div className="container--narrow section" data-aos="fade-up" style={{ paddingBlockStart: 'var(--space-6)' }}>
           {!isProductionSite() && PENDING_APPROVAL.has(slug) ? (
             <p className="notice notice--warn" role="note" data-review-notice style={{ marginBlockEnd: 'var(--space-5)' }}>
               <Icon name="info" /> {t('review.pendingApproval')}

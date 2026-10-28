@@ -34,14 +34,20 @@ export function HomeEditorial({ ctx, news, events, forum }: HomeEditorialProps) 
       : 'News';
   const leadNewsHref = leadNews ? docHref(ctx, 'news', leadNews.id) : href('/news');
 
-  // Combine latest events and forum items up to 4 items for balanced visual height
+  // Display latest events up to 3 items, excluding forum item 7 as requested
   const combinedEvents: (Doc & { isForum?: boolean })[] = [
-    ...events.slice(0, 3).map((e) => ({ ...e, isForum: false })),
-    ...forum.slice(0, 2).map((f) => ({ ...f, isForum: true })),
-  ].slice(0, 4);
+    ...events.map((e) => ({ ...e, isForum: false })),
+    ...forum.map((f) => ({ ...f, isForum: true })),
+  ]
+    .filter(
+      (item) =>
+        String(item.id) !== '7' &&
+        !item.title?.includes('إسهامات الحضارمة في المعارف الملاحية'),
+    )
+    .slice(0, 3);
 
   return (
-    <section className="news-events-section" aria-labelledby="news-events-heading">
+    <section className="news-events-section" aria-labelledby="news-events-heading" data-aos="fade-up">
       <div className="container">
         {/* Section Header */}
         <div className="news-events-head">

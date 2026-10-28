@@ -172,7 +172,7 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
   return (
     <footer className="hc-footer" role="contentinfo">
       {/* ── 1. Newsletter Subscription Section ────────────────────────────── */}
-      <section className="hc-footer__newsletter-section" aria-labelledby="hc-nl-title">
+      <section className="hc-footer__newsletter-section" aria-labelledby="hc-nl-title" data-aos="fade-up">
         <div className="container">
           <div className="hc-nl-card">
             <div className="hc-nl-card__bg-pattern" aria-hidden="true">
@@ -209,7 +209,7 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
       </section>
 
       {/* ── 2. Main Footer Content (5 Columns) ────────────────────────────── */}
-      <div className="hc-footer__main">
+      <div className="hc-footer__main" data-aos="fade-up">
         <div className="container">
           <div className="hc-footer__grid">
             {/* Column 1: Center Identity */}

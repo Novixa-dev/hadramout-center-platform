@@ -126,7 +126,7 @@ export async function NewsListing({
 
   return (
     <>
-      <div className="container news-listing-page listing">
+      <div className="container news-listing-page listing" data-aos="fade-up">
         {/* ── Sidebar Filters ────────────────────────────────────────────── */}
         <aside className="filters news-filters" id="filters" tabIndex={-1} aria-label={isAr ? 'تصفية الأخبار' : 'Filter News'}>
           <div className="news-filters__head">

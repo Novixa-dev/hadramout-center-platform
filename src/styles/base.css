@@ -1,8 +1,8 @@
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }
   * { margin: 0; }
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-block-start: calc(var(--header-h) + 1.25rem); background: #f6f5ef; }
-  body { min-height: 100dvh; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-block-start: calc(var(--header-h) + 1.25rem); background: #f6f5ef; overflow-x: clip; }
+  body { min-height: 100dvh; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: clip; }
   img, picture, video, canvas, svg { display: block; max-inline-size: 100%; }
   img { block-size: auto; }
   input, button, textarea, select { font: inherit; color: inherit; }

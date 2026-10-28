@@ -65,7 +65,7 @@ export default async function AuthorPage({ params }: Props) {
           {books.total ? <li><strong>{books.total}</strong><span>{t('home.stats.books')}</span></li> : null}
         </ul>
       </PageHead>
-      <div className="container section" style={{ paddingBlockStart: 'var(--space-6)' }}>
+      <div className="container section" data-aos="fade-up" style={{ paddingBlockStart: 'var(--space-6)' }}>
         {books.docs.length ? (
           <section style={{ marginBlockEnd: 'var(--space-8)' }} aria-labelledby="ab">
             <SectionHead title={t('authors.books')} id="ab" href={books.total > books.docs.length ? `${href('/books')}?author=${author.id}` : undefined} more={t('section.viewAll')} />

@@ -18,7 +18,7 @@ export function PublicationsSection({ ctx, books }: PublicationsSectionProps) {
   if (!books.length) return null;
 
   return (
-    <section className="publications-section" aria-labelledby="center-publications-title">
+    <section className="publications-section" aria-labelledby="center-publications-title" data-aos="fade-up">
       <div className="container">
         <EditorialCarousel
           id="center-publications"
