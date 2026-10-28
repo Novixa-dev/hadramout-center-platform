@@ -1,5 +1,5 @@
-import { mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { closeSync, fstatSync, mkdirSync, openSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve, sep } from 'node:path';
 
 /**
  * UI strings.
@@ -19,26 +19,33 @@ const dataDir = () => resolve(/* turbopackIgnore: true */ process.env.DATA_DIR ?
 // Callers validate languages against the registry; this guard keeps any other value from ever becoming a file path.
 const LANG_TAG = /^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
 const langFile = (dir: string, lang: string) => {
-  if (!LANG_TAG.test(lang)) throw new RangeError(`not a language tag: ${JSON.stringify(lang)}`);
-  return join(dir, `${lang}.json`);
+  const file = resolve(dir, `${lang}.json`);
+  if (!LANG_TAG.test(lang) || !file.startsWith(resolve(dir) + sep)) throw new RangeError(`not a language tag: ${JSON.stringify(lang)}`);
+  return file;
 };
 const bundlePath = (lang: string) => langFile(join(dataDir(), 'i18n'), lang);
 
 const cache = new Map<string, { mtime: number; value: unknown }>();
 
 function readJson<T>(path: string, fallback: T): T {
-  let mtime: number;
+  // one descriptor for the freshness check and the read, so the file cannot change in between
+  let fd: number;
   try {
-    mtime = statSync(path).mtimeMs;
+    fd = openSync(path, 'r');
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code === 'ENOENT') return fallback;
     throw e;
   }
-  const hit = cache.get(path);
-  if (hit && hit.mtime === mtime) return hit.value as T;
-  const value = JSON.parse(readFileSync(path, 'utf8')) as T;
-  cache.set(path, { mtime, value });
-  return value;
+  try {
+    const mtime = fstatSync(fd).mtimeMs;
+    const hit = cache.get(path);
+    if (hit && hit.mtime === mtime) return hit.value as T;
+    const value = JSON.parse(readFileSync(fd, 'utf8')) as T;
+    cache.set(path, { mtime, value });
+    return value;
+  } finally {
+    closeSync(fd);
+  }
 }
 
 export function loadSourceMessages(): Dict {
