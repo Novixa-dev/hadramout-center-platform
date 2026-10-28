@@ -61,8 +61,6 @@ export default async function Home({ params }: Props) {
       return b.total - a.total;
     })
     .slice(0, 12);
-  const fmt = new Intl.NumberFormat('en');
-
   const stats: [string, number, string][] = [
     ['/articles', nArticles, t('home.stats.articles')],
     ['/books', nBooks, t('home.stats.books')],
@@ -160,7 +158,7 @@ export default async function Home({ params }: Props) {
                   <strong>
                     <AnimatedCounter value={Number(n)} locale={lang.code} />
                   </strong>{' '}
-                  <span>{label}</span>
+                  <span className="stats__label">{label}</span>
                 </Link>
               </li>
             ))}

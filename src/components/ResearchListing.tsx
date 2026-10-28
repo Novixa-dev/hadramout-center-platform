@@ -183,7 +183,7 @@ export async function ResearchListing({
   return (
     <div className="research-page" dir="rtl">
       {/* ── Breadcrumbs & Hero ── */}
-      <section className="research-hero" data-aos="fade-up">
+      <section className="research-hero">
         <div className="container">
           <nav className="research-breadcrumbs" aria-label={t('a11y.breadcrumb')}>
             <ol className="research-breadcrumbs__list">
@@ -232,7 +232,7 @@ export async function ResearchListing({
       </section>
 
       {/* ── Main Content Area ── */}
-      <div className="container research-content-wrap" data-aos="fade-up" data-aos-delay="100">
+      <div className="container research-content-wrap">
         {/* Mobile filter toggle */}
         <div className="research-mobile-bar">
           <FiltersToggle label={t('list.filters')} count={userActive.length} />

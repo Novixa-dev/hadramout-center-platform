@@ -43,9 +43,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
   const data = await load(locale, id);
   if (!data) notFound();
   const ctx = makeCtx(locale);
-  const { t } = ctx;
   const { node, parent } = data;
-  const lead = node.description || t('topics.auto', { name: node.name, count: node.total });
   const sp = await searchParams;
   return (
     <ResearchListing
@@ -55,7 +53,7 @@ export default async function TopicPage({ params, searchParams }: Props) {
       basePath={`/topics/${node.id}`}
       searchParams={sp}
       title={node.name}
-      description={lead}
+      description={node.description || ctx.t('topics.auto', { name: node.name, count: node.total })}
     />
   );
 }
