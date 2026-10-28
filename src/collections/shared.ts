@@ -175,6 +175,7 @@ export function baseFields(opts: { body?: boolean; cover?: boolean; date?: boole
     {
       name: 'source',
       type: 'select',
+      label: L('المصدر', 'Source'),
       defaultValue: 'manual',
       options: [
         { label: L('إدخال يدوي', 'Manual'), value: 'manual' },

@@ -23,6 +23,14 @@ const CSP = [
   "frame-ancestors 'none'",
 ].join('; ');
 
+// Admin and REST API: Payload's admin needs inline/eval scripts, so it does not get the public CSP, but it must never be framed by
+// another site (clickjacking a signed-in editor). 'self' keeps same-origin framing possible (e.g. a future live preview).
+const ADMIN_CSP = "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'";
+const NO_FOREIGN_FRAMES = [
+  { key: 'Content-Security-Policy', value: ADMIN_CSP },
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+];
+
 const SECURITY = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
@@ -40,6 +48,8 @@ const nextConfig: NextConfig = {
       { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }, { key: 'Service-Worker-Allowed', value: '/' }] },
       { source: '/:dir(brand|icons|fonts)/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
       { source: '/((?!admin|api).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
+      { source: '/:area(admin|api)/:path*', headers: NO_FOREIGN_FRAMES },
+      { source: '/admin', headers: NO_FOREIGN_FRAMES },
     ];
   },
   // Legacy item URLs (/articles/9597) are rewritten to the id-mapping handler here, not in proxy.ts: a rewrite returned by the proxy is

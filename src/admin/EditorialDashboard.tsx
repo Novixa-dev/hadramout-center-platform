@@ -1,8 +1,13 @@
 import type { CollectionSlug, Payload, Where } from 'payload';
+import { loadConfig } from '../config.ts';
+import { dashboardStrings, fill } from './i18n.ts';
+import { listUrl } from './links.ts';
 
 /**
- * "What needs attention" panel above the admin dashboard: every count is a link to the matching, pre-filtered list.
- * Counts run with the signed-in user's own access (overrideAccess: false), so a role never sees numbers it cannot open.
+ * The admin home, above Payload's own collection list: what needs attention, the state of every content type
+ * (published / drafts / archived, each a link to the filtered list), the latest edits, today's machine-translation
+ * budget and shortcuts. Every number is a real count run with the signed-in user's own access (overrideAccess: false),
+ * so a role never sees numbers it cannot open, and nothing is shown that the database does not hold.
  */
 
 type Role = 'admin' | 'editor' | 'reviewer';
@@ -14,104 +19,204 @@ interface Props {
 
 const CONTENT: { slug: CollectionSlug; ar: string; en: string }[] = [
   { slug: 'news', ar: 'الأخبار', en: 'News' },
-  { slug: 'articles', ar: 'المقالات', en: 'Articles' },
+  { slug: 'articles', ar: 'المقالات والدراسات', en: 'Articles & studies' },
   { slug: 'books', ar: 'الكتب', en: 'Books' },
-  { slug: 'magazines', ar: 'أعداد المجلة', en: 'Issues' },
-  { slug: 'events', ar: 'المؤتمرات والندوات', en: 'Conferences' },
-  { slug: 'forum-events', ar: 'المنتدى', en: 'Forum' },
+  { slug: 'magazines', ar: 'أعداد المجلة', en: 'Magazine issues' },
+  { slug: 'events', ar: 'المؤتمرات والندوات', en: 'Conferences & seminars' },
+  { slug: 'forum-events', ar: 'منتدى عميد الوفاء', en: 'Forum' },
   { slug: 'videos', ar: 'المرئيات', en: 'Videos' },
 ];
 
-/** `where` as the admin list understands it in the URL (`?where[status][equals]=pending`). */
-function listUrl(slug: string, where: Record<string, Record<string, string>>): string {
-  const q = Object.entries(where)
-    .flatMap(([field, ops]) => Object.entries(ops).map(([op, v]) => `where[${field}][${op}]=${encodeURIComponent(v)}`))
-    .join('&');
-  return `/admin/collections/${slug}${q ? `?${q}` : ''}`;
-}
+const GUIDE_URL = 'https://github.com/Novixa-dev/hadramout-center-platform/blob/master/docs/06-handover/admin-guide-ar.md';
 
-const box: React.CSSProperties = {
-  border: '1px solid var(--theme-elevation-150)',
-  borderRadius: 8,
-  padding: '14px 16px',
-  background: 'var(--theme-elevation-0)',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 4,
-  textDecoration: 'none',
-  color: 'inherit',
-};
+type Recent = { slug: string; type: string; id: number | string; title: string; status?: string; updatedAt: string };
 
 export async function EditorialDashboard({ payload, user, i18n }: Props) {
   if (!user) return null;
-  const ar = (i18n?.language ?? 'ar') === 'ar';
-  const T = (a: string, e: string) => (ar ? a : e);
+  const lang = i18n?.language === 'en' ? 'en' : 'ar';
+  const t = dashboardStrings(lang);
   const role: Role = user.role ?? 'editor';
-  const count = async (collection: CollectionSlug, where: Where) => {
+  const staff = role !== 'reviewer';
+  const nf = new Intl.NumberFormat(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en');
+  const df = new Intl.DateTimeFormat(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+  const dtf = new Intl.DateTimeFormat(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const asUser = { user: user as never, overrideAccess: false } as const;
+
+  const count = async (collection: CollectionSlug, where: Where): Promise<number | null> => {
     try {
-      return (await payload.count({ collection, where, user: user as never, overrideAccess: false })).totalDocs;
+      return (await payload.count({ collection, where, ...asUser })).totalDocs;
     } catch {
       return null; // not allowed for this role, or the collection is unavailable: the card is left out
     }
   };
 
-  const [pendingReviews, newMessages, translationIssues, uncategorised, drafts, latestEvent] = await Promise.all([
-    role === 'reviewer' ? null : count('reviews', { status: { equals: 'pending' } }),
-    role === 'reviewer' ? null : count('messages', { status: { equals: 'new' } }),
+  const [pendingReviews, newMessages, translationIssues, uncategorised, overview, latestEvent, recentLists, usage] = await Promise.all([
+    staff ? count('reviews', { status: { equals: 'pending' } }) : null,
+    staff ? count('messages', { status: { equals: 'new' } }) : null,
     count('messages', { and: [{ status: { equals: 'new' } }, { kind: { equals: 'translation_issue' } }] }),
-    role === 'reviewer' ? null : count('articles', { and: [{ status: { equals: 'published' } }, { category: { exists: false } }] }),
-    role === 'reviewer' ? [] : Promise.all(CONTENT.map(async (c) => ({ ...c, n: await count(c.slug, { status: { equals: 'draft' } }) }))),
+    staff ? count('articles', { and: [{ status: { equals: 'published' } }, { category: { exists: false } }] }) : null,
+    Promise.all(
+      CONTENT.map(async (c) => {
+        const [published, draft, archived] = await Promise.all(['published', 'draft', 'archived'].map((s) => count(c.slug, { status: { equals: s } })));
+        return { ...c, published, draft, archived };
+      }),
+    ),
+    staff
+      ? payload
+          .find({ collection: 'events', where: { status: { equals: 'published' } }, sort: '-eventDate', limit: 1, depth: 0, ...asUser })
+          .then((r) => (r.docs[0] as { eventDate?: string } | undefined)?.eventDate ?? null)
+          .catch(() => null)
+      : null,
+    Promise.all(
+      CONTENT.map((c) =>
+        payload
+          .find({ collection: c.slug, sort: '-updatedAt', limit: 6, depth: 0, locale: 'ar', select: { title: true, status: true, updatedAt: true } as never, ...asUser })
+          .then((r) => (r.docs as unknown as { id: number; title?: string; status?: string; updatedAt: string }[]).map((d): Recent => ({ slug: c.slug, type: lang === 'ar' ? c.ar : c.en, id: d.id, title: d.title || t.untitled, status: d.status, updatedAt: d.updatedAt })))
+          .catch(() => [] as Recent[]),
+      ),
+    ),
     payload
-      .find({ collection: 'events', where: { status: { equals: 'published' } }, sort: '-eventDate', limit: 1, depth: 0, user: user as never, overrideAccess: false })
-      .then((r) => (r.docs[0] as { eventDate?: string } | undefined)?.eventDate ?? null)
+      .find({ collection: 'translation-usage', where: { day: { equals: new Date().toISOString().slice(0, 10) } }, limit: 20, depth: 0, ...asUser })
+      .then((r) => (r.docs as unknown as { charsIn?: number }[]).reduce((n, d) => n + (d.charsIn ?? 0), 0))
       .catch(() => null),
   ]);
 
-  const cards: { label: string; n: number; href: string; hint: string; tone: 'act' | 'info' }[] = [];
-  if (pendingReviews !== null) cards.push({ label: T('مراجعات قرّاء بانتظار الموافقة', 'Reader reviews awaiting approval'), n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: T('لا تظهر للعموم قبل الموافقة', 'Hidden from the public until approved'), tone: 'act' });
-  if (newMessages !== null) cards.push({ label: T('رسائل جديدة من الزوار', 'New visitor messages'), n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: T('تواصل، طلبات كتب، بلاغات ترجمة', 'Contact, book requests, translation reports'), tone: 'act' });
-  if (role === 'reviewer' && translationIssues !== null) cards.push({ label: T('بلاغات عن أخطاء الترجمة', 'Reported translation errors'), n: translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: T('صحّحها من اللغة المعنية في العنصر', 'Fix them in the item, in that language'), tone: 'act' });
-  if (uncategorised !== null) cards.push({ label: T('مقالات منشورة بلا تصنيف', 'Published articles without a topic'), n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: T('التصنيف يجعلها تظهر في صفحات المواضيع', 'A topic makes them appear on topic pages'), tone: 'info' });
-  const draftRows = (drafts ?? []).filter((d) => d.n);
+  const recent = recentLists.flat().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 8);
+  const statusLabel = (s?: string) => (s === 'published' ? t.published : s === 'archived' ? t.archived : t.drafts);
+  const limit = loadConfig().translation.dailyCharLimit;
+
+  const cards: { key: string; label: string; n: number; href: string; hint: string }[] = [];
+  if (pendingReviews !== null) cards.push({ key: 'reviews', label: t.pendingReviews, n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: t.pendingReviewsHint });
+  if (newMessages !== null) cards.push({ key: 'messages', label: t.newMessages, n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: t.newMessagesHint });
+  if (!staff && translationIssues !== null) cards.push({ key: 'tr', label: t.translationIssues, n: translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: t.translationIssuesHint });
+  if (uncategorised !== null) cards.push({ key: 'uncat', label: t.uncategorised, n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: t.uncategorisedHint });
+  const waiting = cards.some((c) => c.n > 0);
+  const roleName = role === 'admin' ? t.roleAdmin : role === 'reviewer' ? t.roleReviewer : t.roleEditor;
 
   return (
-    <section dir={ar ? 'rtl' : 'ltr'} aria-labelledby="hc-dash-title" style={{ marginBlockEnd: 28 }}>
-      <h2 id="hc-dash-title" style={{ marginBlockEnd: 4 }}>
-        {T('أهلاً', 'Welcome')} {user.name ?? ''}
-      </h2>
-      <p style={{ marginBlockStart: 0, opacity: 0.75 }}>
-        {role === 'reviewer'
-          ? T('دورك: مراجع ترجمة — تعدّل نصوص اللغات غير العربية فقط.', 'Your role: translation reviewer — you edit non-Arabic text only.')
-          : T('ما يحتاج انتباهك الآن. كل رقم رابط إلى القائمة المصفّاة.', 'What needs your attention. Every number opens the filtered list.')}
-      </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 12, marginBlockStart: 14 }}>
-        {cards.map((c) => (
-          <a key={c.label} href={c.href} style={{ ...box, borderInlineStart: `4px solid ${c.n && c.tone === 'act' ? 'var(--theme-warning-500, #c49952)' : 'var(--theme-elevation-150)'}` }}>
-            <strong style={{ fontSize: 28, lineHeight: 1.1 }}>{c.n.toLocaleString(ar ? 'ar-EG-u-nu-latn' : 'en')}</strong>
-            <span>{c.label}</span>
-            <small style={{ opacity: 0.7 }}>{c.hint}</small>
-          </a>
-        ))}
-        {draftRows.length ? (
-          <div style={box}>
-            <strong>{T('مسودات غير منشورة', 'Unpublished drafts')}</strong>
-            <ul style={{ margin: 0, paddingInlineStart: 18 }}>
-              {draftRows.map((d) => (
-                <li key={d.slug}>
-                  <a href={listUrl(d.slug, { status: { equals: 'draft' } })}>{ar ? d.ar : d.en}: {d.n}</a>
+    <div className="hc-dash">
+      <header className="hc-dash__head">
+        <div>
+          <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name ?? '' })}</h1>
+          <p className="hc-dash__lead">{staff ? t.leadStaff : t.leadReviewer}</p>
+        </div>
+        <span className={`hc-badge hc-badge--${role}`}>{roleName}</span>
+      </header>
+
+      <section aria-labelledby="hc-dash-attention" className="hc-dash__section">
+        <h2 id="hc-dash-attention" className="hc-dash__h2">{t.attention}</h2>
+        {!waiting ? <p className="hc-dash__clear">{t.allClear}</p> : null}
+        <ul className="hc-cards" role="list">
+          {cards.map((c) => (
+            <li key={c.key}>
+              <a href={c.href} className={`hc-card${c.n > 0 ? ' hc-card--act' : ''}`}>
+                <span className="hc-card__n">{nf.format(c.n)}</span>
+                <span className="hc-card__label">{c.label}</span>
+                <span className="hc-card__hint">{c.hint}</span>
+              </a>
+            </li>
+          ))}
+          {latestEvent !== null && staff ? (
+            <li>
+              <a href={listUrl('events')} className="hc-card">
+                <span className="hc-card__date">{latestEvent ? df.format(new Date(latestEvent)) : t.noEvent}</span>
+                <span className="hc-card__label">{t.latestEvent}</span>
+                <span className="hc-card__hint">{t.latestEventHint}</span>
+              </a>
+            </li>
+          ) : null}
+        </ul>
+      </section>
+
+      <div className="hc-dash__grid">
+        <section aria-labelledby="hc-dash-content" className="hc-dash__section hc-panel">
+          <h2 id="hc-dash-content" className="hc-dash__h2">{t.content}</h2>
+          <div className="hc-table-wrap">
+            <table className="hc-table">
+              <thead>
+                <tr>
+                  <th scope="col">{t.section}</th>
+                  <th scope="col">{t.published}</th>
+                  <th scope="col">{t.drafts}</th>
+                  <th scope="col">{t.archived}</th>
+                  {staff ? <th scope="col"><span className="hc-sr">{t.create}</span></th> : null}
+                </tr>
+              </thead>
+              <tbody>
+                {overview.map((c) => {
+                  const name = lang === 'ar' ? c.ar : c.en;
+                  const cell = (n: number | null, status: string) =>
+                    n === null ? '—' : n === 0 ? <span className="hc-zero">0</span> : <a href={listUrl(c.slug, { status: { equals: status } })}>{nf.format(n)}</a>;
+                  return (
+                    <tr key={c.slug}>
+                      <th scope="row">
+                        <a href={listUrl(c.slug)}>{name}</a>
+                      </th>
+                      <td>{cell(c.published, 'published')}</td>
+                      <td>{cell(c.draft, 'draft')}</td>
+                      <td>{cell(c.archived, 'archived')}</td>
+                      {staff ? (
+                        <td className="hc-table__action">
+                          <a className="hc-add" href={`/admin/collections/${c.slug}/create`} aria-label={fill(t.createNew, { label: name })}>
+                            + {t.create}
+                          </a>
+                        </td>
+                      ) : null}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section aria-labelledby="hc-dash-recent" className="hc-dash__section hc-panel">
+          <h2 id="hc-dash-recent" className="hc-dash__h2">{t.recent}</h2>
+          {recent.length ? (
+            <ol className="hc-recent" role="list">
+              {recent.map((r) => (
+                <li key={`${r.slug}-${r.id}`}>
+                  <a href={`/admin/collections/${r.slug}/${r.id}`} className="hc-recent__title" dir="auto">
+                    {r.title}
+                  </a>
+                  <span className="hc-recent__meta">
+                    {r.type} · <span className={`hc-status hc-status--${r.status ?? 'draft'}`}>{statusLabel(r.status)}</span> · {t.updated} {dtf.format(new Date(r.updatedAt))}
+                  </span>
                 </li>
               ))}
-            </ul>
-          </div>
-        ) : null}
-        {latestEvent && role !== 'reviewer' ? (
-          <a href={listUrl('events', {})} style={box}>
-            <strong>{T('آخر فعالية منشورة', 'Latest published event')}</strong>
-            <span>{new Date(latestEvent).toLocaleDateString(ar ? 'ar-EG-u-nu-latn' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-            <small style={{ opacity: 0.7 }}>{T('أضيفوا فعاليات المركز الأحدث ليبقى الموقع حيّاً', 'Add the latest events to keep the site current')}</small>
-          </a>
-        ) : null}
+            </ol>
+          ) : (
+            <p className="hc-dash__clear">{t.recentEmpty}</p>
+          )}
+        </section>
       </div>
-    </section>
+
+      <div className="hc-dash__grid hc-dash__grid--small">
+        {usage !== null ? (
+          <section aria-labelledby="hc-dash-tr" className="hc-dash__section hc-panel">
+            <h2 id="hc-dash-tr" className="hc-dash__h2">{t.translation}</h2>
+            {usage > 0 && limit > 0 ? (
+              <>
+                <p className="hc-meter-label">{fill(t.translationUsed, { used: nf.format(usage), limit: nf.format(limit) })}</p>
+                <meter className="hc-meter" min={0} max={limit} low={limit * 0.7} high={limit * 0.9} optimum={0} value={Math.min(usage, limit)}>
+                  {Math.round((usage / limit) * 100)}%
+                </meter>
+              </>
+            ) : (
+              <p className="hc-dash__clear">{t.translationNone}</p>
+            )}
+          </section>
+        ) : null}
+        <nav aria-labelledby="hc-dash-quick" className="hc-dash__section hc-panel">
+          <h2 id="hc-dash-quick" className="hc-dash__h2">{t.quick}</h2>
+          <ul className="hc-quick" role="list">
+            <li><a href={`/${lang}`} target="_blank" rel="noopener">{t.viewSite} ↗</a></li>
+            <li><a href="/admin/account">{t.profile}</a></li>
+            {role === 'admin' ? <li><a href="/admin/collections/users">{t.users}</a></li> : null}
+            <li><a href={GUIDE_URL} target="_blank" rel="noopener">{t.guide} ↗</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
   );
 }

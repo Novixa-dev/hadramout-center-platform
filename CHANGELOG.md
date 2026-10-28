@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.14.0] - 2026-10-28
+### Admin: the Center's identity, a real overview, both languages throughout, fixes found by testing every role
+- **Fixed — author names stuck on "Loading…" in admin lists** whenever the admin was opened on a host other than `SITE_URL` (a new domain during the move, localhost): the REST clamp answered Payload's own `limit=250` lookups with an absolute redirect to `SITE_URL`, which CORS blocked. The redirect is now relative (built on the request URL; Next relativizes it) — also one fewer cross-host hop on the live site.
+- **Fixed — admin and REST API could be framed by other sites** (clickjacking a signed-in editor, SEC-011): `X-Frame-Options: SAMEORIGIN` and `frame-ancestors 'self'` on `/admin` and `/api`.
+- **Fixed — rich-text body field:** its label, description, required mark and locale tag were missing (the bilingual label object was ignored); a reviewer could type into the read-only Arabic body; toolbar states (bold, undo…) went stale under Tiptap 3; toolbar and prompts were Arabic-only. Now built on Payload's `FieldLabel`/`FieldDescription`/`FieldError`, read-only aware, bilingual.
+- **Fixed — Arabic phone header:** the content-language picker covered the breadcrumb (Payload positions it with `right` only); `margin-right` on the header actions mirrored too.
+- **Fixed — SVG uploads** (script in a same-origin file, a path from an editor account to an administrator's session, SEC-013): the media library accepts JPEG, PNG, WebP, AVIF, GIF and PDF only.
+- **Fixed — phone breadcrumb** on edit pages could not shrink and ran under the language picker.
+- **Fixed — "forgot password"** promised an email that no mail provider sends: the screen now explains the real procedure, and the endpoint (which only wrote reset tokens to the log) is refused until `MAIL_PROVIDER` is set (SEC-012).
+- **Fixed — untranslated admin labels:** "Source" on every content type, «ISBN», social network names; a unit test now walks every collection and the site settings and fails on any label, option or description without Arabic and English.
+- **Admin identity:** the Center's mark and name on the sign-in screen, in the header and the browser tab; warm-paper/deep-green palette and brand-green primary actions derived from the site tokens at Payload's own lightness steps (contrast preserved, help texts raised to AA); the site's Arabic UI face (IBM Plex Arabic) and Naskh for titles.
+- **Dashboard:** greeting with role badge; "needs attention" cards; content status per section (published / drafts / archived, each a filtered link, with "add"); the last eight edits; today's machine-translation budget; shortcuts. Every number is a live count with the user's own access.
+- **Languages:** the admin is Arabic by default whatever the browser language; a one-click Arabic ⇄ English switch in the header and on the sign-in screen (saved); the header picker reads «لغة المحتوى» / "Content language" so it is no longer confused with the interface language; dates as «28 أكتوبر 2026 · 20:05».
+- **Tests:** `scripts/admin-e2e.mjs` — real-browser journeys with admin, editor and reviewer (sign-in errors, dashboard numbers vs the database, language switch, list pages, create → publish → delete, role limits, phone layouts, sign-out); runs in CI's smoke tier. Smoke also asserts the relative clamp redirect, the anti-framing headers, the refused reset endpoint and the Arabic default.
+
 ## [5.13.0] - 2026-10-27
 ### Editorial dashboard, article lead image, tidy titles, dependency updates
 - **Admin dashboard:** a "what needs attention" panel per role — pending reader reviews, new messages, published articles without a topic, drafts per section, latest event date; every number opens the filtered list. Counts run with the user's own access; reviewers see only reported translation errors. Arabic RTL, light/dark and phone checked.

@@ -1,6 +1,6 @@
 # Test runbook — every tier, how to run it, what "green" means
 
-**Last updated:** 2026-10-27 · **Who:** any engineer or AI agent continuing the project. Human click-through testing: [01-human-test-guide.md](01-human-test-guide.md).
+**Last updated:** 2026-10-28 · **Who:** any engineer or AI agent continuing the project. Human click-through testing: [01-human-test-guide.md](01-human-test-guide.md).
 
 ## Tiers
 
@@ -11,6 +11,7 @@
 | Production build | `TRANSLATION_PROVIDER=none npm run build` | ~6 GB RAM | build succeeds (`mock` is rejected in production mode on purpose) | ok |
 | Runtime smoke | `DB_DIR=<seeded dir> npm run smoke` | a seeded DB copy (`.smoke-data/db`), build | ~72 route/header/regression checks, SEO audit 0 errors, **redirect matrix 0 failed**, staging-mode checks | 72 ok, 1,603 redirect checks |
 | Browser journeys | `RUN_E2E=1 DB_DIR=… npm run smoke` or `node scripts/e2e.mjs <url> --expect production\|staging` | Chrome | all journeys (search, saving/offline, filters, language, mobile menu, keyboard, 320–1024 px overflow, clean console) | 55/55 local, 56/56 live |
+| Admin journeys | `ADMIN_EMAIL=… ADMIN_PASSWORD=… node scripts/admin-e2e.mjs http://localhost:<port>` (also inside `RUN_E2E=1 npm run smoke` when both variables are set; CI sets them) | Chrome, a **throwaway** seeded DB (it creates and deletes a news item and two staff accounts; refuses any host but localhost) | sign-in/errors/forgot screen, dashboard numbers equal the database, language switch persists, list relationship cells resolve, create → publish → delete, editor and reviewer limits, 390 px layouts, sign-out | see PROGRESS |
 | Sitemap sweep | `node scripts/site-sweep.mjs <url> --sample 60 --links 120 --expect staging` | — | sampled pages 200, valid metadata, no broken internal links | 77 pages, 0 errors (live) |
 | SEO / OG audit | `node scripts/seo-audit.mjs <url> [--expect staging]` | — | 0 errors: titles, descriptions, canonical, hreflang, 1200×630 PNG cards, og:type per page type, JSON-LD, robots, sitemap | 0 errors live |
 | Legacy redirects | `node scripts/redirect-matrix.mjs <url> --db <payload.db> [--follow 60]` | a DB with legacy ids | all 1,454 legacy ids 301 to the right page; listings, `/magazine`, trailing slash, cookie language; unknown URLs end in 404 | 1,663 checks, 0 failed |

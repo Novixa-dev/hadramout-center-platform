@@ -29,6 +29,13 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run knip   # dead code (unused files, dependencies, exports) stays out
+      # A component added to payload.config.ts but missing from the generated import map is silently not rendered.
+      - name: Payload import map matches the config
+        env:
+          PAYLOAD_SECRET: ci-import-map-check-only-0123456789
+        run: |
+          npm run generate:importmap
+          git diff --exit-code -- 'src/app/(payload)/admin/importMap.js'
       - run: npm test
       - run: npm run build
       # Runtime tier: fresh database from the committed snapshot, then the standalone server (as in Docker) is probed.
@@ -45,7 +52,10 @@ jobs:
       - name: Smoke test the built server (routes, regressions, SEO audit, browser journeys, sitemap sweep)
         env:
           DB_DIR: ${{ github.workspace }}/.smoke-data
-          RUN_E2E: "1"   # real Chrome (preinstalled on ubuntu-latest): scripts/e2e.mjs and scripts/site-sweep.mjs
+          RUN_E2E: "1"   # real Chrome (preinstalled on ubuntu-latest): scripts/e2e.mjs, scripts/site-sweep.mjs, scripts/admin-e2e.mjs
+          # the throwaway admin seeded in the step above (CI-only values), for the admin journeys
+          ADMIN_EMAIL: ci@example.org
+          ADMIN_PASSWORD: ci-only-password-123456
         run: bash scripts/smoke-prod.sh
       - name: Keep the test server logs when the smoke tier fails
         if: failure()

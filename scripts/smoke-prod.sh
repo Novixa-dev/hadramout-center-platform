@@ -68,6 +68,18 @@ curl -s "http://127.0.0.1:$PORT/manifest.webmanifest" | grep -q '"theme_color":"
 body() { local r; r=$(curl -s "http://127.0.0.1:$PORT$1"); if [ -z "$r" ]; then sleep 2; r=$(curl -s "http://127.0.0.1:$PORT$1"); fi; printf '%s' "$r"; }
 clamp=$(curl -s -o /dev/null -w '%{redirect_url}' "http://127.0.0.1:$PORT/api/news?limit=1000&depth=3")
 case "$clamp" in *limit=100*depth=2*) echo "ok   clamp target $clamp";; *) echo "FAIL clamp target '$clamp'"; fail=1;; esac
+# the clamp redirect is relative: an absolute one (built on SITE_URL) sent the admin's own requests to another origin on any other host
+clamp_loc=$(curl -s -D - -o /dev/null -H 'Host: other.example' "http://127.0.0.1:$PORT/api/authors?limit=250&depth=0" | tr -d '\r' | grep -i '^location:')
+case "$clamp_loc" in [Ll]ocation:\ /api/authors\?*) echo "ok   clamp redirect is relative";; *) echo "FAIL clamp redirect is not relative: '$clamp_loc'"; fail=1;; esac
+# the admin and the REST API cannot be framed by another site (clickjacking a signed-in editor)
+for path in /admin/login /admin /api/news; do
+  case "$(curl -s -D - -o /dev/null "http://127.0.0.1:$PORT$path" | tr -d '\r')" in *[Xx]-[Ff]rame-[Oo]ptions:\ SAMEORIGIN*frame-ancestors*|*frame-ancestors*[Xx]-[Ff]rame-[Oo]ptions:\ SAMEORIGIN*) echo "ok   no foreign framing of $path";; *) echo "FAIL $path can be framed"; fail=1;; esac
+done
+# no mail provider: the password-reset endpoint would only write reset tokens to the log (SEC-012)
+reset=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' -d '{"email":"nobody@example.org"}' "http://127.0.0.1:$PORT/api/users/forgot-password")
+[ "$reset" = 403 ] && echo "ok   password reset by email is refused without a mail provider" || { echo "FAIL forgot-password answered $reset"; fail=1; }
+# the admin is Arabic until staff pick a language, whatever the browser asks for
+case "$(curl -s -H 'Accept-Language: en-US,en;q=0.9' "http://127.0.0.1:$PORT/admin/login")" in *'lang="ar"'*) echo "ok   admin sign-in is Arabic by default";; *) echo "FAIL admin sign-in follows the browser language"; fail=1;; esac
 # capture first: `grep -q` quits at the first match, the 34 KB feed then hits a closed pipe and `pipefail` reported a failure at random
 en_feed=$(body /feeds/en/all.xml)
 case "$en_feed" in *'<title>Hadhramout'*) echo "ok   English feed channel title";; *) echo "FAIL English feed channel title"; fail=1;; esac
@@ -127,5 +139,11 @@ fi
 if [ "${RUN_E2E:-0}" = 1 ]; then
   (cd "$ROOT" && node scripts/e2e.mjs "http://localhost:$PORT" --expect production | tail -14) || fail=1
   (cd "$ROOT" && node scripts/site-sweep.mjs "http://localhost:$PORT" --sample 60 --links 120 --expect production | tail -14) || fail=1
+  # admin journeys with every staff role; they write (and then delete) a news item and two accounts, so only on this throwaway copy
+  if [ -n "${ADMIN_EMAIL:-}" ] && [ -n "${ADMIN_PASSWORD:-}" ]; then
+    (cd "$ROOT" && node scripts/admin-e2e.mjs "http://localhost:$PORT" | tail -14) || fail=1
+  else
+    echo "skip admin-e2e (set ADMIN_EMAIL and ADMIN_PASSWORD of the seeded admin)"
+  fi
 fi
 exit $fail

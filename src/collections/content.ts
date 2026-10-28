@@ -76,7 +76,7 @@ export const Books = contentCollection(
           admin: { description: L('تُستخدم في الاستشهاد العلمي. اتركها فارغة إن لم تُعرف.', 'Used in citations. Leave empty when unknown.') },
         },
         { name: 'pages', type: 'number', label: L('عدد الصفحات', 'Pages'), min: 1 },
-        { name: 'isbn', type: 'text', label: 'ISBN' },
+        { name: 'isbn', type: 'text', label: L('ردمك (ISBN)', 'ISBN') },
       ],
     },
     { name: 'pdf', type: 'text', label: L('رابط ملف PDF', 'PDF link'), admin: { description: L('رابط تنزيل الكتاب إن كان متاحاً للعموم.', 'Download link when the book is publicly available.') } },

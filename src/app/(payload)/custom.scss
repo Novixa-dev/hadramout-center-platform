@@ -1,0 +1,592 @@
+/* ==========================================================================================================
+   Admin theme — the Center's identity on top of Payload's own design system.
+   Payload derives every surface, border and text colour from two scales (--color-base-*, --color-success-*). They are
+   regenerated here from the site's tokens (src/styles/tokens.css): warm paper at the light end, the site's deep green at
+   the dark end, and the brand green (#2a836e) as the "success"/primary hue. Each step keeps the OKLab lightness of
+   Payload's original step, so Payload's own contrast relationships hold in both themes.
+   Rules are unlayered, so they win over Payload's `@layer payload-default` without !important.
+   ========================================================================================================== */
+
+/* Arabic letters from the site's UI face; Latin letters and digits stay on the system UI font. */
+@font-face {
+  font-family: 'HC Arabic';
+  font-weight: 400 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/plex-ar-400.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F;
+}
+@font-face {
+  font-family: 'HC Arabic';
+  font-weight: 600 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/plex-ar-600.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F;
+}
+@font-face {
+  font-family: 'HC Naskh';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/naskh-ar-700-v2.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F;
+}
+
+:root {
+  --font-body: 'HC Arabic', system-ui, -apple-system, 'Segoe UI', 'Noto Sans', 'Noto Sans Arabic', Tahoma, sans-serif;
+  --hc-font-display: 'HC Naskh', 'HC Arabic', Georgia, 'Times New Roman', serif;
+
+  --color-base-0: #fffbf5; --color-base-50: #f9f4ed; --color-base-100: #efeae4; --color-base-150: #e1ddd7; --color-base-200: #d3d0ca;
+  --color-base-250: #c6c3be; --color-base-300: #b7b5b1; --color-base-350: #aaa8a4; --color-base-400: #9c9a97; --color-base-450: #8e8d8b;
+  --color-base-500: #81807e; --color-base-550: #717272; --color-base-600: #636665; --color-base-650: #545857; --color-base-700: #474b49;
+  --color-base-750: #383e3b; --color-base-800: #2b312e; --color-base-850: #222a26; --color-base-900: #19221e; --color-base-950: #121b17;
+  --color-base-1000: #0b1311;
+
+  --color-success-50: #e8f8f2; --color-success-100: #d5f1e8; --color-success-150: #b8e7d8; --color-success-200: #98e0cb;
+  --color-success-250: #80d4bd; --color-success-300: #71c6ae; --color-success-350: #64b9a2; --color-success-400: #56aa94;
+  --color-success-450: #459b85; --color-success-500: #388e79; --color-success-550: #27816c; --color-success-600: #187662;
+  --color-success-650: #006a56; --color-success-700: #02604e; --color-success-750: #025343; --color-success-800: #07483a;
+  --color-success-850: #083d32; --color-success-900: #0c3027; --color-success-950: #12221d;
+
+  --hc-gold: #c49952;
+  --hc-gold-text: #86632b;
+  --hc-brand: var(--color-success-650);
+  --hc-brand-hover: var(--color-success-750);
+  --hc-on-brand: #fff;
+  --hc-brand-soft: var(--color-success-50);
+  --hc-focus: #1a5fb4;
+  --hc-radius: 10px;
+  --hc-shadow: 0 1px 2px rgb(60 40 10 / 0.06), 0 1px 3px rgb(60 40 10 / 0.05);
+  --style-radius-s: 4px;
+  --style-radius-m: 8px;
+  --style-radius-l: 12px;
+}
+
+html[data-theme='dark'] {
+  --hc-gold-text: #e0b96a;
+  --hc-brand: var(--color-success-300);
+  --hc-brand-hover: var(--color-success-200);
+  --hc-on-brand: #0b1311;
+  --hc-brand-soft: #173229;
+  --hc-focus: #8ab4f8;
+  --hc-shadow: none;
+}
+
+/* ── Global polish ─────────────────────────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--hc-focus);
+  outline-offset: 2px;
+}
+
+/* Field help texts: Payload's default grey is ~3.9:1 on paper; one step darker reaches 4.5:1 (WCAG AA) in both themes. */
+.field-description,
+.field-type .field-description {
+  color: var(--theme-elevation-650);
+}
+
+/* Primary actions in the Center's green, everywhere Payload uses its "primary" button (save, create, login…). Payload styles
+   buttons through these variables; overriding them (not `background`) keeps its disabled state ("nothing to save") visible. */
+.btn--style-primary {
+  --color: var(--hc-on-brand);
+  --bg-color: var(--hc-brand);
+  --hover-bg: var(--hc-brand-hover);
+  --hover-color: var(--hc-on-brand);
+
+  &.btn--disabled {
+    --bg-color: var(--theme-elevation-150);
+    --color: var(--theme-elevation-600);
+    --hover-bg: var(--bg-color);
+    --hover-color: var(--color);
+  }
+}
+
+/* Links inside list tables: brand colour, underline only on hover, Arabic titles keep their own direction. */
+.table td a,
+.cell-title a {
+  color: var(--hc-brand);
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+/* Long Arabic titles wrap at word boundaries on narrow screens instead of overflowing. */
+.table td {
+  overflow-wrap: anywhere;
+}
+
+/* ── Header: RTL fixes for Payload's narrow layouts ────────────────────────────────────────────────────────
+   Payload positions the content-language picker with `right` below 768 px and pads the actions with `margin-right`
+   below 1024 px, without RTL counterparts: in Arabic the picker covered the breadcrumb on phones. */
+[dir='rtl'] .app-header__actions-wrapper {
+  margin-right: 0;
+  margin-left: var(--base);
+}
+/* The breadcrumb may shrink: on a phone an edit page's trail (section + document title, ~330 px) is wider than the room left
+   by the header controls, and Payload's `width: 100%` + automatic min-width pushed it under the language picker. Clipped at
+   its end, the home mark and the section stay visible; each part already ends in an ellipsis. */
+.app-header__step-nav-wrapper {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+@media (max-width: 1024px) {
+  [dir='rtl'] .app-header__actions {
+    margin-right: 0;
+    margin-left: var(--base);
+  }
+}
+@media (max-width: 768px) {
+  [dir='rtl'] .app-header__localizer.localizer {
+    right: unset;
+    left: calc(var(--base) * 2);
+  }
+}
+
+.hc-actions {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--base) / 2);
+  white-space: nowrap;
+}
+.hc-actions__site,
+.hc-actions__lang {
+  font: inherit;
+  font-size: 0.8125rem;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: var(--style-radius-m);
+  border: 1px solid var(--theme-elevation-150);
+  background: var(--theme-elevation-0);
+  color: var(--theme-text);
+  text-decoration: none;
+  cursor: pointer;
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+
+  &:hover {
+    border-color: var(--hc-brand);
+    color: var(--hc-brand);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+}
+.hc-login-lang {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-end: calc(var(--base) / 2);
+}
+
+/* On phones the header has room for one shortcut: the language switch stays, "view site" moves to the dashboard. */
+@media (max-width: 768px) {
+  .hc-actions__site { display: none; }
+}
+
+/* ── Brand marks ───────────────────────────────────────────────────────────────────────────────────────── */
+.hc-icon {
+  display: block;
+  inline-size: auto;
+  block-size: 22px;
+}
+.step-nav__home .hc-icon {
+  block-size: 20px;
+}
+
+.hc-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: start;
+}
+.hc-logo__mark {
+  inline-size: auto;
+  block-size: 64px;
+  flex: none;
+}
+.hc-logo__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hc-logo__name {
+  font-family: var(--hc-font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--theme-text);
+}
+.hc-logo__sub {
+  font-size: 0.8125rem;
+  color: var(--hc-gold-text);
+  letter-spacing: 0.01em;
+}
+
+/* Login: a framed card on warm paper with the Center's mark. */
+.template-minimal.login {
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--hc-gold) 10%, transparent) 0, transparent 45%),
+    var(--theme-bg);
+}
+.login .template-minimal__wrap,
+.hc-forgot {
+  background: var(--theme-elevation-0);
+  border: 1px solid var(--theme-elevation-150);
+  border-block-start: 4px solid var(--hc-brand);
+  border-radius: var(--hc-radius);
+  box-shadow: var(--hc-shadow);
+  padding: calc(var(--base) * 1.6);
+}
+.login__brand {
+  margin-block-end: calc(var(--base) * 1.2) !important;
+  justify-content: flex-start !important;
+}
+
+/* Forgot-password replacement (see src/admin/ForgotPassword.tsx). */
+.hc-forgot {
+  max-inline-size: 520px;
+  margin-inline: auto;
+  margin-block: 8vh;
+  line-height: 1.8;
+
+  h1 {
+    font-size: 1.5rem;
+    margin-block: var(--base) calc(var(--base) / 2);
+  }
+  p { margin-block: 0 calc(var(--base) / 1.5); }
+  .btn { margin-block-start: calc(var(--base) / 2); text-decoration: none; }
+}
+.hc-forgot__note {
+  font-size: 0.875rem;
+  color: var(--theme-elevation-650);
+}
+
+/* ── Dashboard ─────────────────────────────────────────────────────────────────────────────────────────── */
+.hc-dash {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--base) * 1.2);
+  margin-block-end: calc(var(--base) * 1.5);
+}
+.hc-dash__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--base);
+  flex-wrap: wrap;
+  padding-block-end: var(--base);
+  border-block-end: 1px solid var(--theme-elevation-100);
+}
+.hc-dash__title {
+  font-family: var(--hc-font-display);
+  font-size: clamp(1.6rem, 1.3rem + 1vw, 2.2rem);
+  line-height: 1.4;
+  margin: 0;
+}
+.hc-dash__lead {
+  margin: 6px 0 0;
+  color: var(--theme-elevation-650);
+  max-inline-size: 70ch;
+}
+.hc-dash__h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 calc(var(--base) * 0.6);
+}
+.hc-dash__clear {
+  margin: 0 0 calc(var(--base) * 0.5);
+  color: var(--theme-elevation-650);
+}
+.hc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: var(--hc-brand-soft);
+  color: var(--hc-brand);
+  border: 1px solid color-mix(in srgb, var(--hc-brand) 30%, transparent);
+}
+.hc-badge--admin {
+  background: color-mix(in srgb, var(--hc-gold) 14%, var(--theme-elevation-0));
+  color: var(--hc-gold-text);
+  border-color: color-mix(in srgb, var(--hc-gold) 45%, transparent);
+}
+
+.hc-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: 12px;
+}
+.hc-card {
+  block-size: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--hc-radius);
+  background: var(--theme-elevation-0);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--hc-shadow);
+  transition: border-color 120ms ease, transform 120ms ease;
+
+  &:hover {
+    border-color: var(--hc-brand);
+  }
+}
+.hc-card--act {
+  border-inline-start: 4px solid var(--hc-gold);
+}
+@media (max-width: 768px) {
+  .hc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .hc-card { padding: 10px 12px; }
+  .hc-card__n { font-size: 1.5rem; }
+  .hc-card__hint { display: none; }
+}
+.hc-card__n {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.hc-card__date {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.hc-card__label { font-weight: 600; }
+.hc-card__hint {
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-650);
+}
+
+.hc-dash__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: calc(var(--base) * 0.8);
+  align-items: start;
+}
+.hc-dash__grid--small {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+@media (max-width: 1024px) {
+  .hc-dash__grid { grid-template-columns: minmax(0, 1fr); }
+}
+.hc-panel {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--hc-radius);
+  background: var(--theme-elevation-0);
+  padding: 16px 18px;
+  box-shadow: var(--hc-shadow);
+}
+
+.hc-table-wrap {
+  overflow-x: auto;
+}
+.hc-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: 9px 8px;
+    text-align: start;
+    border-block-end: 1px solid var(--theme-elevation-100);
+    white-space: nowrap;
+  }
+  thead th {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--theme-elevation-650);
+  }
+  tbody tr:last-child > * { border-block-end: 0; }
+  tbody th { font-weight: 600; }
+  a {
+    color: var(--hc-brand);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+.hc-table__action { text-align: end !important; }
+.hc-zero { color: var(--theme-elevation-400); }
+.hc-add {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 2px 10px;
+  border-radius: var(--style-radius-m);
+  border: 1px solid var(--theme-elevation-150);
+  font-size: 0.8125rem;
+  &:hover { border-color: var(--hc-brand); text-decoration: none !important; }
+}
+
+.hc-recent {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-block: 9px;
+    border-block-end: 1px solid var(--theme-elevation-100);
+    &:last-child { border-block-end: 0; }
+  }
+}
+.hc-recent__title {
+  color: var(--theme-text);
+  font-weight: 600;
+  text-decoration: none;
+  line-height: 1.6;
+  &:hover { color: var(--hc-brand); text-decoration: underline; }
+}
+.hc-recent__meta {
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-650);
+}
+.hc-status--published { color: var(--hc-brand); }
+.hc-status--draft { color: var(--hc-gold-text); }
+
+.hc-meter-label { margin: 0 0 8px; }
+.hc-meter {
+  inline-size: 100%;
+  block-size: 10px;
+}
+
+.hc-quick {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+
+  a {
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 4px 10px;
+    border-radius: var(--style-radius-m);
+    color: var(--theme-text);
+    text-decoration: none;
+    border: 1px solid var(--theme-elevation-100);
+    &:hover { border-color: var(--hc-brand); color: var(--hc-brand); }
+  }
+}
+
+.hc-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Payload's collection cards under the dashboard: a compact, scannable list of every section. */
+.dashboard .collections__card-list {
+  gap: 8px;
+}
+.dashboard .collections__card-list .card {
+  min-height: 0;
+  padding-block: 12px;
+  border-radius: var(--style-radius-m);
+  box-shadow: none;
+  &:hover { border-color: var(--hc-brand); }
+}
+.dashboard .collections__label {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* ── Rich-text body editor (src/admin/fields/HtmlField.tsx) ───────────────────────────────────────────── */
+.hc-ed {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-input-bg);
+}
+.hc-ed-field.error .hc-ed {
+  border-color: var(--theme-error-500);
+}
+.hc-ed-field.read-only .hc-ed {
+  background: var(--theme-elevation-50);
+}
+.hc-ed__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  border-block-end: 1px solid var(--theme-elevation-150);
+  position: sticky;
+  inset-block-start: var(--app-header-height, 0);
+  background: var(--theme-input-bg);
+  z-index: 2;
+  border-start-start-radius: var(--style-radius-m);
+  border-start-end-radius: var(--style-radius-m);
+}
+.hc-ed__group {
+  display: inline-flex;
+  gap: 4px;
+  padding-inline-end: 6px;
+  border-inline-end: 1px solid var(--theme-elevation-150);
+  &:last-child { border-inline-end: 0; padding-inline-end: 0; }
+
+  button {
+    min-inline-size: 36px;
+    min-block-size: 36px;
+    padding: 2px 8px;
+    border: 1px solid transparent;
+    border-radius: var(--style-radius-s);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+
+    &:hover:not(:disabled) { background: var(--theme-elevation-100); }
+    &[aria-pressed='true'] {
+      background: var(--hc-brand-soft);
+      border-color: color-mix(in srgb, var(--hc-brand) 40%, transparent);
+      color: var(--hc-brand);
+      font-weight: 700;
+    }
+    &:disabled { opacity: 0.4; cursor: default; }
+  }
+}
+.hc-ed__loading {
+  min-height: 320px;
+  padding: 12px 14px;
+  color: var(--theme-elevation-500);
+}
+.hc-ed .ProseMirror {
+  min-height: 320px;
+  padding: 12px 14px;
+  outline: none;
+  line-height: 1.9;
+  font-size: 1.05rem;
+
+  &:focus-visible { box-shadow: inset 0 0 0 2px var(--hc-focus); border-radius: var(--style-radius-m); }
+  img { max-width: 100%; height: auto; }
+  h2, h3, h4 { line-height: 1.5; margin-block: 1em 0.4em; }
+  blockquote {
+    border-inline-start: 3px solid var(--hc-gold);
+    margin-inline: 0;
+    padding-inline-start: 12px;
+    color: var(--theme-elevation-650);
+  }
+  a { color: var(--hc-brand); text-decoration: underline; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-card { transition: none; }
+}

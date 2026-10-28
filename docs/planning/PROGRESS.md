@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-27 · **Latest review:** [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
+**Last updated:** 2026-10-28 · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -99,6 +99,18 @@ Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0
 | Article lead image + migration | editor uploads and attaches an image over REST: page header, JSON-LD and card version use it; migration up/down/up, 909 rows kept |
 | Titles tidied on write + migration (RES-008) | unit tests; migration up/down/up; «1000هـ» kept |
 | Dependabot #41–#45 integrated (Payload 3.92, SDK 1.1, react-dom 19.3.1) | check 173/173, build, smoke 72 ok, redirect matrix 1,603/0, e2e 55/55, sweep 77/0, knip clean; the server applied both new migrations itself on start |
+
+## 2026-10-28 — admin audit: identity, overview, both languages, role-tested fixes
+
+| Change | Evidence |
+|---|---|
+| Author names stuck on "Loading…" off `SITE_URL` (absolute clamp redirect) → relative redirect | smoke asserts a relative `Location` with a foreign `Host`; admin-e2e: 6 list pages resolve every relationship cell |
+| SEC-011 admin/API framing, SEC-012 reset endpoint writing tokens to the log, SEC-013 SVG uploads | smoke (headers, 403) + admin-e2e (PNG accepted, SVG refused) |
+| Rich-text field: label/description/required/locale, read-only for reviewers, live toolbar state, bilingual | admin-e2e (label present, aria-pressed, reviewer read-only Arabic / editable English, opening leaves the document unmodified) |
+| Arabic-first admin with a header and sign-in language switch; «لغة المحتوى»; dates; every label bilingual (unit test walks all collections and the site settings) | admin-e2e (English browser → Arabic, switch persists); `tests/unit/admin-i18n.test.ts` |
+| Admin identity (logo, palette from the site tokens, Plex Arabic/Naskh), dashboard with live counts, recent edits, translation budget, shortcuts | screenshots ar/en × light/dark × 1440/390; admin-e2e compares the numbers with the database |
+| Phone header: picker no longer covers the breadcrumb (Payload RTL gaps) | admin-e2e at 390 px, Arabic and English, 4 page types |
+| `scripts/admin-e2e.mjs` in CI; import-map consistency step in CI | ci.yml |
 
 ## Next actionable tasks (in order)
 
