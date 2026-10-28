@@ -47,9 +47,12 @@ const nextConfig: NextConfig = {
       // the service worker file must always be revalidated so a new version reaches visitors promptly
       { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }, { key: 'Service-Worker-Allowed', value: '/' }] },
       { source: '/:dir(brand|icons|fonts)/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
-      { source: '/((?!admin|api).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
-      { source: '/:area(admin|api)/:path*', headers: NO_FOREIGN_FRAMES },
-      { source: '/admin', headers: NO_FOREIGN_FRAMES },
+      // legacy-media sets its own sandboxing CSP in its route; a config header here would replace it (Next keeps the first value)
+      { source: '/((?!admin|api|legacy-media).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
+      { source: '/admin/:path*', headers: NO_FOREIGN_FRAMES },
+      { source: '/api/:path((?!media/file/).*)', headers: NO_FOREIGN_FRAMES },
+      // uploaded files: the config header replaces Payload's own file CSP, so it must carry its script ban as well
+      { source: '/api/media/file/:path*', headers: [{ key: 'Content-Security-Policy', value: `script-src 'none'; frame-src 'none'; ${ADMIN_CSP}` }, { key: 'X-Frame-Options', value: 'SAMEORIGIN' }] },
     ];
   },
   // Legacy item URLs (/articles/9597) are rewritten to the id-mapping handler here, not in proxy.ts: a rewrite returned by the proxy is

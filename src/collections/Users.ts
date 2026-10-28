@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import { Forbidden, type CollectionConfig } from 'payload';
 import { isAdmin, L } from './shared.ts';
 
 type StaffUser = { id?: number | string; role?: string } | null | undefined;
@@ -12,6 +12,16 @@ export const Users: CollectionConfig = {
     maxLoginAttempts: 5,
     lockTime: 15 * 60 * 1000,
     cookies: { sameSite: 'Lax', secure: process.env.NODE_ENV === 'production' },
+  },
+  hooks: {
+    // No email adapter is configured, so a reset email can never reach anyone (SEC-012). Enforced here, at the operation,
+    // because Payload matches endpoint paths case-insensitively (/api/users/Forgot-Password reaches the same handler);
+    // the proxy check is only the early answer. Set MAIL_PROVIDER once a mail adapter exists.
+    beforeOperation: [
+      ({ operation, req }) => {
+        if (operation === 'forgotPassword' && !process.env.MAIL_PROVIDER) throw new Forbidden(req.t);
+      },
+    ],
   },
   access: {
     // The very first user can be created without being logged in (initial setup); afterwards only admins can.

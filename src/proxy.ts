@@ -41,10 +41,11 @@ function route(req: NextRequest): NextResponse {
       return NextResponse.redirect(target, 307);
     }
   }
-  // No email adapter is configured (payload.config.ts), so a password-reset request can never reach anyone: Payload would only
-  // write the reset link and its token to the server log (SEC-012). Refused until a mail provider exists (set MAIL_PROVIDER then,
+  // No email adapter is configured (payload.config.ts), so a password-reset request can never reach anyone (SEC-012): it would
+  // only store a token and log the staff address. Payload matches paths case-insensitively, so the comparison is too; the
+  // authoritative refusal is the beforeOperation hook in collections/Users.ts. Refused until a mail provider exists (set MAIL_PROVIDER then,
   // and remove the custom "forgot" view). An administrator resets a password from the user's page instead.
-  if (pathname === '/api/users/forgot-password' && !process.env.MAIL_PROVIDER) {
+  if (pathname.toLowerCase().replace(/\/+$/, '') === '/api/users/forgot-password' && !process.env.MAIL_PROVIDER) {
     return NextResponse.json({ errors: [{ message: 'Password reset by email is not available. Ask an administrator to set a temporary password.' }] }, { status: 403 });
   }
   // The admin is Arabic-first like the site. Until a staff member picks a language (Payload's `payload-lng` cookie, set by the

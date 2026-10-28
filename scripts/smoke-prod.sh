@@ -78,6 +78,9 @@ done
 # no mail provider: the password-reset endpoint would only write reset tokens to the log (SEC-012)
 reset=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' -d '{"email":"nobody@example.org"}' "http://127.0.0.1:$PORT/api/users/forgot-password")
 [ "$reset" = 403 ] && echo "ok   password reset by email is refused without a mail provider" || { echo "FAIL forgot-password answered $reset"; fail=1; }
+reset_case=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' -d '{"email":"nobody@example.org"}' "http://127.0.0.1:$PORT/api/users/Forgot-Password")
+[ "$reset_case" = 403 ] && echo "ok   the refusal also holds for a case-changed path" || { echo "FAIL Forgot-Password answered $reset_case"; fail=1; }
+case "$(curl -s -D - -o /dev/null "http://127.0.0.1:$PORT/api/media/file/nope.png" | tr -d '\r')" in *script-src\ \'none\'*frame-ancestors*) echo "ok   uploaded files keep a script ban";; *) echo "FAIL /api/media/file CSP lacks script-src 'none'"; fail=1;; esac
 # the admin is Arabic until staff pick a language, whatever the browser asks for
 case "$(curl -s -H 'Accept-Language: en-US,en;q=0.9' "http://127.0.0.1:$PORT/admin/login")" in *'lang="ar"'*) echo "ok   admin sign-in is Arabic by default";; *) echo "FAIL admin sign-in follows the browser language"; fail=1;; esac
 # capture first: `grep -q` quits at the first match, the 34 KB feed then hits a closed pipe and `pipefail` reported a failure at random
