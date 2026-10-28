@@ -56,7 +56,7 @@ set_image "$NEW_IMAGE"
 docker compose up -d --remove-orphans app
 
 echo "→ waiting for health"
-for i in $(seq 1 40); do
+for _ in $(seq 1 40); do
   status="$(docker inspect --format '{{.State.Health.Status}}' "$(docker compose ps -q app)" 2>/dev/null || echo starting)"
   if [ "$status" = "healthy" ]; then
     echo "✓ healthy ($NEW_IMAGE)"

@@ -112,6 +112,14 @@ Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0
 | Phone header: picker no longer covers the breadcrumb (Payload RTL gaps) | admin-e2e at 390 px, Arabic and English, 4 page types |
 | `scripts/admin-e2e.mjs` in CI; import-map consistency step in CI | ci.yml |
 
+## 2026-10-29 — deploy unblocked, CI supply chain hardened
+
+| Change | Evidence |
+|---|---|
+| Deploys had stopped since `b1ce484`: with the repository private, GitHub refused every job (organization billing: "payments failed or spending limit"); 0 billable minutes had been used. Repository made public again → Deploy and Live check green | Deploy run 40774313346; live `sha-ef40632`: cutover 39/0, SEO 0/0, sweep 77/0, `e2e.mjs` 56/56, read-only admin with the owner's account 14/14 |
+| Workflows: actions pinned to SHAs, least-privilege permissions, no persisted checkout tokens, inputs via env (template injection in the rollback tag), zizmor job + CodeQL + critical `npm audit` gate (SEC-015, OPS-3) | zizmor 33 → 0, actionlint and shellcheck clean |
+| `dompurify` (critical) and `fast-uri` via overrides; Node floor 24.22.1 and newest Node 24 in CI; Turbopack whole-project tracing removed (standalone 199 → 158 MB) | `npm audit --omit=dev`: 0 critical; build has 0 warnings; check 181/181, smoke 80/0, e2e 55/55, admin-e2e 65/65 |
+
 ## Next actionable tasks (in order)
 
 1. **Client meeting:** walk through the staging site and the [checklist](../06-handover/client-requirements-checklist-ar.md); collect the Center's materials and the decisions (domain, host, PDFs, Cloudflare, mail provider, 2FA).

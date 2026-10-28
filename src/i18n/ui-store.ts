@@ -14,7 +14,8 @@ export interface UiBundle {
   hashes: Dict;
 }
 
-const dataDir = () => resolve(process.env.DATA_DIR ?? './data');
+// runtime data directory: turbopackIgnore keeps the build from tracing (and bundling) the whole project for it
+const dataDir = () => resolve(/* turbopackIgnore: true */ process.env.DATA_DIR ?? './data');
 const bundlePath = (lang: string) => join(dataDir(), 'i18n', `${lang}.json`);
 
 const cache = new Map<string, { mtime: number; value: unknown }>();

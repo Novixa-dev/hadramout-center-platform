@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.15.0] - 2026-10-29
+### Supply chain and CI hardening, smaller build
+- **CI workflows hardened** (zizmor: 33 findings → 0): every action pinned to a full commit SHA (Dependabot keeps them current); `permissions: contents: read` on CI and Lighthouse; `persist-credentials: false` on every checkout; the deploy's rollback `tag` and `with_tools` inputs and Lighthouse's `desktop` input go through the environment instead of being expanded into shell (template injection), and a rollback tag must match `sha-<hex>`.
+- **New checks in CI:** a `workflows` job (zizmor, offline) and `npm audit --omit=dev --audit-level=critical`; a CodeQL workflow (JavaScript/TypeScript and Actions, `security-extended`, weekly and on every change; skipped while the repository is private, where it would need Advanced Security).
+- **Dependencies:** `dompurify` 3.4.17 (critical DOM-XSS advisory; pulled in by the admin's code editor) and `fast-uri` 3.1.9 (moderate) through `overrides` — `npm audit fix` would have downgraded `monaco-editor`. Production audit: 1 critical / 4 high → 0 critical / 3 high (all three are `happy-dom` under Payload's Lexical, waiting for Payload; triaged in SECURITY_REVIEW).
+- **Node:** `engines` now `>=24.22.1` (what Payload 3.92 requires); CI uses the newest Node 24 (`check-latest`) — runners had 24.21.0 and printed `EBADENGINE`.
+- **Build:** the five Turbopack "dynamic filesystem access traces the whole project" warnings are gone (`turbopackIgnore` on the runtime data and upload paths): standalone output 199 MB → 158 MB.
+- **Scripts:** shellcheck-clean deploy and smoke scripts (array for the images shipped, `cd … || exit`).
+
 ## [5.14.0] - 2026-10-28
 ### Admin: the Center's identity, a real overview, both languages throughout, fixes found by testing every role
 - **Fixed — author names stuck on "Loading…" in admin lists** whenever the admin was opened on a host other than `SITE_URL` (a new domain during the move, localhost): the REST clamp answered Payload's own `limit=250` lookups with an absolute redirect to `SITE_URL`, which CORS blocked. The redirect is now relative (built on the request URL; Next relativizes it) — also one fewer cross-host hop on the live site.

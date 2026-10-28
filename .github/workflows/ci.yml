@@ -4,6 +4,9 @@ on:
     branches: [master, main]
   pull_request:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -20,15 +23,20 @@ jobs:
       TRANSLATION_PROVIDER: none   # "mock" is rejected by the production build on purpose
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
+          check-latest: true
           cache: npm
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run knip   # dead code (unused files, dependencies, exports) stays out
+      # runtime dependencies only; a critical advisory blocks the change (lower ones are triaged in docs/security/SECURITY_REVIEW.md)
+      - name: No critical advisories in production dependencies
+        run: npm audit --omit=dev --audit-level=critical
       # A component added to payload.config.ts but missing from the generated import map is silently not rendered.
       - name: Payload import map matches the config
         env:
@@ -59,7 +67,7 @@ jobs:
         run: bash scripts/smoke-prod.sh
       - name: Keep the test server logs when the smoke tier fails
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: smoke-server-logs
           path: /tmp/hc-smoke/server-*.log
@@ -71,13 +79,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
-      - uses: docker/setup-buildx-action@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Build the production image (not pushed)
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           target: runner
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # Workflow security lint (template injection, unpinned actions, token permissions, credential persistence).
+  workflows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - name: zizmor
+        run: pipx run zizmor==1.31.1 --offline --format github .github/workflows

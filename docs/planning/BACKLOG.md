@@ -1,7 +1,7 @@
 # Backlog
 
 **Purpose:** the single register of open and closed findings from the 2026-10 audit, with status. Detail (evidence, acceptance criteria, verification) stays in the source document linked per row.
-**Last updated:** 2026-10-27 (MIG-007/QA-3 done; security items SEC-003 and SEC-010 closed — see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md)) · **Compiled** once from the finding tables of the audit documents; from now on this file is maintained by hand. Update the status here, not in the source documents.
+**Last updated:** 2026-10-29 (OPS-3 done: audit gate, workflow lint, CodeQL); 2026-10-27 (MIG-007/QA-3 done; security items SEC-003 and SEC-010 closed — see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md)) · **Compiled** once from the finding tables of the audit documents; from now on this file is maintained by hand. Update the status here, not in the source documents.
 **Statuses:** READY (can be done without outside input) · PARTIAL (started, remainder listed) · BLOCKED (needs the Center, an editor, or owner credentials) · DONE (changed and verified; evidence in the note).
 **Related:** [ROADMAP](ROADMAP.md) · [PROGRESS](PROGRESS.md)
 
@@ -143,7 +143,7 @@ Severity is the auditor's claim backed by cited evidence; the planned adversaria
 |---|---|---|---|
 | OPS-1 | Copy backups off the server | BLOCKED | needs a destination chosen by the owner |
 | OPS-2 | Exercise `restore.sh` and the rollback path on a scratch host | READY | never exercised in this pass |
-| OPS-3 | Dependabot and `npm audit` in CI | PARTIAL | Payload upgraded (17 → 12 advisories; the rest is dev tooling); **Dependabot added** (weekly, Payload packages grouped, majors of next/react/node ignored; every update PR runs full CI). A non-blocking `npm audit` step is not added: the 5 remaining high advisories are build-tool chains with no runtime path |
+| OPS-3 | Dependabot and `npm audit` in CI | DONE | Dependabot weekly (Payload grouped; actions and Docker monthly); **2026-10-29:** `npm audit --omit=dev --audit-level=critical` gate in CI, the critical `dompurify` and `fast-uri` fixed via `overrides`, zizmor workflow lint and CodeQL added (SEC-015). Remaining `happy-dom` waits for Payload (SECURITY_REVIEW SEC-008) |
 | QA-1 | Manual keyboard and screen-reader pass on the main journeys | READY | only axe/Lighthouse so far |
 | QA-2 | Full per-route SEO matrix and Search Console readiness | READY | script audit passes; matrix not written |
 | QA-3 | Redirect matrix test (all seven legacy types, query strings, trailing slash) | DONE 2026-10-27 | see MIG-007 |

@@ -3,7 +3,9 @@ name: Live check
 # Read-only and polite (3 requests in flight). A failure opens (or comments on) one GitHub issue, so a bad deploy is noticed here
 # and not by a visitor. While the site is a staging preview use LIVE_EXPECT=staging; set the repository variable to `production` at launch.
 on:
-  workflow_run:
+  # Safe use of workflow_run: the job checks out the default branch only and consumes nothing (code, artifacts, inputs) from the
+  # triggering run, which itself only runs for pushes/dispatches on master.
+  workflow_run: # zizmor: ignore[dangerous-triggers]
     workflows: ["Deploy to Production Server"]
     types: [completed]
   schedule:
@@ -29,10 +31,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
+          check-latest: true
           cache: npm
       - run: npm ci --ignore-scripts
       - name: Let the new container settle after a deploy
@@ -64,7 +68,7 @@ jobs:
           \`\`\`"
           existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"; fi
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: live-check

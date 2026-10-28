@@ -205,10 +205,11 @@ export async function loadCoverBytes(src: string | null | undefined): Promise<Bu
     }
     if (src.startsWith('/api/media/file/')) {
       const name = decodeURIComponent(src.slice('/api/media/file/'.length).split('?')[0] ?? '');
-      const dir = resolve(process.env.MEDIA_DIR || './data/media');
-      const file = resolve(join(dir, name));
+      // runtime upload directory: turbopackIgnore keeps the build from tracing (and bundling) the whole project for it
+      const dir = resolve(/* turbopackIgnore: true */ process.env.MEDIA_DIR || './data/media');
+      const file = resolve(/* turbopackIgnore: true */ join(/* turbopackIgnore: true */ dir, name));
       if (!name || !file.startsWith(dir + sep)) return null;
-      return await readFile(file);
+      return await readFile(/* turbopackIgnore: true */ file);
     }
     if (/^https:\/\/(files\.hadramout\.center|i\.ytimg\.com)\//.test(src)) {
       const res = await fetch(src, { signal: AbortSignal.timeout(4000), redirect: 'error' });

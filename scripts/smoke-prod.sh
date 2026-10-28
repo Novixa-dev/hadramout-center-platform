@@ -8,7 +8,7 @@ SMOKE="${SMOKE_DIR:-${TMPDIR:-/tmp}/hc-smoke}"; APP="$SMOKE/app"; DB_DIR="${DB_D
 APP="$ROOT/.next/standalone"; mkdir -p "$SMOKE"
 rm -rf "$APP/.next/static" "$APP/public" && cp -r "$ROOT/.next/static" "$APP/.next/static" && cp -r "$ROOT/public" "$APP/public"
 rm -rf "$APP/.next/server/route-cache"   # pages cached at runtime by earlier runs: they bake in the host, port and SITE_ENV they were rendered with
-cd "$APP"
+cd "$APP" || exit 1
 # start_server PORT [SITE_ENV]: the standalone server exactly as Docker runs it; prints the pid. SITE_ENV unset = staging behaviour.
 start_server() {
   local port="$1" site_env="${2:-}"
@@ -17,7 +17,7 @@ start_server() {
     node server.js > "$SMOKE/server-$port.log" 2>&1 &
   echo $!
 }
-wait_healthy() { for i in $(seq 1 40); do curl -s -o /dev/null "http://127.0.0.1:$1/api/hc/health" && return 0; sleep 1; done; return 1; }
+wait_healthy() { for _ in $(seq 1 40); do curl -s -o /dev/null "http://127.0.0.1:$1/api/hc/health" && return 0; sleep 1; done; return 1; }
 # the main run is a production-mode server (indexable): every route/SEO check below assumes it; staging behaviour is asserted at the end
 STAGING_PID=""
 PID=$(start_server "$PORT" production); trap 'kill $PID $STAGING_PID 2>/dev/null' EXIT

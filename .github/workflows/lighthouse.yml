@@ -17,6 +17,9 @@ on:
       - "scripts/lighthouse.mjs"
       - "scripts/lighthouse-median.mjs"
 
+permissions:
+  contents: read
+
 concurrency:
   group: lighthouse-${{ github.ref }}
   cancel-in-progress: true
@@ -37,10 +40,12 @@ jobs:
       NEXT_TELEMETRY_DISABLED: "1"
       LH_NO_SANDBOX: "1"
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
+          check-latest: true
           cache: npm
       - run: npm ci
       - run: npm run build
@@ -55,21 +60,23 @@ jobs:
           cp -r public .next/standalone/public
           cd .next/standalone
           NODE_ENV=production PORT=3100 HOSTNAME=127.0.0.1 MEDIA_DIR="$DATA_DIR/media" nohup node server.js > "$GITHUB_WORKSPACE/server.log" 2>&1 &
-          for i in $(seq 1 60); do curl -sf http://127.0.0.1:3100/api/hc/health > /dev/null && exit 0; sleep 1; done
+          for _ in $(seq 1 60); do curl -sf http://127.0.0.1:3100/api/hc/health > /dev/null && exit 0; sleep 1; done
           echo "server did not become healthy"; cat "$GITHUB_WORKSPACE/server.log"; exit 1
       - name: Warm the pages (first render fills the runtime page cache)
         run: for p in /ar /ar/articles /ar/articles/894 /ar/books/37; do curl -s -o /dev/null "http://127.0.0.1:3100$p"; done
       - name: Lighthouse x3
+        env:
+          DESKTOP: ${{ github.event.inputs.desktop }}
         run: |
           PRESETS=mobile
-          if [ "${{ github.event.inputs.desktop }}" = "true" ]; then PRESETS=mobile,desktop; fi
+          if [ "$DESKTOP" = "true" ]; then PRESETS=mobile,desktop; fi
           mkdir -p .lighthouse-runs
           for i in 1 2 3; do
             node scripts/lighthouse.mjs http://localhost:3100 --paths /ar,/ar/articles,/ar/articles/894,/ar/books/37 --presets "$PRESETS" --out ".lighthouse-runs/run-$i.json" --port "$((9333 + i))" || true
           done
       - name: Report the median
         run: node scripts/lighthouse-median.mjs .lighthouse-runs | tee -a "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: lighthouse
