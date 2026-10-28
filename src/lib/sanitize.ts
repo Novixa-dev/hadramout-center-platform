@@ -97,11 +97,12 @@ export function sanitizeBody(input: string): string {
 /** Strip every tag: titles, excerpts and other plain fields. */
 export function sanitizeText(input: string): string {
   return sanitizeHtml(input ?? '', { allowedTags: [], allowedAttributes: {}, textFilter: (t) => t.replaceAll(NBSP, ' ') })
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
+    // last, or "&amp;lt;" (the literal text "&lt;") would be decoded twice into "<"
+    .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
     .trim();
 }

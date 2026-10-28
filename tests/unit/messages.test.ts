@@ -56,3 +56,12 @@ describe('UI messages', () => {
     assert.deepEqual(bad, [], `placeholder mismatch: ${bad.join(', ')}`);
   });
 });
+
+test('a value that is not a language tag never becomes a message file path', async () => {
+  const { loadCuratedMessages, loadUiBundle, messagesFor } = await import('../../src/i18n/ui-store.ts');
+  for (const bad of ['../../.env', 'en/../../x', 'EN', '', 'en.json']) {
+    assert.throws(() => loadCuratedMessages(bad), RangeError, bad);
+    assert.throws(() => loadUiBundle(bad), RangeError, bad);
+  }
+  assert.ok(Object.keys(messagesFor('zh-Hans')).length > 0, 'a real tag with a script subtag still loads (falls back to Arabic/English)');
+});

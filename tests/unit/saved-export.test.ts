@@ -27,6 +27,11 @@ test('BibTeX: escaped specials, unique keys, ISO access date, no invented fields
   assert.ok(!/author|year|publisher =/.test(bib), 'the list does not know authors or years, so none are written');
 });
 
+test('BibTeX: a backslash becomes \\textbackslash{} and is not escaped twice', () => {
+  const bib = toBibtex([{ id: '1', title: 'a\\b {c}', url: '/x', type: 'web' }], origin, when);
+  assert.ok(bib.includes('title = {{a\\textbackslash{}b \\{c\\}}}'), bib);
+});
+
 test('CSL-JSON: valid JSON, webpage type, date-parts', () => {
   const parsed = JSON.parse(toCslJson(items, origin, when)) as { id: string; type: string; URL: string; accessed: { 'date-parts': number[][] } }[];
   assert.equal(parsed.length, 2);

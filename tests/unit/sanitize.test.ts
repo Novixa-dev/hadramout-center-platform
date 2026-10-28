@@ -43,6 +43,9 @@ describe('text helpers', () => {
   test('sanitizeText strips every tag', () => {
     assert.equal(sanitizeText('<b>a</b> &amp; <script>x</script>c'), 'a & c');
   });
+  test('sanitizeText decodes entities once: the literal text "&lt;b&gt;" stays text', () => {
+    assert.equal(sanitizeText('&amp;lt;b&amp;gt; &amp;amp;'), '&lt;b&gt; &amp;');
+  });
   test('htmlToText separates blocks', () => {
     assert.equal(htmlToText('<p>one</p><p>two<br>three</p>'), 'one two three');
   });

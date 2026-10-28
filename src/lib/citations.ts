@@ -130,7 +130,8 @@ export function formatCitation(s: CiteSource, style: CiteStyle): string {
   return parts.join(' ').replace(/\s+/g, ' ').trim();
 }
 
-const bibEsc = (v: string) => v.replace(/([&%$#_{}])/g, '\\$1');
+/** BibTeX special characters in one pass (so an inserted backslash is never escaped again); a literal backslash becomes \textbackslash{}. */
+export const bibEsc = (v: string): string => v.replace(/[\\{}%&$#_]/g, (c) => (c === '\\' ? '\\textbackslash{}' : `\\${c}`));
 
 export function bibKey(s: CiteSource): string {
   const fam = parseName(s.authors[0] ?? 'hc').family.replace(/[^\p{L}\p{N}]/gu, '') || 'hc';

@@ -8,6 +8,9 @@
 - **Node:** `engines` now `>=24.22.1` (what Payload 3.92 requires); CI uses the newest Node 24 (`check-latest`) — runners had 24.21.0 and printed `EBADENGINE`.
 - **Build:** the five Turbopack "dynamic filesystem access traces the whole project" warnings are gone (`turbopackIgnore` on the runtime data and upload paths): standalone output 199 MB → 158 MB.
 - **Scripts:** shellcheck-clean deploy and smoke scripts (array for the images shipped, `cd … || exit`).
+- **Fixed — found by the first CodeQL scan (SEC-016):** `sanitizeText` decoded `&amp;` before `&lt;`, turning the literal text `&lt;b&gt;` into `<b>`; sitemap attributes did not escape quotes; BibTeX escaping existed twice and one copy left `\` raw (now one single-pass `bibEsc`, `\` → `\textbackslash{}`); the UI-string store refuses any value that is not a language tag before building a file path, and no longer checks-then-reads. Four regression tests.
+- **Dependencies:** undici 8.12.3 (five advisories: TLS validation bypass, cache poisoning, DoS — Dependabot #47), Anthropic SDK 1.3.0 (#43).
+- **Repository:** secret scanning with push protection, Dependabot alerts and security updates, private vulnerability reporting (`SECURITY.md`); `master` refuses force-pushes and deletion.
 
 ## [5.14.0] - 2026-10-28
 ### Admin: the Center's identity, a real overview, both languages throughout, fixes found by testing every role

@@ -16,7 +16,8 @@ export interface SitemapOptions {
   tag: (lang: string) => string;
 }
 
-const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// also used inside attribute values, so quotes are escaped too
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 const day = (iso: string | undefined) => (iso && /^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10) : undefined);
 
 export function urlset(base: string, entries: SitemapEntry[], opts: SitemapOptions): string {

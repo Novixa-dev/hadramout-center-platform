@@ -2,6 +2,8 @@
  * Export formats for the browser-local reading list. The list stores only what the reader saved (title, URL, kind),
  * so each record is exported as a web page with an access date: no authors, years or publishers are invented.
  */
+import { bibEsc } from './citations.ts';
+
 export interface SavedItem {
   id: string;
   title: string;
@@ -21,7 +23,7 @@ export function toRis(items: SavedItem[], origin: string, accessed: Date): strin
 }
 
 /** BibTeX/BibLaTeX: braces around the title keep capitalisation, special characters are escaped. */
-const bibEscape = (s: string): string => oneLine(s).replace(/[\\{}]/g, (c) => `\\${c}`).replace(/([%&$#_])/g, '\\$1');
+const bibEscape = (s: string): string => bibEsc(oneLine(s));
 
 export function toBibtex(items: SavedItem[], origin: string, accessed: Date): string {
   const [y, m, d] = ymd(accessed);

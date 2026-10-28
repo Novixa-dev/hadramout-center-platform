@@ -28,3 +28,9 @@ test('the home page has no trailing path, special characters are escaped and ent
   assert.doesNotMatch(xml, /\/none/);
   assert.match(xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>/);
 });
+
+test('quotes cannot break out of the hreflang/href attributes', () => {
+  const xml = urlset(base, [{ path: `/x"y'z`, langs: ['ar'] }], opts);
+  assert.match(xml, /href="https:\/\/example\.org\/ar\/x&quot;y&apos;z"/);
+  assert.doesNotMatch(xml, /x"y/);
+});

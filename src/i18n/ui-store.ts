@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 /**
@@ -16,13 +16,24 @@ export interface UiBundle {
 
 // runtime data directory: turbopackIgnore keeps the build from tracing (and bundling) the whole project for it
 const dataDir = () => resolve(/* turbopackIgnore: true */ process.env.DATA_DIR ?? './data');
-const bundlePath = (lang: string) => join(dataDir(), 'i18n', `${lang}.json`);
+// Callers validate languages against the registry; this guard keeps any other value from ever becoming a file path.
+const LANG_TAG = /^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
+const langFile = (dir: string, lang: string) => {
+  if (!LANG_TAG.test(lang)) throw new RangeError(`not a language tag: ${JSON.stringify(lang)}`);
+  return join(dir, `${lang}.json`);
+};
+const bundlePath = (lang: string) => langFile(join(dataDir(), 'i18n'), lang);
 
 const cache = new Map<string, { mtime: number; value: unknown }>();
 
 function readJson<T>(path: string, fallback: T): T {
-  if (!existsSync(path)) return fallback;
-  const mtime = statSync(path).mtimeMs;
+  let mtime: number;
+  try {
+    mtime = statSync(path).mtimeMs;
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === 'ENOENT') return fallback;
+    throw e;
+  }
   const hit = cache.get(path);
   if (hit && hit.mtime === mtime) return hit.value as T;
   const value = JSON.parse(readFileSync(path, 'utf8')) as T;
@@ -35,7 +46,7 @@ export function loadSourceMessages(): Dict {
 }
 
 export function loadCuratedMessages(lang: string): Dict {
-  return readJson<Dict>(join(MESSAGES_DIR, `${lang}.json`), {});
+  return readJson<Dict>(langFile(MESSAGES_DIR, lang), {});
 }
 
 export function loadUiBundle(lang: string): UiBundle {
