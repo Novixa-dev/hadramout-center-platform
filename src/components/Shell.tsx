@@ -35,8 +35,6 @@ const SECONDARY = [
   { key: 'nav.contact', path: '/contact' },
 ] as const;
 
-export const NAV = [...PRIMARY, ...SECONDARY] as const;
-
 export interface LangOption {
   code: string;
   native: string;
