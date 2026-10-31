@@ -14,6 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - All changes verified locally with `npm run check` (210 unit tests passing across 38 suites, 0 TypeScript errors, 0 ESLint warnings, `knip` clean).
 
 ### Added
+- **Navigation Integration & Discoverability (`NAV-002`):**
+  - Integrated public routes for Audio Archive (`/audio`) and Research Submissions (`/submit`) into the secondary ("المزيد") navigation menu and footer explore/research columns in `src/components/Shell.tsx`.
+  - Added bilingual keys `nav.audio` and `nav.submit` across `messages/ar.json` and `messages/en.json`.
+- **Fast-Forward Branch Synchronization Utility:**
+  - Added cross-platform Node script `scripts/sync-branches.mjs` with batched atomic git pushes to fast-forward all `claude/*` branches to `master` in a single network pass.
+  - Updated `scripts/sync-branches.sh` to delegate to `scripts/sync-branches.mjs`.
+- **Novixa Technical Partner Page Seed Defaults:**
+  - Added `novixa` static page definition to `DEFAULT_PAGES` in `src/seed/defaults.ts` to ensure clean throwaway databases in CI environments have all linked footer pages available.
 - **Author Honorifics & Clean Data Pipeline (`DAT-001`):**
   - Added localized `honorific` field to `Authors` collection schema in `src/collections/Authors.ts`.
   - Created and applied SQLite migration `src/migrations/20261031_025843_add_author_honorific.ts`.
