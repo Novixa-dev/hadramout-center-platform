@@ -14,7 +14,14 @@ export interface Doc {
   body?: string | null;
   coverUrl?: string | null;
   coverAlt?: string | null;
-  cover?: { id: number; url?: string | null; sizes?: Record<string, { url?: string | null }> } | number | null;
+  cover?: {
+    id: number;
+    url?: string | null;
+    width?: number | null;
+    height?: number | null;
+    mimeType?: string | null;
+    sizes?: Record<string, { url?: string | null; width?: number | null; height?: number | null; mimeType?: string | null }>;
+  } | number | null;
   status: string;
   publishedAt?: string | null;
   datePrecision?: string | null;

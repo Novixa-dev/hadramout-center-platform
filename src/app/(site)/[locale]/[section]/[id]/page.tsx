@@ -6,7 +6,7 @@ import { typeFromRoute, type ContentType } from '../../../../../lib/content-type
 import { getDoc, getDocsByIds, getSite, trInfo, type Doc } from '../../../../../lib/data.ts';
 import { neighboursAndRelated, queryArchive } from '../../../../../lib/facets.ts';
 import { buildMetadata, cardUrl } from '../../../../../lib/seo.ts';
-import { describe } from '../../../../../lib/seo-text.ts';
+import { describe, bodyImageSources } from '../../../../../lib/seo-text.ts';
 import { appConfig } from '../../../../../lib/runtime-light.ts';
 import { withHeadingIds } from '../../../../../lib/html-utils.ts';
 import { localizeLegacyMedia } from '../../../../../lib/legacy-media.ts';
@@ -73,23 +73,61 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const doc = await getDoc(info.type, Number(id), locale);
   if (!doc) return {};
   const tr = trInfo(doc, locale);
-  const cover = coverOf(doc, 'large');
+  const cover = coverOf(doc, 'large') ?? coverOf(doc);
   const url = absolute(`/${locale}/${section}/${id}`);
   const pdfUrl = typeof doc.pdf === 'string' && doc.pdf ? (doc.pdf.startsWith('http') && !doc.pdf.includes('files.hadramout.center') ? doc.pdf : absolute(localizeLegacyMedia(doc.pdf))) : null;
   const meta = scholarMeta(citeSourceOf(info.type, doc, url, locale, ''), pdfUrl);
   const category = typeof doc.category === 'object' && doc.category ? doc.category.name : null;
+
+  // Resolve best explicit image for Open Graph and Twitter Card:
+  // 1. Explicit cover: For books and magazines, this is the crystal-clear book cover matching the book card.
+  //    For news, events, and articles with a cover image, this is the high-res featured photo/banner.
+  // 2. Video thumbnail: For videos with YouTube ID, use YouTube HQ poster.
+  // 3. Body illustration: For articles without a cover, use the first high-quality illustration from the body.
+  let ogImage: string | null = null;
+  const ogImageAlt = cover?.alt || doc.title;
+  let ogImageWidth = cover?.width;
+  let ogImageHeight = cover?.height;
+  let ogImageType = cover?.mimeType;
+
+  if (cover?.src) {
+    ogImage = absolute(cover.src);
+  } else if (info.type === 'video' && doc.youtubeId) {
+    ogImage = `https://i.ytimg.com/vi/${doc.youtubeId}/hqdefault.jpg`;
+    ogImageWidth = 480;
+    ogImageHeight = 360;
+    ogImageType = 'image/jpeg';
+  } else if ((info.type === 'article' || info.type === 'news') && typeof doc.body === 'string') {
+    const bodyImages = bodyImageSources(doc.body, 1);
+    if (bodyImages[0]) {
+      ogImage = absolute(localizeLegacyMedia(bodyImages[0]));
+    }
+  }
+
+  // Publication date / release date
+  const pubTime =
+    info.type === 'book' && doc.year
+      ? `${doc.year}-01-01T00:00:00.000Z`
+      : doc.datePrecision === 'day'
+        ? doc.publishedAt
+        : null;
+
   return buildMetadata({
     ctx,
     path: `/${section}/${id}`,
     title: doc.title,
     description: describe(doc.excerpt, htmlToText(doc.body ?? '')),
     card: { kind: section, id: doc.id, v: doc.updatedAt ? Date.parse(doc.updatedAt) : undefined },
-    imageAlt: cover?.alt,
+    image: ogImage,
+    imageAlt: ogImageAlt,
+    imageWidth: ogImageWidth,
+    imageHeight: ogImageHeight,
+    imageType: ogImageType,
     type: info.type === 'book' ? 'book' : info.type === 'article' || info.type === 'news' ? 'article' : info.type === 'video' ? 'video' : 'website',
     videoUrl: info.type === 'video' && doc.youtubeId ? `https://www.youtube-nocookie.com/embed/${doc.youtubeId}` : null,
     readyLangs: readyLangsOf(doc),
     incomplete: tr.status !== 'source' && tr.status !== 'complete',
-    publishedTime: doc.datePrecision === 'day' ? doc.publishedAt : null,
+    publishedTime: pubTime,
     modifiedTime: doc.updatedAt,
     authors: authorsOf(doc).map((a) => ({ name: a.name, url: absolute(`/${locale}/authors/${a.id}`) })),
     section: category,

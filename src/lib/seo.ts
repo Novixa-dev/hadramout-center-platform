@@ -5,7 +5,7 @@ import { loadConfig } from '../config.ts';
 import { absolute, type Ctx } from './ctx.ts';
 import { isProductionSite } from './site-env.ts';
 import { getSite } from './data.ts';
-import { clip, describe, isoOrUndefined, socialTitle, titlePart, twitterHandle, withPage } from './seo-text.ts';
+import { clip, describe, isoOrUndefined, mimeTypeOf, socialTitle, titlePart, twitterHandle, withPage } from './seo-text.ts';
 
 /** Languages whose interface is complete enough to be indexed as pages (ar, en + well-covered generated ones). */
 export function uiReadyLangs(): string[] {
@@ -24,7 +24,7 @@ export type CardRef = { key: string } | { kind: string; id: number; v?: string |
  * Revision of the card design. It is part of every card URL because shared caches (Cloudflare, messengers) keep a card for up to 30 days:
  * bump it whenever the look of the cards changes so every page points at fresh images.
  */
-export const OG_DESIGN = 4;
+export const OG_DESIGN = 5;
 
 export function cardUrl(lang: string, card: CardRef): string {
   if ('key' in card) return absolute(`/og/${lang}/${card.key}.png?d=${OG_DESIGN}`);
@@ -40,9 +40,12 @@ export interface MetaInput {
   absoluteTitle?: boolean;
   description?: string | null;
   card?: CardRef;
-  /** explicit absolute image URL (overrides the generated card) */
+  /** explicit absolute image URL (primary image for Open Graph and Twitter) */
   image?: string | null;
   imageAlt?: string;
+  imageWidth?: number | null;
+  imageHeight?: number | null;
+  imageType?: string | null;
   type?: 'website' | 'article' | 'book' | 'video' | 'profile';
   /** languages in which this exact page is complete (for hreflang). Defaults to the UI-ready set. */
   readyLangs?: string[];
@@ -83,8 +86,39 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
   const noindex = Boolean(staging || m.noindex || m.incomplete || !isIndexable(lang));
   const baseTitle = m.absoluteTitle ? clip(m.title, 70) : titlePart(withPage(m.title, page, m.pageLabel ?? String(page)));
   const description = describe(m.description, site.description, site.tagline);
-  const image = m.image ?? cardUrl(lang, m.card ?? { key: 'home' });
+  const cardImage = cardUrl(lang, m.card ?? { key: 'home' });
   const imageAlt = clip(m.imageAlt ?? `${m.title} — ${site.name}`, 200);
+
+  // If a direct content image is provided (book cover, news photo, etc.), it is the primary og:image.
+  // The branded 1200×630 canvas card is included as secondary image for landscape card pickers.
+  const ogImages = m.image
+    ? [
+        {
+          url: m.image,
+          alt: imageAlt,
+          ...(m.imageWidth ? { width: m.imageWidth } : {}),
+          ...(m.imageHeight ? { height: m.imageHeight } : {}),
+          type: m.imageType || mimeTypeOf(m.image),
+        },
+        {
+          url: cardImage,
+          width: 1200,
+          height: 630,
+          alt: imageAlt,
+          type: 'image/png',
+        },
+      ]
+    : [
+        {
+          url: cardImage,
+          width: 1200,
+          height: 630,
+          alt: imageAlt,
+          type: 'image/png',
+        },
+      ];
+
+  const twitterImage = m.image ?? cardImage;
   const handle = twitterHandle(site.social?.x);
   const ogType = m.type ?? 'website';
   const og = {
@@ -94,7 +128,7 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
     siteName: site.name,
     locale: ctx.lang.og,
     alternateLocale: ready.filter((c) => c !== lang).map((c) => getLanguage(c)?.og ?? c),
-    images: [{ url: image, width: 1200, height: 630, alt: imageAlt, type: 'image/png' }],
+    images: ogImages,
   };
   return {
     title: m.absoluteTitle ? { absolute: baseTitle } : baseTitle,
@@ -124,7 +158,7 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
             : ogType === 'profile'
               ? { ...og, type: 'profile' }
               : { ...og, type: 'website' },
-    twitter: { card: 'summary_large_image', title: og.title, description: description || undefined, images: [{ url: image, alt: imageAlt }], ...(handle ? { site: handle } : {}) },
+    twitter: { card: 'summary_large_image', title: og.title, description: description || undefined, images: [{ url: twitterImage, alt: imageAlt }], ...(handle ? { site: handle } : {}) },
     other: m.extra,
   };
 }

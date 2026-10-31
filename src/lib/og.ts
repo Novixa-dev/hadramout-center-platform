@@ -3,6 +3,10 @@ import { readFile } from 'node:fs/promises';
 import { join, resolve, sep } from 'node:path';
 import sharp, { type OverlayOptions, type Sharp } from 'sharp';
 import { resolveLegacyPath } from './legacy-media.ts';
+import { loadConfig } from '../config.ts';
+import { bodyImageSources } from './seo-text.ts';
+
+export { bodyImageSources };
 
 /**
  * Branded social-preview cards (1200×630 PNG) for every page of the archive.
@@ -199,12 +203,24 @@ export async function renderOgCard(input: OgInput): Promise<Buffer> {
 export async function loadCoverBytes(src: string | null | undefined): Promise<Buffer | null> {
   if (!src) return null;
   try {
-    if (src.startsWith('/legacy-media/')) {
-      const target = resolveLegacyPath(src.slice('/legacy-media/'.length).split('/'));
+    let path = src;
+    if (/^https?:\/\//i.test(src)) {
+      try {
+        const u = new URL(src);
+        const configuredHost = new URL(loadConfig().siteUrl).host;
+        if (u.host === configuredHost || u.host === 'localhost' || u.host === '127.0.0.1') {
+          path = u.pathname;
+        }
+      } catch {
+        /* fall through */
+      }
+    }
+    if (path.startsWith('/legacy-media/')) {
+      const target = resolveLegacyPath(path.slice('/legacy-media/'.length).split('/'));
       return target ? await readFile(target.file) : null;
     }
-    if (src.startsWith('/api/media/file/')) {
-      const name = decodeURIComponent(src.slice('/api/media/file/'.length).split('?')[0] ?? '');
+    if (path.startsWith('/api/media/file/')) {
+      const name = decodeURIComponent(path.slice('/api/media/file/'.length).split('?')[0] ?? '');
       // runtime upload directory: turbopackIgnore keeps the build from tracing (and bundling) the whole project for it
       const dir = resolve(/* turbopackIgnore: true */ process.env.MEDIA_DIR || './data/media');
       const file = resolve(/* turbopackIgnore: true */ join(/* turbopackIgnore: true */ dir, name));
@@ -221,18 +237,6 @@ export async function loadCoverBytes(src: string | null | undefined): Promise<Bu
     /* fall through */
   }
   return null;
-}
-
-/** `src` of the first images inside an HTML body, in reading order (data: URIs and icons skipped). */
-export function bodyImageSources(html: string | null | undefined, max = 2): string[] {
-  const out: string[] = [];
-  for (const m of (html ?? '').matchAll(/<img\b[^>]*?\ssrc=["']([^"']+)["']/gi)) {
-    const src = m[1]!.trim();
-    if (/^data:|\.svg(\?|$)|\/(emoji|icons?|smilies)\//i.test(src)) continue;
-    out.push(src);
-    if (out.length >= max) break;
-  }
-  return out;
 }
 
 /** A body image may illustrate a card when it is big enough to stay sharp and is not a divider strip or a tall scan. */

@@ -67,3 +67,25 @@ export function twitterHandle(url: string | undefined): string | undefined {
 export function withPage(title: string, page: number, label: string): string {
   return page > 1 ? `${title} — ${label}` : title;
 }
+
+/** `src` of the first images inside an HTML body, in reading order (data: URIs and icons skipped). */
+export function bodyImageSources(html: string | null | undefined, max = 2): string[] {
+  const out: string[] = [];
+  for (const m of (html ?? '').matchAll(/<img\b[^>]*?\ssrc=["']([^"']+)["']/gi)) {
+    const src = m[1]!.trim();
+    if (/^data:|\.svg(\?|$)|\/(emoji|icons?|smilies)\//i.test(src)) continue;
+    out.push(src);
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
+/** Detect MIME type from an image URL for Open Graph tag hints. */
+export function mimeTypeOf(url: string | null | undefined): string {
+  if (!url) return 'image/jpeg';
+  if (/\.png(\?|$)/i.test(url)) return 'image/png';
+  if (/\.webp(\?|$)/i.test(url)) return 'image/webp';
+  if (/\.gif(\?|$)/i.test(url)) return 'image/gif';
+  if (/\.svg(\?|$)/i.test(url)) return 'image/svg+xml';
+  return 'image/jpeg';
+}

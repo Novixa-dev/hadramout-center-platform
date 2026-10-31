@@ -1,9 +1,10 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
-import { clip, cleanDescription, describe as describeText, isoOrUndefined, twitterHandle, withPage, titlePart } from '../../src/lib/seo-text.ts';
+import { clip, cleanDescription, describe as describeText, isoOrUndefined, mimeTypeOf, twitterHandle, withPage, titlePart } from '../../src/lib/seo-text.ts';
 import { breadcrumbJsonLd, collectionJsonLd, contentJsonLd, jsonLdString, personJsonLd, siteJsonLd } from '../../src/lib/jsonld.ts';
 import { bodyImageSources, cardWorthy, drawable, OG_HEIGHT, OG_WIDTH, renderOgCard } from '../../src/lib/og.ts';
+import { coverOf } from '../../src/lib/ctx.ts';
 
 const org = { name: 'مركز حضرموت', origin: 'https://example.org', logo: 'https://example.org/icons/icon-512.png' };
 const authorUrl = (id: number) => `https://example.org/ar/authors/${id}`;
@@ -157,5 +158,40 @@ describe('magazine reference line', () => {
     assert.equal(stripReferenceLine('المرجع : مجلة حضرموت الثقافية .. العدد 24 – 25 .. ص 4 رابط العدد 24 – 25 : اضغط هنا عندما يقام'), 'عندما يقام');
     assert.equal(stripReferenceLine(null), '');
     assert.equal(stripReferenceLine('المرجع : كتاب بلا رابط'), 'المرجع : كتاب بلا رابط');
+  });
+});
+
+describe('mimeTypeOf and image metadata', () => {
+  test('detects MIME types correctly from URL or file path', () => {
+    assert.equal(mimeTypeOf('https://example.org/cover.png'), 'image/png');
+    assert.equal(mimeTypeOf('https://example.org/cover.webp?v=2'), 'image/webp');
+    assert.equal(mimeTypeOf('/media/book-cover.jpg'), 'image/jpeg');
+    assert.equal(mimeTypeOf('/icons/brand.svg'), 'image/svg+xml');
+    assert.equal(mimeTypeOf(null), 'image/jpeg');
+  });
+
+  test('coverOf extracts media dimensions and mimeType for Open Graph hints', () => {
+    const docWithMedia = {
+      id: 1,
+      title: 'كتاب التاريخ',
+      status: 'published',
+      cover: {
+        id: 10,
+        url: '/media/book.jpg',
+        width: 800,
+        height: 1200,
+        mimeType: 'image/jpeg',
+        sizes: {
+          large: { url: '/media/book-large.jpg', width: 800, height: 1200, mimeType: 'image/jpeg' },
+        },
+      },
+    } as never;
+
+    const cover = coverOf(docWithMedia, 'large');
+    assert.ok(cover);
+    assert.equal(cover.src, '/media/book-large.jpg');
+    assert.equal(cover.width, 800);
+    assert.equal(cover.height, 1200);
+    assert.equal(cover.mimeType, 'image/jpeg');
   });
 });

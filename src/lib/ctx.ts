@@ -38,6 +38,9 @@ export interface CoverImage {
   src: string;
   alt: string;
   remote: boolean;
+  width?: number;
+  height?: number;
+  mimeType?: string;
 }
 
 /** Best available cover: mirrored upload first, else the legacy remote URL. */
@@ -45,8 +48,18 @@ export function coverOf(doc: Doc, size: 'thumb' | 'card' | 'large' = 'card'): Co
   const alt = (doc.coverAlt as string | undefined) || doc.title;
   const c = doc.cover;
   if (c && typeof c === 'object') {
-    const url = c.sizes?.[size]?.url ?? c.url;
-    if (url) return { src: url, alt, remote: false };
+    const s = c.sizes?.[size];
+    const url = s?.url ?? c.url;
+    if (url) {
+      return {
+        src: url,
+        alt,
+        remote: false,
+        width: s?.width ?? c.width ?? undefined,
+        height: s?.height ?? c.height ?? undefined,
+        mimeType: s?.mimeType ?? c.mimeType ?? undefined,
+      };
+    }
   }
   if (doc.coverUrl) return { src: localizeLegacyMedia(doc.coverUrl), alt, remote: false };
   return null;

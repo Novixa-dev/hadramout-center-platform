@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
+import { absolute, isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { typeFromRoute, type ContentType } from '../../../../lib/content-types.ts';
 import { getPage, trInfo } from '../../../../lib/data.ts';
 import { htmlToText } from '../../../../lib/sanitize.ts';
@@ -30,12 +30,20 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     if (!page) return {};
     const title = page.metaTitle || page.title;
     const description = page.metaDescription || describe(htmlToText(page.body ?? ''));
+    const ogImg = typeof page.ogImage === 'object' && page.ogImage && 'url' in page.ogImage && page.ogImage.url ? page.ogImage : null;
+    const heroImg = !ogImg && typeof page.heroImage === 'object' && page.heroImage && 'url' in page.heroImage && page.heroImage.url ? page.heroImage : null;
+    const chosenMedia = ogImg || heroImg;
+    const pageImage = chosenMedia?.url ? absolute(chosenMedia.url) : null;
     return buildMetadata({
       ctx,
       path: `/${section}`,
       title,
       description,
       card: { kind: 'pages', id: page.id },
+      image: pageImage,
+      imageWidth: chosenMedia?.width,
+      imageHeight: chosenMedia?.height,
+      imageType: chosenMedia?.mimeType ?? undefined,
       readyLangs: readyLangsOf(page as never),
       incomplete: locale !== 'ar' && trInfo(page as never, locale).status !== 'complete',
       noindex: Boolean(page.noindex),
