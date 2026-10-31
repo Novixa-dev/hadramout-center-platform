@@ -162,6 +162,7 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
               <li><Link href={href('/privacy')}>{t('footer.privacy')}</Link></li>
               <li><Link href={href('/terms')}>{t('footer.terms')}</Link></li>
               <li><Link href={href('/accessibility')}>{t('footer.accessibility')}</Link></li>
+              <li><Link href={href('/novixa')}>{t('footer.novixa')}</Link></li>
             </ul>
           </nav>
           <div>
@@ -174,7 +175,7 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
         </div>
         <div className="site-footer__legal">
           <span>© {new Date().getFullYear()} {site.name} — {t('footer.rights')}</span>
-          <span>{t('footer.built')} <a href="https://novixa.dev" target="_blank" rel="noopener noreferrer">Novixa</a></span>
+          <span>{t('footer.built')} <Link href={href('/novixa')}>Novixa</Link></span>
         </div>
       </div>
     </footer>

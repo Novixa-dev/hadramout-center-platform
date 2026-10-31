@@ -16,11 +16,17 @@ interface ShareProps {
 export function ShareMenu({ label, title, url, copyLink, copied, closeLabel, targets }: ShareProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const [done, setDone] = useState(false);
+  const [quote, setQuote] = useState('');
   const enc = encodeURIComponent;
   const open = async () => {
+    const sel = typeof window !== 'undefined' ? window.getSelection()?.toString().trim() : '';
+    const q = sel && sel.length >= 10 && sel.length <= 300 ? sel : '';
+    setQuote(q);
+    const textToSend = q ? `«${q}»\n\n${title}` : title;
+
     if (typeof navigator !== 'undefined' && 'share' in navigator) {
       try {
-        await navigator.share({ title, url });
+        await navigator.share({ title: textToSend, url });
         return;
       } catch {
         /* cancelled or unsupported → fall through to the menu */
@@ -28,10 +34,11 @@ export function ShareMenu({ label, title, url, copyLink, copied, closeLabel, tar
     }
     ref.current?.showModal();
   };
+  const shareText = quote ? `«${quote}»\n\n${title}` : title;
   const links = [
-    [targets.whatsapp, `https://wa.me/?text=${enc(`${title} ${url}`)}`],
-    [targets.telegram, `https://t.me/share/url?url=${enc(url)}&text=${enc(title)}`],
-    [targets.x, `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(title)}`],
+    [targets.whatsapp, `https://wa.me/?text=${enc(`${shareText} ${url}`)}`],
+    [targets.telegram, `https://t.me/share/url?url=${enc(url)}&text=${enc(shareText)}`],
+    [targets.x, `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(shareText)}`],
     [targets.facebook, `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`],
   ] as const;
   return (
@@ -43,6 +50,11 @@ export function ShareMenu({ label, title, url, copyLink, copied, closeLabel, tar
           <button type="button" className="icon-btn" onClick={() => ref.current?.close()} aria-label={closeLabel}><Icon name="close" /></button>
         </div>
         <div className="dlg__body stack">
+          {quote ? (
+            <blockquote style={{ margin: 0, padding: '0.6rem 0.8rem', background: 'var(--surface-2)', borderInlineStart: '3px solid var(--gold-500)', fontSize: 'var(--step--1)', borderRadius: 'var(--r-sm)', fontStyle: 'italic' }}>
+              «{quote}»
+            </blockquote>
+          ) : null}
           <div className="cluster">
             {links.map(([name, href]) => <a key={name} className="btn btn--secondary btn--sm" href={href} target="_blank" rel="noopener noreferrer">{name}</a>)}
           </div>

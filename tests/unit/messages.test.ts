@@ -33,7 +33,7 @@ for (const file of walk('src')) {
   const src = readFileSync(file, 'utf8');
   for (const m of src.matchAll(re)) used.add(m[2] as string);
   // keys passed as data: { title: 'home.hero.title' }, TITLE_KEY maps, nav tables…
-  for (const m of src.matchAll(/['"`]((?:nav|home|list|search|topics|reviews|reader|timeline|authors|event|pdf|pager|cite|footer|saved|og|magazine|meta|article|book|news|events|forum|videos|articles|books|magazines|contact|a11y|error|tools|share|theme|lang|tr|card|newsletter|section|header|site|video)\.[A-Za-z0-9_.-]+)['"`]/g)) used.add(m[1] as string);
+  for (const m of src.matchAll(/['"`]((?:nav|home|list|search|topics|reviews|reader|timeline|authors|event|pdf|pager|cite|footer|saved|og|magazine|meta|article|book|news|events|forum|videos|articles|books|magazines|contact|a11y|error|tools|share|theme|lang|tr|card|newsletter|section|header|site|video|submit|partners|testimonials)\.[A-Za-z0-9_.-]+)['"`]/g)) used.add(m[1] as string);
 }
 
 // plural forms are looked up as key.one / key.other; the base key may not exist on its own

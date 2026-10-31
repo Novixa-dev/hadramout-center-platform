@@ -8,9 +8,9 @@ export const Media: CollectionConfig = {
   access: { read: () => true, create: isEditorOrAdmin, update: isEditorOrAdmin, delete: isAdmin },
   upload: {
     staticDir: process.env.MEDIA_DIR || './data/media',
-    // Raster images and PDF only. `image/*` also admitted SVG, which can carry script and is served from this origin
+    // Raster images, audio and PDF. `image/*` also admitted SVG, which can carry script and is served from this origin
     // (/api/media/file/…): an editor account could plant a file that acts with an administrator's session when opened (SEC-013).
-    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'application/pdf'],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif', 'application/pdf', 'audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/webm'],
     adminThumbnail: 'thumb',
     focalPoint: true,
     imageSizes: [

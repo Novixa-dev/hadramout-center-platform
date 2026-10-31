@@ -74,6 +74,10 @@ export interface Config {
     events: Event;
     'forum-events': ForumEvent;
     videos: Video;
+    audio: Audio;
+    announcements: Announcement;
+    partners: Partner;
+    testimonials: Testimonial;
     authors: Author;
     categories: Category;
     pages: Page;
@@ -100,6 +104,10 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     'forum-events': ForumEventsSelect<false> | ForumEventsSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
+    audio: AudioSelect<false> | AudioSelect<true>;
+    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
+    partners: PartnersSelect<false> | PartnersSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -620,6 +628,10 @@ export interface Article {
 export interface Author {
   id: number;
   /**
+   * e.g. Prof. Dr., Dr., Sheikh, Researcher (separated to keep alphabetical indexing accurate)
+   */
+  honorific?: string | null;
+  /**
    * Transliterated automatically for other languages.
    */
   name: string;
@@ -842,6 +854,24 @@ export interface Event {
   endDate?: string | null;
   youtubeId?: string | null;
   link?: string | null;
+  tracks?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  chairs?: string | null;
+  papers?:
+    | {
+        title: string;
+        researcher: string;
+        abstract?: string | null;
+        file?: (number | null) | Media;
+        fileUrl?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -897,6 +927,24 @@ export interface ForumEvent {
   endDate?: string | null;
   youtubeId?: string | null;
   link?: string | null;
+  tracks?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  chairs?: string | null;
+  papers?:
+    | {
+        title: string;
+        researcher: string;
+        abstract?: string | null;
+        file?: (number | null) | Media;
+        fileUrl?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -956,17 +1004,317 @@ export interface Video {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio".
+ */
+export interface Audio {
+  id: number;
+  title: string;
+  /**
+   * Upload an audio file (MP3 / M4A / WAV).
+   */
+  audioFile?: (number | null) | Media;
+  /**
+   * Direct MP3 link, podcast platform, or SoundCloud stream URL.
+   */
+  audioUrl?: string | null;
+  presenter?: string | null;
+  program?: string | null;
+  /**
+   * Approximate recording duration (e.g. 45:00 or 45 mins).
+   */
+  duration?: string | null;
+  cover?: (number | null) | Media;
+  /**
+   * Full transcript of the audio recording or detailed episode notes.
+   */
+  body?: string | null;
+  publishedAt?: string | null;
+  status?: ('draft' | 'published') | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements".
+ */
+export interface Announcement {
+  id: number;
+  title: string;
+  /**
+   * Featured prominently at the top of the homepage.
+   */
+  pinned?: boolean | null;
+  /**
+   * The full text of the announcement or circular.
+   */
+  body?: string | null;
+  attachment?: (number | null) | Media;
+  attachmentUrl?: string | null;
+  /**
+   * If the announcement concerns a workshop, conference, or call for papers deadline.
+   */
+  eventDate?: string | null;
+  /**
+   * The announcement disappears from prominent displays after this date.
+   */
+  expiresAt?: string | null;
+  publishedAt?: string | null;
+  status?: ('draft' | 'published') | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners".
+ */
+export interface Partner {
+  id: number;
+  name: string;
+  category?: ('academic' | 'research' | 'cultural' | 'governmental') | null;
+  logo: number | Media;
+  website?: string | null;
+  summary?: string | null;
+  /**
+   * Logos are not shown publicly without explicit written consent from the partner institution.
+   */
+  hasWrittenConsent?: boolean | null;
+  order?: number | null;
+  status?: ('draft' | 'published') | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  personName: string;
+  personTitle?: string | null;
+  institution?: string | null;
+  quote: string;
+  avatar?: (number | null) | Media;
+  /**
+   * e.g. Guestbook, conference speech, press statement.
+   */
+  source?: string | null;
+  /**
+   * Confirm the author gave permission to publish publicly on the site.
+   */
+  hasWrittenConsent?: boolean | null;
+  date?: string | null;
+  status?: ('draft' | 'published') | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
   id: number;
   title: string;
+  blocks?:
+    | (
+        | {
+            eyebrow?: string | null;
+            heading: string;
+            lead?: string | null;
+            image?: (number | null) | Media;
+            imageUrl?: string | null;
+            imageAlt?: string | null;
+            ctaLabel?: string | null;
+            ctaUrl?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero';
+          }
+        | {
+            content: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'richText';
+          }
+        | {
+            title: string;
+            subtitle?: string | null;
+            align?: ('start' | 'center') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'sectionHeading';
+          }
+        | {
+            title?: string | null;
+            body: string;
+            image?: (number | null) | Media;
+            imageUrl?: string | null;
+            imageAlt?: string | null;
+            imagePosition?: ('start' | 'end') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textWithImage';
+          }
+        | {
+            title?: string | null;
+            subtitle?: string | null;
+            columns?: ('2' | '3' | '4') | null;
+            items?:
+              | {
+                  title: string;
+                  description?: string | null;
+                  icon?: string | null;
+                  link?: string | null;
+                  badge?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cardGrid';
+          }
+        | {
+            quote: string;
+            attribution?: string | null;
+            source?: string | null;
+            style?: ('heritage' | 'info' | 'highlight') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'quoteCallout';
+          }
+        | {
+            title?: string | null;
+            videoUrl?: string | null;
+            audioUrl?: string | null;
+            transcript?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'mediaEmbed';
+          }
+        | {
+            title: string;
+            description?: string | null;
+            file?: (number | null) | Media;
+            fileUrl?: string | null;
+            fileSize?: string | null;
+            fileType?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'fileDownload';
+          }
+        | {
+            items?:
+              | {
+                  value: string;
+                  label: string;
+                  description?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'statsStrip';
+          }
+        | {
+            title?: string | null;
+            items?:
+              | {
+                  question: string;
+                  answer: string;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'accordionFaq';
+          }
+        | {
+            title: string;
+            text?: string | null;
+            buttonLabel: string;
+            buttonUrl: string;
+            secondaryButtonLabel?: string | null;
+            secondaryButtonUrl?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'ctaBox';
+          }
+      )[]
+    | null;
+  /**
+   * Used for simple text pages or as fallback when no blocks are added above.
+   */
+  body?: string | null;
+  /**
+   * Custom title shown in search results and browser tab (50-60 chars).
+   */
+  metaTitle?: string | null;
+  /**
+   * Brief summary shown under search engine results (120-155 chars).
+   */
+  metaDescription?: string | null;
+  /**
+   * Image (1200x630) shown when sharing the link on social media.
+   */
+  ogImage?: (number | null) | Media;
+  /**
+   * Enable this to tell search engine crawlers not to index this page.
+   */
+  noindex?: boolean | null;
+  /**
+   * Optional: override canonical URL if content is duplicated elsewhere.
+   */
+  canonicalUrl?: string | null;
+  navPlacement?: ('none' | 'primary' | 'dropdown' | 'footer_about' | 'footer_explore') | null;
+  /**
+   * Numeric order for sorting (lower numbers appear first).
+   */
+  navOrder?: number | null;
+  /**
+   * Short label shown in menu if the full page title is long.
+   */
+  navLabel?: string | null;
   /**
    * about · contact · privacy · terms · accessibility
    */
   slug: string;
-  body?: string | null;
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'archived';
+  publishedAt?: string | null;
   translationMeta?:
     | {
         [k: string]: unknown;
@@ -1370,6 +1718,22 @@ export interface PayloadLockedDocument {
         value: number | Video;
       } | null)
     | ({
+        relationTo: 'audio';
+        value: number | Audio;
+      } | null)
+    | ({
+        relationTo: 'announcements';
+        value: number | Announcement;
+      } | null)
+    | ({
+        relationTo: 'partners';
+        value: number | Partner;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
         relationTo: 'authors';
         value: number | Author;
       } | null)
@@ -1592,6 +1956,24 @@ export interface EventsSelect<T extends boolean = true> {
   endDate?: T;
   youtubeId?: T;
   link?: T;
+  tracks?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  chairs?: T;
+  papers?:
+    | T
+    | {
+        title?: T;
+        researcher?: T;
+        abstract?: T;
+        file?: T;
+        fileUrl?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1623,6 +2005,24 @@ export interface ForumEventsSelect<T extends boolean = true> {
   endDate?: T;
   youtubeId?: T;
   link?: T;
+  tracks?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  chairs?: T;
+  papers?:
+    | T
+    | {
+        title?: T;
+        researcher?: T;
+        abstract?: T;
+        file?: T;
+        fileUrl?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1655,9 +2055,82 @@ export interface VideosSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audio_select".
+ */
+export interface AudioSelect<T extends boolean = true> {
+  title?: T;
+  audioFile?: T;
+  audioUrl?: T;
+  presenter?: T;
+  program?: T;
+  duration?: T;
+  cover?: T;
+  body?: T;
+  publishedAt?: T;
+  status?: T;
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements_select".
+ */
+export interface AnnouncementsSelect<T extends boolean = true> {
+  title?: T;
+  pinned?: T;
+  body?: T;
+  attachment?: T;
+  attachmentUrl?: T;
+  eventDate?: T;
+  expiresAt?: T;
+  publishedAt?: T;
+  status?: T;
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners_select".
+ */
+export interface PartnersSelect<T extends boolean = true> {
+  name?: T;
+  category?: T;
+  logo?: T;
+  website?: T;
+  summary?: T;
+  hasWrittenConsent?: T;
+  order?: T;
+  status?: T;
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  personName?: T;
+  personTitle?: T;
+  institution?: T;
+  quote?: T;
+  avatar?: T;
+  source?: T;
+  hasWrittenConsent?: T;
+  date?: T;
+  status?: T;
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "authors_select".
  */
 export interface AuthorsSelect<T extends boolean = true> {
+  honorific?: T;
   name?: T;
   nameKey?: T;
   bio?: T;
@@ -1685,9 +2158,155 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
+  blocks?:
+    | T
+    | {
+        hero?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              lead?: T;
+              image?: T;
+              imageUrl?: T;
+              imageAlt?: T;
+              ctaLabel?: T;
+              ctaUrl?: T;
+              id?: T;
+              blockName?: T;
+            };
+        richText?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        sectionHeading?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              align?: T;
+              id?: T;
+              blockName?: T;
+            };
+        textWithImage?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              image?: T;
+              imageUrl?: T;
+              imageAlt?: T;
+              imagePosition?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cardGrid?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              columns?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    icon?: T;
+                    link?: T;
+                    badge?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        quoteCallout?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              source?: T;
+              style?: T;
+              id?: T;
+              blockName?: T;
+            };
+        mediaEmbed?:
+          | T
+          | {
+              title?: T;
+              videoUrl?: T;
+              audioUrl?: T;
+              transcript?: T;
+              id?: T;
+              blockName?: T;
+            };
+        fileDownload?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              file?: T;
+              fileUrl?: T;
+              fileSize?: T;
+              fileType?: T;
+              id?: T;
+              blockName?: T;
+            };
+        statsStrip?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        accordionFaq?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        ctaBox?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              buttonLabel?: T;
+              buttonUrl?: T;
+              secondaryButtonLabel?: T;
+              secondaryButtonUrl?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   body?: T;
+  metaTitle?: T;
+  metaDescription?: T;
+  ogImage?: T;
+  noindex?: T;
+  canonicalUrl?: T;
+  navPlacement?: T;
+  navOrder?: T;
+  navLabel?: T;
+  slug?: T;
   status?: T;
+  publishedAt?: T;
   translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;

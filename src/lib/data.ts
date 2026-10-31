@@ -3,6 +3,7 @@ import { isNotFound, isPlausibleId } from './errors.ts';
 import type { Where } from 'payload';
 import { getPayloadClient } from './runtime.ts';
 import { makeT } from '../i18n/t.ts';
+import type { Page } from '../payload-types.ts';
 import { CONTENT, type ContentType, type CollectionSlug } from './content-types.ts';
 
 /** Loosely-typed document as returned by Payload for the public site. */
@@ -36,17 +37,19 @@ export interface TrInfo {
   excerptLang: string;
   machine: boolean;
   reviewed: boolean;
+  stale: boolean;
 }
 
 /** Which text of a document is really in `lang` (the rest fell back to Arabic). */
 export function trInfo(doc: Pick<Doc, 'translationMeta' | 'body'>, lang: string): TrInfo {
-  if (lang === 'ar') return { lang, status: 'source', titleLang: 'ar', bodyLang: 'ar', excerptLang: 'ar', machine: false, reviewed: false };
-  const m = (doc.translationMeta?.[lang] ?? {}) as Record<string, { q?: string } | undefined>;
+  if (lang === 'ar') return { lang, status: 'source', titleLang: 'ar', bodyLang: 'ar', excerptLang: 'ar', machine: false, reviewed: false, stale: false };
+  const m = (doc.translationMeta?.[lang] ?? {}) as Record<string, { q?: string; stale?: boolean } | undefined>;
   const has = (f: string) => Boolean(m[f]);
   const hasBody = Boolean(doc.body);
   const complete = has('title') && (!hasBody || has('body'));
   const any = Object.keys(m).length > 0;
   const q = Object.values(m).map((v) => v?.q);
+  const stale = Object.values(m).some((v) => Boolean(v?.stale));
   return {
     lang,
     status: complete ? 'complete' : any ? 'partial' : 'missing',
@@ -55,6 +58,7 @@ export function trInfo(doc: Pick<Doc, 'translationMeta' | 'body'>, lang: string)
     bodyLang: has('body') ? lang : 'ar',
     machine: q.includes('auto'),
     reviewed: q.length > 0 && q.every((x) => x !== 'auto'),
+    stale,
   };
 }
 
@@ -169,10 +173,11 @@ export async function yearsFor(type: ContentType): Promise<number[]> {
   return [...new Set((res.docs as unknown as { publishedAt?: string }[]).map((d) => Number(d.publishedAt?.slice(0, 4))).filter(Boolean))].sort((a, b) => b - a);
 }
 
-export async function getPage(slug: string, lang: string) {
+export async function getPage(slug: string, lang: string, opts: { draft?: boolean } = {}): Promise<Page | null> {
   const payload = await getPayloadClient();
-  const res = await payload.find({ collection: 'pages', where: { and: [{ slug: { equals: slug } }, { status: { equals: 'published' } }] }, limit: 1, depth: 0, locale: lang as never, fallbackLocale: 'ar' });
-  return (res.docs[0] as unknown as { id: number; title: string; body?: string; translationMeta?: Doc['translationMeta'] } | undefined) ?? null;
+  const where: Where = opts.draft ? { slug: { equals: slug } } : { and: [{ slug: { equals: slug } }, { status: { equals: 'published' } }] };
+  const res = await payload.find({ collection: 'pages', where, limit: 1, depth: 1, locale: lang as never, fallbackLocale: 'ar', overrideAccess: Boolean(opts.draft) });
+  return ((res.docs[0] as unknown as Page) || undefined) ?? null;
 }
 
 export interface SiteInfo {
@@ -232,3 +237,146 @@ export async function listTimeline(lang: string): Promise<TimelineEntry[]> {
   const res = await payload.find({ collection: 'timeline', where: { status: { equals: 'published' } }, sort: 'yearFrom', limit: 500, pagination: false, depth: 0, locale: lang as never, fallbackLocale: 'ar' });
   return res.docs as unknown as TimelineEntry[];
 }
+
+export interface AnnouncementDoc {
+  id: number;
+  title: string;
+  pinned?: boolean;
+  body?: string | null;
+  attachmentUrl?: string | null;
+  attachment?: { url?: string | null } | number | null;
+  eventDate?: string | null;
+  expiresAt?: string | null;
+  publishedAt?: string | null;
+}
+
+export async function listActiveAnnouncements(lang: string): Promise<AnnouncementDoc[]> {
+  const payload = await getPayloadClient();
+  const now = new Date().toISOString();
+  try {
+    const res = await payload.find({
+      collection: 'announcements',
+      where: {
+        and: [
+          PUBLISHED,
+          { pinned: { equals: true } },
+          {
+            or: [
+              { expiresAt: { exists: false } },
+              { expiresAt: { greater_than: now } },
+            ],
+          },
+        ],
+      },
+      limit: 3,
+      locale: lang as never,
+      fallbackLocale: 'ar',
+      depth: 1,
+    });
+    return res.docs as unknown as AnnouncementDoc[];
+  } catch {
+    return [];
+  }
+}
+
+export interface AudioDoc {
+  id: number;
+  title: string;
+  audioUrl?: string | null;
+  audioFile?: { url?: string | null } | number | null;
+  presenter?: string | null;
+  program?: string | null;
+  duration?: string | null;
+  cover?: { url?: string | null } | number | null;
+  body?: string | null;
+  publishedAt?: string | null;
+}
+
+export async function listAudio(lang: string, limit = 20): Promise<AudioDoc[]> {
+  const payload = await getPayloadClient();
+  try {
+    const res = await payload.find({
+      collection: 'audio',
+      where: PUBLISHED,
+      sort: '-publishedAt',
+      limit,
+      locale: lang as never,
+      fallbackLocale: 'ar',
+      depth: 1,
+    });
+    return res.docs as unknown as AudioDoc[];
+  } catch {
+    return [];
+  }
+}
+
+export interface PartnerDoc {
+  id: number;
+  name: string;
+  category?: 'academic' | 'research' | 'cultural' | 'governmental' | null;
+  description?: string | null;
+  logo?: { url?: string | null } | number | null;
+  logoUrl?: string | null;
+  website?: string | null;
+  order?: number | null;
+  hasWrittenConsent?: boolean | null;
+}
+
+export interface TestimonialDoc {
+  id: number;
+  personName: string;
+  personTitle?: string | null;
+  institution?: string | null;
+  quote: string;
+  avatar?: { url?: string | null } | number | null;
+  avatarUrl?: string | null;
+  context?: string | null;
+  hasWrittenConsent?: boolean | null;
+}
+
+export async function listApprovedPartners(lang: string, limit = 50): Promise<PartnerDoc[]> {
+  const payload = await getPayloadClient();
+  try {
+    const res = await payload.find({
+      collection: 'partners',
+      where: {
+        and: [
+          PUBLISHED,
+          { hasWrittenConsent: { equals: true } },
+        ],
+      },
+      sort: 'order',
+      limit,
+      locale: lang as never,
+      fallbackLocale: 'ar',
+      depth: 1,
+    });
+    return res.docs as unknown as PartnerDoc[];
+  } catch {
+    return [];
+  }
+}
+
+export async function listApprovedTestimonials(lang: string, limit = 20): Promise<TestimonialDoc[]> {
+  const payload = await getPayloadClient();
+  try {
+    const res = await payload.find({
+      collection: 'testimonials',
+      where: {
+        and: [
+          PUBLISHED,
+          { hasWrittenConsent: { equals: true } },
+        ],
+      },
+      sort: '-createdAt',
+      limit,
+      locale: lang as never,
+      fallbackLocale: 'ar',
+      depth: 1,
+    });
+    return res.docs as unknown as TestimonialDoc[];
+  } catch {
+    return [];
+  }
+}
+

@@ -18,6 +18,10 @@ const { Reviews } = await import('../../src/collections/Reviews.ts');
 const { Timeline } = await import('../../src/collections/Timeline.ts');
 const { Pages } = await import('../../src/collections/Pages.ts');
 const { Media } = await import('../../src/collections/Media.ts');
+const { Audio } = await import('../../src/collections/Audio.ts');
+const { Announcements } = await import('../../src/collections/Announcements.ts');
+const { Partners } = await import('../../src/collections/Partners.ts');
+const { Testimonials } = await import('../../src/collections/Testimonials.ts');
 const { Site } = await import('../../src/globals/Site.ts');
 
 const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
@@ -73,7 +77,7 @@ describe('dashboard links', () => {
 });
 
 describe('collection labels', () => {
-  const collections = [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, TranslationUsage, Users];
+  const collections = [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Audio, Announcements, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, TranslationUsage, Users];
   type Node = { name?: string; label?: unknown; fields?: Node[]; tabs?: Node[]; options?: unknown[]; admin?: { hidden?: boolean; description?: unknown } };
   const problems: string[] = [];
   const bilingual = (v: unknown, where: string) => {

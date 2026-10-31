@@ -7,6 +7,7 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { editorStrings } from '../i18n.ts';
+import { normalizeScholarlyArabic } from '../../lib/arabic-assist.ts';
 
 /**
  * WYSIWYG editor for article/news bodies. It edits the same HTML the site renders; the server sanitizes it again
@@ -62,6 +63,14 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
     const src = window.prompt(t.imagePrompt, 'https://');
     if (src) chain().setImage({ src, alt: window.prompt(t.altPrompt, '') ?? '' }).run();
   };
+  const runScholarlyAssist = () => {
+    if (!editor) return;
+    const currentHtml = editor.getHTML();
+    const normalized = normalizeScholarlyArabic(currentHtml);
+    if (normalized !== currentHtml) {
+      editor.commands.setContent(normalized, { emitUpdate: true });
+    }
+  };
 
   const groups: Cmd[][] = editor
     ? [
@@ -87,6 +96,9 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
         [
           { label: '↶', title: t.undo, run: () => chain().undo().run(), disabled: !editor.can().undo() },
           { label: '↷', title: t.redo, run: () => chain().redo().run(), disabled: !editor.can().redo() },
+        ],
+        [
+          { label: t.scholarlyAssistShort, title: t.scholarlyAssist, run: runScholarlyAssist },
         ],
       ]
     : [];

@@ -51,20 +51,43 @@ export async function queueTranslations(payload: Payload, slug: string, id: numb
   }
 }
 
-/** A human edit of a translated field turns it into "manual": machine translation will never overwrite it. */
+/** A human edit of a translated field turns it into "manual": machine translation will never overwrite it.
+ * Meanwhile, an update to the Arabic source marks existing translations of modified fields as stale. */
 const trackManualEdits: CollectionBeforeChangeHook = ({ data, originalDoc, req, operation, collection }) => {
-  if (operation !== 'update' || req.locale === 'ar' || req.context?.fromTranslation === true || !req.user) return data;
+  if (operation !== 'update' || req.context?.fromTranslation === true) return data;
   const meta: TranslationMeta = { ...((originalDoc?.translationMeta as TranslationMeta | null) ?? {}) };
-  const lang = String(req.locale);
-  const langMeta = { ...(meta[lang] ?? {}) };
-  let changed = false;
-  for (const spec of TRANSLATABLE[collection.slug as keyof typeof TRANSLATABLE] ?? []) {
-    if (spec.name in data && data[spec.name] !== originalDoc?.[spec.name]) {
-      langMeta[spec.name] = { h: langMeta[spec.name]?.h ?? '', q: 'manual', at: new Date().toISOString() };
-      changed = true;
+  const specs = TRANSLATABLE[collection.slug as keyof typeof TRANSLATABLE] ?? [];
+
+  if (req.locale !== 'ar' && req.user) {
+    const lang = String(req.locale);
+    const langMeta = { ...(meta[lang] ?? {}) };
+    let changed = false;
+    for (const spec of specs) {
+      if (spec.name in data && data[spec.name] !== originalDoc?.[spec.name]) {
+        langMeta[spec.name] = { h: langMeta[spec.name]?.h ?? '', q: 'manual', at: new Date().toISOString(), stale: false };
+        changed = true;
+      }
     }
+    if (changed) data.translationMeta = { ...meta, [lang]: langMeta };
+    return data;
   }
-  if (changed) data.translationMeta = { ...meta, [lang]: langMeta };
+
+  // When editing the Arabic original, check if translatable fields changed and mark translations stale
+  if (!req.locale || req.locale === 'ar') {
+    let modified = false;
+    for (const spec of specs) {
+      if (spec.name in data && data[spec.name] !== originalDoc?.[spec.name]) {
+        for (const [, langMeta] of Object.entries(meta)) {
+          if (langMeta && langMeta[spec.name]) {
+            langMeta[spec.name] = { ...langMeta[spec.name], stale: true };
+            modified = true;
+          }
+        }
+      }
+    }
+    if (modified) data.translationMeta = meta;
+  }
+
   return data;
 };
 

@@ -28,7 +28,18 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   if (!info) {
     const page = await getPage(section, locale);
     if (!page) return {};
-    return buildMetadata({ ctx, path: `/${section}`, title: page.title, description: describe(htmlToText(page.body ?? '')), card: { kind: 'pages', id: page.id }, readyLangs: readyLangsOf(page as never), incomplete: locale !== 'ar' && trInfo(page as never, locale).status !== 'complete' });
+    const title = page.metaTitle || page.title;
+    const description = page.metaDescription || describe(htmlToText(page.body ?? ''));
+    return buildMetadata({
+      ctx,
+      path: `/${section}`,
+      title,
+      description,
+      card: { kind: 'pages', id: page.id },
+      readyLangs: readyLangsOf(page as never),
+      incomplete: locale !== 'ar' && trInfo(page as never, locale).status !== 'complete',
+      noindex: Boolean(page.noindex),
+    });
   }
   const sp = await searchParams;
   const q = parseListQuery(sp, info.type);
@@ -49,12 +60,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
 export default async function SectionPage({ params, searchParams }: Props) {
   const { locale, section } = await params;
+  const sp = await searchParams;
   const info = typeFromRoute(section);
   if (!isLocale(locale)) notFound();
-  if (!info) return <StaticPage locale={locale} slug={section} />;
+  const isPreview = sp.preview === '1';
+  if (!info) return <StaticPage locale={locale} slug={section} preview={isPreview} />;
   const ctx = makeCtx(locale);
   const { t } = ctx;
-  const sp = await searchParams;
   const title = t(TITLE_KEY[info.type]);
   return (
     <>

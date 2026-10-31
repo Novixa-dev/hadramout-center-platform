@@ -53,7 +53,7 @@ export function Entry({ ctx, doc, type = 'article', eager = false, compact = fal
         </h3>
         {!compact && stripReferenceLine(doc.excerpt) ? <p className="entry__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{stripReferenceLine(doc.excerpt)}</p> : null}
         <p className="entry__meta">
-          {authors.length ? <span>{authors.map((a, i) => <span key={a.id}>{i ? '، ' : ''}<Link href={href(`/authors/${a.id}`)} dir="auto">{a.name}</Link></span>)}</span> : null}
+          {authors.length ? <span>{authors.map((a, i) => <span key={a.id}>{i ? '، ' : ''}<Link href={href(`/authors/${a.id}`)} dir="auto">{a.honorific ? `${a.honorific} ` : ''}{a.name}</Link></span>)}</span> : null}
           {date ? <time dateTime={doc.publishedAt ?? undefined}>{date}</time> : null}
           {issue ? <span>{ctx.t('meta.issue', { n: Number(issue.issueNumber ?? 0) })}</span> : null}
         </p>
@@ -120,7 +120,7 @@ export function BookCard({ ctx, doc, eager = false }: CardProps) {
         <h3 className="book__title" {...textAttrs(tr.titleLang, lang.code)}>
           <Link href={docHref(ctx, 'book', doc.id)}>{doc.title}</Link>
         </h3>
-        {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => a.name).join('، ')}</p> : null}
+        {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => (a.honorific ? `${a.honorific} ` : '') + a.name).join('، ')}</p> : null}
         {year ? <p className="book__meta">{year}</p> : <p className="book__meta">{t('book.yearUnknown')}</p>}
       </div>
     </article>
@@ -144,7 +144,7 @@ export function BookRow({ ctx, doc, eager = false }: CardProps) {
         <h3 className="book__title" {...textAttrs(tr.titleLang, lang.code)}>
           <Link href={docHref(ctx, 'book', doc.id)}>{doc.title}</Link>
         </h3>
-        {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => a.name).join('، ')}</p> : null}
+        {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => (a.honorific ? `${a.honorific} ` : '') + a.name).join('، ')}</p> : null}
         {excerpt ? <p className="book-row__excerpt" {...textAttrs(tr.excerptLang, lang.code)}>{excerpt}</p> : null}
         <p className="book__meta"><span>{year}</span>{pdf ? <span className="badge"><Icon name="file" />PDF</span> : null}</p>
       </div>

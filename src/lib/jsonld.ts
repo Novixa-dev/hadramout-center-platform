@@ -40,7 +40,12 @@ interface Args {
 /** JSON-LD for a content page (ScholarlyArticle, Book, PublicationIssue, NewsArticle, Event, VideoObject). */
 export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf, issue, category, rating }: Args): Record<string, unknown> {
   const publisher = publisherRef(org);
-  const authors = authorsOf(doc).map((a) => ({ '@type': 'Person', name: a.name, url: authorUrl(a.id) }));
+  const authors = authorsOf(doc).map((a) => ({
+    '@type': 'Person',
+    name: a.name,
+    ...(a.honorific ? { honorificPrefix: a.honorific } : {}),
+    url: authorUrl(a.id),
+  }));
   const date = doc.datePrecision && !['estimated', 'none'].includes(doc.datePrecision) ? isoOrUndefined(doc.publishedAt) : undefined;
   const modified = isoOrUndefined(doc.updatedAt);
   const summary = stripReferenceLine(doc.excerpt).trim();

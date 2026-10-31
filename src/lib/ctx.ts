@@ -61,4 +61,5 @@ export function displayDate(doc: Pick<Doc, 'publishedAt' | 'datePrecision'>, lan
   return formatDate(doc.publishedAt, lang);
 }
 
-export const authorsOf = (doc: Doc): { id: number; name: string }[] => (doc.authors ?? []).filter((a): a is { id: number; name: string } => typeof a === 'object');
+export const authorsOf = (doc: Doc): { id: number; name: string; honorific?: string | null }[] =>
+  (doc.authors ?? []).filter((a): a is { id: number; name: string; honorific?: string | null } => typeof a === 'object');

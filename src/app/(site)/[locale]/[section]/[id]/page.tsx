@@ -75,7 +75,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const tr = trInfo(doc, locale);
   const cover = coverOf(doc, 'large');
   const url = absolute(`/${locale}/${section}/${id}`);
-  const meta = scholarMeta(citeSourceOf(info.type, doc, url, locale, ''), typeof doc.pdf === 'string' ? doc.pdf : null);
+  const pdfUrl = typeof doc.pdf === 'string' && doc.pdf ? (doc.pdf.startsWith('http') && !doc.pdf.includes('files.hadramout.center') ? doc.pdf : absolute(localizeLegacyMedia(doc.pdf))) : null;
+  const meta = scholarMeta(citeSourceOf(info.type, doc, url, locale, ''), pdfUrl);
   const category = typeof doc.category === 'object' && doc.category ? doc.category.name : null;
   return buildMetadata({
     ctx,
@@ -134,9 +135,11 @@ export default async function DetailPage({ params }: Props) {
   const minutes = bodyHtml && (type === 'article' || type === 'news') ? readingMinutes(htmlToText(bodyHtml), locale) : 0;
   const category = typeof doc.category === 'object' && doc.category ? doc.category : null;
   const magazine = typeof doc.magazine === 'object' && doc.magazine ? doc.magazine : null;
-  const pdf = typeof doc.pdf === 'string' && doc.pdf ? doc.pdf : null;
+  const pdf = typeof doc.pdf === 'string' && doc.pdf ? localizeLegacyMedia(doc.pdf) : null;
   const isEvent = type === 'event' || type === 'forum';
   const eventDate = (doc.eventDate as string | undefined) ?? undefined;
+  const tracks = (isEvent && Array.isArray(doc.tracks) ? doc.tracks : []) as { title: string; description?: string | null }[];
+  const papers = (isEvent && Array.isArray(doc.papers) ? doc.papers : []) as { title: string; researcher: string; abstract?: string | null; fileUrl?: string | null; file?: { url?: string | null } | number | null }[];
   const source = citeSourceOf(type, doc, url, locale, t('book.noYear'));
   const styles = { apa: formatCitation(source, 'apa'), mla: formatCitation(source, 'mla'), chicago: formatCitation(source, 'chicago'), harvard: formatCitation(source, 'harvard') };
   const key = bibKey(source);
@@ -189,7 +192,7 @@ export default async function DetailPage({ params }: Props) {
   const byline = (
     <div className="byline">
       {authors.length ? (
-        <span><Icon name="user" />{authors.map((a, i) => <span key={a.id}>{i ? '، ' : ''}<Link href={href(`/authors/${a.id}`)}>{a.name}</Link></span>)}</span>
+        <span><Icon name="user" />{authors.map((a, i) => <span key={a.id}>{i ? '، ' : ''}<Link href={href(`/authors/${a.id}`)}>{a.honorific ? `${a.honorific} ` : ''}{a.name}</Link></span>)}</span>
       ) : null}
       {date && !isEvent ? <span><Icon name="calendar" /><time dateTime={doc.publishedAt ?? undefined}>{date}{hijri}</time></span> : null}
       {magazine ? <span><Icon name="book" />{t('meta.publishedIn')} <Link href={docHref(ctx, 'magazine', magazine.id)}>{magazine.title}</Link></span> : null}
@@ -310,10 +313,11 @@ export default async function DetailPage({ params }: Props) {
           needsTranslation={needsTranslation}
           machine={tr.machine}
           reviewed={tr.reviewed}
+          stale={tr.stale}
           providerEnabled={cfg.translation.provider !== 'none'}
           originalHref={href(`/${section}/${id}`, 'ar')}
           reportHref={`${href('/contact')}?kind=translation_issue&page=${encodeURIComponent(`/${locale}/${section}/${id}`)}`}
-          labels={{ machine: t('tr.machine'), reviewed: t('tr.reviewed'), pending: t('tr.pending'), unavailable: t('tr.unavailable'), failed: t('tr.failed'), ready: t('tr.ready'), viewOriginal: t('tr.viewOriginal'), report: t('tr.report') }}
+          labels={{ machine: t('tr.machine'), reviewed: t('tr.reviewed'), pending: t('tr.pending'), unavailable: t('tr.unavailable'), failed: t('tr.failed'), ready: t('tr.ready'), viewOriginal: t('tr.viewOriginal'), report: t('tr.report'), stale: t('tr.stale') }}
         />
       ) : null}
       {reading && prose ? <ReadingProgress targetId="article-body" /> : null}
@@ -373,7 +377,17 @@ export default async function DetailPage({ params }: Props) {
               </>
             )}
 
-            {isEvent ? <Facts items={[[t('meta.speaker'), doc.speaker as string | undefined], [t('meta.moderator'), doc.moderator as string | undefined], [t('meta.time'), doc.timeText as string | undefined], [t('meta.venue'), doc.venue as string | undefined]]} /> : null}
+            {isEvent ? (
+              <Facts
+                items={[
+                  [t('meta.speaker'), doc.speaker as string | undefined],
+                  [t('meta.moderator'), doc.moderator as string | undefined],
+                  [t('event.chairs'), doc.chairs as string | undefined],
+                  [t('meta.time'), doc.timeText as string | undefined],
+                  [t('meta.venue'), doc.venue as string | undefined],
+                ]}
+              />
+            ) : null}
 
             {(type === 'video' || isEvent) && doc.youtubeId ? (
               <div style={{ marginBlock: 'var(--space-5)' }}>
@@ -396,6 +410,67 @@ export default async function DetailPage({ params }: Props) {
             ) : null}
 
             {proseBlock}
+
+            {isEvent && tracks.length > 0 ? (
+              <section style={{ marginBlockStart: 'var(--space-8)' }} aria-labelledby="tracks-h">
+                <SectionHead title={t('event.tracks')} id="tracks-h" as="h2" />
+                <div style={{ display: 'grid', gap: 'var(--space-4)', marginBlockStart: 'var(--space-4)' }}>
+                  {tracks.map((track, idx) => (
+                    <div key={idx} className="box box--tint" style={{ padding: 'var(--space-4)' }}>
+                      <h3 style={{ fontSize: 'var(--step-0)', marginBlockEnd: track.description ? 'var(--space-2)' : 0 }}>
+                        <span style={{ color: 'var(--primary)', marginInlineEnd: '0.5rem' }}>{idx + 1}.</span>
+                        {track.title}
+                      </h3>
+                      {track.description ? (
+                        <p style={{ color: 'var(--text-2)', fontSize: 'var(--step--1)', margin: 0, lineHeight: 1.7 }}>
+                          {track.description}
+                        </p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {isEvent && papers.length > 0 ? (
+              <section style={{ marginBlockStart: 'var(--space-8)' }} aria-labelledby="papers-h">
+                <SectionHead title={t('event.papers')} id="papers-h" as="h2" />
+                <div style={{ display: 'grid', gap: 'var(--space-4)', marginBlockStart: 'var(--space-4)' }}>
+                  {papers.map((paper, idx) => {
+                    const fileHref = paper.fileUrl || (typeof paper.file === 'object' && paper.file?.url ? paper.file.url : null);
+                    const localizedFileHref = fileHref ? localizeLegacyMedia(fileHref) : null;
+                    return (
+                      <div key={idx} className="box" style={{ padding: 'var(--space-4)', borderColor: 'var(--border)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
+                          <div>
+                            <h3 style={{ fontSize: 'var(--step-0)', marginBlockEnd: 'var(--space-1)' }}>{paper.title}</h3>
+                            <p style={{ color: 'var(--text-2)', fontSize: 'var(--step--1)', margin: 0, fontWeight: 500 }}>
+                              {paper.researcher}
+                            </p>
+                          </div>
+                          {localizedFileHref ? (
+                            <a
+                              href={localizedFileHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn--secondary"
+                              style={{ fontSize: 'var(--step--1)', padding: '0.4rem 0.8rem' }}
+                            >
+                              <Icon name="download" /> {t('event.downloadPaper')}
+                            </a>
+                          ) : null}
+                        </div>
+                        {paper.abstract ? (
+                          <p style={{ color: 'var(--text-2)', fontSize: 'var(--step--1)', marginBlockStart: 'var(--space-3)', marginBlockEnd: 0, lineHeight: 1.7 }}>
+                            {paper.abstract}
+                          </p>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
 
             {issueContents?.docs.length ? (
               <section style={{ marginBlockStart: 'var(--space-8)' }} aria-labelledby="issue-h">

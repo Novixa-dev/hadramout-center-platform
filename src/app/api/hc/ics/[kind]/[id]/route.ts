@@ -1,6 +1,7 @@
 import { typeFromRoute } from '../../../../../../lib/content-types.ts';
 import { getDoc } from '../../../../../../lib/data.ts';
 import { absolute } from '../../../../../../lib/ctx.ts';
+import { getPayloadClient } from '../../../../../../lib/runtime.ts';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,13 +27,52 @@ function fold(line: string): string {
 }
 const ymd = (iso: string) => iso.slice(0, 10).replace(/-/g, '');
 
-/** /api/hc/ics/{events|forum}/{id}.ics — an all-day calendar entry for an event (only the date is known, never a time). */
+/** /api/hc/ics/{events|forum|announcements}/{id}.ics — an all-day calendar entry for an event or announcement. */
 export async function GET(req: Request, { params }: { params: Promise<{ kind: string; id: string }> }) {
   const { kind, id } = await params;
-  const info = typeFromRoute(kind);
   const n = Number(id.replace(/\.ics$/i, ''));
-  if (!info || (info.type !== 'event' && info.type !== 'forum') || !Number.isInteger(n) || n < 1) return new Response('Not found', { status: 404 });
+  if (!Number.isInteger(n) || n < 1) return new Response('Not found', { status: 404 });
   const lang = new URL(req.url).searchParams.get('lang') ?? 'ar';
+
+  if (kind === 'announcements') {
+    const payload = await getPayloadClient();
+    try {
+      const doc = (await payload.findByID({
+        collection: 'announcements',
+        id: n,
+        depth: 0,
+        overrideAccess: true,
+      })) as { title?: string; eventDate?: string; excerpt?: string; venue?: string } | null;
+      const start = doc?.eventDate;
+      if (!doc || !start) return new Response('Not found', { status: 404 });
+      const url = absolute(`/${lang}`);
+      const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Hadramout Center//Announcements//AR',
+        'CALSCALE:GREGORIAN',
+        'BEGIN:VEVENT',
+        `UID:announcement-${n}@${new URL(absolute('')).host}`,
+        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '')}`,
+        `DTSTART;VALUE=DATE:${ymd(start)}`,
+        `DTEND;VALUE=DATE:${ymd(start)}`,
+        `SUMMARY:${esc(doc.title || 'Announcement')}`,
+        ...(doc.venue ? [`LOCATION:${esc(String(doc.venue))}`] : []),
+        ...(doc.excerpt ? [`DESCRIPTION:${esc(doc.excerpt)}`] : []),
+        `URL:${url}`,
+        'END:VEVENT',
+        'END:VCALENDAR',
+      ];
+      return new Response(`${lines.map(fold).join('\r\n')}\r\n`, {
+        headers: { 'content-type': 'text/calendar; charset=utf-8', 'content-disposition': `attachment; filename="announcement-${n}.ics"`, 'cache-control': 'public, max-age=3600' },
+      });
+    } catch {
+      return new Response('Not found', { status: 404 });
+    }
+  }
+
+  const info = typeFromRoute(kind);
+  if (!info || (info.type !== 'event' && info.type !== 'forum')) return new Response('Not found', { status: 404 });
   const doc = await getDoc(info.type, n, /^[a-z-]{2,6}$/.test(lang) ? lang : 'ar');
   const start = (doc?.eventDate as string | undefined) ?? undefined;
   if (!doc || !start) return new Response('Not found', { status: 404 });

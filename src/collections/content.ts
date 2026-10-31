@@ -1,5 +1,5 @@
 import type { CollectionConfig, Field } from 'payload';
-import { baseFields, contentAccess, L, localizedText, lockForReviewers, markEdited } from './shared.ts';
+import { baseFields, contentAccess, L, localizedText, lockForReviewers, markEdited, titleText } from './shared.ts';
 import { contentHooks } from '../hooks/content.ts';
 import type { CollectionSlug } from '../lib/content-types.ts';
 
@@ -109,6 +109,28 @@ const eventFields: Field[] = [
   },
   { name: 'youtubeId', type: 'text', label: L('معرّف فيديو يوتيوب', 'YouTube video ID') },
   { name: 'link', type: 'text', label: L('رابط الحضور', 'Join link') },
+  {
+    name: 'tracks',
+    type: 'array',
+    label: L('محاور المؤتمر / الفعالية', 'Conference Tracks / Themes'),
+    fields: [
+      titleText('title', L('عنوان المحور', 'Track Title'), { required: true }),
+      { name: 'description', type: 'textarea', localized: true, label: L('وصف المحور', 'Track Description') },
+    ],
+  },
+  localizedText('chairs', L('رؤساء الجلسات العلمية', 'Session Chairs')),
+  {
+    name: 'papers',
+    type: 'array',
+    label: L('الأوراق البحثية وجلسات العمل', 'Research Papers & Sessions'),
+    fields: [
+      titleText('title', L('عنوان البحث أو الورقة', 'Paper Title'), { required: true }),
+      localizedText('researcher', L('الباحث / المحاضر', 'Researcher / Author'), { required: true }),
+      { name: 'abstract', type: 'textarea', localized: true, label: L('الملخص العلمي', 'Abstract') },
+      { name: 'file', type: 'upload', relationTo: 'media', label: L('ملف البحث (PDF)', 'Paper File (PDF)') },
+      { name: 'fileUrl', type: 'text', label: L('أو رابط ملف خارجي', 'Direct File URL') },
+    ],
+  },
 ];
 
 export const Events = contentCollection('events', { singular: L('مؤتمر / ندوة', 'Conference / seminar'), plural: L('المؤتمرات والندوات', 'Conferences & seminars') }, eventFields, { columns: ['title', 'eventDate', 'status'] });

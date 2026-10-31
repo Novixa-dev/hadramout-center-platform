@@ -35,6 +35,12 @@ const notReviewer: FieldAccess = ({ req }) => roleOf(req.user) !== 'reviewer';
 export function lockForReviewers(fields: Field[]): Field[] {
   return fields.map((f): Field => {
     if ((f.type === 'row' || f.type === 'collapsible') && 'fields' in f) return { ...f, fields: lockForReviewers(f.fields) } as Field;
+    if (f.type === 'tabs' && 'tabs' in f) {
+      return {
+        ...f,
+        tabs: f.tabs.map((tab) => ('fields' in tab ? { ...tab, fields: lockForReviewers(tab.fields) } : tab)),
+      } as Field;
+    }
     if (!('name' in f) || ('localized' in f && f.localized)) return f;
     const access = ('access' in f ? f.access : undefined) ?? {};
     return { ...f, access: { ...access, update: access.update ?? notReviewer } } as Field;

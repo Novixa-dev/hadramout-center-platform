@@ -14,6 +14,7 @@ export interface FieldMeta {
   p?: string;
   m?: string;
   at: string;
+  stale?: boolean;
 }
 export type TranslationMeta = Record<string, Record<string, FieldMeta>>;
 

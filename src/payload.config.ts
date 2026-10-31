@@ -17,6 +17,10 @@ import { Timeline } from './collections/Timeline.ts';
 import { Reviews } from './collections/Reviews.ts';
 import { Glossary } from './collections/Glossary.ts';
 import { Messages, Subscribers, TranslationUsage } from './collections/Forms.ts';
+import { Audio } from './collections/Audio.ts';
+import { Announcements } from './collections/Announcements.ts';
+import { Partners } from './collections/Partners.ts';
+import { Testimonials } from './collections/Testimonials.ts';
 import { Site } from './globals/Site.ts';
 import { TASKS } from './jobs/tasks.ts';
 import { DEFAULT_LOCALE, PAYLOAD_LOCALES } from './i18n/locales.ts';
@@ -48,7 +52,7 @@ export default buildConfig({
   },
   i18n: { supportedLanguages: { ar, en }, fallbackLanguage: 'ar', translations: ADMIN_TRANSLATIONS },
   localization: { locales: PAYLOAD_LOCALES, defaultLocale: DEFAULT_LOCALE, fallback: true },
-  collections: [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, TranslationUsage, Users],
+  collections: [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Audio, Announcements, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, TranslationUsage, Users],
   globals: [Site],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

@@ -86,21 +86,42 @@ async function staticPageCard(lang: string, id: number): Promise<{ input: OgInpu
   const payload = await getPayloadClient();
   const find = async (l: string) => {
     try {
-      return (await payload.findByID({ collection: 'pages', id, depth: 0, locale: l as never, fallbackLocale: 'ar', overrideAccess: false })) as unknown as { title: string; updatedAt?: string; status?: string };
+      return (await payload.findByID({ collection: 'pages', id, depth: 1, locale: l as never, fallbackLocale: 'ar', overrideAccess: false })) as unknown as {
+        title: string;
+        metaTitle?: string;
+        metaDescription?: string;
+        ogImage?: { url?: string } | number | null;
+        updatedAt?: string;
+        status?: string;
+      };
     } catch {
       return null;
     }
   };
   let page = await find(lang);
   let useLang = lang;
-  if (page && !drawable(page.title)) {
+  if (page && !drawable(page.metaTitle || page.title)) {
     page = await find('ar');
     useLang = 'ar';
   }
   if (!page) return null;
   const ctx = makeCtx(useLang);
   const site = await getSite(useLang);
-  return { version: page.updatedAt ?? '', input: { dir: isArabicText(page.title) ? 'rtl' : ctx.lang.dir, org: drawable(site.name) ? site.name : (await getSite('ar')).name, kicker: ctx.t('og.archive'), title: page.title, host: host() } };
+  const cardTitle = page.metaTitle || page.title;
+  const coverUrl = typeof page.ogImage === 'object' && page.ogImage ? page.ogImage.url : null;
+  const cover = await loadCoverBytes(coverUrl);
+  return {
+    version: page.updatedAt ?? '',
+    input: {
+      dir: isArabicText(cardTitle) ? 'rtl' : ctx.lang.dir,
+      org: drawable(site.name) ? site.name : (await getSite('ar')).name,
+      kicker: ctx.t('og.archive'),
+      title: cardTitle,
+      meta: page.metaDescription || undefined,
+      cover,
+      host: host(),
+    },
+  };
 }
 
 const PAGE_TITLES: Record<string, { title: string; lead?: string }> = {

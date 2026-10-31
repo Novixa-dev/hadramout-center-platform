@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload';
-import { contentAccess, L, lockForReviewers, titleText } from './shared.ts';
+import { contentAccess, L, localizedText, lockForReviewers, titleText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
 
 export const Authors: CollectionConfig = {
@@ -16,6 +16,14 @@ export const Authors: CollectionConfig = {
     ],
   },
   fields: lockForReviewers([
+    localizedText('honorific', L('اللقب العلمي أو الشرفي', 'Honorific or academic title'), {
+      admin: {
+        description: L(
+          'مثل: أ.د.، د.، الشيخ، الباحث (يُفصل عن الاسم لحفظ دقة الفهرسة والترتيب الأبجدي)',
+          'e.g. Prof. Dr., Dr., Sheikh, Researcher (separated to keep alphabetical indexing accurate)',
+        ),
+      },
+    }),
     titleText('name', L('الاسم', 'Name'), { required: true, admin: { description: L('يُنقحر تلقائياً للغات الأخرى.', 'Transliterated automatically for other languages.') } }),
     {
       name: 'nameKey',

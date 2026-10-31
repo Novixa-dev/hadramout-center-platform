@@ -45,7 +45,7 @@ export default async function Home({ params }: Props) {
     topAuthors(locale, 14),
     listTimeline(locale),
   ]);
-  const [nArticles, nBooks, nIssues, nEvents, nForum, nNews] = counts;
+  const [nArticles, nBooks, nIssues, nEvents, _nForum, nNews] = counts;
   const issue = issues[0];
   const events = upcoming.length ? upcoming : recentEvents;
   const roots = topics.roots.filter((r) => r.total > 0 && r.children.length > 0).slice(0, 8);
@@ -55,7 +55,7 @@ export default async function Home({ params }: Props) {
     ['/articles', nArticles, t('home.stats.articles')],
     ['/books', nBooks, t('home.stats.books')],
     ['/magazines', nIssues, t('home.stats.issues')],
-    ['/events', nEvents + nForum, t('home.stats.events')],
+    ['/events', nEvents, t('home.stats.events')],
     ['/news', nNews, t('home.stats.news')],
   ];
   const sameAs = Object.entries(site.social ?? {}).filter(([k, v]) => v && isSocialName(k)).map(([, v]) => v as string);

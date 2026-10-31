@@ -35,7 +35,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ path: s
     const type = res.headers.get('content-type') ?? '';
     if (!res.ok || !/^(image\/|application\/pdf)/.test(type)) return new Response('Not found', { status: 404 });
     const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length > 25 * 1024 * 1024) return new Response('Too large', { status: 404 });
+    if (buf.length > 100 * 1024 * 1024) return new Response('Too large', { status: 404 });
     await mkdir(dirname(target.file), { recursive: true });
     const tmp = `${target.file}.${process.pid}.tmp`;
     await writeFile(tmp, buf);

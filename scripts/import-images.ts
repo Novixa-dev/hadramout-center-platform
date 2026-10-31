@@ -23,7 +23,11 @@ const collect = (text: unknown) => {
   for (const m of text.matchAll(RE)) wanted.add(m[1]!.replace(/[?#].*$/, ''));
 };
 for (const t of TABLES) {
-  for (const sql of [`SELECT body FROM ${t}_locales WHERE body LIKE '%files.hadramout.center%'`, `SELECT cover_url FROM ${t} WHERE cover_url IS NOT NULL`]) {
+  for (const sql of [
+    `SELECT body FROM ${t}_locales WHERE body LIKE '%files.hadramout.center%'`,
+    `SELECT cover_url FROM ${t} WHERE cover_url IS NOT NULL`,
+    `SELECT pdf FROM ${t} WHERE pdf IS NOT NULL`,
+  ]) {
     try {
       for (const row of db.prepare(sql).all() as Record<string, unknown>[]) collect(Object.values(row)[0]);
     } catch {

@@ -10,7 +10,8 @@ interface Props {
   needsTranslation: boolean;
   machine: boolean;
   reviewed: boolean;
-  labels: { machine: string; reviewed: string; pending: string; unavailable: string; failed: string; ready: string; viewOriginal: string; report: string };
+  stale?: boolean;
+  labels: { machine: string; reviewed: string; pending: string; unavailable: string; failed: string; ready: string; viewOriginal: string; report: string; stale?: string };
   originalHref: string;
   reportHref: string;
   providerEnabled: boolean;
@@ -20,8 +21,9 @@ interface Props {
  * Shown on pages whose language is not Arabic.
  *  - complete machine translation → disclosure + link to the Arabic original
  *  - missing/partial → the browser (never a crawler) asks the server to translate, then polls and refreshes
+ *  - stale translation → polite alert indicating the Arabic original changed
  */
-export function TrBanner({ lang, slug, id, needsTranslation, machine, reviewed, labels, originalHref, reportHref, providerEnabled }: Props) {
+export function TrBanner({ lang, slug, id, needsTranslation, machine, reviewed, stale, labels, originalHref, reportHref, providerEnabled }: Props) {
   const router = useRouter();
   const [state, setState] = useState<'idle' | 'pending' | 'failed' | 'ready'>('idle');
 
@@ -70,6 +72,17 @@ export function TrBanner({ lang, slug, id, needsTranslation, machine, reviewed, 
           {state === 'pending' || state === 'ready' ? <span className="spinner" aria-hidden="true" /> : null}
           <span>{!providerEnabled ? labels.unavailable : state === 'failed' ? labels.failed : state === 'ready' ? labels.ready : labels.pending}</span>
           <a href={originalHref} hrefLang="ar">{labels.viewOriginal}</a>
+        </div>
+      </div>
+    );
+  }
+  if (stale && labels.stale) {
+    return (
+      <div className="tr-banner tr-banner--stale" role="status" style={{ backgroundColor: '#fffbeb', color: '#92400e', borderBlockEnd: '1px solid #fde68a' }}>
+        <div className="container tr-banner__in">
+          <span>{labels.stale}</span>
+          <a href={originalHref} hrefLang="ar">{labels.viewOriginal}</a>
+          <a href={reportHref}>{labels.report}</a>
         </div>
       </div>
     );
