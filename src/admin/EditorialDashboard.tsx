@@ -2,12 +2,17 @@ import type { CollectionSlug, Payload, Where } from 'payload';
 import { loadConfig } from '../config.ts';
 import { dashboardStrings, fill } from './i18n.ts';
 import { listUrl } from './links.ts';
+import { ScholarlyNormalizerWidget } from './components/ScholarlyNormalizerWidget.tsx';
 
 /**
- * The admin home, above Payload's own collection list: what needs attention, the state of every content type
- * (published / drafts / archived, each a link to the filtered list), the latest edits, today's machine-translation
- * budget and shortcuts. Every number is a real count run with the signed-in user's own access (overrideAccess: false),
- * so a role never sees numbers it cannot open, and nothing is shown that the database does not hold.
+ * The modern admin home, above Payload's own collection list:
+ * - Quick Actions bar for instant creation of pages, articles, audio, announcements, and news
+ * - Real-time attention cards with animated status alerts
+ * - Overview of all 11 content collections (published / drafts / archived)
+ * - Scholarly Arabic quick punctuation normalizer tool
+ * - Recent updates with locale and type metadata
+ * - Translation usage budget meter and quick navigation shortcuts
+ * Every number is a real count run with the signed-in user's own access (overrideAccess: false).
  */
 
 type Role = 'admin' | 'editor' | 'reviewer';
@@ -24,7 +29,11 @@ const CONTENT: { slug: CollectionSlug; ar: string; en: string }[] = [
   { slug: 'magazines', ar: 'أعداد المجلة', en: 'Magazine issues' },
   { slug: 'events', ar: 'المؤتمرات والندوات', en: 'Conferences & seminars' },
   { slug: 'forum-events', ar: 'منتدى عميد الوفاء', en: 'Forum' },
+  { slug: 'audio', ar: 'الصوتيات والبودكاست', en: 'Audio & Podcasts' },
   { slug: 'videos', ar: 'المرئيات', en: 'Videos' },
+  { slug: 'announcements', ar: 'الإعلانات والبيانات', en: 'Announcements' },
+  { slug: 'partners', ar: 'الشركاء والجهات', en: 'Partners' },
+  { slug: 'pages', ar: 'الصفحات التعريفية', en: 'Pages' },
 ];
 
 const GUIDE_URL = 'https://github.com/Novixa-dev/hadramout-center-platform/blob/master/docs/06-handover/admin-guide-ar.md';
@@ -46,7 +55,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
     try {
       return (await payload.count({ collection, where, ...asUser })).totalDocs;
     } catch {
-      return null; // not allowed for this role, or the collection is unavailable: the card is left out
+      return null;
     }
   };
 
@@ -103,6 +112,41 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
         <span className={`hc-badge hc-badge--${role}`}>{roleName}</span>
       </header>
 
+      {/* Quick Actions Bar */}
+      {staff && (
+        <section aria-label={t.quickActions} className="hc-dash__actions-section">
+          <div className="hc-dash__actions-bar">
+            <div className="hc-dash__actions-title">
+              <span className="hc-dash__pulse-dot" />
+              <span>{t.quickActions}</span>
+            </div>
+            <div className="hc-dash__actions-buttons">
+              <a href="/admin/collections/pages/create" className="hc-action-btn hc-action-btn--primary">
+                <span className="hc-action-btn__icon">📄</span>
+                <span>{t.newPage}</span>
+              </a>
+              <a href="/admin/collections/articles/create" className="hc-action-btn">
+                <span className="hc-action-btn__icon">✍️</span>
+                <span>{t.newArticle}</span>
+              </a>
+              <a href="/admin/collections/audio/create" className="hc-action-btn">
+                <span className="hc-action-btn__icon">🎙️</span>
+                <span>{t.newAudio}</span>
+              </a>
+              <a href="/admin/collections/announcements/create" className="hc-action-btn">
+                <span className="hc-action-btn__icon">📢</span>
+                <span>{t.newAnnouncement}</span>
+              </a>
+              <a href="/admin/collections/news/create" className="hc-action-btn">
+                <span className="hc-action-btn__icon">📰</span>
+                <span>{t.newNews}</span>
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Attention / Alerts Cards */}
       <section aria-labelledby="hc-dash-attention" className="hc-dash__section">
         <h2 id="hc-dash-attention" className="hc-dash__h2">{t.attention}</h2>
         {!waiting ? <p className="hc-dash__clear">{t.allClear}</p> : null}
@@ -128,6 +172,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
         </ul>
       </section>
 
+      {/* Main Content Grid: Content Overview & Recent Updates */}
       <div className="hc-dash__grid">
         <section aria-labelledby="hc-dash-content" className="hc-dash__section hc-panel">
           <h2 id="hc-dash-content" className="hc-dash__h2">{t.content}</h2>
@@ -191,31 +236,39 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
         </section>
       </div>
 
-      <div className="hc-dash__grid hc-dash__grid--small">
-        {usage !== null ? (
-          <section aria-labelledby="hc-dash-tr" className="hc-dash__section hc-panel">
-            <h2 id="hc-dash-tr" className="hc-dash__h2">{t.translation}</h2>
-            {usage > 0 && limit > 0 ? (
-              <>
-                <p className="hc-meter-label">{fill(t.translationUsed, { used: nf.format(usage), limit: nf.format(limit) })}</p>
-                <meter className="hc-meter" min={0} max={limit} low={limit * 0.7} high={limit * 0.9} optimum={0} value={Math.min(usage, limit)}>
-                  {Math.round((usage / limit) * 100)}%
-                </meter>
-              </>
-            ) : (
-              <p className="hc-dash__clear">{t.translationNone}</p>
-            )}
-          </section>
-        ) : null}
-        <nav aria-labelledby="hc-dash-quick" className="hc-dash__section hc-panel">
-          <h2 id="hc-dash-quick" className="hc-dash__h2">{t.quick}</h2>
-          <ul className="hc-quick" role="list">
-            <li><a href={`/${lang}`} target="_blank" rel="noopener">{t.viewSite} ↗</a></li>
-            <li><a href="/admin/account">{t.profile}</a></li>
-            {role === 'admin' ? <li><a href="/admin/collections/users">{t.users}</a></li> : null}
-            <li><a href={GUIDE_URL} target="_blank" rel="noopener">{t.guide} ↗</a></li>
-          </ul>
-        </nav>
+      {/* Scholarly Assistant & Utility Grid */}
+      <div className="hc-dash__grid">
+        <section aria-label={t.scholarlyAssistTitle} className="hc-dash__section hc-panel">
+          <ScholarlyNormalizerWidget lang={lang} />
+        </section>
+
+        <div className="hc-dash__subgrid">
+          {usage !== null ? (
+            <section aria-labelledby="hc-dash-tr" className="hc-dash__section hc-panel">
+              <h2 id="hc-dash-tr" className="hc-dash__h2">{t.translation}</h2>
+              {usage > 0 && limit > 0 ? (
+                <>
+                  <p className="hc-meter-label">{fill(t.translationUsed, { used: nf.format(usage), limit: nf.format(limit) })}</p>
+                  <meter className="hc-meter" min={0} max={limit} low={limit * 0.7} high={limit * 0.9} optimum={0} value={Math.min(usage, limit)}>
+                    {Math.round((usage / limit) * 100)}%
+                  </meter>
+                </>
+              ) : (
+                <p className="hc-dash__clear">{t.translationNone}</p>
+              )}
+            </section>
+          ) : null}
+
+          <nav aria-labelledby="hc-dash-quick" className="hc-dash__section hc-panel">
+            <h2 id="hc-dash-quick" className="hc-dash__h2">{t.quick}</h2>
+            <ul className="hc-quick" role="list">
+              <li><a href={`/${lang}`} target="_blank" rel="noopener">{t.viewSite} ↗</a></li>
+              <li><a href="/admin/account">{t.profile}</a></li>
+              {role === 'admin' ? <li><a href="/admin/collections/users">{t.users}</a></li> : null}
+              <li><a href={GUIDE_URL} target="_blank" rel="noopener">{t.guide} ↗</a></li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </div>
   );

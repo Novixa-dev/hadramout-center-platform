@@ -14,6 +14,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - All changes verified locally with `npm run check` (210 unit tests passing across 38 suites, 0 TypeScript errors, 0 ESLint warnings, `knip` clean).
 
 ### Added
+- **Modernized Editorial Experience, Dashboard, Page Builder & SEO Controls (`ADM-001`, `PAG-001`, `SEO-001`):**
+  - **Pages Collection & Form Modernization:**
+    - Upgraded `src/collections/Pages.ts` with structured tabs (`Content & Hero`, `SEO & Social`, `Navigation & Placement`) and comprehensive sidebar controls (`slug`, `status`, `publishedAt`, `scheduledPublish`, `editorialNotes`).
+    - Added localized `lead` (prominent hero subtitle/overview) and `badge` (hero category badge).
+    - Added `heroLayout` (`standard`, `centered`, `banner`, `split`, `minimal`) and `heroImage` (`upload` relation to `media`).
+    - Added `schemaType` (`WebPage`, `AboutPage`, `ContactPage`, `ItemPage`, `CollectionPage`) for semantic rich snippet indexing.
+    - Added `showBreadcrumbs` toggle with frontend integration in `src/components/StaticPage.tsx` and `src/components/PageHead.tsx`.
+    - Created and applied SQLite migration `src/migrations/20261031_070000_enhance_pages_schema.ts`.
+  - **Live Search & Social Card Preview (`SerpPreview.tsx`):**
+    - Developed reactive client component `src/admin/fields/SerpPreview.tsx` displaying real-time Google SERP preview (Desktop/Mobile viewports) and OpenGraph 1200×630 social card preview.
+    - Integrated dynamic character counter bars with color status feedback for SEO title (0-60 chars) and meta description (0-155 chars).
+  - **Enhanced Scholarly Rich-Text Editor (`HtmlField.tsx`):**
+    - Integrated live editorial statistics footer: word count, character count, and estimated reading time.
+    - Added traditional scholarly quotation helper (`« »`) for automatic wrapping or insertion.
+    - Added sequential scholarly footnote / citation inserter (`[1]`).
+    - Added fullscreen distraction-free focus mode (`⛶`).
+    - Added visual feedback alerts upon normalizing scholarly typography.
+  - **Modernized Admin Dashboard (`EditorialDashboard.tsx` & `custom.scss`):**
+    - Added animated Quick Actions creation bar (`+ صفحة جديدة`, `+ مقال أو دراسة`, `+ حلقة بودكاست`, `+ إعلان رسمي`, `+ خبر صحفي`).
+    - Expanded overview table to include all 11 content collections (`news`, `articles`, `books`, `magazines`, `events`, `forum-events`, `audio`, `videos`, `announcements`, `partners`, `pages`).
+    - Built interactive `ScholarlyNormalizerWidget.tsx` for one-click Arabic text and punctuation auditing and clipboard copying directly from the admin dashboard.
+    - Implemented modern micro-interactions, subtle hover card lifts, refined status tags, and dark mode parity.
+  - **Admin Bilingual String Tables (`src/admin/i18n.ts`):**
+    - Added 31 new translation keys across `EDITOR` and `DASHBOARD` with 100% Arabic and English parity.
 - **Navigation Integration & Discoverability (`NAV-002`):**
   - Integrated public routes for Audio Archive (`/audio`) and Research Submissions (`/submit`) into the secondary ("المزيد") navigation menu and footer explore/research columns in `src/components/Shell.tsx`.
   - Added bilingual keys `nav.audio` and `nav.submit` across `messages/ar.json` and `messages/en.json`.

@@ -1150,6 +1150,19 @@ export interface Testimonial {
 export interface Page {
   id: number;
   title: string;
+  /**
+   * Category badge shown above title (e.g. About the Center, Official Document).
+   */
+  badge?: string | null;
+  /**
+   * Brief overview summarizing the page displayed prominently under the title.
+   */
+  lead?: string | null;
+  heroLayout?: ('standard' | 'centered' | 'banner' | 'split' | 'minimal') | null;
+  /**
+   * Optional hero cover image.
+   */
+  heroImage?: (number | null) | Media;
   blocks?:
     | (
         | {
@@ -1289,20 +1302,24 @@ export interface Page {
    */
   metaDescription?: string | null;
   /**
-   * Image (1200x630) shown when sharing the link on social media.
+   * Image (1200x630) shown when sharing on social media.
    */
   ogImage?: (number | null) | Media;
   /**
-   * Enable this to tell search engine crawlers not to index this page.
+   * Semantic type for rich search snippets.
    */
-  noindex?: boolean | null;
+  schemaType?: ('WebPage' | 'AboutPage' | 'ContactPage' | 'ItemPage' | 'CollectionPage') | null;
   /**
-   * Optional: override canonical URL if content is duplicated elsewhere.
+   * Optional: override canonical URL if duplicated.
    */
   canonicalUrl?: string | null;
+  /**
+   * Tells crawlers not to index this page.
+   */
+  noindex?: boolean | null;
   navPlacement?: ('none' | 'primary' | 'dropdown' | 'footer_about' | 'footer_explore') | null;
   /**
-   * Numeric order for sorting (lower numbers appear first).
+   * Numeric order for sorting (lower first).
    */
   navOrder?: number | null;
   /**
@@ -1310,11 +1327,23 @@ export interface Page {
    */
   navLabel?: string | null;
   /**
+   * Display hierarchical breadcrumbs trail at the top of the page.
+   */
+  showBreadcrumbs?: boolean | null;
+  /**
    * about · contact · privacy · terms · accessibility
    */
   slug: string;
   status: 'draft' | 'published' | 'archived';
   publishedAt?: string | null;
+  /**
+   * Set a future date and time for scheduled launch.
+   */
+  scheduledPublish?: string | null;
+  /**
+   * Internal team notes, source citations, and review instructions (never visible to visitors).
+   */
+  editorialNotes?: string | null;
   translationMeta?:
     | {
         [k: string]: unknown;
@@ -2158,6 +2187,10 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface PagesSelect<T extends boolean = true> {
   title?: T;
+  badge?: T;
+  lead?: T;
+  heroLayout?: T;
+  heroImage?: T;
   blocks?:
     | T
     | {
@@ -2299,14 +2332,18 @@ export interface PagesSelect<T extends boolean = true> {
   metaTitle?: T;
   metaDescription?: T;
   ogImage?: T;
-  noindex?: T;
+  schemaType?: T;
   canonicalUrl?: T;
+  noindex?: T;
   navPlacement?: T;
   navOrder?: T;
   navLabel?: T;
+  showBreadcrumbs?: T;
   slug?: T;
   status?: T;
   publishedAt?: T;
+  scheduledPublish?: T;
+  editorialNotes?: T;
   translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;

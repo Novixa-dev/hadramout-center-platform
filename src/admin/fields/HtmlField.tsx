@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { FieldDescription, FieldError, FieldLabel, useField, useTranslation } from '@payloadcms/ui';
 import { getTranslation } from '@payloadcms/translations';
 import type { TextareaFieldClientComponent } from 'payload';
@@ -10,10 +10,10 @@ import { editorStrings } from '../i18n.ts';
 import { normalizeScholarlyArabic } from '../../lib/arabic-assist.ts';
 
 /**
- * WYSIWYG editor for article/news bodies. It edits the same HTML the site renders; the server sanitizes it again
- * on save (see sanitizeBody in field hooks), so nothing unsafe can be stored even if the browser is tampered with.
- * Label, description, error and read-only state come from Payload like any built-in field (a reviewer sees the Arabic
- * body read-only); the toolbar speaks the admin's interface language.
+ * Modern WYSIWYG editor for article/news/page bodies. It edits the same HTML the site renders;
+ * the server sanitizes it again on save (see sanitizeBody in field hooks).
+ * Includes scholarly Arabic helpers, quotation brackets (« »), footnotes ([1]), word/char counts,
+ * reading time estimation, and fullscreen focus mode.
  */
 
 type Cmd = { label: string; title: string; run: () => void; active?: boolean; disabled?: boolean };
@@ -25,9 +25,11 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
   const locked = Boolean(readOnly || disabled);
   const label = getTranslation(field.label || field.name, i18n);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
   const editor = useEditor({
     immediatelyRender: false,
-    // Tiptap 3 no longer re-renders on every transaction: without this the toolbar's pressed/disabled states went stale.
     shouldRerenderOnTransaction: true,
     editable: !locked,
     extensions: [StarterKit.configure({ heading: { levels: [2, 3, 4] }, link: { openOnClick: false, autolink: true } }), Image],
@@ -36,7 +38,7 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
     onUpdate: ({ editor: ed }) => setValue(ed.isEmpty ? '' : ed.getHTML()),
   });
 
-  // The value changes from outside when the editor switches locale or a document loads.
+  // Keep editor content in sync with external value changes (e.g. locale switch)
   useEffect(() => {
     if (!editor || editor.isFocused) return;
     const incoming = value ?? '';
@@ -44,14 +46,19 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
     if (incoming !== current) editor.commands.setContent(incoming, { emitUpdate: false });
   }, [value, editor]);
 
-  // Access can change without a remount (locale switch: a reviewer may edit English but not Arabic; the form is also briefly
-  // disabled while it initialises). emitUpdate=false: Tiptap's default fires "update", which wrote the editor's normalised
-  // HTML back into the form and marked every document as modified the moment it was opened.
+  // Handle read-only / disabled state changes dynamically
   useEffect(() => {
     if (editor && editor.isEditable === locked) editor.setEditable(!locked, false);
   }, [editor, locked]);
 
+  // Flash feedback message and clear after delay
+  const showFeedback = (msg: string) => {
+    setFeedback(msg);
+    setTimeout(() => setFeedback(null), 3500);
+  };
+
   const chain = () => editor!.chain().focus();
+
   const addLink = () => {
     const prev = editor!.getAttributes('link').href as string | undefined;
     const url = window.prompt(t.linkPrompt, prev ?? 'https://');
@@ -59,18 +66,59 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
     if (url === '') chain().extendMarkRange('link').unsetLink().run();
     else chain().extendMarkRange('link').setLink({ href: url }).run();
   };
+
   const addImage = () => {
     const src = window.prompt(t.imagePrompt, 'https://');
     if (src) chain().setImage({ src, alt: window.prompt(t.altPrompt, '') ?? '' }).run();
   };
+
+  // Scholarly Arabic typography normalization
   const runScholarlyAssist = () => {
     if (!editor) return;
     const currentHtml = editor.getHTML();
     const normalized = normalizeScholarlyArabic(currentHtml);
     if (normalized !== currentHtml) {
       editor.commands.setContent(normalized, { emitUpdate: true });
+      showFeedback(t.normalizerSuccess);
+    } else {
+      showFeedback(t.normalizerSuccess);
     }
   };
+
+  // Insert or wrap with traditional scholarly brackets « »
+  const insertScholarlyQuotes = () => {
+    if (!editor) return;
+    const { state } = editor;
+    const { from, to } = state.selection;
+    if (from !== to) {
+      const selectedText = state.doc.textBetween(from, to);
+      editor.commands.insertContentAt({ from, to }, `«${selectedText}»`);
+    } else {
+      editor.commands.insertContent('«»');
+      editor.commands.setTextSelection(from + 1);
+    }
+    chain().run();
+  };
+
+  // Insert sequentially-numbered scholarly footnote [1]
+  const insertFootnote = () => {
+    if (!editor) return;
+    const text = editor.getText();
+    const matches = text.match(/\[(\d+)\]/g);
+    const nextNum = matches ? matches.length + 1 : 1;
+    editor.commands.insertContent(` [${nextNum}] `);
+    chain().run();
+  };
+
+  // Real-time statistics
+  const stats = useMemo(() => {
+    if (!editor) return { words: 0, chars: 0, readingTimeMinutes: 1 };
+    const text = editor.getText().trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    const chars = text.length;
+    const readingTimeMinutes = Math.max(1, Math.ceil(words / 200));
+    return { words, chars, readingTimeMinutes };
+  }, [editor, value]);
 
   const groups: Cmd[][] = editor
     ? [
@@ -89,6 +137,11 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
           { label: '❝', title: t.quote, run: () => chain().toggleBlockquote().run(), active: editor.isActive('blockquote') },
         ],
         [
+          { label: t.scholarlyQuotesShort, title: t.scholarlyQuotes, run: insertScholarlyQuotes },
+          { label: t.footnoteShort, title: t.footnote, run: insertFootnote },
+          { label: t.scholarlyAssistShort, title: t.scholarlyAssist, run: runScholarlyAssist },
+        ],
+        [
           { label: t.linkShort, title: t.link, run: addLink, active: editor.isActive('link') },
           { label: t.imageShort, title: t.image, run: addImage },
           { label: '—', title: t.rule, run: () => chain().setHorizontalRule().run() },
@@ -98,18 +151,24 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
           { label: '↷', title: t.redo, run: () => chain().redo().run(), disabled: !editor.can().redo() },
         ],
         [
-          { label: t.scholarlyAssistShort, title: t.scholarlyAssist, run: runScholarlyAssist },
+          {
+            label: isFullscreen ? '🗗' : '⛶',
+            title: isFullscreen ? t.fullscreenExit : t.fullscreen,
+            run: () => setIsFullscreen(!isFullscreen),
+            active: isFullscreen,
+          },
         ],
       ]
     : [];
 
   const description = field.admin?.description;
+
   return (
-    <div className={['field-type', 'hc-ed-field', showError ? 'error' : '', locked ? 'read-only' : ''].filter(Boolean).join(' ')}>
+    <div className={['field-type', 'hc-ed-field', showError ? 'error' : '', locked ? 'read-only' : '', isFullscreen ? 'hc-ed-field--fullscreen' : ''].filter(Boolean).join(' ')}>
       <FieldLabel label={field.label} localized={field.localized} path={path} required={field.required} />
       <div className="field-type__wrap">
         <FieldError path={path} showError={showError} />
-        <div className="hc-ed">
+        <div className={`hc-ed ${isFullscreen ? 'hc-ed--fullscreen' : ''}`}>
           {locked ? null : (
             <div className="hc-ed__bar" role="toolbar" aria-label={t.toolbar}>
               {groups.map((g, i) => (
@@ -124,6 +183,28 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
             </div>
           )}
           {editor ? <EditorContent editor={editor} /> : <div className="hc-ed__loading" aria-busy="true">{t.loading}</div>}
+
+          {/* Real-time editorial statistics and feedback footer */}
+          <div className="hc-ed__footer">
+            <div className="hc-ed__stats">
+              <span className="hc-ed__stat-item">
+                📊 {t.wordCount.replace('{words}', String(stats.words))}
+              </span>
+              <span className="hc-ed__stat-sep">•</span>
+              <span className="hc-ed__stat-item">
+                {t.charCount.replace('{chars}', String(stats.chars))}
+              </span>
+              <span className="hc-ed__stat-sep">•</span>
+              <span className="hc-ed__stat-item">
+                ⏱️ {t.readingTime.replace('{minutes}', String(stats.readingTimeMinutes))}
+              </span>
+            </div>
+            {feedback && (
+              <div className="hc-ed__feedback" role="status">
+                ✨ {feedback}
+              </div>
+            )}
+          </div>
         </div>
         {description ? <FieldDescription description={description} path={path} /> : null}
       </div>

@@ -30,6 +30,9 @@ export async function StaticPage({ locale, slug, preview = false }: { locale: st
   const ld = breadcrumbJsonLd([{ name: t('nav.home'), url: absolute(`/${locale}`) }, { name: page.title, url: absolute(`/${locale}/${slug}`) }]);
   const hasBlocks = Boolean(page.blocks && page.blocks.length > 0);
   const isAboutPage = slug === 'about';
+  const pageWithExtras = page as unknown as { showBreadcrumbs?: boolean | null; lead?: string | null; badge?: string | null };
+  const showBreadcrumbs = pageWithExtras.showBreadcrumbs !== false;
+  const crumbs = showBreadcrumbs ? [{ name: page.title }] : [];
   const [partners, testimonials] = isAboutPage
     ? await Promise.all([listApprovedPartners(locale), listApprovedTestimonials(locale)])
     : [[], []];
@@ -51,7 +54,14 @@ export async function StaticPage({ locale, slug, preview = false }: { locale: st
           labels={{ machine: t('tr.machine'), reviewed: t('tr.reviewed'), pending: t('tr.pending'), unavailable: t('tr.unavailable'), failed: t('tr.failed'), ready: t('tr.ready'), viewOriginal: t('tr.viewOriginal'), report: t('tr.report'), stale: t('tr.stale') }}
         />
       ) : null}
-      <PageHead ctx={ctx} crumbs={[{ name: page.title }]} title={page.title} titleAttrs={tr.titleLang === 'ar' && locale !== 'ar' ? { lang: 'ar', dir: 'rtl' } : undefined} />
+      <PageHead
+        ctx={ctx}
+        crumbs={crumbs}
+        title={page.title}
+        lead={pageWithExtras.lead || undefined}
+        badge={pageWithExtras.badge ? <span className="badge badge--gold">{pageWithExtras.badge}</span> : undefined}
+        titleAttrs={tr.titleLang === 'ar' && locale !== 'ar' ? { lang: 'ar', dir: 'rtl' } : undefined}
+      />
       {!isProductionSite() && PENDING_APPROVAL.has(slug) ? (
         <div className="container--narrow" style={{ paddingBlockStart: 'var(--space-4)' }}>
           <p className="notice notice--warn" role="note" data-review-notice style={{ margin: 0 }}>

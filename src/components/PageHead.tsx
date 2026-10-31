@@ -22,12 +22,29 @@ export function Breadcrumbs({ ctx, items }: { ctx: Ctx; items: Crumb[] }) {
   );
 }
 
-/** Heading band of an inner page: breadcrumbs, the one <h1>, an optional lead and extra content (actions, stats). */
-export function PageHead({ ctx, crumbs, title, lead, children, titleAttrs }: { ctx: Ctx; crumbs: Crumb[]; title: string; lead?: ReactNode; children?: ReactNode; titleAttrs?: { lang?: string; dir?: 'rtl' | 'ltr' } }) {
+/** Heading band of an inner page: breadcrumbs, optional badge, the one <h1>, an optional lead and extra content (actions, stats). */
+export function PageHead({
+  ctx,
+  crumbs,
+  title,
+  lead,
+  badge,
+  children,
+  titleAttrs,
+}: {
+  ctx: Ctx;
+  crumbs: Crumb[];
+  title: string;
+  lead?: ReactNode;
+  badge?: ReactNode;
+  children?: ReactNode;
+  titleAttrs?: { lang?: string; dir?: 'rtl' | 'ltr' };
+}) {
   return (
     <div className="page-head">
       <div className="container">
         {crumbs.length ? <Breadcrumbs ctx={ctx} items={crumbs} /> : null}
+        {badge ? <div className="page-head__badge" style={{ marginBlockEnd: 'var(--space-2)' }}>{badge}</div> : null}
         <h1 {...titleAttrs}>{title}</h1>
         {lead ? <p className="page-head__lead">{lead}</p> : null}
         {children}
