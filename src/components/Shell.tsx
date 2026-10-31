@@ -27,8 +27,10 @@ const PRIMARY = [
 const SECONDARY = [
   { key: 'nav.topics', path: '/topics' },
   { key: 'nav.forum', path: '/forum' },
+  { key: 'nav.audio', path: '/audio' },
   { key: 'nav.authors', path: '/authors' },
   { key: 'nav.timeline', path: '/timeline' },
+  { key: 'nav.submit', path: '/submit' },
   { key: 'nav.about', path: '/about' },
   { key: 'nav.contact', path: '/contact' },
 ] as const;
@@ -142,6 +144,7 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
               {[...PRIMARY, SECONDARY[0], SECONDARY[1]].map((n) => (
                 <li key={n.path}><Link href={href(n.path)}>{t(n.key)}</Link></li>
               ))}
+              <li><Link href={href('/audio')}>{t('nav.audio')}</Link></li>
             </ul>
           </nav>
           <nav aria-label={t('footer.research')}>
@@ -150,6 +153,7 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
               <li><Link href={href('/search')}>{t('nav.search')}</Link></li>
               <li><Link href={href('/authors')}>{t('nav.authors')}</Link></li>
               <li><Link href={href('/timeline')}>{t('nav.timeline')}</Link></li>
+              <li><Link href={href('/submit')}>{t('nav.submit')}</Link></li>
               <li><Link href={href('/saved')}>{t('saved.title')}</Link></li>
               <li><a href={`/feeds/${ctx.lang.code}/all.xml`}>{t('footer.rss')}</a></li>
             </ul>
