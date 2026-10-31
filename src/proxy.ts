@@ -62,7 +62,15 @@ function route(req: NextRequest): NextResponse {
   if (enabledOrAll().has(first)) {
     const headers = new Headers(req.headers);
     headers.set('x-pathname', pathname);
-    return NextResponse.next({ request: { headers } });
+    const res = NextResponse.next({ request: { headers } });
+    if (req.nextUrl.searchParams.get('preview') === '1') {
+      res.headers.set(
+        'Content-Security-Policy',
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://files.hadramout.center https://i.ytimg.com; font-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'",
+      );
+      res.headers.set('X-Frame-Options', 'SAMEORIGIN');
+    }
+    return res;
   }
 
   // legacy item URLs: rewritten to the id-mapping handler by next.config.ts (rewrites), so the proxy only lets them through

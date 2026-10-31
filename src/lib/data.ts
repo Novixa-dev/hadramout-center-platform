@@ -380,3 +380,36 @@ export async function listApprovedTestimonials(lang: string, limit = 20): Promis
   }
 }
 
+
+
+export interface NavPageDoc {
+  id: number;
+  slug: string;
+  title: string;
+  navLabel?: string | null;
+  navPlacement: 'primary' | 'dropdown' | 'footer_about' | 'footer_explore';
+  navOrder: number;
+}
+
+export async function listNavPages(lang: string): Promise<NavPageDoc[]> {
+  const payload = await getPayloadClient();
+  try {
+    const res = await payload.find({
+      collection: 'pages',
+      where: {
+        and: [
+          PUBLISHED,
+          { navPlacement: { not_equals: 'none' } },
+        ],
+      },
+      sort: 'navOrder',
+      limit: 100,
+      locale: lang as never,
+      fallbackLocale: 'ar',
+      depth: 0,
+    });
+    return (res.docs as unknown as NavPageDoc[]).filter((d) => d.navPlacement && d.navPlacement !== ('none' as never));
+  } catch {
+    return [];
+  }
+}

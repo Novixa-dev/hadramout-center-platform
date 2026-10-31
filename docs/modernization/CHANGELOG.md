@@ -14,6 +14,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - All changes verified locally with `npm run check` (210 unit tests passing across 38 suites, 0 TypeScript errors, 0 ESLint warnings, `knip` clean).
 
 ### Added
+- **Dynamic CMS Navigation, AI Auto-Fill, Admin Home Nav & Live Preview Fixes (`ADM-002`, `NAV-003`, `PRV-001`):**
+  - **Dynamic CMS Navigation Integration (`NAV-003`):**
+    - Added `listNavPages(locale)` in `src/lib/data.ts` to fetch published CMS pages with custom placement.
+    - Updated `src/components/Shell.tsx` and `src/app/(site)/[locale]/layout.tsx` so pages configured with `navPlacement: 'dropdown'` automatically display under the "المزيد" dropdown menu and in mobile navigation, `navPlacement: 'primary'` in the main header bar, and footer placements in their respective columns, sorted by `navOrder`.
+  - **Admin Home Sidebar Navigation Link (`ADM-002`):**
+    - Created `src/admin/components/NavHomeLink.tsx` and registered it in `src/payload.config.ts` via `admin.components.beforeNavLinks` to provide a dedicated, styled "الرئيسية (لوحة التحكم)" / "Dashboard (Home)" link at the top of the admin sidebar.
+  - **Live Preview & Framing Resolution (`PRV-001`):**
+    - Configured `preview` function and improved `livePreview.url` handling in `src/collections/Pages.ts`.
+    - Added conditional CSP and `X-Frame-Options: SAMEORIGIN` headers for `?preview=1` requests in `src/proxy.ts`, allowing same-origin framing so Live Preview renders without CSP blocks.
+  - **AI Content Auto-Fill & Smart Editorial Tools:**
+    - Expanded `src/app/api/hc/editorial-assist/route.ts` with dedicated actions: `auto-fill-seo`, `auto-fill-lead`, `academic-template`, and `translate`.
+    - Created `src/admin/fields/AiEditorialBar.tsx` client component integrated into page editing with 4 instant actions (Auto-Fill SEO, Extract Lead, Academic Template, Translate Draft).
+    - Added academic template inserter (`📜`) and editor translation tool (`🌐`) to `HtmlField.tsx` toolbar.
 - **Modernized Editorial Experience, Dashboard, Page Builder & SEO Controls (`ADM-001`, `PAG-001`, `SEO-001`):**
   - **Pages Collection & Form Modernization:**
     - Upgraded `src/collections/Pages.ts` with structured tabs (`Content & Hero`, `SEO & Social`, `Navigation & Placement`) and comprehensive sidebar controls (`slug`, `status`, `publishedAt`, `scheduledPublish`, `editorialNotes`).

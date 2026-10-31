@@ -10,7 +10,7 @@ import { PriorityNav } from './client/PriorityNav.tsx';
 import { SearchToggle } from './client/SearchToggle.tsx';
 import { NewsletterForm } from './client/NewsletterForm.tsx';
 import type { SearchLabels } from './client/SearchBox.tsx';
-import type { getSite } from '../lib/data.ts';
+import type { getSite, NavPageDoc } from '../lib/data.ts';
 
 type Site = Awaited<ReturnType<typeof getSite>>;
 
@@ -68,8 +68,25 @@ export function searchLabels(ctx: Ctx): SearchLabels {
   };
 }
 
-export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: LangOption[] }) {
+export function Header({ ctx, site, langs, navPages = [] }: { ctx: Ctx; site: Site; langs: LangOption[]; navPages?: NavPageDoc[] }) {
   const { t, href } = ctx;
+  const primaryDynamic = navPages
+    .filter((p) => p.navPlacement === 'primary')
+    .map((p) => ({ href: href(`/${p.slug}`), label: p.navLabel || p.title }));
+  const dropdownDynamic = navPages
+    .filter((p) => p.navPlacement === 'dropdown')
+    .map((p) => ({ href: href(`/${p.slug}`), label: p.navLabel || p.title }));
+
+  const primaryItems = [
+    ...PRIMARY.map((n) => ({ href: href(n.path), label: t(n.key) })),
+    ...primaryDynamic,
+  ];
+
+  const moreItems = [
+    ...SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) })),
+    ...dropdownDynamic,
+  ];
+
   return (
     <header className="site-header">
       <div className="container site-header__bar">
@@ -81,7 +98,7 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           </span>
         </Link>
         <nav className="nav" aria-label={t('nav.main')}>
-          <PriorityNav items={PRIMARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} more={SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) }))} moreLabel={t('nav.more')} />
+          <PriorityNav items={primaryItems} more={moreItems} moreLabel={t('nav.more')} />
         </nav>
         <div className="header-tools">
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
@@ -90,7 +107,7 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
           <MobileMenu
             label={t('nav.menu')}
             closeLabel={t('nav.close')}
-            items={[{ href: href('/'), label: t('nav.home') }, ...NAV.map((n) => ({ href: href(n.path), label: t(n.key) })), { href: href('/saved'), label: t('saved.title') }]}
+            items={[{ href: href('/'), label: t('nav.home') }, ...primaryItems, ...moreItems, { href: href('/saved'), label: t('saved.title') }]}
             footer={<ThemeToggle label={t('theme.toggle')} />}
           />
         </div>
@@ -99,8 +116,10 @@ export function Header({ ctx, site, langs }: { ctx: Ctx; site: Site; langs: Lang
   );
 }
 
-export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
+export function Footer({ ctx, site, navPages = [] }: { ctx: Ctx; site: Site; navPages?: NavPageDoc[] }) {
   const { t, href } = ctx;
+  const footerAboutDynamic = navPages.filter((p) => p.navPlacement === 'footer_about');
+  const footerExploreDynamic = navPages.filter((p) => p.navPlacement === 'footer_explore');
   const social = site.social ?? {};
   const links: { name: SocialName; label: string; url?: string }[] = [
     { name: 'x', label: 'X', url: social.x },
@@ -145,6 +164,9 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
                 <li key={n.path}><Link href={href(n.path)}>{t(n.key)}</Link></li>
               ))}
               <li><Link href={href('/audio')}>{t('nav.audio')}</Link></li>
+              {footerExploreDynamic.map((p) => (
+                <li key={p.slug}><Link href={href(`/${p.slug}`)}>{p.navLabel || p.title}</Link></li>
+              ))}
             </ul>
           </nav>
           <nav aria-label={t('footer.research')}>
@@ -167,6 +189,9 @@ export function Footer({ ctx, site }: { ctx: Ctx; site: Site }) {
               <li><Link href={href('/terms')}>{t('footer.terms')}</Link></li>
               <li><Link href={href('/accessibility')}>{t('footer.accessibility')}</Link></li>
               <li><Link href={href('/novixa')}>{t('footer.novixa')}</Link></li>
+              {footerAboutDynamic.map((p) => (
+                <li key={p.slug}><Link href={href(`/${p.slug}`)}>{p.navLabel || p.title}</Link></li>
+              ))}
             </ul>
           </nav>
           <div>

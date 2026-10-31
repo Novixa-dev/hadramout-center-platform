@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import '../../../styles/index.css';
 import { isLocale, makeCtx } from '../../../lib/ctx.ts';
 import { enabledOrAll } from '../../../lib/negotiate.ts';
-import { getSite, listActiveAnnouncements } from '../../../lib/data.ts';
+import { getSite, listActiveAnnouncements, listNavPages } from '../../../lib/data.ts';
 import { loadConfig } from '../../../config.ts';
 import { uiCoverage } from '../../../i18n/ui-store.ts';
 import { Footer, Header, langOptions } from '../../../components/Shell.tsx';
@@ -55,9 +55,10 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const { locale } = await params;
   if (!isLocale(locale) || !enabledOrAll().has(locale)) notFound();
   const ctx = makeCtx(locale);
-  const [site, announcements] = await Promise.all([
+  const [site, announcements, navPages] = await Promise.all([
     getSite(locale),
     listActiveAnnouncements(locale),
+    listNavPages(locale),
   ]);
   const ready = new Set(['ar', 'en', ...[...enabledOrAll()].filter((c) => uiCoverage(c) >= 0.95)]);
   return (
@@ -77,9 +78,9 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         <a className="skip-link" href="#main">{ctx.t('site.skip')}</a>
         {isProductionSite() ? null : <StagingBar text={ctx.t('staging.banner')} />}
         <AnnouncementBanner announcements={announcements} calendarLabel={ctx.t('event.addToCalendar')} closeLabel={ctx.t('nav.close')} />
-        <Header ctx={ctx} site={site} langs={langOptions(ready)} />
+        <Header ctx={ctx} site={site} langs={langOptions(ready)} navPages={navPages} />
         <main id="main" tabIndex={-1}>{children}</main>
-        <Footer ctx={ctx} site={site} />
+        <Footer ctx={ctx} site={site} navPages={navPages} />
         <BackToTop label={ctx.t('tools.backToTop')} />
         <PwaRegister />
         <Suspense fallback={null}><NavProgress /></Suspense>

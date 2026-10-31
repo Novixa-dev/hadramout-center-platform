@@ -110,6 +110,39 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
     chain().run();
   };
 
+  // Insert structured academic template
+  const insertAcademicTemplate = () => {
+    if (!editor) return;
+    if (!editor.isEmpty && !window.confirm(i18n.language === 'en' ? 'Replace content with academic template?' : 'استبدال المحتوى بقالب دراسة أكاديمية؟')) return;
+    const template = `<h2>مقدمة ومدخل تاريخي</h2><p>توطئة حول موضوع البحث وسياقه التاريخي والتوثيقي في حضرموت وجنوب الجزيرة العربية...</p><h2>المحاور والمباحث التوثيقية</h2><p>تفصيل المبحث الأول وتحليل الوثائق والمصادر والشواهد التاريخية المرتبطة...</p><h2>النتائج والتوصيات</h2><p>خلاصة النتائج العلمية التي خلصت إليها هذه المادة البحثية...</p><h2>المصادر والمراجع</h2><ol><li>المصدر الأول: اسم الكتاب، المؤلف، الطبعة وسنة النشر.</li></ol>`;
+    editor.commands.setContent(template, { emitUpdate: true });
+    showFeedback(i18n.language === 'en' ? 'Template inserted' : 'تم إدراج هيكل الدراسة');
+  };
+
+  // Auto-translate editor content to current admin interface language
+  const translateCurrentBody = async () => {
+    if (!editor || editor.isEmpty) return;
+    if (!window.confirm(t.translateConfirm)) return;
+    try {
+      const res = await fetch('/api/hc/editorial-assist', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'translate',
+          body: editor.getHTML(),
+          targetLang: i18n.language || 'en',
+        }),
+      });
+      const data = await res.json();
+      if (data.translatedBody) {
+        editor.commands.setContent(data.translatedBody, { emitUpdate: true });
+        showFeedback(t.translateSuccess);
+      }
+    } catch {
+      showFeedback(t.translateUnavailable);
+    }
+  };
+
   // Real-time statistics
   const stats = useMemo(() => {
     if (!editor) return { words: 0, chars: 0, readingTimeMinutes: 1 };
@@ -140,6 +173,8 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
           { label: t.scholarlyQuotesShort, title: t.scholarlyQuotes, run: insertScholarlyQuotes },
           { label: t.footnoteShort, title: t.footnote, run: insertFootnote },
           { label: t.scholarlyAssistShort, title: t.scholarlyAssist, run: runScholarlyAssist },
+          { label: '📜', title: i18n.language === 'en' ? 'Insert Academic Template' : 'إدراج هيكل دراسة أكاديمية', run: insertAcademicTemplate },
+          { label: t.translateContentShort, title: t.translateContent, run: translateCurrentBody },
         ],
         [
           { label: t.linkShort, title: t.link, run: addLink, active: editor.isActive('link') },

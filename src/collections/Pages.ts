@@ -10,10 +10,18 @@ export const Pages: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'navPlacement', 'updatedAt'],
     group: L('المحتوى', 'Content'),
+    preview: (doc, { locale }) => {
+      const lang = locale || 'ar';
+      const slug = (doc as { slug?: string })?.slug;
+      if (!slug) return `/${lang}`;
+      return `/${lang}/${slug}?preview=1`;
+    },
     livePreview: {
       url: ({ data, locale }) => {
         const lang = locale ? locale.code : 'ar';
-        return `/${lang}/${data.slug || ''}?preview=1`;
+        const slug = (data as { slug?: string })?.slug;
+        if (!slug) return `/${lang}?preview=1`;
+        return `/${lang}/${slug}?preview=1`;
       },
       breakpoints: [
         { label: 'Mobile', name: 'mobile', width: 390, height: 844 },
@@ -39,6 +47,14 @@ export const Pages: CollectionConfig = {
         {
           label: L('المحتوى والترويسة', 'Content & Hero'),
           fields: [
+            {
+              name: 'aiEditorialBar',
+              type: 'ui',
+              label: L('أدوات المساعد التحريري والذكاء الاصطناعي', 'Editorial AI & Smart Assistant Tools'),
+              admin: {
+                components: { Field: '/admin/fields/AiEditorialBar#AiEditorialBar' },
+              },
+            },
             localizedText('badge', L('شارة الترويسة', 'Hero Badge'), {
               admin: {
                 description: L(
