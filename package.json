@@ -76,7 +76,7 @@
     "jsdom": "30.1.2",
     "knip": "6.43.0",
     "node-html-parser": "9.0.5",
-    "puppeteer-core": "25.15.0",
+    "puppeteer-core": "25.16.0",
     "sass": "1.105.2",
     "tsx": "4.23.15",
     "typescript": "5.9.3",
