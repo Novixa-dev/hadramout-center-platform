@@ -6,6 +6,7 @@ import { sanitizeText } from '../lib/sanitize.ts';
 import { CONTENT, type ContentType } from '../lib/content-types.ts';
 import { mergeBareTitles, splitHonorific } from '../lib/author-names.ts';
 import { DEFAULT_GLOSSARY, DEFAULT_PAGES, DEFAULT_TIMELINE } from './defaults.ts';
+import { CENTER_PAGES } from './center-pages.ts';
 import type { Snapshot } from '../importer/crawl.ts';
 import type { SnapshotPost } from '../importer/legacy.ts';
 
@@ -155,7 +156,7 @@ export async function seedSnapshot(payload: Payload, snapshot: Snapshot, log: (m
 
 /** Pages, timeline, glossary and site settings that the legacy site does not provide. */
 export async function seedDefaults(payload: Payload): Promise<void> {
-  for (const p of DEFAULT_PAGES) {
+  for (const p of [...DEFAULT_PAGES, ...CENTER_PAGES]) {
     if (!(await findOne(payload, 'pages', { slug: { equals: p.slug } }))) {
       await payload.create({ collection: 'pages', data: { slug: p.slug, title: p.title, body: p.body, status: 'published' }, ...OPTS });
     }

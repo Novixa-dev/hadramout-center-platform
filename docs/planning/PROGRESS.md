@@ -134,6 +134,20 @@ Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0
 
 Known, not fixed: 4,004 images in article bodies have no alt text (editorial work list in the quality report); a deploy restarts the container, so there is a short 502 window (a zero-downtime swap is an infrastructure task); local Windows smoke can hit a one-off `ECONNRESET` in the redirect matrix (passes alone, Linux CI is the reference).
 
+## 2026-11-06 (second pass) — the Center's files: feedback report and tenth-anniversary book
+
+| Change | Evidence |
+|---|---|
+| Both client files read page by page (their Arabic text cannot be extracted: fonts without Unicode maps) and analysed: [docs/client](../client/README.md) — 20-row conformity matrix, book digest with page numbers, action plan CF-01…CF-24 | docs |
+| **Menu grouped as the Center proposed**: About · Media Center · Research & Studies · Programs & Projects · Contact (14 flat links → 5 entries); keyboard/Esc/outside-click dropdowns, "More" overflow kept, phone drawer shows sections | e2e 55/55, admin-e2e 65/65, screenshots ar/en × light/dark × 390/1366 |
+| 7 institutional pages from the book (`src/seed/center-pages.ts`) + migration `20261106_130000`: vision/mission/values, goals, organisation, a decade, 2026–2030 plan, digital library, partnerships. Figures need the Center's confirmation (CF-24) | migration run on an old seeded copy: 12 pages |
+| Events: *supporters* and *attendance* fields (migration `20261106_140000`), "Add to Google Calendar" link (unit-tested) | 236 unit tests, migration chain run on a seed copy |
+| Light theme: gold tint behind the header (client request); `.date-block` contrast fixed in dark (4.15 → ≥ 4.5:1) | axe on local build: 0 violations on new pages |
+| Docs rebuilt: README, index, CHANGELOG 5.16.0, [HANDOVER](../06-handover/HANDOVER.md), [IDEAS_AND_ROADMAP](IDEAS_AND_ROADMAP.md), designed Arabic manual [docs/manual](../manual/index.html) + PDF (`npm run manual:pdf`) | PDF checked page by page (21 pages) |
+| Raw client PDFs are git-ignored (public repository); the root audit prompt moved to `docs/archive/` | — |
+
+Still waiting on the Center: logo asset (CF-05), chairman's word and board/team names (CF-07a), governance documents (CF-08), publishing-ethics texts (CF-10), podcast files (CF-14), partner logos with consent (CF-17), testimonials (CF-18), taxonomy policy (CF-19), and **confirmation of every figure and name taken from the book (CF-24)**.
+
 ## Next actionable tasks (in order)
 
 1. **Client meeting:** walk through the staging site and the [checklist](../06-handover/client-requirements-checklist-ar.md); collect the Center's materials and the decisions (domain, host, PDFs, Cloudflare, mail provider, 2FA).

@@ -146,7 +146,7 @@
   .event__body { display: grid; gap: 0.3rem; min-inline-size: 0; }
   .date-block { display: grid; place-items: center; inline-size: 4rem; padding-block: 0.5rem; border-radius: var(--r-md); background: var(--brand-fill); color: var(--on-brand); line-height: 1.15; text-align: center; flex: none; }
   .date-block strong { font-size: var(--step-2); font-variant-numeric: tabular-nums; }
-  .date-block span { font-size: var(--step--2); font-weight: 600; opacity: 0.92; }
+  .date-block span { font-size: var(--step--2); font-weight: 600; /* no opacity: it dropped white on the dark-theme brand fill to 4.15:1 */ }
   .date-block--past { background: var(--surface-3); color: var(--text-2); }
 
   /* video tile */

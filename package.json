@@ -32,7 +32,8 @@
     "db:seed": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/seed.ts",
     "import:legacy": "node scripts/import-legacy.ts",
     "import:images": "node scripts/import-images.ts",
-    "knip": "knip --no-progress"
+    "knip": "knip --no-progress",
+    "manual:pdf": "node scripts/manual-pdf.mjs"
   },
   "keywords": [
     "hadhramout",

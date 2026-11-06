@@ -100,6 +100,19 @@ const eventFields: Field[] = [
   localizedText('moderator', L('مدير الجلسة', 'Moderator')),
   localizedText('venue', L('المكان', 'Venue')),
   localizedText('timeText', L('الوقت', 'Time')),
+  localizedText('supporters', L('الجهات الداعمة', 'Supporters'), {
+    admin: { description: L('الجهات الراعية أو الداعمة للفعالية، مفصولة بفواصل.', 'Sponsors or supporting bodies, separated by commas.') },
+  }),
+  {
+    name: 'attendance',
+    type: 'select',
+    label: L('طريقة الحضور', 'Attendance'),
+    options: [
+      { label: L('حضوري', 'In person'), value: 'onsite' },
+      { label: L('افتراضي (عن بُعد)', 'Virtual (online)'), value: 'virtual' },
+      { label: L('حضوري وافتراضي', 'In person and online'), value: 'hybrid' },
+    ],
+  },
   {
     type: 'row',
     fields: [

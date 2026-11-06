@@ -6,7 +6,7 @@ import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
-import { PriorityNav } from './client/PriorityNav.tsx';
+import { PriorityNav, type NavItem } from './client/PriorityNav.tsx';
 import { SearchToggle } from './client/SearchToggle.tsx';
 import { NewsletterForm } from './client/NewsletterForm.tsx';
 import type { SearchLabels } from './client/SearchBox.tsx';
@@ -14,25 +14,64 @@ import type { getSite, NavPageDoc } from '../lib/data.ts';
 
 type Site = Awaited<ReturnType<typeof getSite>>;
 
-/** Sections that stay visible in the header; everything else lives under "More" so nothing is crowded. */
-const PRIMARY = [
+/**
+ * Header menu, grouped as the Center proposed it (client report, 2025): About the Center · Media Center · Research & Studies ·
+ * Programs & Projects · Contact. Sections the Center still has to write (governance, digital platforms) are left out until they
+ * exist; editors can add pages to the bar or to "More" from the admin (navPlacement).
+ */
+const GROUPS = [
+  {
+    key: 'nav.group.about',
+    links: [
+      { key: 'nav.about', path: '/about' },
+      { key: 'nav.vision', path: '/vision-mission' },
+      { key: 'nav.goals', path: '/strategic-goals' },
+      { key: 'nav.organization', path: '/organization' },
+      { key: 'nav.decade', path: '/decade' },
+      { key: 'nav.partnerships', path: '/partnerships' },
+    ],
+  },
+  {
+    key: 'nav.group.media',
+    links: [
+      { key: 'nav.news', path: '/news' },
+      { key: 'nav.audio', path: '/audio' },
+      { key: 'nav.videos', path: '/videos' },
+    ],
+  },
+  {
+    key: 'nav.group.research',
+    links: [
+      { key: 'nav.articles', path: '/articles' },
+      { key: 'nav.topics', path: '/topics' },
+      { key: 'nav.authors', path: '/authors' },
+      { key: 'nav.timeline', path: '/timeline' },
+      { key: 'nav.submit', path: '/submit' },
+    ],
+  },
+  {
+    key: 'nav.group.programs',
+    links: [
+      { key: 'nav.events', path: '/events' },
+      { key: 'nav.forum', path: '/forum' },
+      { key: 'nav.magazines', path: '/magazines' },
+      { key: 'nav.books', path: '/books' },
+      { key: 'nav.future', path: '/future-plan' },
+      { key: 'nav.library', path: '/digital-library' },
+    ],
+  },
+] as const;
+
+/** Footer "explore" column: the content sections, flat (the header groups them). */
+const FOOTER_EXPLORE = [
   { key: 'nav.news', path: '/news' },
   { key: 'nav.articles', path: '/articles' },
   { key: 'nav.books', path: '/books' },
   { key: 'nav.magazines', path: '/magazines' },
   { key: 'nav.events', path: '/events' },
   { key: 'nav.videos', path: '/videos' },
-] as const;
-
-const SECONDARY = [
   { key: 'nav.topics', path: '/topics' },
   { key: 'nav.forum', path: '/forum' },
-  { key: 'nav.audio', path: '/audio' },
-  { key: 'nav.authors', path: '/authors' },
-  { key: 'nav.timeline', path: '/timeline' },
-  { key: 'nav.submit', path: '/submit' },
-  { key: 'nav.about', path: '/about' },
-  { key: 'nav.contact', path: '/contact' },
 ] as const;
 
 export interface LangOption {
@@ -75,15 +114,13 @@ export function Header({ ctx, site, langs, navPages = [] }: { ctx: Ctx; site: Si
     .filter((p) => p.navPlacement === 'dropdown')
     .map((p) => ({ href: href(`/${p.slug}`), label: p.navLabel || p.title }));
 
-  const primaryItems = [
-    ...PRIMARY.map((n) => ({ href: href(n.path), label: t(n.key) })),
+  const primaryItems: NavItem[] = [
+    ...GROUPS.map((g) => ({ label: t(g.key), children: g.links.map((l) => ({ href: href(l.path), label: t(l.key) })) })),
+    { href: href('/contact'), label: t('nav.contact') },
     ...primaryDynamic,
   ];
 
-  const moreItems = [
-    ...SECONDARY.map((n) => ({ href: href(n.path), label: t(n.key) })),
-    ...dropdownDynamic,
-  ];
+  const moreItems = dropdownDynamic;
 
   return (
     <header className="site-header">
@@ -158,7 +195,7 @@ export function Footer({ ctx, site, navPages = [] }: { ctx: Ctx; site: Site; nav
           <nav aria-label={t('footer.explore')}>
             <h3>{t('footer.explore')}</h3>
             <ul>
-              {[...PRIMARY, SECONDARY[0], SECONDARY[1]].map((n) => (
+              {FOOTER_EXPLORE.map((n) => (
                 <li key={n.path}><Link href={href(n.path)}>{t(n.key)}</Link></li>
               ))}
               <li><Link href={href('/audio')}>{t('nav.audio')}</Link></li>

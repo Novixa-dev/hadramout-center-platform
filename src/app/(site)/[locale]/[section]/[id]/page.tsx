@@ -11,6 +11,7 @@ import { appConfig } from '../../../../../lib/runtime-light.ts';
 import { withHeadingIds } from '../../../../../lib/html-utils.ts';
 import { localizeLegacyMedia } from '../../../../../lib/legacy-media.ts';
 import { formatHijri } from '../../../../../lib/dates.ts';
+import { googleCalendarUrl } from '../../../../../lib/ical.ts';
 import { readingMinutes } from '../../../../../lib/arabic.ts';
 import { htmlToText } from '../../../../../lib/sanitize.ts';
 import { bibKey, formatCitation, scholarMeta, toBibtex, toCslJson, toRis, type CiteSource } from '../../../../../lib/citations.ts';
@@ -176,6 +177,7 @@ export default async function DetailPage({ params }: Props) {
   const pdf = typeof doc.pdf === 'string' && doc.pdf ? localizeLegacyMedia(doc.pdf) : null;
   const isEvent = type === 'event' || type === 'forum';
   const eventDate = (doc.eventDate as string | undefined) ?? undefined;
+  const gcal = isEvent && eventDate ? googleCalendarUrl({ title: doc.title, start: eventDate, end: (doc.endDate as string | undefined) ?? null, location: typeof doc.venue === 'string' ? doc.venue : null, url }) : null;
   const tracks = (isEvent && Array.isArray(doc.tracks) ? doc.tracks : []) as { title: string; description?: string | null }[];
   const papers = (isEvent && Array.isArray(doc.papers) ? doc.papers : []) as { title: string; researcher: string; abstract?: string | null; fileUrl?: string | null; file?: { url?: string | null } | number | null }[];
   const source = citeSourceOf(type, doc, url, locale, t('book.noYear'));
@@ -249,6 +251,7 @@ export default async function DetailPage({ params }: Props) {
       ) : null}
       {type === 'book' ? <Link className="btn btn--gold" href={`${href('/contact')}?kind=book_request&book=${doc.id}&subject=${encodeURIComponent(t('contact.form.bookRequest', { title: doc.title }))}`}>{t('book.request')}</Link> : null}
       {isEvent && eventDate ? <a className="btn btn--primary" href={`/api/hc/ics/${section}/${doc.id}.ics?lang=${locale}`}><Icon name="calendar" /> {t('event.addToCalendar')}</a> : null}
+      {isEvent && gcal ? <a className="btn btn--ghost" href={gcal} target="_blank" rel="noopener noreferrer"><Icon name="calendar" /> {t('event.addToGoogle')}</a> : null}
       {pdf || type === 'book' || isEvent ? <span className="actions__sep" aria-hidden="true" /> : null}
       {canCite ? <CitePanel label={t('tools.cite')} title={t('cite.title')} note={t('cite.note')} copyLabel={t('tools.copy')} copiedLabel={t('tools.copied')} exportLabel={t('cite.export')} closeLabel={t('nav.close')} styles={styles} files={files} /> : null}
       <ShareMenu label={t('tools.share')} title={doc.title} url={url} copyLink={t('tools.copyLink')} copied={t('tools.copied')} closeLabel={t('nav.close')} targets={{ whatsapp: t('share.whatsapp'), telegram: t('share.telegram'), x: t('share.x'), facebook: t('share.facebook') }} />
@@ -423,6 +426,8 @@ export default async function DetailPage({ params }: Props) {
                   [t('event.chairs'), doc.chairs as string | undefined],
                   [t('meta.time'), doc.timeText as string | undefined],
                   [t('meta.venue'), doc.venue as string | undefined],
+                  [t('event.attendance'), typeof doc.attendance === 'string' ? t(`event.attendance.${doc.attendance}`) : undefined],
+                  [t('event.supporters'), doc.supporters as string | undefined],
                 ]}
               />
             ) : null}

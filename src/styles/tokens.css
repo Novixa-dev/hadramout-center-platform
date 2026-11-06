@@ -31,6 +31,7 @@
     --accent: light-dark(var(--gold-500), #e0b96a);
     --accent-text: light-dark(var(--gold-700), #e0b96a);
     --accent-soft: light-dark(var(--gold-50), #2b2616);
+    --header-tint: light-dark(color-mix(in srgb, var(--gold-200) 38%, transparent), transparent); /* client note: gold of the logo behind the light header, not flat white */
     --link: var(--brand);
     --focus: light-dark(#1a5fb4, #8ab4f8);
     --success: light-dark(#1e7a4a, #6fd39a);

@@ -850,6 +850,11 @@ export interface Event {
   moderator?: string | null;
   venue?: string | null;
   timeText?: string | null;
+  /**
+   * Sponsors or supporting bodies, separated by commas.
+   */
+  supporters?: string | null;
+  attendance?: ('onsite' | 'virtual' | 'hybrid') | null;
   eventDate?: string | null;
   endDate?: string | null;
   youtubeId?: string | null;
@@ -923,6 +928,11 @@ export interface ForumEvent {
   moderator?: string | null;
   venue?: string | null;
   timeText?: string | null;
+  /**
+   * Sponsors or supporting bodies, separated by commas.
+   */
+  supporters?: string | null;
+  attendance?: ('onsite' | 'virtual' | 'hybrid') | null;
   eventDate?: string | null;
   endDate?: string | null;
   youtubeId?: string | null;
@@ -1981,6 +1991,8 @@ export interface EventsSelect<T extends boolean = true> {
   moderator?: T;
   venue?: T;
   timeText?: T;
+  supporters?: T;
+  attendance?: T;
   eventDate?: T;
   endDate?: T;
   youtubeId?: T;
@@ -2030,6 +2042,8 @@ export interface ForumEventsSelect<T extends boolean = true> {
   moderator?: T;
   venue?: T;
   timeText?: T;
+  supporters?: T;
+  attendance?: T;
   eventDate?: T;
   endDate?: T;
   youtubeId?: T;

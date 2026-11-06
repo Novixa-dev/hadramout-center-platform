@@ -14,6 +14,8 @@ import * as migration_20261031_024246_add_partners_and_testimonials from './2026
 import * as migration_20261031_025843_add_author_honorific from './20261031_025843_add_author_honorific';
 import * as migration_20261031_070000_enhance_pages_schema from './20261031_070000_enhance_pages_schema';
 import * as migration_20261106_120000_split_author_honorifics from './20261106_120000_split_author_honorifics';
+import * as migration_20261106_130000_add_center_pages from './20261106_130000_add_center_pages';
+import * as migration_20261106_140000_add_event_supporters_attendance from './20261106_140000_add_event_supporters_attendance';
 
 export const migrations = [
   {
@@ -95,5 +97,15 @@ export const migrations = [
     up: migration_20261106_120000_split_author_honorifics.up,
     down: migration_20261106_120000_split_author_honorifics.down,
     name: '20261106_120000_split_author_honorifics'
+  },
+  {
+    up: migration_20261106_130000_add_center_pages.up,
+    down: migration_20261106_130000_add_center_pages.down,
+    name: '20261106_130000_add_center_pages'
+  },
+  {
+    up: migration_20261106_140000_add_event_supporters_attendance.up,
+    down: migration_20261106_140000_add_event_supporters_attendance.down,
+    name: '20261106_140000_add_event_supporters_attendance'
   },
 ];

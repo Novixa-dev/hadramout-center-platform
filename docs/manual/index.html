@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الدليل الشامل لمنصة مركز حضرموت</title>
+<style>
+@font-face { font-family: 'Plex AR'; font-weight: 400 500; src: url('../../public/fonts/plexui-ar-400-v2.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+0020-0040, U+005B-0060, U+007B-007E, U+00A0-00BF, U+2000-206F; }
+@font-face { font-family: 'Plex AR'; font-weight: 600 700; src: url('../../public/fonts/plexui-ar-600-v2.woff2') format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+0020-0040, U+005B-0060, U+007B-007E, U+00A0-00BF, U+2000-206F; }
+:root {
+  --green-900: #0e2a22; --green-800: #174438; --green-700: #1c5547; --green-600: #226a5a; --green-50: #eef7f4;
+  --gold-600: #a97f37; --gold-500: #c49952; --gold-300: #dbb775; --gold-100: #f4e8cf; --gold-50: #fbf6ec;
+  --ink: #1f2421; --ink-2: #3c423d; --muted: #5b5f58; --line: #e3dccd; --bg: #fffdf9; --card: #ffffff;
+  --warn: #7a5200; --danger: #b3261e; --ok: #1e7a4a;
+}
+* { box-sizing: border-box; }
+html { font-size: 17px; }
+body { margin: 0; background: #f4efe4; color: var(--ink); font-family: 'Plex AR', 'Segoe UI', Tahoma, sans-serif; line-height: 1.95; }
+.page { max-width: 62rem; margin: 0 auto; background: var(--bg); box-shadow: 0 0 40px rgba(14, 42, 34, .12); }
+.sheet { padding: 3.2rem 3.6rem; }
+a { color: var(--green-600); }
+code, pre, .ltr { font-family: Consolas, 'SFMono-Regular', Menlo, monospace; direction: ltr; unicode-bidi: isolate; }
+code { background: var(--gold-50); border: 1px solid var(--line); padding: .05rem .4rem; border-radius: 6px; font-size: .86em; }
+pre { background: var(--green-900); color: #e9efe8; padding: 1rem 1.2rem; border-radius: 12px; overflow-x: auto; font-size: .84rem; line-height: 1.7; text-align: left; border-inline-start: 5px solid var(--gold-500); }
+pre code { background: none; border: 0; padding: 0; color: inherit; }
+
+/* cover */
+.cover { min-height: 100vh; background: radial-gradient(circle at 78% 18%, rgba(196, 153, 82, .28), transparent 42%), linear-gradient(160deg, var(--green-800), var(--green-900)); color: #fff; padding: 4.5rem 3.6rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+.cover::after { content: ''; position: absolute; inset: 0; background-image: linear-gradient(45deg, rgba(255,255,255,.04) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.04) 75%), linear-gradient(45deg, rgba(255,255,255,.04) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.04) 75%); background-size: 46px 46px; background-position: 0 0, 23px 23px; pointer-events: none; }
+.cover > * { position: relative; z-index: 1; }
+.cover img { height: 5.6rem; width: auto; background: #fff; border-radius: 16px; padding: .7rem 1rem; }
+.cover .kicker { color: var(--gold-300); font-weight: 600; letter-spacing: .04em; margin: 0 0 .6rem; }
+.cover h1 { font-size: 3.1rem; line-height: 1.35; margin: 0 0 1rem; font-weight: 700; }
+.cover h1 em { font-style: normal; color: var(--gold-300); }
+.cover .lead { font-size: 1.25rem; max-width: 36rem; color: #dbe7e1; margin: 0; }
+.cover dl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 0; }
+.cover dl div { border-top: 2px solid var(--gold-500); padding-top: .6rem; }
+.cover dt { color: var(--gold-300); font-size: .8rem; }
+.cover dd { margin: 0; font-weight: 600; font-size: .95rem; }
+
+/* toc */
+.toc { columns: 2; column-gap: 3rem; margin: 1.5rem 0 0; padding: 0; list-style: none; counter-reset: t; }
+.toc li { counter-increment: t; break-inside: avoid; padding: .45rem 0; border-bottom: 1px dotted var(--line); }
+.toc li::before { content: counter(t, arabic-indic) '. '; color: var(--gold-600); font-weight: 700; }
+.toc a { text-decoration: none; color: var(--ink); }
+
+/* headings */
+h2 { font-size: 1.85rem; color: var(--green-700); margin: 0 0 1.2rem; padding-block-end: .6rem; border-bottom: 3px solid var(--gold-500); display: flex; gap: .8rem; align-items: baseline; }
+h2 .n { color: var(--gold-600); font-size: 1.2rem; font-weight: 700; background: var(--gold-50); border: 1px solid var(--gold-300); border-radius: 10px; padding: 0 .65rem; }
+h3 { font-size: 1.28rem; color: var(--green-800); margin: 2rem 0 .5rem; }
+h4 { font-size: 1.05rem; color: var(--gold-600); margin: 1.3rem 0 .3rem; }
+section { break-before: page; }
+p { margin: .5rem 0 .9rem; }
+ul, ol { padding-inline-start: 1.5rem; margin: .4rem 0 1rem; }
+li { margin: .25rem 0; }
+
+/* components */
+.callout { margin: 1.1rem 0; padding: .9rem 1.2rem; border-radius: 12px; border: 1px solid var(--line); border-inline-start: 6px solid var(--green-600); background: var(--green-50); }
+.callout.warn { border-inline-start-color: var(--gold-500); background: var(--gold-50); }
+.callout.danger { border-inline-start-color: var(--danger); background: #fdf1f0; }
+.callout b:first-child { display: block; margin-bottom: .1rem; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: .9rem; margin: 1.2rem 0; }
+.stat { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--gold-500); border-radius: 14px; padding: .9rem 1rem; text-align: center; }
+.stat strong { display: block; font-size: 1.9rem; color: var(--green-700); line-height: 1.3; font-variant-numeric: tabular-nums; }
+.stat span { font-size: .85rem; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0 1.4rem; font-size: .93rem; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+th { background: var(--green-700); color: #fff; padding: .55rem .8rem; text-align: start; font-weight: 600; }
+td { padding: .5rem .8rem; border-top: 1px solid var(--line); vertical-align: top; }
+tr:nth-child(even) td { background: #fbf9f4; }
+.tag { display: inline-block; padding: 0 .55rem; border-radius: 999px; font-size: .78rem; font-weight: 600; border: 1px solid transparent; }
+.tag.ok { background: #e4f4ea; color: var(--ok); border-color: #b9dfc7; }
+.tag.part { background: var(--gold-50); color: var(--warn); border-color: var(--gold-300); }
+.tag.wait { background: #eceff3; color: #43505e; border-color: #cfd6de; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.box { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: .8rem 1.1rem; }
+.box h4 { margin-top: .2rem; }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 1rem 0; }
+.flow span { background: var(--green-50); border: 1px solid var(--green-600); color: var(--green-800); border-radius: 10px; padding: .25rem .8rem; font-weight: 600; font-size: .9rem; }
+.flow i { color: var(--gold-600); font-style: normal; font-weight: 700; }
+footer.doc { padding: 1.5rem 3.6rem; border-top: 4px solid var(--gold-500); background: var(--green-900); color: #cfe0d8; font-size: .85rem; display: flex; justify-content: space-between; gap: 1rem; }
+
+@media screen and (max-width: 760px) {
+  html { font-size: 16px; } .sheet { padding: 1.6rem 1.1rem; } .cover { padding: 2rem 1.2rem; min-height: auto; gap: 3rem; }
+  .cover h1 { font-size: 2.1rem; } .cover dl, .stats, .grid2 { grid-template-columns: 1fr 1fr; } .toc { columns: 1; }
+  table { display: block; overflow-x: auto; } footer.doc { padding: 1rem 1.2rem; flex-direction: column; }
+}
+@media print {
+  @page { size: A4; margin: 15mm 14mm 17mm; }
+  @page :first { margin: 0; }
+  html { font-size: 15px; }
+  body { background: #fff; font-size: 10pt; line-height: 1.8; } .page { box-shadow: none; max-width: none; } .sheet { padding: 0; }
+  .cover { height: 297mm; min-height: 0; padding: 22mm 20mm; border-radius: 0; break-after: page; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .stat { padding: .45rem .6rem; } .stat strong { font-size: 1.45rem; } .callout { padding: .6rem .9rem; margin: .8rem 0; } h3 { margin-top: 1.3rem; }
+  .sheet:not(#s1) { padding-top: 0; }
+  th, .stat, .callout, .tag, pre, .cover, footer.doc, h2 .n { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  section { break-before: page; } h2, h3, h4 { break-after: avoid; } table, pre, .callout, .stat, .box { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; } footer.doc { padding: 4mm 6mm; border-radius: 8px; margin-top: 1rem; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ============ cover ============ -->
+<header class="cover">
+  <img src="../../public/brand/logo.svg" alt="شعار مركز حضرموت">
+  <div>
+    <p class="kicker">الدليل الشامل · الإصدار 2.0</p>
+    <h1>منصة <em>مركز حضرموت</em><br>للدراسات التاريخية والتوثيق والنشر</h1>
+    <p class="lead">كل ما يلزم لفهم المنصة وتشغيلها وإدارة محتواها وصيانتها وتطويرها: من الزائر إلى المحرر إلى المطوّر.</p>
+  </div>
+  <dl>
+    <div><dt>الموقع (نسخة المراجعة)</dt><dd class="ltr">hadramout-center.novixa.dev</dd></div>
+    <div><dt>التقنية</dt><dd class="ltr">Next.js 16 · Payload 3</dd></div>
+    <div><dt>تطوير</dt><dd>Novixa</dd></div>
+    <div><dt>تاريخ الدليل</dt><dd>6 نوفمبر 2026</dd></div>
+  </dl>
+</header>
+
+<div class="sheet">
+<h2 style="border:0">المحتويات</h2>
+<ol class="toc">
+  <li><a href="#s1">نظرة عامة والأرقام الرئيسية</a></li>
+  <li><a href="#s2">الموقع العام: ما يراه الزائر</a></li>
+  <li><a href="#s3">لوحة التحكم: ما يفعله الفريق</a></li>
+  <li><a href="#s4">دليل المحرر خطوة بخطوة</a></li>
+  <li><a href="#s5">اللغات والترجمة الآلية</a></li>
+  <li><a href="#s6">البيانات والمحتوى والـ seed</a></li>
+  <li><a href="#s7">التصميم وتجربة المستخدم</a></li>
+  <li><a href="#s8">محركات البحث ومشاركة الروابط</a></li>
+  <li><a href="#s9">الأمان والخصوصية</a></li>
+  <li><a href="#s10">البنية التقنية والمجلدات</a></li>
+  <li><a href="#s11">التشغيل: GitHub والنشر التلقائي والنسخ الاحتياطي</a></li>
+  <li><a href="#s12">الاختبارات والجودة</a></li>
+  <li><a href="#s13">ملاحظات العميل وما نُفِّذ</a></li>
+  <li><a href="#s14">استكشاف الأخطاء</a></li>
+  <li><a href="#s15">خارطة الطريق والأفكار</a></li>
+  <li><a href="#s16">فهرس الوثائق والمراجع</a></li>
+</ol>
+
+<div class="callout"><b>كيف تستعمل هذا الدليل؟</b>
+الأقسام 2–5 للفريق التحريري ومدير المركز. الأقسام 6–12 للمطوّرين ومسؤول الخادم. القسم 13 يلخص ما طلبه المركز وما تم. القسم 14 للطوارئ.</div>
+</div>
+
+<!-- ============ 1 ============ -->
+<section class="sheet" id="s1">
+<h2><span class="n">١</span> نظرة عامة والأرقام الرئيسية</h2>
+<p>منصة <strong>أرشيف رقمي ومعرفة مفتوحة</strong> لمركز حضرموت للدراسات التاريخية والتوثيق والنشر (المكلا، اليمن). الواجهة <strong>عربية أولاً</strong> وتُترجم تلقائياً إلى نحو <strong>90 لغة</strong> عند الطلب. حلّت محل موقع قديم، وتحمل كل محتواه بتحويلات دائمة تحفظ الروابط القديمة.</p>
+<div class="stats">
+  <div class="stat"><strong>1,454</strong><span>عنصراً منشوراً</span></div>
+  <div class="stat"><strong>909</strong><span>مقالة ودراسة</span></div>
+  <div class="stat"><strong>387</strong><span>خبراً</span></div>
+  <div class="stat"><strong>52</strong><span>كتاباً</span></div>
+  <div class="stat"><strong>40</strong><span>عدداً من المجلة</span></div>
+  <div class="stat"><strong>64</strong><span>مؤتمراً وندوة وفعالية منتدى</span></div>
+  <div class="stat"><strong>272</strong><span>كاتباً ومؤلفاً</span></div>
+  <div class="stat"><strong>61</strong><span>تصنيفاً</span></div>
+</div>
+<table>
+  <tr><th>البند</th><th>القيمة</th></tr>
+  <tr><td>العنوان الحالي</td><td class="ltr"><a href="https://hadramout-center.novixa.dev">https://hadramout-center.novixa.dev</a> · لوحة التحكم <code>/admin</code> · الصحة <code>/api/hc/health</code></td></tr>
+  <tr><td>الوضع</td><td><span class="tag part">نسخة معاينة</span> غير مفهرسة (<code>noindex</code>) مع شريط تنبيه، حتى يعتمد المركز الإطلاق</td></tr>
+  <tr><td>المستودع</td><td class="ltr">github.com/Novixa-dev/hadramout-center-platform (عام) · الفرع الرئيس <code>master</code></td></tr>
+  <tr><td>التقنية</td><td class="ltr">Next.js 16 · Payload CMS 3.92 · SQLite (libSQL) · TypeScript · Node 24</td></tr>
+  <tr><td>التحويلات القديمة</td><td>1,454 معرّفاً قديماً ← 1,603 فحصاً آلياً، 0 فشل</td></tr>
+  <tr><td>الأداء (مختبر)</td><td>Lighthouse: أداء 93 · TBT 79ms · CLS 0 · إمكانية الوصول 100</td></tr>
+</table>
+<div class="callout warn"><b>قاعدة لا تُكسر: لا اختلاق.</b>
+لا تُضاف معلومة مؤسسية أو رقم أو اسم لا يمكن تتبّعه إلى مصدر (الموقع القديم أو مواد المركز). ما يُجهل يُترك فارغاً.</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="sheet" id="s2">
+<h2><span class="n">٢</span> الموقع العام: ما يراه الزائر</h2>
+<h3>القائمة الرئيسية (مجمّعة كما طلب المركز)</h3>
+<table>
+  <tr><th>المدخل</th><th>يحوي</th></tr>
+  <tr><td><strong>عن المركز</strong></td><td>عن المركز · الرؤية والرسالة والقيم · الأهداف الاستراتيجية · الهيكل التنظيمي · عقد من المنجزات · العلاقات والتعاون المؤسسي</td></tr>
+  <tr><td><strong>المركز الإعلامي</strong></td><td>الأخبار · المكتبة السمعية · المرئيات</td></tr>
+  <tr><td><strong>أبحاث ودراسات</strong></td><td>المقالات والدراسات · المواضيع · الكتّاب · الخط الزمني · المساهمات والنشر</td></tr>
+  <tr><td><strong>البرامج والمشاريع</strong></td><td>المؤتمرات والندوات · منتدى عميد الوفاء · مجلة حضرموت · الكتب · الخطط 2026–2030 · مشروع الخزانة الحضرمية</td></tr>
+  <tr><td><strong>تواصل معنا</strong></td><td>نموذج وأرقام واتساب وعنوان المركز</td></tr>
+</table>
+<p>القائمة «تتسع تلقائياً»: ما لا يتسع في عرض الشاشة يدخل «المزيد». على الجوال تُعرض كمقاطع مرتبة في درج جانبي. للمحرر أن يضيف صفحة إلى الشريط أو «المزيد» من حقل <em>موضع الرابط</em> في الصفحة.</p>
+
+<h3>أبرز ميزات الزائر</h3>
+<div class="grid2">
+  <div class="box"><h4>البحث والتصفح</h4><ul>
+    <li>بحث نصي عربي ذكي (تطبيع الحروف والسوابق) مع اقتراحات فورية وسجل بحث.</li>
+    <li>فلاتر لكل قسم: الموضوع (شجرة)، الكاتب، السنة، الترتيب، وعرض شبكي/قائمة.</li>
+    <li>صفحات للكتّاب (272) وللمواضيع، وخط زمني تاريخي.</li>
+  </ul></div>
+  <div class="box"><h4>القراءة</h4><ul>
+    <li>مقالات بقياس قراءة مريح، فهرس محتويات، شريط تقدّم، وإعدادات الخط والعرض.</li>
+    <li>نسخ مع إسناد تلقائي للمصدر، وطباعة نظيفة.</li>
+    <li>استشهاد جاهز: APA وMLA وChicago وHarvard، وتصدير RIS وBibTeX وCSL-JSON.</li>
+  </ul></div>
+  <div class="box"><h4>حسابك دون تسجيل</h4><ul>
+    <li>«محفوظاتي»: حفظ المقالات في المتصفح (لا تُرسل لأي خادم).</li>
+    <li>قراءة المحفوظات <strong>دون اتصال</strong> (Service Worker محافظ).</li>
+    <li>تقييمات وآراء القرّاء بعد مراجعة المحرر.</li>
+  </ul></div>
+  <div class="box"><h4>البيانات المفتوحة</h4><ul>
+    <li>تصدير فهرس الكتب والمجلات CSV/JSON.</li>
+    <li>خلاصات RSS لكل لغة ولكل موضوع ولكل كاتب.</li>
+    <li>ملف iCal لكل فعالية، ورابط «أضف إلى تقويم جوجل».</li>
+  </ul></div>
+</div>
+<h3>الصفحات والمسارات</h3>
+<table>
+  <tr><th>المسار</th><th>الغرض</th></tr>
+  <tr><td class="ltr">/ar · /en · /{lang}</td><td>الرئيسية بكل لغة (العربية هي الافتراضية دائماً)</td></tr>
+  <tr><td class="ltr">/{lang}/news · articles · books · magazines · events · forum · videos · audio</td><td>القوائم والتفاصيل</td></tr>
+  <tr><td class="ltr">/{lang}/authors · topics · timeline · search · saved</td><td>التصفح والبحث والمحفوظات</td></tr>
+  <tr><td class="ltr">/{lang}/about · vision-mission · strategic-goals · organization · decade · future-plan · digital-library · partnerships</td><td>صفحات المركز</td></tr>
+  <tr><td class="ltr">/{lang}/contact · submit · privacy · terms · accessibility</td><td>التواصل والمساهمات والسياسات</td></tr>
+  <tr><td class="ltr">/feeds/{lang}/all.xml · /sitemap.xml · /robots.txt · /api/hc/catalog</td><td>الخلاصات والخريطة والفهرس المفتوح</td></tr>
+</table>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="sheet" id="s3">
+<h2><span class="n">٣</span> لوحة التحكم: ما يفعله الفريق</h2>
+<p>العنوان: <code>/admin</code>. اللوحة <strong>عربية افتراضياً</strong> (مع مبدّل إنجليزي)، بهوية المركز وألوانه.</p>
+<h3>الأدوار والصلاحيات</h3>
+<table>
+  <tr><th>الدور</th><th>يستطيع</th><th>لا يستطيع</th></tr>
+  <tr><td><strong>مدير</strong> <code>admin</code></td><td>كل شيء: المحتوى، المستخدمون وأدوارهم، إعدادات الموقع، الحذف</td><td>—</td></tr>
+  <tr><td><strong>محرر</strong> <code>editor</code></td><td>إنشاء وتعديل ونشر كل أنواع المحتوى والصفحات</td><td>إدارة المستخدمين، الحذف، إعدادات الموقع</td></tr>
+  <tr><td><strong>مراجع ترجمة</strong> <code>reviewer</code></td><td>تصحيح نصوص اللغات غير العربية فقط (تعديله محمي من الاستبدال الآلي)</td><td>تعديل الأصل العربي أو الحالة أو التواريخ</td></tr>
+</table>
+<p>الحماية: قفل الحساب 15 دقيقة بعد 5 محاولات خاطئة · جلسة 12 ساعة · كعكة <code>Secure</code> + <code>SameSite=Lax</code>.</p>
+<h3>الأقسام</h3>
+<div class="grid2">
+  <div class="box"><h4>المحتوى</h4><p>الأخبار · المقالات · الكتب · المجلات · المؤتمرات والندوات · منتدى عميد الوفاء · المرئيات · المكتبة السمعية · الإعلانات · شركاء النجاح · الآراء («قالوا عنا») · الكتّاب · التصنيفات.</p></div>
+  <div class="box"><h4>الصفحات</h4><p>منشئ صفحات بـ<strong>11 نوع كتلة</strong>، معاينة حية، حقول SEO وصورة المشاركة، وتحديد موضع الصفحة في القوائم (الرئيسية/المزيد/الفوتر).</p></div>
+  <div class="box"><h4>الذكاء والكتابة</h4><p>مساعد تدقيق عربي علمي (علامات الترقيم، الاقتباس العربي)، وتعبئة تحريرية بالذكاء الاصطناعي (ملخص، كلمات مفتاحية) عند ضبط مفتاح المزوّد.</p></div>
+  <div class="box"><h4>الترجمة</h4><p>قاموس المصطلحات، بلاغات أخطاء الترجمة، وحد استهلاك يومي يظهر في اللوحة.</p></div>
+</div>
+<h3>الصفحة الرئيسية للوحة</h3>
+<ul>
+  <li><strong>ما يحتاج انتباهك:</strong> مراجعات معلّقة، رسائل جديدة، مقالات بلا تصنيف، مسودات، آخر فعالية — كل رقم رابط إلى قائمة مصفّاة.</li>
+  <li><strong>حالة المحتوى:</strong> منشور/مسودة/مؤرشف لكل قسم، وزر «إضافة».</li>
+  <li><strong>آخر التعديلات</strong> و<strong>الترجمة اليوم</strong> واختصارات.</li>
+</ul>
+<div class="callout"><b>تقرير جودة التحرير</b>
+الأمر <code>npm run quality</code> يطبع قائمة عمل للمحررين: مقالات بلا تصنيف، كتب بلا ISBN، صور بلا نص بديل، <strong>كتّاب بأسماء غير صالحة</strong>، بحث بلا نتائج. لا يغيّر شيئاً ولا يخمّن.</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="sheet" id="s4">
+<h2><span class="n">٤</span> دليل المحرر خطوة بخطوة</h2>
+<div class="callout warn"><b>القاعدة الذهبية</b> أدخل المحتوى <strong>بالعربية فقط</strong>. النظام يترجمه لأي لغة يطلبها الزائر. لا تُدخل لغة أخرى يدوياً إلا لتصحيح ترجمة.</div>
+<h3>نشر خبر أو مقالة</h3>
+<ol>
+  <li>ادخل <code>/admin</code> ← القسم (الأخبار أو المقالات) ← «إنشاء جديد».</li>
+  <li>املأ: العنوان · الملخص · النص · الصورة · التاريخ · الكاتب · التصنيف (للمقالات).</li>
+  <li>اضبط <strong>الحالة</strong>: «مسودة» لا تظهر للزوار، «منشور» تظهر فوراً. الموصى به: المحرر يحفظ مسودة والمدير ينشر.</li>
+  <li>احفظ. تظهر في الموقع والبحث والخلاصات والخريطة تلقائياً.</li>
+</ol>
+<h3>إضافة مؤتمر أو ندوة أو محاضرة</h3>
+<ol>
+  <li>القسم «المؤتمرات والندوات» (أو «منتدى عميد الوفاء») ← إنشاء.</li>
+  <li>الحقول: العنوان · تاريخ البداية والنهاية · المكان · المتحدث · مدير الجلسة · <strong>الجهات الداعمة</strong> · <strong>طريقة الحضور</strong> (حضوري/افتراضي/كلاهما) · رابط الحضور · فيديو يوتيوب.</li>
+  <li><strong>المحاور</strong> و<strong>رؤساء الجلسات</strong> و<strong>الأوراق البحثية</strong> (عنوان، باحث، ملخص، ملف PDF).</li>
+  <li>تظهر في الصفحة أزرار «أضف إلى التقويم» (ملف iCal) و«أضف إلى تقويم جوجل» تلقائياً.</li>
+</ol>
+<h3>إضافة كتاب أو عدد</h3>
+<p>الكتب: الغلاف · المؤلفون · الناشر · الطبعة · ISBN · عدد الصفحات · رابط PDF. الأعداد: رقم العدد (فريد) · الغلاف · PDF · المحتويات. <strong>لا تُخمّن ISBN أو عدد الصفحات</strong>؛ اتركها فارغة إن لم تعرفها.</p>
+<h3>إنشاء صفحة جديدة</h3>
+<ol>
+  <li>«الصفحات» ← جديد ← العنوان والعنوان المختصر (slug) ← المحتوى بالكتل.</li>
+  <li>تبويب <em>موضع التنقل</em>: اختر «القائمة الرئيسية» أو «المزيد» أو أعمدة الفوتر.</li>
+  <li>تبويب <em>SEO</em>: عنوان ووصف وصورة المشاركة، و«عدم الفهرسة» عند الحاجة.</li>
+</ol>
+<h3>الإعلان العاجل</h3>
+<p>القسم «الإعلانات»: نص وصورة وتاريخ بدء وانتهاء. يظهر شريطاً أعلى الموقع ويختفي تلقائياً بعد الانتهاء.</p>
+<h3>الشركاء و«قالوا عنا»</h3>
+<p>لا يظهر شعار شريك قبل تحديد <strong>موافقة كتابية</strong> (<code>hasWrittenConsent</code>)، ولا يُنشر رأي دون إذن صاحبه.</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="sheet" id="s5">
+<h2><span class="n">٥</span> اللغات والترجمة الآلية</h2>
+<div class="flow"><span>زائر يختار لغة</span><i>←</i><span>يُترجم النص عند أول طلب</span><i>←</i><span>يُحفظ في قاعدة البيانات</span><i>←</i><span>يظهر فوراً لكل من يليه</span></div>
+<ul>
+  <li><strong>الأصل العربي دائماً.</strong> لا تُعتمد لغة المتصفح؛ العربية هي الافتراضية، والصفحات المترجمة موسومة بأنها ترجمة آلية.</li>
+  <li><strong>الفهرسة:</strong> العربية والإنجليزية فقط (<code>INDEXABLE_LANGS=ar,en</code>) لتفادي محتوى مترجم رديء في نتائج البحث.</li>
+  <li><strong>المزوّدات:</strong> <code>none</code> (لا ترجمة) · <code>mock</code> (تطوير) · <code>anthropic</code> · <code>google</code> · <code>libretranslate</code> · <code>cloudflare</code> (Workers AI، مجاني).</li>
+  <li><strong>الضوابط:</strong> حد يومي (<code>TRANSLATION_DAILY_CHAR_LIMIT</code>، افتراضي 2,000,000 حرف)، تزامن 2، لغة إنجليزية «متحمّسة» مسبقة.</li>
+  <li><strong>الجودة:</strong> قاموس مصطلحات يضمن ثبات أسماء الأعلام والمصطلحات، وتعديل المراجع اليدوي <strong>محمي</strong> من الاستبدال.</li>
+  <li><strong>الاتجاه:</strong> RTL/LTR تلقائياً حسب اللغة، والمقاطع العربية داخل صفحات أخرى موسومة <code>lang="ar"</code>.</li>
+</ul>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="sheet" id="s6">
+<h2><span class="n">٦</span> البيانات والمحتوى والـ seed</h2>
+<h3>من أين جاء المحتوى؟</h3>
+<p>لقطة من الموقع القديم محفوظة في <code>content/legacy-snapshot.json.gz</code> (1,454 عنصراً) تُحمَّل بالأمر <code>npm run db:seed</code>، ثم تُبنى فهارس البحث. الأمر آمن للتكرار: لا يستبدل ما عدّله المحررون.</p>
+<h3>ما يُنشئه الـ seed</h3>
+<table>
+  <tr><th>الكيان</th><th>العدد</th><th>الحالة</th></tr>
+  <tr><td>المقالات / الأخبار / الكتب / الأعداد / الفعاليات / المنتدى / المرئيات</td><td>909 / 387 / 52 / 40 / 53 / 11 / 2</td><td><span class="tag ok">مكتمل من المصدر</span></td></tr>
+  <tr><td>الكتّاب (مع الألقاب في حقل مستقل) والتصنيفات</td><td>272 / 61</td><td><span class="tag ok">مكتمل</span></td></tr>
+  <tr><td>الصفحات (عن المركز، الخصوصية، الشروط، الوصول، الشريك التقني، + 7 صفحات من كتاب المركز)</td><td>12</td><td><span class="tag ok">مكتمل</span></td></tr>
+  <tr><td>الخط الزمني التاريخي / قاموس المصطلحات</td><td>6 / 28</td><td><span class="tag part">أساسي — يحتاج مراجعة علمية</span></td></tr>
+  <tr><td>إعدادات الموقع: الاسم، العنوان، البريد، واتساب، 5 حسابات تواصل</td><td>1</td><td><span class="tag ok">مكتمل</span></td></tr>
+  <tr><td>الشركاء · الآراء · الإعلانات · المكتبة السمعية</td><td>0</td><td><span class="tag wait">فارغ عمداً (ينتظر مواد المركز)</span></td></tr>
+</table>
+<div class="callout danger"><b>لماذا بعض الكيانات فارغة؟</b>
+الشركاء يحتاجون موافقة كتابية على الشعار، والآراء تحتاج إذن أصحابها، والمكتبة السمعية بلا ملفات صوتية بعد. إدخال بيانات «تجريبية» يعرّض المركز لنشر معلومات غير حقيقية باسمه، فقرّرنا تركها فارغة وتوثيق المطلوب في <a href="../client/03-action-plan-and-tracking.md">خطة العمل</a>.</div>
+<h3>الترحيلات (migrations)</h3>
+<p>تغييرات بنية البيانات تُطبَّق تلقائياً عند بدء الخادم، بعد نسخة احتياطية إلزامية. آخر ثلاثة: <code>20261106_120000_split_author_honorifics</code> (فصل الألقاب ودمج مؤلفين مشطورين) · <code>20261106_130000_add_center_pages</code> (صفحات المركز) · <code>20261106_140000_add_event_supporters_attendance</code> (الداعمون وطريقة الحضور).</p>
+<pre><code>npm run payload migrate        # تطبيق الترحيلات
+npm run db:seed                # تحميل المحتوى + إنشاء المدير
+npm run db:seed -- --defaults-only   # الصفحات والإعدادات فقط</code></pre>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="sheet" id="s7">
+<h2><span class="n">٧</span> التصميم وتجربة المستخدم</h2>
+<table>
+  <tr><th>المجال</th><th>ما نُفِّذ</th></tr>
+  <tr><td>الهوية</td><td>أخضر المركز والذهبي من الشعار، خطوط IBM Plex Sans Arabic وNaskh مستضافة ذاتياً (لا طلبات خارجية)، زخارف هندسية خفيفة.</td></tr>
+  <tr><td>الثيمان</td><td>داكن (الافتراضي، يُرسَم من الخادم دون وميض) وفاتح بتدرج ذهبي خفيف خلف الرأس؛ مبدّل بنقرة، ويتذكر الاختيار؛ ووضع تباين عالٍ AAA لمن يفعّله.</td></tr>
+  <tr><td>الشاشات</td><td>اختُبر من 320px إلى 2560px بلا تمرير أفقي: جوال، لوحي، حاسوب، شاشات عريضة.</td></tr>
+  <tr><td>الحركة</td><td>انتقالات خفيفة تحترم «تقليل الحركة» في النظام.</td></tr>
+  <tr><td>إمكانية الوصول</td><td>WCAG 2.2 AA: لوحة مفاتيح كاملة، رابط تخطي، أهداف لمس 24px+، تباين مُختبَر آلياً (4.5:1)، <code>aria</code> للقوائم والفلاتر؛ فحص axe بلا مخالفات على 184 تحميلاً (جوال وحاسوب، لغتان، ثيمان).</td></tr>
+  <tr><td>النصوص المنطقية</td><td>خصائص CSS منطقية فقط (<code>inline-start</code> إلخ) فتنقلب الواجهة تلقائياً بين RTL وLTR.</td></tr>
+</table>
+<div class="callout"><b>قواعد التصميم</b> مرجعها <code>docs/02-plan/03-design-system.md</code> والرموز في <code>src/styles/tokens.css</code>. أي تعديل بصري يُفحص في الثيمين وبالعربية والإنجليزية وعلى الجوال.</div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="sheet" id="s8">
+<h2><span class="n">٨</span> محركات البحث ومشاركة الروابط</h2>
+<ul>
+  <li><strong>الإطلاق مقفل بمفتاح واحد:</strong> <code>SITE_ENV=production</code> هو الوحيد الذي يجعل الموقع قابلاً للفهرسة؛ غيابه = <code>noindex</code> + شريط معاينة + <code>robots.txt</code> بلا خريطة.</li>
+  <li>عنوان ووصف ورابط قانوني (canonical) وبدائل اللغات (hreflang مع <code>x-default</code>) لكل صفحة.</li>
+  <li><strong>بيانات منظمة JSON-LD:</strong> Organization · WebSite (مع SearchAction) · Article · Book · Event (فقط عند وجود تاريخ) · VideoObject · ProfilePage · BreadcrumbList.</li>
+  <li><strong>بطاقات المشاركة OG:</strong> 1200×630 تُرسَم عند الطلب بعنوان الصفحة؛ للمقالات المصوَّرة تُستعمل صورة المقال؛ للكتب غلاف الكتاب.</li>
+  <li><code>sitemap.xml</code> بلا <code>priority</code>/<code>changefreq</code> (يتجاهلهما جوجل) مع <code>lastmod</code> صحيح، وإشعار IndexNow عند الإنتاج.</li>
+</ul>
+<pre><code>node scripts/seo-audit.mjs https://hadramout-center.novixa.dev --expect staging   # 0 errors</code></pre>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="sheet" id="s9">
+<h2><span class="n">٩</span> الأمان والخصوصية</h2>
+<table>
+  <tr><th>الضابط</th><th>التفصيل</th></tr>
+  <tr><td>الرؤوس</td><td>HSTS مع preload · CSP صارم (<code>object-src 'none'</code>, <code>frame-ancestors 'none'</code>) · <code>nosniff</code> · Referrer-Policy · Permissions-Policy · COOP</td></tr>
+  <tr><td>واجهة <code>/api</code></td><td>قراءات محدودة (<code>limit≤100</code>, <code>depth≤2</code>) · GraphQL معطّل · تحديد معدّل للبحث والنماذج</td></tr>
+  <tr><td>الإدخال</td><td>تعقيم HTML للمحتوى · رفض SVG في الرفع · مسارات الملفات محروسة من التسلل</td></tr>
+  <tr><td>الحسابات</td><td>أدوار، قفل بعد محاولات فاشلة، جلسات قصيرة؛ <em>لم يُفعَّل بعد: التحقق بخطوتين (قرار المالك)</em></td></tr>
+  <tr><td>سلسلة التوريد</td><td>إجراءات GitHub مثبتة بـ SHA · صلاحيات دنيا · zizmor · CodeQL · Dependabot · فحص ثغرات حرجة · <code>overrides</code> للحزم المصابة (dompurify, fast-uri, happy-dom)</td></tr>
+  <tr><td>الخصوصية</td><td>لا كوكيز تتبّع ولا إعلانات؛ المحفوظات في المتصفح فقط؛ بيانات النماذج للرد فقط. <span class="ltr">Secret scanning + push protection</span> مفعّلان.</td></tr>
+</table>
+<div class="callout warn"><b>مستودع عام:</b> لا تُكتب كلمات مرور أو مفاتيح في أي ملف. بيانات الدخول في <code>docs/06-handover/CREDENTIALS.local.md</code> (مستثنى من git) وأسرار الخادم في GitHub Secrets.</div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="sheet" id="s10">
+<h2><span class="n">١٠</span> البنية التقنية والمجلدات</h2>
+<pre><code>src/app/(site)/[locale]/   صفحات الموقع العام
+src/app/(payload)/         لوحة Payload
+src/app/api/ · feeds/ · og/ · legacy/     واجهات وخلاصات وبطاقات وتحويلات
+src/collections/ · globals/              نماذج البيانات (Payload)
+src/components/ · components/client/     واجهة React (الخادم / العميل)
+src/lib/                    المنطق: بحث، SEO، JSON-LD، الاستشهاد، التواريخ...
+src/i18n/                   اللغات ومحرك الترجمة
+src/migrations/             ترحيلات قاعدة البيانات
+src/seed/ · content/        الـ seed ولقطة المحتوى
+src/styles/                 tokens · base · layout · components · pages · a11y
+messages/                   نصوص الواجهة (ar, en)
+scripts/                    اختبارات التشغيل والتدقيق والاستيراد
+deploy/                     docker-compose + سكربتات النشر والنسخ الاحتياطي
+docs/                       الوثائق (هذا الدليل منها)</code></pre>
+<div class="flow"><span>المتصفح</span><i>←</i><span>Cloudflare</span><i>←</i><span>nginx</span><i>←</i><span>حاوية Docker (Next + Payload)</span><i>←</i><span>SQLite + ملفات الوسائط</span></div>
+<p>قاعدتا بيانات: <code>payload.db</code> (المحتوى) و<code>extras.db</code> (فهرس البحث FTS وسجلات خفيفة). الوسائط القديمة في <code>legacy-media</code> وتدخل ضمن النسخ الاحتياطي.</p>
+<h3>أوامر يومية</h3>
+<pre><code>npm ci &amp;&amp; cp .env.example .env && npm run payload migrate && npm run db:seed &amp;&amp; npm run dev
+npm run check      # typecheck + lint + اختبارات الوحدة
+npm run knip       # ملفات وحزم وتصديرات غير مستخدمة
+npm run build &amp;&amp; npm run smoke    # بناء الإنتاج + فحص التشغيل (RUN_E2E=1 لمتصفح حقيقي)
+npm run quality    # تقرير جودة المحتوى</code></pre>
+<div class="callout warn"><b>فخاخ موثّقة:</b> البناء المحلي يتطلب <code>TRANSLATION_PROVIDER=none</code> · لا تجعل سكربتات <code>prepare/postinstall</code> تعتمد على ملفات المستودع (تُنفَّذ داخل Docker) · لا تلتقط كل الأخطاء كـ «غير موجود»: 404/403 فقط.</div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="sheet" id="s11">
+<h2><span class="n">١١</span> التشغيل: GitHub والنشر التلقائي والنسخ الاحتياطي</h2>
+<h3>مسار العمل</h3>
+<div class="flow"><span>تعديل محلي</span><i>←</i><span><code>npm run check</code> + بناء + smoke</span><i>←</i><span>commit (hook يفحص)</span><i>←</i><span>fast-forward إلى <code>master</code></span><i>←</i><span>CI + Deploy تلقائياً</span><i>←</i><span>فحص الموقع الحي</span></div>
+<p>قاعدة المالك: <strong>لا طلبات دمج لعمل الفريق</strong>؛ تُدفع الدفعات المختبرة مباشرة (fast-forward، لا force). تحديثات Dependabot تُدمج عبر GitHub بعد نجاح فحوصاتها.</p>
+<table>
+  <tr><th>Workflow</th><th>متى</th><th>ماذا يفعل</th></tr>
+  <tr><td><strong>CI</strong></td><td>كل push وPR</td><td>typecheck، lint، اختبارات، knip، خريطة الاستيراد، تهيئة قاعدة وseed، smoke + متصفح حقيقي + admin e2e، بناء صورة Docker، zizmor</td></tr>
+  <tr><td><strong>Deploy</strong></td><td>push إلى <code>master</code> أو يدوياً</td><td>فحص سريع ← بناء الصورة ← شحنها عبر SSH ← نسخة احتياطية ← تشغيل ← فحص صحة ← <strong>تراجع تلقائي عند الفشل</strong></td></tr>
+  <tr><td><strong>CodeQL</strong></td><td>أسبوعياً وعلى PR</td><td>تحليل أمني للشيفرة</td></tr>
+  <tr><td><strong>Lighthouse</strong></td><td>أسبوعياً/يدوي</td><td>وسيط 3 تشغيلات: أداء ≥ 80، TBT ≤ 600ms، CLS ≤ 0.1</td></tr>
+  <tr><td><strong>Live check</strong></td><td>يومياً</td><td>يفحص الموقع الحي ويفتح issue عند الفشل</td></tr>
+</table>
+<h3>التراجع والنسخ الاحتياطي</h3>
+<ul>
+  <li><strong>النسخة الاحتياطية قبل كل نشر</strong> (<code>backup.sh pre-deploy</code>) تشمل قاعدتي البيانات و<code>legacy-media</code>؛ فشلها يوقف النشر قبل لمس الموقع.</li>
+  <li>يُحتفظ بآخر <strong>3</strong> صور للتراجع. تراجع يدوي: Deploy ← Run workflow ← <code>tag=sha-xxxxxxx</code>.</li>
+  <li>يومياً بـcron: <code>15 3 * * * backup.sh daily</code>. الاستعادة: <code>scripts/restore.sh</code>. <em>نسخة خارج الخادم لم تُضبط بعد (قرار المالك).</em></li>
+</ul>
+<h3>الإطلاق والانتقال إلى نطاق جديد</h3>
+<ol>
+  <li>اعتماد المركز (البند CF-24 في خطة العميل) ثم تحديد المضيف والنطاق.</li>
+  <li>اتبع <code>docs/05-deploy/03-move-to-new-host-and-domain.md</code> (قوالب Caddy جاهزة).</li>
+  <li>اضبط <code>SITE_URL</code> و<code>SITE_ENV=production</code> وأعد إنشاء الحاوية: <code>docker compose up -d --force-recreate app</code>.</li>
+  <li>تحقق: <code>node scripts/cutover-check.mjs https://النطاق</code> (المضيف، الفهرسة، الخريطة، التحويلات، الرؤوس).</li>
+</ol>
+<h3>المتغيرات البيئية الأهم</h3>
+<table>
+  <tr><th>المتغير</th><th>الدور</th></tr>
+  <tr><td class="ltr">PAYLOAD_SECRET</td><td>سر الجلسات والتوقيع (إلزامي)</td></tr>
+  <tr><td class="ltr">DATABASE_URL · DATA_DIR · MEDIA_DIR</td><td>مواضع قاعدة البيانات والملفات</td></tr>
+  <tr><td class="ltr">SITE_URL · SITE_ENV</td><td>عنوان الموقع ووضع الفهرسة (<code>production</code> للإطلاق فقط)</td></tr>
+  <tr><td class="ltr">DEFAULT_LANG · ENABLED_LANGS · INDEXABLE_LANGS</td><td>اللغات</td></tr>
+  <tr><td class="ltr">TRANSLATION_PROVIDER + مفاتيح المزوّد</td><td>الترجمة الآلية</td></tr>
+  <tr><td class="ltr">ADMIN_EMAIL · ADMIN_PASSWORD</td><td>المدير الأول عند الـ seed</td></tr>
+</table>
+</section>
+
+<!-- ============ 12 ============ -->
+<section class="sheet" id="s12">
+<h2><span class="n">١٢</span> الاختبارات والجودة</h2>
+<div class="stats">
+  <div class="stat"><strong>236</strong><span>اختبار وحدة</span></div>
+  <div class="stat"><strong>80+</strong><span>فحص تشغيل (smoke)</span></div>
+  <div class="stat"><strong>55</strong><span>رحلة متصفح حقيقي</span></div>
+  <div class="stat"><strong>65</strong><span>فحص لوحة التحكم</span></div>
+  <div class="stat"><strong>1,603</strong><span>فحص تحويل قديم</span></div>
+  <div class="stat"><strong>77</strong><span>صفحة في مسح الخريطة</span></div>
+  <div class="stat"><strong>39</strong><span>فحص نشر (cutover)</span></div>
+  <div class="stat"><strong>0</strong><span>مخالفات axe (184 تحميلاً)</span></div>
+</div>
+<table>
+  <tr><th>الطبقة</th><th>الأمر</th></tr>
+  <tr><td>ثابت + وحدات</td><td class="ltr">npm run check</td></tr>
+  <tr><td>شيفرة ميتة</td><td class="ltr">npm run knip</td></tr>
+  <tr><td>تشغيل + SEO + تحويلات + متصفح</td><td class="ltr">DB_DIR=… RUN_E2E=1 npm run smoke</td></tr>
+  <tr><td>لوحة التحكم</td><td class="ltr">ADMIN_EMAIL=… ADMIN_PASSWORD=… node scripts/admin-e2e.mjs http://localhost:PORT</td></tr>
+  <tr><td>بعد كل نشر</td><td class="ltr">node scripts/cutover-check.mjs URL --expect staging · scripts/e2e.mjs URL · scripts/site-sweep.mjs URL</td></tr>
+  <tr><td>إمكانية الوصول</td><td class="ltr">npm run a11y · axe على مصفوفة (لغة × ثيم × حجم)</td></tr>
+</table>
+<p>الدليل التفصيلي: <code>docs/04-qa/02-test-runbook.md</code>. لا يُعلَن إنجاز دون مخرجات الفحص.</p>
+</section>
+
+<!-- ============ 13 ============ -->
+<section class="sheet" id="s13">
+<h2><span class="n">١٣</span> ملاحظات العميل وما نُفِّذ</h2>
+<p>وصل من المركز ملفان: <strong>تقرير ملاحظات</strong> (5 صفحات) وكتاب <strong>«عقد من المنجزات والتحديات»</strong> (190 صفحة). حُلّلا وطُوبقا مع المشروع في <code>docs/client/</code>.</p>
+<table>
+  <tr><th>الطلب</th><th>الحالة</th></tr>
+  <tr><td>قائمة رئيسية حسب هيكل المركز</td><td><span class="tag ok">نُفِّذ</span> 5 مداخل منسدلة</td></tr>
+  <tr><td>صفحات الهوية والأهداف والهيكل والمسار والخطط والخزانة والشراكات من الكتاب</td><td><span class="tag ok">نُفِّذ</span> 7 صفحات مصدرها الكتاب</td></tr>
+  <tr><td>خلفية بتدرج ذهبي في النهاري</td><td><span class="tag ok">نُفِّذ</span> على الرأس</td></tr>
+  <tr><td>حقول الفعاليات: الداعمون، حضوري/افتراضي</td><td><span class="tag ok">نُفِّذ</span> مع ترحيل</td></tr>
+  <tr><td>«أضف إلى تقويم جوجل»</td><td><span class="tag ok">نُفِّذ</span></td></tr>
+  <tr><td>الشعار ثلاثي الأبعاد</td><td><span class="tag wait">ينتظر الملف</span></td></tr>
+  <tr><td>الحوكمة، كلمة الرئيس، أسماء المجلس والفريق، سياسات النشر</td><td><span class="tag wait">ينتظر مواد المركز</span></td></tr>
+  <tr><td>بودكاست سقاية، شعارات الشركاء، قالوا عنا</td><td><span class="tag wait">ينتظر مواد وموافقات</span></td></tr>
+  <tr><td>سياسة تصنيف المقالات (142 بلا تصنيف)</td><td><span class="tag wait">ورشة تحريرية</span></td></tr>
+  <tr><td>المنصات الرقمية (عضويات، متجر، موسوعة، تبرعات)</td><td><span class="tag part">مرحلة 2</span></td></tr>
+</table>
+<div class="callout warn"><b>قبل الإطلاق:</b> يجب أن يراجع المركز كل رقم واسم وتاريخ نُقل من الكتاب (بند CF-24)؛ قُرئت الصفحات صورةً لا نصاً.</div>
+</section>
+
+<!-- ============ 14 ============ -->
+<section class="sheet" id="s14">
+<h2><span class="n">١٤</span> استكشاف الأخطاء</h2>
+<table>
+  <tr><th>العَرَض</th><th>السبب المحتمل ← العلاج</th></tr>
+  <tr><td>مئات أخطاء <code>Cannot find module 'next'</code></td><td><code>node_modules</code> تالفة ← <code>npm ci</code> (لا تُرسل نسخ الاسترداد).</td></tr>
+  <tr><td>البناء يرفض <code>TRANSLATION_PROVIDER=mock</code></td><td>وضع الإنتاج يمنعها ← ابنِ بـ <code>none</code>.</td></tr>
+  <tr><td>الصفحات تحمل مضيفاً أو وضع فهرسة قديماً بعد تغيير <code>SITE_URL</code></td><td>صفحات مخزنة وقت التشغيل ← <code>docker compose up -d --force-recreate app</code>.</td></tr>
+  <tr><td>502 لثوانٍ أثناء النشر</td><td>إعادة تشغيل الحاوية؛ يزول بعد نجاح فحص الصحة. إن استمر فراجع سجل Deploy.</td></tr>
+  <tr><td>فشل النشر</td><td>يتراجع تلقائياً. اقرأ سجل <em>Deploy</em> ثم <code>docker logs</code> على الخادم.</td></tr>
+  <tr><td>حساب مقفل</td><td>انتظر 15 دقيقة أو اطلب من المدير «فتح القفل».</td></tr>
+  <tr><td>بطاقة مشاركة بلا نص محلياً (Windows)</td><td>حدّ في مكتبة الصور على Windows؛ تعمل على Linux/Docker وفي CI.</td></tr>
+  <tr><td>انقطاع <code>ECONNRESET</code> عابر في smoke محلي</td><td>يعاد التشغيل؛ مرجع الحقيقة هو CI على Linux.</td></tr>
+  <tr><td>رسالة «غير موجود» لصفحة جديدة</td><td>تأكد أن حالتها «منشور» وأن الـ slug كما في الرابط.</td></tr>
+</table>
+</section>
+
+<!-- ============ 15 ============ -->
+<section class="sheet" id="s15">
+<h2><span class="n">١٥</span> خارطة الطريق والأفكار</h2>
+<h3>قبل الإطلاق (بوابات)</h3>
+<ol>
+  <li>اجتماع العميل وتسليم المواد (CF-04…CF-18) واعتماد الأرقام (CF-24).</li>
+  <li>قرارات المالك: نطاق واستضافة، مزوّد ترجمة، Cloudflare، التحقق بخطوتين، نسخ خارج الخادم، مزوّد بريد.</li>
+  <li>مراجعة يدوية بقارئ شاشة ولوحة مفاتيح، وبروفة استعادة النسخ الاحتياطي على المضيف الجديد.</li>
+</ol>
+<h3>بعد الإطلاق</h3>
+<ul>
+  <li>Search Console وقياس Core Web Vitals الميدانية، وتقرير الجودة أسبوعياً.</li>
+  <li>مرحلة 2: العضويات، المتجر، الموسوعة الحضرمية، التبرعات والتطوع، منصة حضرموت الثقافية.</li>
+  <li>نشر بلا انقطاع (حاويتان وتبديل)، ودمج تلقائي لتحديثات Dependabot البسيطة.</li>
+  <li>نصوص بديلة للصور (4,004 صورة) بمساعدة اقتراح آلي يراجعه محرر.</li>
+  <li>رابط «أضف إلى تقويم جوجل» للإعلانات، وصفحة أرشيف للإعلانات، ونوع «محاضرة/ندوة/مؤتمر» كحقل مستقل مع فلتر.</li>
+</ul>
+<p>القائمة الكاملة بالأولويات: <code>docs/planning/IDEAS_AND_ROADMAP.md</code>.</p>
+</section>
+
+<!-- ============ 16 ============ -->
+<section class="sheet" id="s16">
+<h2><span class="n">١٦</span> فهرس الوثائق والمراجع</h2>
+<table>
+  <tr><th>أريد أن…</th><th>اقرأ</th></tr>
+  <tr><td>أبدأ من أين؟</td><td><code>README.md</code> ثم <code>docs/00-INDEX.md</code></td></tr>
+  <tr><td>أعرف أين وصل العمل</td><td><code>docs/planning/PROGRESS.md</code></td></tr>
+  <tr><td>أفهم ملفات العميل</td><td><code>docs/client/</code></td></tr>
+  <tr><td>أدير المحتوى</td><td><code>docs/06-handover/admin-guide-ar.md</code> و<code>translation-guide-ar.md</code></td></tr>
+  <tr><td>أعرف الحسابات والأدوار</td><td><code>docs/06-handover/ACCESS_AND_ACCOUNTS.md</code></td></tr>
+  <tr><td>أنشر أو أنقل المنصة</td><td><code>docs/05-deploy/</code></td></tr>
+  <tr><td>أختبر</td><td><code>docs/04-qa/02-test-runbook.md</code></td></tr>
+  <tr><td>أفهم التصميم والمعمارية</td><td><code>docs/02-plan/03-design-system.md</code> · <code>docs/architecture/</code></td></tr>
+  <tr><td>أراجع الأمان</td><td><code>docs/security/SECURITY_REVIEW.md</code></td></tr>
+  <tr><td>أرى الأفكار والمهام</td><td><code>docs/planning/IDEAS_AND_ROADMAP.md</code> · <code>BACKLOG.md</code> · <code>ROADMAP.md</code></td></tr>
+  <tr><td>أسلّم المشروع</td><td><code>docs/06-handover/HANDOVER.md</code></td></tr>
+</table>
+<p style="color: var(--muted); font-size: .9rem">هذا الدليل مصدره <code>docs/manual/index.html</code> ويُصدَّر إلى PDF بالأمر <code>npm run manual:pdf</code>. تعديل المنصة يستلزم تحديثه.</p>
+</section>
+
+<footer class="doc">
+  <span>مركز حضرموت للدراسات التاريخية والتوثيق والنشر · المكلا، اليمن</span>
+  <span>تطوير Novixa · الدليل الشامل 2.0 · 2026-11-06</span>
+</footer>
+</div>
+</body>
+</html>

@@ -60,3 +60,25 @@ export function generateIcs(event: CalendarEvent): string {
 
   return lines.join('\r\n') + '\r\n';
 }
+
+/** "20261115" for a calendar date given as "2026-11-15" or an ISO timestamp (the date part is used; no timezone shifting). */
+const compactDate = (d: string): string => d.slice(0, 10).replace(/-/g, '');
+const nextDay = (d: string): string => {
+  const t = new Date(`${d.slice(0, 10)}T00:00:00Z`);
+  t.setUTCDate(t.getUTCDate() + 1);
+  return t.toISOString().slice(0, 10).replace(/-/g, '');
+};
+
+/**
+ * "Add to Google Calendar" link for an all-day (date-only) event: the Center publishes event dates, not times.
+ * Google's all-day range is end-exclusive, so the last day is passed as the day after. Returns null for an invalid start date.
+ */
+export function googleCalendarUrl(e: { title: string; start: string; end?: string | null; location?: string | null; url?: string | null; details?: string | null }): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}/.test(e.start)) return null;
+  const last = e.end && /^\d{4}-\d{2}-\d{2}/.test(e.end) && e.end.slice(0, 10) >= e.start.slice(0, 10) ? e.end : e.start;
+  const q = new URLSearchParams({ action: 'TEMPLATE', text: e.title, dates: `${compactDate(e.start)}/${nextDay(last)}` });
+  const details = [e.details, e.url].filter(Boolean).join('\n\n');
+  if (details) q.set('details', details);
+  if (e.location) q.set('location', e.location);
+  return `https://calendar.google.com/calendar/render?${q.toString()}`;
+}

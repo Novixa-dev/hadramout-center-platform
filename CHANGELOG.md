@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.16.0] - 2026-11-06
+### Client feedback applied, author data fixed, WCAG audit fixes, docs rebuilt
+- **Header menu grouped as the Center proposed** (client report): About the Center · Media Center · Research & Studies · Programs & Projects · Contact. Dropdowns are disclosure buttons (Esc, outside click, keyboard); overflow still folds into "More"; the phone drawer shows the same groups as sections. Sections without material (governance, digital platforms) are left out until they exist.
+- **Seven institutional pages from the Center's tenth-anniversary book** (vision, mission and values; strategic goals; organisation; a decade of achievements; 2026–2030 plan; Hadrami Digital Library; partnerships): `src/seed/center-pages.ts`, added to existing databases by migration `20261106_130000_add_center_pages`. Figures are read from printed pages and need the Center's confirmation (CF-24).
+- **Events:** new fields *supporters* and *attendance* (in person / virtual / both) with migration `20261106_140000`; "Add to Google Calendar" next to the .ics button (`googleCalendarUrl`, unit-tested).
+- **Light theme:** a faint gold tint behind the header (client request) — contrast tests unchanged.
+- **Fixed — author titles:** migration `20261106_120000_split_author_honorifics` moves titles into `honorific` and merges authors cut in two by the legacy import (159 "أ.م.د", 78 "الشيخ"); the seeder uses the same rules (`src/lib/author-names.ts`), so a fresh seed equals the live database (272 authors, 88 titles).
+- **Accessibility (axe, 184 page loads: 2 viewports × 2 themes × 2 languages):** warning-badge contrast, 24 px radio targets, sub-topic link overlap, author links distinguishable without colour, topic facet without a control inside `<summary>`.
+- **Dependencies:** Payload 3.92.1, tiptap 3.32.1, typescript-eslint 8.72.1, sass 1.107.1, puppeteer-core 25.16.0; `happy-dom` 21.0.4 via `overrides` (two high advisories).
+- **Quality report:** new "Authors" section (names that are only a title or not a person).
+- **Docs:** `docs/client/` (analysis, book digest, action plan), `docs/manual/` (designed Arabic manual + PDF, `npm run manual:pdf`), `HANDOVER.md`, `IDEAS_AND_ROADMAP.md`; README and index rewritten.
+
 ## [5.15.0] - 2026-10-29
 ### Supply chain and CI hardening, smaller build
 - **CI workflows hardened** (zizmor: 33 findings → 0): every action pinned to a full commit SHA (Dependabot keeps them current); `permissions: contents: read` on CI and Lighthouse; `persist-credentials: false` on every checkout; the deploy's rollback `tag` and `with_tools` inputs and Lighthouse's `desktop` input go through the environment instead of being expanded into shell (template injection), and a rollback tag must match `sha-<hex>`.

@@ -4,10 +4,14 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from
 import { usePathname } from 'next/navigation';
 import { Icon } from '../Icon.tsx';
 
-interface Item {
+interface Link1 {
   href: string;
   label: string;
 }
+/** A top-level entry is a plain link or a labelled group of links (a dropdown). */
+export type NavItem = Link1 | { label: string; children: Link1[] };
+const isGroup = (i: NavItem): i is { label: string; children: Link1[] } => 'children' in i;
+const keyOf = (i: NavItem) => (isGroup(i) ? `g:${i.label}` : i.href);
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const isCurrent = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -17,12 +21,13 @@ const isCurrent = (pathname: string, href: string) => pathname === href || pathn
  * "More" menu together with the secondary links (priority+ pattern). The server renders every primary link in the bar, so
  * the page is usable before hydration; the bar clips (never overlaps) until the measurement runs.
  */
-export function PriorityNav({ items, more, moreLabel }: { items: Item[]; more: Item[]; moreLabel: string }) {
+export function PriorityNav({ items, more, moreLabel }: { items: NavItem[]; more: Link1[]; moreLabel: string }) {
   const pathname = usePathname();
   const nav = useRef<HTMLUListElement>(null);
   const moreRef = useRef<HTMLLIElement>(null);
   const [shown, setShown] = useState(items.length);
-  const [open, setOpen] = useState(false);
+  /** the dropdown that is open: "more", a group key, or none */
+  const [open, setOpen] = useState<string | null>(null);
   const menuId = useId();
 
   const measure = useCallback(() => {
@@ -53,14 +58,15 @@ export function PriorityNav({ items, more, moreLabel }: { items: Item[]; more: I
     return () => ro.disconnect();
   }, [measure, items]);
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => setOpen(null), [pathname]);
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: MouseEvent) => !moreRef.current?.contains(e.target as Node) && setOpen(false);
+    const onDown = (e: MouseEvent) => !(e.target as HTMLElement).closest('[data-dropdown]') && setOpen(null);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setOpen(false);
-        moreRef.current?.querySelector('button')?.focus();
+        const trigger = nav.current?.querySelector<HTMLElement>('[data-dropdown] > button[aria-expanded="true"]');
+        setOpen(null);
+        trigger?.focus();
       }
     };
     document.addEventListener('mousedown', onDown);
@@ -72,33 +78,73 @@ export function PriorityNav({ items, more, moreLabel }: { items: Item[]; more: I
   }, [open]);
 
   const overflow = items.slice(shown);
-  const menu = [...overflow, ...more];
-  const active = menu.some((i) => isCurrent(pathname, i.href));
+  const menu: NavItem[] = [...overflow, ...more];
+  const flat = (n: NavItem): Link1[] => (isGroup(n) ? n.children : [n]);
+  const active = menu.some((n) => flat(n).some((i) => isCurrent(pathname, i.href)));
 
   return (
     <ul className="nav__list" ref={nav}>
-      {items.map((i, idx) => (
+      {items.map((i, idx) => {
         // links that do not fit stay in the DOM (so they can be re-measured) but out of flow, sight and tab order
-        <li key={i.href} data-prio style={idx >= shown ? { position: 'absolute', visibility: 'hidden', pointerEvents: 'none' } : undefined}>
-          <Link className="nav__link" href={i.href} aria-current={isCurrent(pathname, i.href) ? 'page' : undefined}>
-            {i.label}
-          </Link>
-        </li>
-      ))}
+        const hidden = idx >= shown ? ({ position: 'absolute', visibility: 'hidden', pointerEvents: 'none' } as const) : undefined;
+        if (!isGroup(i)) {
+          return (
+            <li key={keyOf(i)} data-prio style={hidden}>
+              <Link className="nav__link" href={i.href} aria-current={isCurrent(pathname, i.href) ? 'page' : undefined}>
+                {i.label}
+              </Link>
+            </li>
+          );
+        }
+        const id = keyOf(i);
+        const current = i.children.some((c) => isCurrent(pathname, c.href));
+        return (
+          <li key={id} data-prio data-dropdown className="nav-group" style={hidden}>
+            <button type="button" className="nav__link nav-more__btn" aria-expanded={open === id} aria-controls={`${menuId}-${idx}`} onClick={() => setOpen(open === id ? null : id)} data-current={current ? 'true' : undefined} tabIndex={hidden ? -1 : undefined}>
+              {i.label}
+              <Icon name="down" className="icon nav-more__chev" />
+            </button>
+            <ul id={`${menuId}-${idx}`} className="nav-more__menu nav-group__menu" hidden={open !== id}>
+              {i.children.map((c) => (
+                <li key={c.href}>
+                  <Link href={c.href} aria-current={isCurrent(pathname, c.href) ? 'page' : undefined}>
+                    {c.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+        );
+      })}
       {menu.length ? (
-        <li className="nav-more" ref={moreRef}>
-          <button type="button" className="nav__link nav-more__btn" aria-expanded={open} aria-controls={menuId} onClick={() => setOpen((v) => !v)} data-current={active ? 'true' : undefined}>
+        <li className="nav-more" data-dropdown ref={moreRef}>
+          <button type="button" className="nav__link nav-more__btn" aria-expanded={open === 'more'} aria-controls={menuId} onClick={() => setOpen(open === 'more' ? null : 'more')} data-current={active ? 'true' : undefined}>
             {moreLabel}
             <Icon name="down" className="icon nav-more__chev" />
           </button>
-          <ul id={menuId} className="nav-more__menu" hidden={!open}>
-            {menu.map((i) => (
-              <li key={i.href}>
-                <Link href={i.href} aria-current={isCurrent(pathname, i.href) ? 'page' : undefined}>
-                  {i.label}
-                </Link>
-              </li>
-            ))}
+          <ul id={menuId} className="nav-more__menu" hidden={open !== 'more'}>
+            {menu.flatMap((n) =>
+              isGroup(n)
+                ? [
+                    <li key={`h:${n.label}`} className="nav-more__head" role="presentation">
+                      {n.label}
+                    </li>,
+                    ...n.children.map((c) => (
+                      <li key={c.href}>
+                        <Link href={c.href} aria-current={isCurrent(pathname, c.href) ? 'page' : undefined}>
+                          {c.label}
+                        </Link>
+                      </li>
+                    )),
+                  ]
+                : [
+                    <li key={n.href}>
+                      <Link href={n.href} aria-current={isCurrent(pathname, n.href) ? 'page' : undefined}>
+                        {n.label}
+                      </Link>
+                    </li>,
+                  ],
+            )}
           </ul>
         </li>
       ) : null}

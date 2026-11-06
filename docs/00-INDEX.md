@@ -4,6 +4,7 @@
 
 | المجلد | المحتوى |
 |---|---|
+| **ابدأ هنا (2026-11-06)** | [`manual/index.html`](manual/index.html) الدليل الشامل المصمَّم (+ `manual-ar.pdf`) · [`06-handover/HANDOVER.md`](06-handover/HANDOVER.md) وثيقة التسليم · [`client/`](client/README.md) تحليل ملفات العميل وخطة العمل (CF-01…CF-24) · [`planning/IDEAS_AND_ROADMAP.md`](planning/IDEAS_AND_ROADMAP.md) الأفكار مرتبة بالأولوية |
 | `01-audit` | تدقيق المستودع القديم والموقع القديم وأفضل الممارسات |
 | `02-plan` | قرار الإطار، الخطة الرئيسية، المعمارية، نظام التصميم، **الترجمة**، كتالوج الميزات، نموذج المحتوى، القرارات |
 | `03-tracking` | `TRACKER.md` — الحالة الحالية والمتبقي |
@@ -21,6 +22,7 @@
 | `planning`, `reports` | `planning/PROGRESS.md` نقطة المتابعة · `planning/ROADMAP.md` خارطة الطريق · `planning/BACKLOG.md` سجل المهام · `planning/FEATURE_PLAN.md` خطة الميزات ووعودنا · `planning/NEXT_PLAN.md` الخطة القادمة مرتبة بالأولوية · `research/PARITY_AND_PEER_REVIEW_2026-10-24.md` مطابقة الموقع القديم ومقارنة المواقع المشابهة · `reports/BASELINE_REPORT.md` خط الأساس · `reports/RELEASE_READINESS.md` جاهزية الإطلاق |
 | **خطة التحديث** | `planning/MODERNIZATION_PLAN.md`: الحركة والتحميل، التنقل والبحث، SEO وبطاقات المشاركة، حسابات القرّاء وأدوات فريق المركز، الميزات الجديدة، وست دفعات عمل بمعايير قبول |
 | **ابدأ هنا (2026-10-28)** | `reports/REVIEW_2026-10-28_ADMIN.md` مراجعة لوحة التحكم والحسابات والأمان · `reports/REVIEW_2026-10-27.md` آخر مراجعة شاملة للموقع والحكم على الجاهزية · `reports/RELEASE_READINESS.md` · `06-handover/ACCESS_AND_ACCOUNTS.md` الحسابات والأدوار وأين كلمات المرور (بلا أسرار — المستودع عام) · `04-qa/02-test-runbook.md` كل مستويات الاختبار وأوامرها |
+| `archive` | `v1/` وثائق النسخة الأولى · `PROFESSIONAL_AUDIT_AND_UPGRADE_PROMPT.md` (تعليمة التدقيق الأصلية) — مراجع تاريخية لا يُعتمد عليها |
 | `archive/v1` | وثائق النسخة الأولى (مرجع تاريخي — لا يُعتمد عليها) |
 
 ## أوامر أساسية
