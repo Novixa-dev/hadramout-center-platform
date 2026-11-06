@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-10-28 · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
+**Last updated:** 2026-11-06 · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -120,6 +120,18 @@ Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0
 | Workflows: actions pinned to SHAs, least-privilege permissions, no persisted checkout tokens, inputs via env (template injection in the rollback tag), zizmor job + CodeQL + critical `npm audit` gate (SEC-015, OPS-3) | zizmor 33 → 0, actionlint and shellcheck clean |
 | CodeQL first scan, 24 alerts: 4 real defects fixed in runtime code (entity decoding order, sitemap attribute quotes, one BibTeX escaper, language-tag path guard); 13 triaged for dismissal (SEC-016). undici 8.12.3, Anthropic SDK 1.3.0. Repository: secret scanning + push protection, Dependabot alerts/security updates, private vulnerability reporting, `master` protected from force-push/deletion | CodeQL: 0 open in runtime code; live `sha-0f62a46`: cutover 39/0, SEO 0/0, sweep 77/0, e2e 56/56, admin read-only 14/14; Lighthouse CI median mobile 90–94 / desktop 100, a11y 97–100, SEO 100 |
 | `dompurify` (critical) and `fast-uri` via overrides; Node floor 24.22.1 and newest Node 24 in CI; Turbopack whole-project tracing removed (standalone 199 → 158 MB) | `npm audit --omit=dev`: 0 critical; build has 0 warnings; check 181/181, smoke 80/0, e2e 55/55, admin-e2e 65/65 |
+
+## 2026-11-06 — repository sync, dependency batch, multi-matrix audit, author-data fix
+
+| Change | Evidence |
+|---|---|
+| Repository state verified: every `claude/*` branch equals `master`; Dependabot #48 (Payload 3.92.1), #49 (tiptap), #51, #52, #53 (lint/types, puppeteer, sass) merged via GitHub after their CI was green; each push deployed | `gh pr list`, Deploy runs green |
+| Browser audit of the live site: 366 page loads (23 pages × ar/en × light/dark × 390/820/1440/2560 px) with axe (WCAG 2.2 AA + best practice), console, network, overflow, `dir`/`lang`, broken images | `.smoke-data/audit/audit.mjs` (scratch). 502s seen were the container restart window of a deploy running at the same time |
+| A11y fixes: warning badge contrast (new `--warning-text`, 5.9:1), 24 px radio targets, sub-topic links no longer overlap, author index links underlined faintly (WCAG 1.4.1), topic facet no longer puts a radio inside `<summary>` (group = disclosure, "All in X" first inside it) | axe re-run on a local build |
+| **Author titles** — the hand-run clean-up never reached the live database, and its fix for author 159 would have listed one person twice. New migration `20261106_120000_split_author_honorifics` (idempotent): titles → `honorific`, bare-title authors cut off by the legacy import (159 "أ.م.د", 78 "الشيخ") merged into the person who follows them. Same rules in `src/lib/author-names.ts`, used by the seeder, so a fresh seed gives the same 272 authors / 88 titles | unit tests (20), migration run on a seeded copy, fresh seed compared |
+| Quality report: new "Authors" section lists names that are only a title or not a person (78/129/254/264 → editors decide; nothing is guessed) | `npm run quality` |
+
+Known, not fixed: 4,004 images in article bodies have no alt text (editorial work list in the quality report); a deploy restarts the container, so there is a short 502 window (a zero-downtime swap is an infrastructure task); local Windows smoke can hit a one-off `ECONNRESET` in the redirect matrix (passes alone, Linux CI is the reference).
 
 ## Next actionable tasks (in order)
 

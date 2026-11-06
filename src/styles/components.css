@@ -43,7 +43,7 @@
   a.kicker:hover { color: var(--brand); text-decoration: underline; }
   .badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.1rem 0.55rem; border-radius: var(--r-sm); font-size: var(--step--2); font-weight: 700; background: var(--accent-soft); color: var(--accent-text); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
   .badge--ok { background: color-mix(in srgb, var(--success) 12%, var(--surface)); color: var(--success); border-color: color-mix(in srgb, var(--success) 35%, transparent); }
-  .badge--warn { background: color-mix(in srgb, var(--warning) 12%, var(--surface)); color: var(--warning); border-color: color-mix(in srgb, var(--warning) 40%, transparent); }
+  .badge--warn { background: color-mix(in srgb, var(--warning) 12%, var(--surface)); color: var(--warning-text); border-color: color-mix(in srgb, var(--warning) 40%, transparent); }
   .badge .icon { inline-size: 0.9rem; block-size: 0.9rem; }
   .eyebrow { color: var(--accent-text); font-weight: 700; font-size: var(--step--1); }
 
@@ -67,7 +67,7 @@
   .notice--ok { background: color-mix(in srgb, var(--success) 12%, var(--surface)); border-color: color-mix(in srgb, var(--success) 40%, transparent); }
   .notice--err { background: color-mix(in srgb, var(--danger) 10%, var(--surface)); border-color: var(--danger); }
   .check { display: flex; align-items: center; gap: 0.6rem; min-block-size: 2.5rem; cursor: pointer; font-size: var(--step--1); }
-  .check input { inline-size: 1.15rem; block-size: 1.15rem; accent-color: var(--brand-fill); flex: none; }
+  .check input { inline-size: 1.5rem; block-size: 1.5rem; /* 24px: WCAG 2.5.8 minimum target */ accent-color: var(--brand-fill); flex: none; }
   .check span.count { margin-inline-start: auto; color: var(--muted); font-size: var(--step--2); font-variant-numeric: tabular-nums; }
   .check:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
 

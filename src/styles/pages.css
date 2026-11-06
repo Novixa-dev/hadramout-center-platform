@@ -24,9 +24,11 @@
   .facet[open] > summary::after { transform: rotate(-135deg); }
   .facet__list { display: grid; max-block-size: 15rem; overflow-y: auto; padding-inline-end: 0.25rem; overscroll-behavior: contain; }
   .facet__list--tall { max-block-size: 22rem; }
-  .facet .tree-parent > summary { list-style: none; display: flex; align-items: center; gap: 0.3rem; cursor: pointer; }
+  .facet .tree-parent > summary { list-style: none; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; min-block-size: 2.5rem; padding-inline: 0.5rem; border-radius: var(--r-md); font-size: var(--step--1); transition: background var(--t-fast) var(--ease); }
+  .facet .tree-parent > summary:hover { background: var(--surface-3); }
   .facet .tree-parent > summary::-webkit-details-marker { display: none; }
-  .facet .tree-parent > summary .check { flex: 1; }
+  .facet .tree-parent > summary > span:first-of-type { flex: 1; }
+  .facet .tree-parent > summary .count { margin-inline-start: auto; padding: 0.05rem 0.5rem; border-radius: 999px; background: var(--surface-3); color: var(--muted); font-size: var(--step--2); min-inline-size: 1.7rem; text-align: center; font-variant-numeric: tabular-nums; }
   .facet .tree-parent > summary::before { content: ''; inline-size: 0.45rem; block-size: 0.45rem; border: solid var(--muted); border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform var(--t-med); flex: none; margin-inline-end: 0.2rem; }
   :dir(rtl) .facet .tree-parent > summary::before { transform: rotate(135deg); }
   .facet .tree-parent[open] > summary::before { transform: rotate(45deg); }
@@ -153,6 +155,7 @@
   .topic-card h3 a::after { content: ''; position: absolute; inset: 0; }
   .topic-card__count { color: var(--accent-text); font-weight: 700; font-size: var(--step--1); }
   .topic-card ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0 0.75rem; color: var(--muted); font-size: var(--step--1); }
+  .topic-card ul li { display: flex; min-block-size: 2.25rem; } /* rows must be as tall as their links, or neighbouring targets overlap */
   .topic-card ul a { position: relative; z-index: 1; display: inline-flex; align-items: center; min-block-size: 2.25rem; color: var(--text-2); text-decoration: none; }
   .topic-card ul a:hover { color: var(--brand); text-decoration: underline; }
   .authors-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; }
@@ -258,8 +261,8 @@
   .author-group h2 { font-family: var(--font-display); font-size: var(--step-2); color: var(--accent-text); border-block-end: 1px solid var(--rule); padding-block-end: 0.3rem; margin-block-end: 0.6rem; }
   .author-list { columns: 16rem; column-gap: 2rem; list-style: none; padding: 0; }
   .author-list li { break-inside: avoid; padding-block: 0.3rem; }
-  .author-list a { text-decoration: none; } /* 270 underlined names at once read as noise; underline on hover/focus */
-  .author-list a:hover, .author-list a:focus-visible { text-decoration: underline; text-underline-offset: 0.2em; }
+  .author-list a { text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 30%, transparent); text-underline-offset: 0.25em; } /* a faint rule keeps 270 names calm while links stay distinguishable without colour (WCAG 1.4.1) */
+  .author-list a:hover, .author-list a:focus-visible { text-decoration-color: currentColor; }
   .author-list .n { color: var(--muted); font-size: var(--step--2); margin-inline-start: 0.4rem; }
 
   .error-page { text-align: center; padding-block: var(--space-10); display: grid; gap: var(--space-4); justify-items: center; }

@@ -52,17 +52,21 @@ function TopicFacet({ ctx, roots, counts, selected }: { ctx: Ctx; roots: TopicNo
           <input type="radio" name="category" value="" defaultChecked={!selected} />
           <span>{t('list.all')}</span>
         </label>
-        {nodes.map(({ r, kids, total }) => (
-          <details key={r.id} className="tree-parent" open={selected === r.id || kids.some((c) => c.id === selected)}>
-            <summary>
-              <label className="check">
-                <input type="radio" name="category" value={r.id} defaultChecked={selected === r.id} />
+        {nodes.map(({ r, kids, total }) =>
+          kids.length ? (
+            // a group is a plain disclosure (no control inside <summary>: nested interactive content is invalid for assistive tech);
+            // choosing the whole group is the first option inside it
+            <details key={r.id} className="tree-parent" open={selected === r.id || kids.some((c) => c.id === selected)}>
+              <summary>
                 <span dir="auto">{r.name}</span>
                 <span className="count">{total}</span>
-              </label>
-            </summary>
-            {kids.length ? (
+              </summary>
               <div className="tree-children">
+                <label className="check">
+                  <input type="radio" name="category" value={r.id} defaultChecked={selected === r.id} />
+                  <span dir="auto">{t('list.allIn', { name: r.name })}</span>
+                  <span className="count">{total}</span>
+                </label>
                 {kids.map((c) => (
                   <label key={c.id} className="check">
                     <input type="radio" name="category" value={c.id} defaultChecked={selected === c.id} />
@@ -71,9 +75,15 @@ function TopicFacet({ ctx, roots, counts, selected }: { ctx: Ctx; roots: TopicNo
                   </label>
                 ))}
               </div>
-            ) : null}
-          </details>
-        ))}
+            </details>
+          ) : (
+            <label key={r.id} className="check">
+              <input type="radio" name="category" value={r.id} defaultChecked={selected === r.id} />
+              <span dir="auto">{r.name}</span>
+              <span className="count">{total}</span>
+            </label>
+          ),
+        )}
       </div>
     </details>
   );

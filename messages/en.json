@@ -78,6 +78,7 @@
   "list.year": "Year",
   "list.category": "Category",
   "list.all": "All",
+  "list.allIn": "All in {name}",
   "list.clear": "Clear filters",
   "list.upcoming": "Upcoming",
   "list.past": "Past",

@@ -35,6 +35,7 @@
     --focus: light-dark(#1a5fb4, #8ab4f8);
     --success: light-dark(#1e7a4a, #6fd39a);
     --warning: light-dark(#9a6700, #e6b450);
+    --warning-text: light-dark(#7a5200, #e6b450); /* text on a tinted warning surface: 5.9:1 in light (the plain warning colour is 4.2:1 there) */
     --danger: light-dark(#b3261e, #ff8a80);
     --hero-bg: light-dark(var(--green-900), #0a1411);
     --hero-text: #f6f1e7;
@@ -87,7 +88,7 @@
     :root {
       --bg: #fffbf5; --surface: #fff; --surface-2: #faf4ea; --surface-3: #f3eadb; --border: #e8dfd0; --border-strong: #d2c6b0; --rule: #dccfb8;
       --text: #1f2421; --text-2: #3c423d; --muted: #5b5f58; --brand: #226a5a; --brand-strong: #1c5547; --brand-fill: #226a5a; --brand-soft: #eef7f4;
-      --accent: #c49952; --accent-text: #86632b; --accent-soft: #fbf6ec; --focus: #1a5fb4; --success: #1e7a4a; --warning: #9a6700; --danger: #b3261e;
+      --accent: #c49952; --accent-text: #86632b; --accent-soft: #fbf6ec; --focus: #1a5fb4; --success: #1e7a4a; --warning: #9a6700; --warning-text: #7a5200; --danger: #b3261e;
       --hero-bg: #174438; --pattern: #226a5a;
     }
   }

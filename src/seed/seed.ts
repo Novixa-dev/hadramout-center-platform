@@ -4,6 +4,7 @@ import type { Payload } from 'payload';
 import { authorKey } from '../lib/arabic.ts';
 import { sanitizeText } from '../lib/sanitize.ts';
 import { CONTENT, type ContentType } from '../lib/content-types.ts';
+import { mergeBareTitles, splitHonorific } from '../lib/author-names.ts';
 import { DEFAULT_GLOSSARY, DEFAULT_PAGES, DEFAULT_TIMELINE } from './defaults.ts';
 import type { Snapshot } from '../importer/crawl.ts';
 import type { SnapshotPost } from '../importer/legacy.ts';
@@ -73,12 +74,16 @@ function typeFields(p: SnapshotPost, ids: { authors: number[]; category?: number
 export async function seedSnapshot(payload: Payload, snapshot: Snapshot, log: (m: string) => void = () => {}): Promise<SeedReport> {
   const report: SeedReport = { created: 0, updated: 0, skippedEdited: 0, authors: 0, categories: 0 };
 
+  // bylines the legacy export cut at a slash ("الشيخ/ فلان" → "الشيخ", "فلان") are one author again
+  for (const p of snapshot.posts) p.authors = mergeBareTitles(p.authors);
+
   // authors
   const authorIds = new Map<string, number>();
   for (const [key, name] of canonicalAuthors(snapshot.posts)) {
     let a = await findOne(payload, 'authors', { nameKey: { equals: key } });
     if (!a) {
-      a = (await payload.create({ collection: 'authors', data: { name, nameKey: key }, ...OPTS })) as unknown as { id: number };
+      const split = splitHonorific(name); // the title goes to its own field, as the data migration does for existing rows
+      a = (await payload.create({ collection: 'authors', data: { name: split?.name ?? name, ...(split?.honorific ? { honorific: split.honorific } : {}), nameKey: key }, ...OPTS })) as unknown as { id: number };
       report.authors++;
     }
     authorIds.set(key, a.id);

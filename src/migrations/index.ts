@@ -13,6 +13,7 @@ import * as migration_20261031_020508_add_audio_and_announcements from './202610
 import * as migration_20261031_024246_add_partners_and_testimonials from './20261031_024246_add_partners_and_testimonials';
 import * as migration_20261031_025843_add_author_honorific from './20261031_025843_add_author_honorific';
 import * as migration_20261031_070000_enhance_pages_schema from './20261031_070000_enhance_pages_schema';
+import * as migration_20261106_120000_split_author_honorifics from './20261106_120000_split_author_honorifics';
 
 export const migrations = [
   {
@@ -89,5 +90,10 @@ export const migrations = [
     up: migration_20261031_070000_enhance_pages_schema.up,
     down: migration_20261031_070000_enhance_pages_schema.down,
     name: '20261031_070000_enhance_pages_schema'
+  },
+  {
+    up: migration_20261106_120000_split_author_honorifics.up,
+    down: migration_20261106_120000_split_author_honorifics.down,
+    name: '20261106_120000_split_author_honorifics'
   },
 ];

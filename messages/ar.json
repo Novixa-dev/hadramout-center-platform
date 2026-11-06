@@ -78,6 +78,7 @@
   "list.year": "السنة",
   "list.category": "التصنيف",
   "list.all": "الكل",
+  "list.allIn": "كل «{name}»",
   "list.clear": "مسح التصفية",
   "list.upcoming": "القادمة",
   "list.past": "السابقة",

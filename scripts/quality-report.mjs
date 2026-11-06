@@ -59,6 +59,19 @@ const dup = run(payload, 'articles duplicate titles', `SELECT l.title AS title, 
 lines.push(`- **Duplicate titles:** ${dup.length} titles used more than once`);
 for (const d of dup.slice(0, SAMPLE)) lines.push(`  - ${String(d.title).slice(0, 70)} → ids ${d.ids}`);
 
+h('Authors');
+// A name is suspect when nothing but an honorific is left once titles are removed, or when it names an event or institution instead of a person.
+// The list is a work list for the editors: nothing is corrected or guessed here.
+const HONORIFICS = new Set(['أ', 'د', 'أ.د', 'أ.م.د', 'أ.م', 'م', 'م.د', 'الشيخ', 'شيخ', 'الدكتور', 'الدكتورة', 'الأستاذ', 'الأستاذة', 'الأستاذ.', 'السيد', 'الحاج', 'المهندس', 'الأمير', 'السلطان', 'الإمام', 'الحبيب', 'السيد.']);
+const NOT_A_PERSON = /^(ندوة|مؤتمر|محاضرة|ورشة|فعالية|مجلة|المركز|مركز|إدارة|الإدارة|لجنة|فريق|قسم)(\s|$)/;
+const authorRows = run(payload, 'authors', `SELECT a.id, l.name AS name FROM authors a JOIN authors_locales l ON l._parent_id=a.id AND l._locale='ar'`);
+const suspect = authorRows.filter((r) => {
+  const tokens = String(r.name ?? '').replace(/[.؟]+/g, '.').split(/\s+/).map((x) => x.replace(/^\.+|\.+$/g, '')).filter(Boolean);
+  const rest = tokens.filter((tk) => !HONORIFICS.has(tk) && !HONORIFICS.has(tk + '.'));
+  return rest.length === 0 || NOT_A_PERSON.test(String(r.name).trim());
+});
+check('Author names that are only a title, or not a person', 'authors', suspect.map((r) => ({ id: r.id, title: r.name })), 'rename, merge into the real author or unpublish; the pages cite this name');
+
 h('Books and issues');
 check('Books without a cover', 'books', run(payload, 'books no cover', `SELECT a.id, ${title('books')} AS title FROM books a WHERE a.status='published' AND a.cover_id IS NULL AND (a.cover_url IS NULL OR a.cover_url='')`));
 check('Books without a PDF link', 'books', run(payload, 'books no pdf', `SELECT a.id, ${title('books')} AS title FROM books a WHERE a.status='published' AND (a.pdf IS NULL OR a.pdf='')`), 'not necessarily a defect: some books are not public');
