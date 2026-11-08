@@ -138,6 +138,8 @@ Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0
 |---|---|
 | Emoji icons → inline SVG set; swipeable quick actions; icon cards; compact content rows on phones; duplicate CSS and the pulse animation removed | screenshots light/dark × 390/1440 px, no horizontal overflow; check 236/236; see CHANGELOG 5.17.0 |
 
+Also 2026-11-08: dashboard axe 0 violations (4 combinations); public site: 25 route shapes × 2 themes at 390 px, axe 0, no overflow; footer credit and byline author links raised to 24 px; admin drawer toggles 44 px. **Open:** admin header hamburger/sign-out/list controls < 24 px (Payload's own markup; needs a header redesign).
+
 Known, not fixed: 4,004 images in article bodies have no alt text (editorial work list in the quality report); a deploy restarts the container, so there is a short 502 window (a zero-downtime swap is an infrastructure task); local Windows smoke can hit a one-off `ECONNRESET` in the redirect matrix (passes alone, Linux CI is the reference).
 
 ## 2026-11-06 (second pass) — the Center's files: feedback report and tenth-anniversary book

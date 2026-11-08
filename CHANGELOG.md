@@ -8,6 +8,8 @@
 - **Content overview:** compact rows on phones (the add button shrinks to a 44 px icon with an accessible label), the same real `<table>` on wide screens.
 - **Accessibility:** axe (WCAG 2.2 AA + best practice) reports 0 violations on the dashboard in light/dark at 390 and 1440 px; the duplicate banner landmark was removed.
 - **Public site (WCAG 2.5.8 target size):** the footer credit link (22 px) and the author link in the article byline now reach 24 px; checked at 390 px on home, lists, article, books, events (e2e 55/55).
+- **Admin drawer:** sidebar group toggles are 44 px tall. Still open (Payload's own sizes, needs a header redesign): the phone hamburger (22 px), sign-out icon and a few list controls under 24 px.
+- **Sweep:** 25 public route shapes × light/dark at 390 px in real Chrome: axe WCAG 2.2 AA (with contrast) 0 violations, no horizontal overflow.
 - **CSS:** duplicate `.hc-card` rules and the pulse keyframes removed; reduced-motion respected.
 
 ## [5.16.0] - 2026-11-06

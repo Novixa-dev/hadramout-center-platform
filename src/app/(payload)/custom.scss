@@ -1168,3 +1168,11 @@ html[data-theme='dark'] .hc-serp-card__title {
     color: var(--hc-gold-text);
   }
 }
+
+/* Touch targets (WCAG 2.2 SC 2.5.8): the drawer's group toggles were 20 px tall. The header's hamburger (22 px) is still
+   Payload's own size: neighbouring header controls overlap any enlarged hit area, so it needs a header redesign (backlog). */
+.nav-group__toggle {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+}
