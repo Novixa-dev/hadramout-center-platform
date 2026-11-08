@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { normalizeScholarlyArabic } from '../../lib/arabic-assist.ts';
 import { dashboardStrings } from '../i18n.ts';
+import { Icon } from '../icons.tsx';
 
 interface Props {
   lang: 'ar' | 'en';
@@ -36,7 +37,7 @@ export const ScholarlyNormalizerWidget: React.FC<Props> = ({ lang }) => {
     <div className="hc-normalizer-widget">
       <div className="hc-normalizer-widget__header">
         <div className="hc-normalizer-widget__title-group">
-          <span className="hc-normalizer-widget__icon">✨</span>
+          <span className="hc-normalizer-widget__icon"><Icon name="sparkle" /></span>
           <h3 className="hc-normalizer-widget__title">{t.scholarlyAssistTitle}</h3>
         </div>
         <p className="hc-normalizer-widget__desc">{t.scholarlyAssistDesc}</p>

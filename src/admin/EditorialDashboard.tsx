@@ -3,6 +3,7 @@ import { loadConfig } from '../config.ts';
 import { dashboardStrings, fill } from './i18n.ts';
 import { listUrl } from './links.ts';
 import { ScholarlyNormalizerWidget } from './components/ScholarlyNormalizerWidget.tsx';
+import { Icon, type IconName } from './icons.tsx';
 
 /**
  * The modern admin home, above Payload's own collection list:
@@ -94,11 +95,11 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
   const statusLabel = (s?: string) => (s === 'published' ? t.published : s === 'archived' ? t.archived : t.drafts);
   const limit = loadConfig().translation.dailyCharLimit;
 
-  const cards: { key: string; label: string; n: number; href: string; hint: string }[] = [];
-  if (pendingReviews !== null) cards.push({ key: 'reviews', label: t.pendingReviews, n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: t.pendingReviewsHint });
-  if (newMessages !== null) cards.push({ key: 'messages', label: t.newMessages, n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: t.newMessagesHint });
-  if (!staff && translationIssues !== null) cards.push({ key: 'tr', label: t.translationIssues, n: translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: t.translationIssuesHint });
-  if (uncategorised !== null) cards.push({ key: 'uncat', label: t.uncategorised, n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: t.uncategorisedHint });
+  const cards: { key: string; icon: IconName; label: string; n: number; href: string; hint: string }[] = [];
+  if (pendingReviews !== null) cards.push({ key: 'reviews', icon: 'review', label: t.pendingReviews, n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: t.pendingReviewsHint });
+  if (newMessages !== null) cards.push({ key: 'messages', icon: 'message', label: t.newMessages, n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: t.newMessagesHint });
+  if (!staff && translationIssues !== null) cards.push({ key: 'tr', icon: 'language', label: t.translationIssues, n: translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: t.translationIssuesHint });
+  if (uncategorised !== null) cards.push({ key: 'uncat', icon: 'tag', label: t.uncategorised, n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: t.uncategorisedHint });
   const waiting = cards.some((c) => c.n > 0);
   const roleName = role === 'admin' ? t.roleAdmin : role === 'reviewer' ? t.roleReviewer : t.roleEditor;
 
@@ -107,6 +108,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
       <header className="hc-dash__head">
         <div>
           <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name ?? '' })}</h1>
+          <p className="hc-dash__date">{df.format(new Date())}</p>
           <p className="hc-dash__lead">{staff ? t.leadStaff : t.leadReviewer}</p>
         </div>
         <span className={`hc-badge hc-badge--${role}`}>{roleName}</span>
@@ -116,31 +118,22 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
       {staff && (
         <section aria-label={t.quickActions} className="hc-dash__actions-section">
           <div className="hc-dash__actions-bar">
-            <div className="hc-dash__actions-title">
-              <span className="hc-dash__pulse-dot" />
-              <span>{t.quickActions}</span>
-            </div>
+            <h2 className="hc-dash__actions-title">{t.quickActions}</h2>
             <div className="hc-dash__actions-buttons">
-              <a href="/admin/collections/pages/create" className="hc-action-btn hc-action-btn--primary">
-                <span className="hc-action-btn__icon">📄</span>
-                <span>{t.newPage}</span>
-              </a>
-              <a href="/admin/collections/articles/create" className="hc-action-btn">
-                <span className="hc-action-btn__icon">✍️</span>
-                <span>{t.newArticle}</span>
-              </a>
-              <a href="/admin/collections/audio/create" className="hc-action-btn">
-                <span className="hc-action-btn__icon">🎙️</span>
-                <span>{t.newAudio}</span>
-              </a>
-              <a href="/admin/collections/announcements/create" className="hc-action-btn">
-                <span className="hc-action-btn__icon">📢</span>
-                <span>{t.newAnnouncement}</span>
-              </a>
-              <a href="/admin/collections/news/create" className="hc-action-btn">
-                <span className="hc-action-btn__icon">📰</span>
-                <span>{t.newNews}</span>
-              </a>
+              {(
+                [
+                  ['news', 'news', t.newNews],
+                  ['articles', 'article', t.newArticle],
+                  ['pages', 'page', t.newPage],
+                  ['audio', 'audio', t.newAudio],
+                  ['announcements', 'announcement', t.newAnnouncement],
+                ] as const
+              ).map(([slug, icon, label], i) => (
+                <a key={slug} href={`/admin/collections/${slug}/create`} className={`hc-action-btn${i === 0 ? ' hc-action-btn--primary' : ''}`}>
+                  <Icon name={icon} />
+                  <span>{label}</span>
+                </a>
+              ))}
             </div>
           </div>
         </section>
@@ -154,6 +147,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
           {cards.map((c) => (
             <li key={c.key}>
               <a href={c.href} className={`hc-card${c.n > 0 ? ' hc-card--act' : ''}`}>
+                <span className="hc-card__icon"><Icon name={c.icon} /></span>
                 <span className="hc-card__n">{nf.format(c.n)}</span>
                 <span className="hc-card__label">{c.label}</span>
                 <span className="hc-card__hint">{c.hint}</span>
@@ -163,6 +157,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
           {latestEvent !== null && staff ? (
             <li>
               <a href={listUrl('events')} className="hc-card">
+                <span className="hc-card__icon"><Icon name="calendar" /></span>
                 <span className="hc-card__date">{latestEvent ? df.format(new Date(latestEvent)) : t.noEvent}</span>
                 <span className="hc-card__label">{t.latestEvent}</span>
                 <span className="hc-card__hint">{t.latestEventHint}</span>
@@ -203,7 +198,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
                       {staff ? (
                         <td className="hc-table__action">
                           <a className="hc-add" href={`/admin/collections/${c.slug}/create`} aria-label={fill(t.createNew, { label: name })}>
-                            + {t.create}
+                            <Icon name="plus" /><span className="hc-add__label">{t.create}</span>
                           </a>
                         </td>
                       ) : null}
@@ -262,10 +257,10 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
           <nav aria-labelledby="hc-dash-quick" className="hc-dash__section hc-panel">
             <h2 id="hc-dash-quick" className="hc-dash__h2">{t.quick}</h2>
             <ul className="hc-quick" role="list">
-              <li><a href={`/${lang}`} target="_blank" rel="noopener">{t.viewSite} ↗</a></li>
-              <li><a href="/admin/account">{t.profile}</a></li>
-              {role === 'admin' ? <li><a href="/admin/collections/users">{t.users}</a></li> : null}
-              <li><a href={GUIDE_URL} target="_blank" rel="noopener">{t.guide} ↗</a></li>
+              <li><a href={`/${lang}`} target="_blank" rel="noopener"><Icon name="external" />{t.viewSite}</a></li>
+              <li><a href="/admin/account"><Icon name="user" />{t.profile}</a></li>
+              {role === 'admin' ? <li><a href="/admin/collections/users"><Icon name="users" />{t.users}</a></li> : null}
+              <li><a href={GUIDE_URL} target="_blank" rel="noopener"><Icon name="book" />{t.guide}</a></li>
             </ul>
           </nav>
         </div>

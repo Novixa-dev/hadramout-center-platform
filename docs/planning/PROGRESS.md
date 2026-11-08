@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-11-06 · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
+**Last updated:** 2026-11-08 · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -131,6 +131,12 @@ Live before deploy: cutover-check 39 ok/0 failed, SEO audit 0 errors, sweep 77/0
 | **Author titles** — the hand-run clean-up never reached the live database, and its fix for author 159 would have listed one person twice. New migration `20261106_120000_split_author_honorifics` (idempotent): titles → `honorific`, bare-title authors cut off by the legacy import (159 "أ.م.د", 78 "الشيخ") merged into the person who follows them. Same rules in `src/lib/author-names.ts`, used by the seeder, so a fresh seed gives the same 272 authors / 88 titles | unit tests (20), migration run on a seeded copy, fresh seed compared |
 | Quality report: new "Authors" section lists names that are only a title or not a person (78/129/254/264 → editors decide; nothing is guessed) | `npm run quality` |
 | Dependabot alerts: two high-severity `happy-dom` advisories (pulled in by Lexical inside Payload) closed with an `overrides` entry (20.14.6 → 21.0.4); 12 low/moderate dev-tooling advisories remain (drizzle-kit, esbuild, minimatch: build-time only) | npm audit, check 232/232, build, smoke 80, redirect matrix 1,603/0, e2e 55/55, admin-e2e 65/65 |
+
+## 2026-11-08 — admin dashboard redesign (mobile first)
+
+| Change | Evidence |
+|---|---|
+| Emoji icons → inline SVG set; swipeable quick actions; icon cards; compact content rows on phones; duplicate CSS and the pulse animation removed | screenshots light/dark × 390/1440 px, no horizontal overflow; check 236/236; see CHANGELOG 5.17.0 |
 
 Known, not fixed: 4,004 images in article bodies have no alt text (editorial work list in the quality report); a deploy restarts the container, so there is a short 502 window (a zero-downtime swap is an infrastructure task); local Windows smoke can hit a one-off `ECONNRESET` in the redirect matrix (passes alone, Linux CI is the reference).
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.17.0] - 2026-11-08
+### Admin dashboard redesign, mobile first
+- **Icons:** the dashboard used emoji as icons; replaced by one inline SVG set (`src/admin/icons.tsx`, stroke icons in `currentColor`, theme-aware, `aria-hidden`).
+- **Quick actions:** a single swipeable row on phones (44 px targets), wrapping from 769 px; the always-pulsing dot was removed (motion without meaning).
+- **Attention cards:** icon tile per card, steady hover (no lift), visible focus ring; today's date under the greeting.
+- **Content overview:** compact rows on phones (the add button shrinks to a 44 px icon with an accessible label), the same real `<table>` on wide screens.
+- **CSS:** duplicate `.hc-card` rules and the pulse keyframes removed; reduced-motion respected.
+
 ## [5.16.0] - 2026-11-06
 ### Client feedback applied, author data fixed, WCAG audit fixes, docs rebuilt
 - **Header menu grouped as the Center proposed** (client report): About the Center · Media Center · Research & Studies · Programs & Projects · Contact. Dropdowns are disclosure buttons (Esc, outside click, keyboard); overflow still folds into "More"; the phone drawer shows the same groups as sections. Sections without material (governance, digital platforms) are left out until they exist.
