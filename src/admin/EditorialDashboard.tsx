@@ -105,14 +105,14 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
 
   return (
     <div className="hc-dash">
-      <header className="hc-dash__head">
+      <div className="hc-dash__head">
         <div>
           <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name ?? '' })}</h1>
           <p className="hc-dash__date">{df.format(new Date())}</p>
           <p className="hc-dash__lead">{staff ? t.leadStaff : t.leadReviewer}</p>
         </div>
         <span className={`hc-badge hc-badge--${role}`}>{roleName}</span>
-      </header>
+      </div>
 
       {/* Quick Actions Bar */}
       {staff && (

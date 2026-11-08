@@ -6,6 +6,7 @@
 - **Quick actions:** a single swipeable row on phones (44 px targets), wrapping from 769 px; the always-pulsing dot was removed (motion without meaning).
 - **Attention cards:** icon tile per card, steady hover (no lift), visible focus ring; today's date under the greeting.
 - **Content overview:** compact rows on phones (the add button shrinks to a 44 px icon with an accessible label), the same real `<table>` on wide screens.
+- **Accessibility:** axe (WCAG 2.2 AA + best practice) reports 0 violations on the dashboard in light/dark at 390 and 1440 px; the duplicate banner landmark was removed.
 - **CSS:** duplicate `.hc-card` rules and the pulse keyframes removed; reduced-motion respected.
 
 ## [5.16.0] - 2026-11-06
