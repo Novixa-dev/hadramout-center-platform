@@ -170,7 +170,7 @@
   .byline > span { display: inline-flex; align-items: center; flex-wrap: wrap; } /* the global svg{display:block} reset stacked the icon above its text */
   .article-layout--read .article-main { inline-size: min(100%, var(--prose)); margin-inline: auto; } /* reading pages without a contents column: centre the measure instead of leaving one side empty */
   .byline { display: flex; flex-wrap: wrap; gap: 0.35rem 1.4rem; color: var(--text-2); font-size: var(--step--1); }
-  .byline a { color: var(--text); font-weight: 600; }
+  .byline a { color: var(--text); font-weight: 600; display: inline-flex; align-items: center; min-block-size: 1.5rem; } /* WCAG 2.2 target size (2.5.8) */
   .byline .icon { inline-size: 1rem; block-size: 1rem; vertical-align: -0.15em; margin-inline-end: 0.3rem; color: var(--muted); }
   .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block: var(--space-4); align-items: center; }
   .actions__sep { inline-size: 1px; block-size: 1.5rem; background: var(--border-strong); margin-inline: 0.25rem; }
