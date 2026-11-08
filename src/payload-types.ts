@@ -846,15 +846,15 @@ export interface Event {
     | number
     | boolean
     | null;
+  /**
+   * Decides the menu section the event appears in (conferences, seminars, lectures…).
+   */
+  kind?: ('conference' | 'seminar' | 'panel' | 'lecture' | 'virtual' | 'competition' | 'other') | null;
+  attendance?: ('onsite' | 'virtual' | 'hybrid') | null;
   speaker?: string | null;
   moderator?: string | null;
   venue?: string | null;
   timeText?: string | null;
-  /**
-   * Sponsors or supporting bodies, separated by commas.
-   */
-  supporters?: string | null;
-  attendance?: ('onsite' | 'virtual' | 'hybrid') | null;
   eventDate?: string | null;
   endDate?: string | null;
   youtubeId?: string | null;
@@ -867,6 +867,22 @@ export interface Event {
       }[]
     | null;
   chairs?: string | null;
+  /**
+   * One row per person with their role; allows several guests for forum events.
+   */
+  participants?:
+    | {
+        name: string;
+        role: 'speaker' | 'researcher' | 'presenter' | 'chair' | 'moderator' | 'guest';
+        id?: string | null;
+      }[]
+    | null;
+  supporters?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
   papers?:
     | {
         title: string;
@@ -924,15 +940,15 @@ export interface ForumEvent {
     | number
     | boolean
     | null;
+  /**
+   * Decides the menu section the event appears in (conferences, seminars, lectures…).
+   */
+  kind?: ('conference' | 'seminar' | 'panel' | 'lecture' | 'virtual' | 'competition' | 'other') | null;
+  attendance?: ('onsite' | 'virtual' | 'hybrid') | null;
   speaker?: string | null;
   moderator?: string | null;
   venue?: string | null;
   timeText?: string | null;
-  /**
-   * Sponsors or supporting bodies, separated by commas.
-   */
-  supporters?: string | null;
-  attendance?: ('onsite' | 'virtual' | 'hybrid') | null;
   eventDate?: string | null;
   endDate?: string | null;
   youtubeId?: string | null;
@@ -945,6 +961,22 @@ export interface ForumEvent {
       }[]
     | null;
   chairs?: string | null;
+  /**
+   * One row per person with their role; allows several guests for forum events.
+   */
+  participants?:
+    | {
+        name: string;
+        role: 'speaker' | 'researcher' | 'presenter' | 'chair' | 'moderator' | 'guest';
+        id?: string | null;
+      }[]
+    | null;
+  supporters?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
   papers?:
     | {
         title: string;
@@ -955,6 +987,7 @@ export interface ForumEvent {
         id?: string | null;
       }[]
     | null;
+  category?: (number | null) | Category;
   updatedAt: string;
   createdAt: string;
 }
@@ -1009,6 +1042,17 @@ export interface Video {
   embedUrl?: string | null;
   guest?: string | null;
   duration?: string | null;
+  /**
+   * For a multi-part recording: a YouTube ID or a link per part.
+   */
+  clips?:
+    | {
+        title?: string | null;
+        youtubeId?: string | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1027,6 +1071,26 @@ export interface Audio {
    * Direct MP3 link, podcast platform, or SoundCloud stream URL.
    */
   audioUrl?: string | null;
+  /**
+   * For a multi-part recording: upload a file or paste a link (YouTube, SoundCloud, social media) per part.
+   */
+  clips?:
+    | {
+        title?: string | null;
+        file?: (number | null) | Media;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Two or three lines shown in the list.
+   */
+  excerpt?: string | null;
+  /**
+   * Saqaya episodes appear on the podcast page.
+   */
+  series?: ('library' | 'saqaya') | null;
+  episode?: number | null;
   presenter?: string | null;
   program?: string | null;
   /**
@@ -1059,10 +1123,22 @@ export interface Audio {
 export interface Announcement {
   id: number;
   title: string;
+  kind?: ('conference' | 'seminar' | 'lecture' | 'forum' | 'call' | 'event') | null;
   /**
-   * Featured prominently at the top of the homepage.
+   * Shown in the bar at the top of every page until it expires.
    */
   pinned?: boolean | null;
+  /**
+   * Shown in the home page announcements until it expires.
+   */
+  showOnHome?: boolean | null;
+  cover?: (number | null) | Media;
+  /**
+   * Shown on the card and in the calendar entry.
+   */
+  excerpt?: string | null;
+  venue?: string | null;
+  link?: string | null;
   /**
    * The full text of the announcement or circular.
    */
@@ -1074,7 +1150,7 @@ export interface Announcement {
    */
   eventDate?: string | null;
   /**
-   * The announcement disappears from prominent displays after this date.
+   * Hidden automatically after this date. When empty it ends after the event day.
    */
   expiresAt?: string | null;
   publishedAt?: string | null;
@@ -1099,7 +1175,10 @@ export interface Partner {
   id: number;
   name: string;
   category?: ('academic' | 'research' | 'cultural' | 'governmental') | null;
-  logo: number | Media;
+  /**
+   * Optional; shown only with the written consent below. Without it the name and collaboration areas are shown.
+   */
+  logo?: (number | null) | Media;
   website?: string | null;
   summary?: string | null;
   /**
@@ -1987,12 +2066,12 @@ export interface EventsSelect<T extends boolean = true> {
   source?: T;
   edited?: T;
   translationMeta?: T;
+  kind?: T;
+  attendance?: T;
   speaker?: T;
   moderator?: T;
   venue?: T;
   timeText?: T;
-  supporters?: T;
-  attendance?: T;
   eventDate?: T;
   endDate?: T;
   youtubeId?: T;
@@ -2005,6 +2084,19 @@ export interface EventsSelect<T extends boolean = true> {
         id?: T;
       };
   chairs?: T;
+  participants?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        id?: T;
+      };
+  supporters?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
   papers?:
     | T
     | {
@@ -2038,12 +2130,12 @@ export interface ForumEventsSelect<T extends boolean = true> {
   source?: T;
   edited?: T;
   translationMeta?: T;
+  kind?: T;
+  attendance?: T;
   speaker?: T;
   moderator?: T;
   venue?: T;
   timeText?: T;
-  supporters?: T;
-  attendance?: T;
   eventDate?: T;
   endDate?: T;
   youtubeId?: T;
@@ -2056,6 +2148,19 @@ export interface ForumEventsSelect<T extends boolean = true> {
         id?: T;
       };
   chairs?: T;
+  participants?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        id?: T;
+      };
+  supporters?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
   papers?:
     | T
     | {
@@ -2066,6 +2171,7 @@ export interface ForumEventsSelect<T extends boolean = true> {
         fileUrl?: T;
         id?: T;
       };
+  category?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2093,6 +2199,14 @@ export interface VideosSelect<T extends boolean = true> {
   embedUrl?: T;
   guest?: T;
   duration?: T;
+  clips?:
+    | T
+    | {
+        title?: T;
+        youtubeId?: T;
+        url?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2104,6 +2218,17 @@ export interface AudioSelect<T extends boolean = true> {
   title?: T;
   audioFile?: T;
   audioUrl?: T;
+  clips?:
+    | T
+    | {
+        title?: T;
+        file?: T;
+        url?: T;
+        id?: T;
+      };
+  excerpt?: T;
+  series?: T;
+  episode?: T;
   presenter?: T;
   program?: T;
   duration?: T;
@@ -2121,7 +2246,13 @@ export interface AudioSelect<T extends boolean = true> {
  */
 export interface AnnouncementsSelect<T extends boolean = true> {
   title?: T;
+  kind?: T;
   pinned?: T;
+  showOnHome?: T;
+  cover?: T;
+  excerpt?: T;
+  venue?: T;
+  link?: T;
   body?: T;
   attachment?: T;
   attachmentUrl?: T;

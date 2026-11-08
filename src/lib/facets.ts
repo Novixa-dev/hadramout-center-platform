@@ -36,7 +36,7 @@ const SELECT: Record<ContentType, Record<string, true>> = {
   article: { title: true, publishedAt: true, datePrecision: true, category: true, authors: true, magazine: true, featured: true },
   book: { title: true, publishedAt: true, datePrecision: true, year: true, category: true, authors: true, pdf: true, cover: true, coverUrl: true, featured: true },
   magazine: { title: true, publishedAt: true, datePrecision: true, issueNumber: true, pdf: true, cover: true, coverUrl: true, featured: true },
-  event: { title: true, publishedAt: true, datePrecision: true, eventDate: true, cover: true, coverUrl: true, featured: true },
+  event: { title: true, publishedAt: true, datePrecision: true, eventDate: true, kind: true, cover: true, coverUrl: true, featured: true },
   forum: { title: true, publishedAt: true, datePrecision: true, eventDate: true, cover: true, coverUrl: true, featured: true },
   video: { title: true, publishedAt: true, datePrecision: true, cover: true, coverUrl: true, featured: true },
 };
@@ -59,6 +59,7 @@ function toRow(type: ContentType, d: Raw): Row {
     hasPdf: typeof d.pdf === 'string' && d.pdf.length > 0,
     hasCover: Boolean(d.cover || d.coverUrl),
     featured: Boolean(d.featured),
+    kind: typeof d.kind === 'string' ? d.kind : null,
   };
 }
 
@@ -157,6 +158,7 @@ export interface ArchiveQuery {
   magazineId?: number;
   pdf?: boolean;
   when?: 'upcoming' | 'past';
+  kind?: string;
   sort?: Sort;
   page?: number;
   limit?: number;
@@ -194,6 +196,7 @@ export async function queryArchive(p: ArchiveQuery): Promise<ArchiveResult> {
     magazine: p.magazineId,
     pdf: p.pdf,
     when: p.when,
+    kind: p.kind,
     ids,
   };
   const sort: Sort = p.sort ?? (q ? 'relevance' : 'newest');

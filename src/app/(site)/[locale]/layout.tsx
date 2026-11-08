@@ -4,16 +4,17 @@ import { notFound } from 'next/navigation';
 import '../../../styles/index.css';
 import { isLocale, makeCtx } from '../../../lib/ctx.ts';
 import { enabledOrAll } from '../../../lib/negotiate.ts';
-import { getSite, listActiveAnnouncements, listNavPages } from '../../../lib/data.ts';
+import { getSite, listAnnouncements, listNavPages } from '../../../lib/data.ts';
 import { loadConfig } from '../../../config.ts';
 import { uiCoverage } from '../../../i18n/ui-store.ts';
-import { Footer, Header, langOptions } from '../../../components/Shell.tsx';
+import { Footer, Header, UtilityBar, langOptions } from '../../../components/Shell.tsx';
 import { AnnouncementBanner } from '../../../components/AnnouncementBanner.tsx';
 import { BackToTop } from '../../../components/client/BackToTop.tsx';
 import { PwaRegister } from '../../../components/client/PwaRegister.tsx';
 import { NavProgress } from '../../../components/client/NavProgress.tsx';
 import { StagingBar } from '../../../components/StagingBar.tsx';
 import { isProductionSite } from '../../../lib/site-env.ts';
+import { formatDate } from '../../../lib/dates.ts';
 
 export const dynamicParams = true;
 export const revalidate = 300;
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 // Dark is the site's default theme (server-rendered as data-theme="dark", so there is no flash and it works without JavaScript).
 // A visitor's explicit choice, stored by the toggle, overrides it before first paint; the browser's own colour-scheme setting is not consulted.
-const THEME_INIT = `(function(){try{var d=document.documentElement,t=localStorage.getItem('hc-theme'),f=localStorage.getItem('hc-fs');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);var m=document.getElementById('hc-theme-color');if(m)m.setAttribute('content',t==='light'?'#fffbf5':'#0e1815')}if(f)d.setAttribute('data-fs',f)}catch(e){}})()`;
+const THEME_INIT = `(function(){try{var d=document.documentElement,t=localStorage.getItem('hc-theme'),f=localStorage.getItem('hc-fs');if(t==='light'||t==='dark'){d.setAttribute('data-theme',t);var m=document.getElementById('hc-theme-color');if(m)m.setAttribute('content',t==='light'?'#f6e9cf':'#0e1815')}if(f)d.setAttribute('data-fs',f)}catch(e){}})()`;
 
 export default async function LocaleLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -57,7 +58,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const ctx = makeCtx(locale);
   const [site, announcements, navPages] = await Promise.all([
     getSite(locale),
-    listActiveAnnouncements(locale),
+    listAnnouncements(locale, { only: 'pinned', limit: 1 }),
     listNavPages(locale),
   ]);
   const ready = new Set(['ar', 'en', ...[...enabledOrAll()].filter((c) => uiCoverage(c) >= 0.95)]);
@@ -77,8 +78,17 @@ export default async function LocaleLayout({ children, params }: { children: Rea
       <body>
         <a className="skip-link" href="#main">{ctx.t('site.skip')}</a>
         {isProductionSite() ? null : <StagingBar text={ctx.t('staging.banner')} />}
-        <AnnouncementBanner announcements={announcements} calendarLabel={ctx.t('event.addToCalendar')} closeLabel={ctx.t('nav.close')} />
-        <Header ctx={ctx} site={site} langs={langOptions(ready)} navPages={navPages} />
+        {announcements[0] ? (
+          <AnnouncementBanner
+            id={announcements[0].id}
+            title={announcements[0].title}
+            when={announcements[0].eventDate ? formatDate(announcements[0].eventDate, ctx.lang.tag) : null}
+            href={ctx.href(`/announcements#announcement-${announcements[0].id}`)}
+            labels={{ kicker: ctx.t('announcements.kicker'), more: ctx.t('announcements.details'), close: ctx.t('nav.close') }}
+          />
+        ) : null}
+        <UtilityBar ctx={ctx} langs={langOptions(ready)} />
+        <Header ctx={ctx} site={site} navPages={navPages} />
         <main id="main" tabIndex={-1}>{children}</main>
         <Footer ctx={ctx} site={site} navPages={navPages} />
         <BackToTop label={ctx.t('tools.backToTop')} />

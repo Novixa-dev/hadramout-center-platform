@@ -21,6 +21,8 @@ export interface Row {
   hasPdf: boolean;
   hasCover: boolean;
   featured: boolean;
+  /** event type (conference, seminar…), events only */
+  kind?: string | null;
 }
 
 export interface Filters {
@@ -31,6 +33,7 @@ export interface Filters {
   magazine?: number;
   pdf?: boolean;
   when?: 'upcoming' | 'past';
+  kind?: string;
   /** restrict to these ids (full-text search result) */
   ids?: ReadonlySet<number>;
   /** YYYY-MM-DD, for `when` */
@@ -40,7 +43,7 @@ export interface Filters {
 /** `Filters.year` value meaning "documents without a reliable date" (shown as `year=undated` in URLs). */
 export const UNDATED = -1;
 
-export type FacetKey = 'year' | 'category' | 'author' | 'pdf' | 'when';
+export type FacetKey = 'year' | 'category' | 'author' | 'pdf' | 'when' | 'kind';
 export type Sort = 'newest' | 'oldest' | 'title' | 'relevance';
 
 export function matches(r: Row, f: Filters, skip?: FacetKey): boolean {
@@ -50,6 +53,7 @@ export function matches(r: Row, f: Filters, skip?: FacetKey): boolean {
   if (skip !== 'author' && f.author && !r.authors.includes(f.author)) return false;
   if (f.magazine && r.magazine !== f.magazine) return false;
   if (skip !== 'pdf' && f.pdf && !r.hasPdf) return false;
+  if (skip !== 'kind' && f.kind && r.kind !== f.kind) return false;
   if (skip !== 'when' && f.when) {
     const today = f.today ?? new Date().toISOString().slice(0, 10);
     if (!r.date) return false;
@@ -89,13 +93,14 @@ export interface Counts {
   pdf: number;
   upcoming: number;
   past: number;
+  kinds: Map<string, number>;
 }
 
 const bump = (m: Map<number, number>, k: number) => m.set(k, (m.get(k) ?? 0) + 1);
 
 /** Disjunctive facet counts: each facet is counted over the rows that match every OTHER active filter. */
 export function countFacets(rows: readonly Row[], f: Filters): Counts {
-  const c: Counts = { years: new Map(), undated: 0, categories: new Map(), authors: new Map(), pdf: 0, upcoming: 0, past: 0 };
+  const c: Counts = { years: new Map(), undated: 0, categories: new Map(), authors: new Map(), pdf: 0, upcoming: 0, past: 0, kinds: new Map() };
   const today = f.today ?? new Date().toISOString().slice(0, 10);
   for (const r of rows) {
     if (matches(r, f, 'year')) {
@@ -105,6 +110,7 @@ export function countFacets(rows: readonly Row[], f: Filters): Counts {
     if (matches(r, f, 'category') && r.category !== null) bump(c.categories, r.category);
     if (matches(r, f, 'author')) for (const a of r.authors) bump(c.authors, a);
     if (matches(r, f, 'pdf') && r.hasPdf) c.pdf++;
+    if (matches(r, f, 'kind') && r.kind) c.kinds.set(r.kind, (c.kinds.get(r.kind) ?? 0) + 1);
     if (matches(r, f, 'when') && r.date) {
       if (r.date.slice(0, 10) >= today) c.upcoming++;
       else c.past++;

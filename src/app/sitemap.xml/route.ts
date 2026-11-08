@@ -10,6 +10,9 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
 const TTL_MS = 60 * 60 * 1000;
+
+/** Pages rendered by code (not stored in the pages collection); /search and /saved are noindex and never listed. */
+const STATIC_PAGES = ['/timeline', '/contact', '/submit', '/platforms', '/audio', '/podcast', '/announcements', '/partners'];
 let cached: { at: number; xml: string } | null = null;
 
 export async function GET() {
@@ -18,8 +21,10 @@ export async function GET() {
   const payload = await getPayloadClient();
   const ui = uiReadyLangs();
   const entries: Entry[] = [{ path: '', langs: ui }];
-  // /search and /saved are noindex pages and never listed
-  for (const p of ['/timeline', '/about', '/contact', '/privacy', '/terms', '/accessibility']) entries.push({ path: p, langs: ['ar', 'en'] });
+  for (const p of STATIC_PAGES) entries.push({ path: p, langs: ['ar', 'en'] });
+  // pages written in the admin (about, about/identity, privacy…): published and not marked noindex
+  const pages = await payload.find({ collection: 'pages', where: { and: [{ status: { equals: 'published' } }, { or: [{ noindex: { equals: false } }, { noindex: { exists: false } }] }] }, limit: 500, pagination: false, depth: 0, locale: 'ar', select: { slug: true, updatedAt: true } as never });
+  for (const d of pages.docs as unknown as { slug: string; updatedAt: string }[]) entries.push({ path: `/${d.slug}`, langs: ['ar', 'en'], lastmod: d.updatedAt });
   entries.push({ path: '/authors', langs: ['ar'] }, { path: '/topics', langs: ['ar'] });
   for (const t of CONTENT_TYPES) {
     const info = CONTENT[t];

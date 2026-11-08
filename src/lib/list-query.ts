@@ -1,12 +1,16 @@
 import type { ContentType } from './content-types.ts';
 import { UNDATED, type Sort } from './facet-core.ts';
 
+/** Event types an archive list can be narrowed to (same values as the `kind` field of collections/content.ts). */
+export const EVENT_KIND_VALUES = ['conference', 'seminar', 'panel', 'lecture', 'virtual', 'competition', 'other'] as const;
+export type EventKind = (typeof EVENT_KIND_VALUES)[number];
+
 /**
  * URL state of an archive list. Every filter lives in the query string (shareable, back/forward-safe);
  * links are built so that defaults never appear in the URL and unknown/garbled params are ignored.
  */
 
-export type FacetName = 'q' | 'topic' | 'year' | 'author' | 'pdf' | 'when';
+export type FacetName = 'q' | 'topic' | 'year' | 'author' | 'pdf' | 'when' | 'kind';
 export type View = 'grid' | 'list' | 'compact';
 
 export const FACETS: Record<ContentType, readonly FacetName[]> = {
@@ -14,7 +18,7 @@ export const FACETS: Record<ContentType, readonly FacetName[]> = {
   article: ['q', 'topic', 'year', 'author'],
   book: ['q', 'year', 'author', 'pdf'],
   magazine: ['q', 'year', 'pdf'],
-  event: ['q', 'when', 'year'],
+  event: ['q', 'kind', 'when', 'year'],
   forum: ['q', 'when', 'year'],
   video: ['q'],
 };
@@ -43,6 +47,7 @@ export interface ListQuery {
   author?: number;
   pdf?: boolean;
   when?: 'upcoming' | 'past';
+  kind?: EventKind;
   sort?: Sort;
   view: View;
   page: number;
@@ -65,6 +70,7 @@ export function parseListQuery(sp: Raw, type: ContentType): ListQuery {
   const sort: Sort | undefined = sortRaw === 'oldest' || sortRaw === 'title' || (sortRaw === 'newest' && q) || (sortRaw === 'relevance' && q) ? sortRaw : undefined;
   const viewRaw = one(sp.view) as View | undefined;
   const whenRaw = one(sp.when);
+  const kindRaw = one(sp.kind);
   return {
     q,
     year: facets.includes('year') ? (one(sp.year) === 'undated' ? UNDATED : posInt(one(sp.year), 3000)) : undefined,
@@ -72,6 +78,7 @@ export function parseListQuery(sp: Raw, type: ContentType): ListQuery {
     author: facets.includes('author') ? posInt(one(sp.author)) : undefined,
     pdf: facets.includes('pdf') && one(sp.pdf) === '1' ? true : undefined,
     when: facets.includes('when') && (whenRaw === 'upcoming' || whenRaw === 'past') ? whenRaw : undefined,
+    kind: facets.includes('kind') && (EVENT_KIND_VALUES as readonly string[]).includes(kindRaw ?? '') ? (kindRaw as EventKind) : undefined,
     sort,
     view: viewRaw && views.includes(viewRaw) ? viewRaw : (views[0] as View),
     page: posInt(one(sp.page), 10_000) ?? 1,
@@ -98,6 +105,7 @@ export function queryParams(q: ListQuery, type: ContentType, patch: Partial<Reco
     author: m.author ? String(m.author) : undefined,
     pdf: m.pdf ? '1' : undefined,
     when: m.when,
+    kind: m.kind,
     sort: m.sort && m.sort !== (m.q ? 'relevance' : 'newest') ? m.sort : undefined,
     view: m.view !== defaultView ? m.view : undefined,
     page: m.page > 1 ? String(m.page) : undefined,
@@ -120,6 +128,7 @@ export function activeFilters(q: ListQuery): FacetName[] {
   if (q.author) out.push('author');
   if (q.pdf) out.push('pdf');
   if (q.when) out.push('when');
+  if (q.kind) out.push('kind');
   return out;
 }
 

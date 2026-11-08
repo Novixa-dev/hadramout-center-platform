@@ -140,11 +140,19 @@ const PAGE_TITLES: Record<string, { title: string; lead?: string }> = {
   contact: { title: 'nav.contact' },
   search: { title: 'search.title' },
   saved: { title: 'saved.title' },
+  audio: { title: 'audio.title', lead: 'audio.lead' },
+  podcast: { title: 'podcast.title', lead: 'podcast.lead' },
+  announcements: { title: 'announcements.title', lead: 'announcements.lead' },
+  partners: { title: 'partners.title', lead: 'partners.lead' },
+  testimonials: { title: 'testimonials.title', lead: 'testimonials.lead' },
+  submit: { title: 'submit.title', lead: 'submit.lead' },
+  platforms: { title: 'platforms.title', lead: 'platforms.lead' },
 };
 
 /** Card for a list/landing page (home, a section, authors…). */
 export async function pageCard(lang: string, key: string): Promise<{ input: OgInput; version: string } | null> {
-  const spec = PAGE_TITLES[key];
+  // own keys only: "constructor" or "__proto__" in the URL must not resolve to an inherited property
+  const spec = Object.hasOwn(PAGE_TITLES, key) ? PAGE_TITLES[key] : undefined;
   if (!spec || !isLocale(lang)) return null;
   let ctx = makeCtx(lang);
   let site = await getSite(lang);

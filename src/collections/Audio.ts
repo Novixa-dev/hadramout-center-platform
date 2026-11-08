@@ -35,6 +35,43 @@ export const Audio: CollectionConfig = {
       label: L('رابط البث أو ملف الصوت الخارجي', 'External streaming or audio URL'),
       admin: { description: L('رابط مباشر لملف MP3 أو منصة بودكاست أو ساوندكلاود.', 'Direct MP3 link, podcast platform, or SoundCloud stream URL.') },
     },
+    {
+      name: 'clips',
+      type: 'array',
+      label: L('مقاطع إضافية', 'More clips'),
+      labels: { singular: L('مقطع', 'Clip'), plural: L('مقاطع', 'Clips') },
+      admin: { description: L('لتسجيل من عدة أجزاء: ارفع ملفاً أو ضع رابطاً (يوتيوب، ساوندكلاود، منصات التواصل) لكل جزء.', 'For a multi-part recording: upload a file or paste a link (YouTube, SoundCloud, social media) per part.') },
+      fields: [
+        titleText('title', L('عنوان المقطع', 'Clip title')),
+        {
+          type: 'row',
+          fields: [
+            { name: 'file', type: 'upload', relationTo: 'media', label: L('ملف صوتي', 'Audio file'), admin: { width: '50%' } },
+            { name: 'url', type: 'text', label: L('أو رابط', 'Or a link'), admin: { width: '50%' } },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'excerpt',
+      type: 'textarea',
+      localized: true,
+      label: L('الملخص', 'Summary'),
+      admin: { description: L('سطران أو ثلاثة يظهران في القائمة.', 'Two or three lines shown in the list.') },
+    },
+    {
+      name: 'series',
+      type: 'select',
+      defaultValue: 'library',
+      index: true,
+      label: L('القسم', 'Section'),
+      options: [
+        { value: 'library', label: L('المكتبة السمعية', 'Audio library') },
+        { value: 'saqaya', label: L('بودكاست سقاية', 'Saqaya podcast') },
+      ],
+      admin: { position: 'sidebar', description: L('حلقات «سقاية» تظهر في صفحة البودكاست.', 'Saqaya episodes appear on the podcast page.') },
+    },
+    { name: 'episode', type: 'number', min: 1, label: L('رقم الحلقة', 'Episode number'), admin: { position: 'sidebar' } },
     localizedText('presenter', L('مقدم البرنامج / المتحدث', 'Presenter / Speaker')),
     localizedText('program', L('اسم البرنامج أو السلسلة', 'Program / Series')),
     {

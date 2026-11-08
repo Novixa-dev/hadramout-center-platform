@@ -6,7 +6,7 @@ import { CONTENT, type ContentType } from '../lib/content-types.ts';
 import { getSite } from '../lib/data.ts';
 import { queryArchive } from '../lib/facets.ts';
 import { UNDATED, type TopicNode } from '../lib/facet-core.ts';
-import { FACETS, VIEWS, activeFilters, effectiveSort, parseListQuery, perPage, queryParams, sidebarFacets, toSearch, type FacetName, type ListQuery, type View } from '../lib/list-query.ts';
+import { EVENT_KIND_VALUES, FACETS, VIEWS, activeFilters, effectiveSort, parseListQuery, perPage, queryParams, sidebarFacets, toSearch, type FacetName, type ListQuery, type View } from '../lib/list-query.ts';
 import { breadcrumbJsonLd, collectionJsonLd, jsonLdString } from '../lib/jsonld.ts';
 import { BookCard, BookRow, EventRow, EntryList, IssueCard, Tile, VideoTile } from './Cards.tsx';
 import { Pagination } from './Pagination.tsx';
@@ -98,7 +98,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
   const views = VIEWS[type];
   const sort = effectiveSort(q);
   const limit = perPage(type, q.view);
-  const res = await queryArchive({ type, lang: lang.code, q: q.q, year: q.year, category: q.category, author: q.author, pdf: q.pdf, when: q.when, sort, page: q.page, limit });
+  const res = await queryArchive({ type, lang: lang.code, q: q.q, year: q.year, category: q.category, author: q.author, pdf: q.pdf, when: q.when, kind: q.kind, sort, page: q.page, limit });
   // a page beyond the last one does not exist: 404 instead of serving the last page again under an endless set of URLs
   if (q.page > res.pages) notFound();
   const site = await getSite(lang.code);
@@ -126,6 +126,7 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
   if (q.author) chips.push({ key: 'author', label: t('list.chip.author', { v: res.authorNames.get(q.author) ?? String(q.author) }), remove: link({ author: undefined }) });
   if (q.pdf) chips.push({ key: 'pdf', label: t('list.pdfOnly'), remove: link({ pdf: undefined }) });
   if (q.when) chips.push({ key: 'when', label: q.when === 'upcoming' ? t('list.upcoming') : t('list.past'), remove: link({ when: undefined }) });
+  if (q.kind) chips.push({ key: 'kind', label: t(`events.kind.${q.kind}`), remove: link({ kind: undefined }) });
 
   // author facet: the most prolific authors in the current result set (+ the chosen one)
   const authorOptions = [...counts.authors.entries()]
@@ -173,6 +174,17 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
               </div>
               <form id="filter-form" className="filters__form" method="get" action={base}>
                 {q.view !== views[0] ? <input type="hidden" name="view" value={q.view} /> : null}
+                {facets.includes('kind') ? (
+                  <details className="facet" open>
+                    <summary>{t('events.kind')}</summary>
+                    <div className="facet__list">
+                      <label className="check"><input type="radio" name="kind" value="" defaultChecked={!q.kind} /><span>{t('list.all')}</span></label>
+                      {EVENT_KIND_VALUES.filter((k) => counts.kinds.get(k) || q.kind === k).map((k) => (
+                        <label key={k} className="check"><input type="radio" name="kind" value={k} defaultChecked={q.kind === k} /><span>{t(`events.kind.${k}`)}</span><span className="count">{counts.kinds.get(k) ?? 0}</span></label>
+                      ))}
+                    </div>
+                  </details>
+                ) : null}
                 {facets.includes('when') ? (
                   <details className="facet" open>
                     <summary>{t('meta.date')}</summary>

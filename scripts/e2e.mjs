@@ -84,7 +84,7 @@ await journey('defaults and theme', async (page) => {
   await page.click(toggle);
   check((await html(page, 'data-theme')) === 'light', 'toggle switches to light');
   check((await page.evaluate(() => localStorage.getItem('hc-theme'))) === 'light', 'the choice is stored');
-  check((await page.$eval('#hc-theme-color', (m) => m.content)) === '#fffbf5', 'theme-color follows the toggle');
+  check((await page.$eval('#hc-theme-color', (m) => m.content)) === '#f6e9cf', 'theme-color follows the toggle');
   await page.reload({ waitUntil: 'networkidle2' });
   check((await html(page, 'data-theme')) === 'light', 'the choice survives a reload');
   await page.click(toggle);

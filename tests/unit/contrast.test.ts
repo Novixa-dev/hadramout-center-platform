@@ -36,6 +36,10 @@ const ratio = (a: string, b: string) => {
 const TEXT_PAIRS: [string, string][] = [
   ['text', 'bg'], ['text', 'surface'], ['text-2', 'bg'], ['text-2', 'surface'], ['text-2', 'surface-2'], ['text-2', 'surface-3'],
   ['muted', 'bg'], ['muted', 'surface'], ['muted', 'surface-2'],
+  // the top of the light page is the deeper gold tint
+  ['text', 'bg-tint'], ['text-2', 'bg-tint'], ['muted', 'bg-tint'], ['brand', 'bg-tint'], ['accent-text', 'bg-tint'],
+  // the teal band above the header (light and dark)
+  ['strata-text', 'strata-bg'],
   ['brand', 'bg'], ['brand', 'surface'], ['brand', 'surface-2'], ['brand', 'brand-soft'], ['brand-strong', 'surface'],
   ['accent-text', 'bg'], ['accent-text', 'surface'], ['accent-text', 'surface-2'], ['accent-text', 'accent-soft'],
   ['danger', 'surface'], ['success', 'surface'], ['warning', 'surface'],

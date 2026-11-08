@@ -97,6 +97,22 @@ export class TranslationEngine {
     if (this.o.dailyCharLimit > 0 && charsIn + chars > this.o.dailyCharLimit) throw new TranslationError('daily translation limit reached', true);
   }
 
+  /**
+   * Unsaved page text from the editor's assistant: the same daily budget, usage record, glossary and HTML structure guard
+   * as document jobs (empty parts stay empty, nothing is stored).
+   */
+  async translateFragments(lang: string, parts: { text: string; html: boolean }[]): Promise<string[]> {
+    const glossary = await this.glossaryFor(lang);
+    const context = contextFor('pages');
+    const out: string[] = [];
+    for (const p of parts) {
+      if (!p.text) out.push('');
+      else if (p.html) out.push(await this.translateHtml(lang, p.text, glossary, context));
+      else out.push(sanitizeText((await this.call(lang, [p.text], 'text', glossary, context))[0] ?? ''));
+    }
+    return out;
+  }
+
   // ── Provider calls ─────────────────────────────────────────────────────────
 
   private async call(lang: string, texts: string[], format: 'text' | 'html', glossary: GlossaryEntry[], context: string): Promise<string[]> {

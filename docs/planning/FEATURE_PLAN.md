@@ -1,7 +1,7 @@
 # Feature plan — everything we said we would do
 
 **Purpose:** one list of every idea, feature and improvement promised across the project documents, with its *verified* status and the order of work. Findings (defects) live in [BACKLOG](BACKLOG.md); this file is about features and product decisions.
-**Last updated:** 2026-10-20 · **Status legend:** DONE (verified in code or live) · TODO (we can build it without outside input) · BLOCKED (needs the Center, an editor, or owner credentials) · REJECTED (decided against, with the reason) · DECISION (needs the owner)
+**Last updated:** 2026-11-03 (the Center's feedback report) · 2026-10-20 · **Status legend:** DONE (verified in code or live) · TODO (we can build it without outside input) · BLOCKED (needs the Center, an editor, or owner credentials) · REJECTED (decided against, with the reason) · DECISION (needs the owner)
 **Sources read:** [feature catalog](../02-plan/05-feature-catalog.md) · [master plan](../02-plan/01-master-plan.md) · [deferred ideas](../09-redesign/04-deferred-ideas.md) · [old-vs-new review](../08-review/01-site-review-old-vs-new.md) · [redesign plan](../09-redesign/00-baseline-and-plan.md) · [launch plan](../07-marketing/01-launch-campaign-plan.md) · [design system](../02-plan/03-design-system.md) · [editorial issues](../09-redesign/02-editorial-issues.md) · [TRACKER](../03-tracking/TRACKER.md) · [ROADMAP](ROADMAP.md)
 
 ## 1. Owner requests in force
@@ -10,6 +10,7 @@
 |---|---|
 | Arabic is the default language | DONE — verified live: `Accept-Language: en/fr/none` all redirect to `/ar`; only a saved language cookie changes it; guarded by the CI smoke test |
 | Dark theme is the default | DONE (PR #16) — `<html data-theme="dark">` rendered by the server, no flash, no JS needed; explicit visitor choice persists; theme-color, manifest and print follow |
+| The Center's feedback report (2026-10-27): menu in its order with sub-levels, utility bar, gold light theme, event/forum/podcast/audio/video/announcement fields, partners, testimonials, About pages from the decade book | DONE except the 3D logo, governance texts, board/team names and the categorisation policy (BLOCKED on the Center) — see [REQUIREMENTS_TRACEABILITY](../../REQUIREMENTS_TRACEABILITY.md) |
 | Everything planned gets built, tested and documented; GitHub always in sync | In progress — see sections 2–4; every change goes through a PR with CI |
 
 ## 2. Feature catalog status (F-xx)

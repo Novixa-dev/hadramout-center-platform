@@ -2,7 +2,8 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { absolute, isLocale, makeCtx, docHref } from '../../../lib/ctx.ts';
-import { getSite, listTimeline } from '../../../lib/data.ts';
+import { getSite, listAnnouncements, listTimeline } from '../../../lib/data.ts';
+import { AnnouncementCard } from '../../../components/AnnouncementCard.tsx';
 import { getTopics, latest, rowCount, topAuthors } from '../../../lib/facets.ts';
 import { buildMetadata } from '../../../lib/seo.ts';
 import { describe } from '../../../lib/seo-text.ts';
@@ -30,7 +31,7 @@ export default async function Home({ params }: Props) {
   if (!isLocale(locale)) notFound();
   const ctx = makeCtx(locale);
   const { t, href, lang } = ctx;
-  const [site, counts, issues, articles, news, books, upcoming, recentEvents, forum, videos, topics, authors, timeline] = await Promise.all([
+  const [site, counts, issues, articles, news, books, upcoming, recentEvents, forum, videos, topics, authors, timeline, announcements] = await Promise.all([
     getSite(locale),
     Promise.all((['article', 'book', 'magazine', 'event', 'forum', 'news'] as const).map(rowCount)),
     latest('magazine', locale, 8),
@@ -44,6 +45,7 @@ export default async function Home({ params }: Props) {
     getTopics(locale),
     topAuthors(locale, 14),
     listTimeline(locale),
+    listAnnouncements(locale, { only: 'home', limit: 3 }),
   ]);
   const [nArticles, nBooks, nIssues, nEvents, _nForum, nNews] = counts;
   const issue = issues[0];
@@ -104,6 +106,17 @@ export default async function Home({ params }: Props) {
           </ul>
         </div>
       </div>
+
+      {announcements.length ? (
+        <section className="section section--tight" aria-labelledby="announcements-h">
+          <div className="container">
+            <SectionHead title={t('announcements.home')} id="announcements-h" href={href('/announcements')} more={t('announcements.more')} as="h2" />
+            <div className="announce-row">
+              {announcements.map((a) => <AnnouncementCard key={a.id} ctx={ctx} item={a} host={new URL(absolute('')).host} compact />)}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section className="section section--tight">
         <div className="container split">

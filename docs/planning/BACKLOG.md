@@ -1,7 +1,7 @@
 # Backlog
 
 **Purpose:** the single register of open and closed findings from the 2026-10 audit, with status. Detail (evidence, acceptance criteria, verification) stays in the source document linked per row.
-**Last updated:** 2026-10-29 (OPS-3 done: audit gate, workflow lint, CodeQL); 2026-10-27 (MIG-007/QA-3 done; security items SEC-003 and SEC-010 closed — see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md)) · **Compiled** once from the finding tables of the audit documents; from now on this file is maintained by hand. Update the status here, not in the source documents.
+**Last updated:** 2026-11-03 (Center feedback report + decade book: section «Center feedback (CF)» below; requirement-by-requirement status in [REQUIREMENTS_TRACEABILITY](../../REQUIREMENTS_TRACEABILITY.md)); 2026-10-29 (OPS-3 done: audit gate, workflow lint, CodeQL); 2026-10-27 (MIG-007/QA-3 done; security items SEC-003 and SEC-010 closed — see [SECURITY_REVIEW](../security/SECURITY_REVIEW.md)) · **Compiled** once from the finding tables of the audit documents; from now on this file is maintained by hand. Update the status here, not in the source documents.
 **Statuses:** READY (can be done without outside input) · PARTIAL (started, remainder listed) · BLOCKED (needs the Center, an editor, or owner credentials) · DONE (changed and verified; evidence in the note).
 **Related:** [ROADMAP](ROADMAP.md) · [PROGRESS](PROGRESS.md)
 
@@ -15,6 +15,28 @@
 | DONE | 15 | 1 | 11 | 3 | 0 |
 
 Severity is the auditor's claim backed by cited evidence; the planned adversarial re-verification did not run (usage limit). The 5 remaining high-severity items are LEG-001, LEG-002, DATA-001, MIG-001, MIG-003 (ARCH-001 was downgraded on measurement).
+
+## Center feedback (CF) — report of 2026-10-27 and the decade book (2026-11-03)
+
+| ID | Severity | Title | Status | Note |
+|---|---|---|---|---|
+| CF-SEC-1 | high | `/api/hc/editorial-assist` open to visitors, spent the translation budget | DONE | staff session + rate limit + size cap; translate goes through the engine budget; smoke asserts 401 |
+| CF-SEC-2 | high | `?preview=1` showed draft pages to anyone | DONE | drafts only with a staff session; smoke inserts a draft and asserts 404 |
+| CF-SEC-3 | medium | announcement `.ics` and the unused `/api/hc/calendar` read drafts | DONE | published only; dead route and `lib/ical.ts` removed |
+| CF-SEC-4 | medium | testimonials without consent and partner logos readable over REST | DONE | collection/field read access |
+| CF-INT-1 | high | `/submit` published invented publishing/peer-review rules and an internal id | DONE | rewritten: five headings as the Center named them, «قيد الاعتماد», real channel only |
+| CF-NAV | high | menu order and levels as the Center asked (R1-02…R1-10) | DONE | `src/lib/nav.ts`; two-row desktop header, drawer accordions, utility bar |
+| CF-ABOUT | high | About sub-pages from the decade book (R1-03, R2-01…06) | DONE | migration `20261103_160000`; board/team/advisors wait for names |
+| CF-GOV | medium | Governance pages (R1-04) | BLOCKED | pages exist, content from the Center |
+| CF-EVT | medium | event type, attendance, participants, supporters, forum category; type filter (R1-07, R1-12…14, R1-17) | DONE | 44 of 53 events typed from their titles; 9 «فعالية…» left for an editor |
+| CF-MEDIA | medium | audio clips/series/summary, Saqaya page, video clips, announcements page + Google Calendar, partners, testimonials (R1-18…23) | DONE | content entry by editors |
+| CF-THEME | low | gold background in the light theme (R1-11) | DONE | `--bg`/`--bg-tint`, contrast test extended |
+| CF-LOGO | medium | new 3D logo (R1-01) | BLOCKED | file needed from the Center |
+| CF-BOOK | high | the decade book's records were not on the site (papers, conferences 4/6/7, seminars, panels, forum, 4 books) | DONE | `src/seed/book-records-data.ts`, migration `20261108_130000_book_records` |
+| CF-CONFLICT | medium | book vs announcements: dates and p. 67 lecturers | BLOCKED | the Center decides: `docs/client/05-book-vs-site-conflicts-ar.md` |
+| CF-PDF-PUBLIC | high | the Center's internal PDFs are in the public repository since `2f335bb` | BLOCKED | owner decision |
+| CF-TAX | medium | categorisation policy (R1-24) | BLOCKED | proposal: `docs/06-handover/taxonomy-policy-proposal-ar.md` |
+| CF-UPLOAD | low | audio uploads above 25 MB are refused by nginx | READY | long episodes: use links, or raise `client_max_body_size` for `/api/media` |
 
 ## Ready
 

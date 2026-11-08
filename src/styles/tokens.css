@@ -13,7 +13,14 @@
     --gold-500: #c49952; --gold-600: #a97f37; --gold-700: #86632b; --gold-800: #644a22; --gold-900: #423119;
 
     /* semantic colors: light | dark  (text pairs verified ≥ 4.5:1, see docs/09-redesign) */
-    --bg: light-dark(#fffbf5, #0e1815);
+    /* the page is built from the emblem's layers (cover of the Center's decade book): the teal band, then the gold body.
+       light: gold at the top and foot of the window fading into warm paper, instead of white, as the Center asked */
+    --logo-teal: #188876; --logo-teal-deep: #076f5f; --logo-gold: #d3a970; --logo-gold-deep: #af8d5d;
+    --bg: light-dark(#fbf3e4, #0e1815);
+    --bg-tint: light-dark(#f1dfba, #0e1815);
+    --strata-bg: light-dark(var(--logo-teal-deep), #0b2a22);
+    --strata-text: #ffffff;
+    --strata-accent: light-dark(var(--gold-200), #e0b96a);
     --surface: light-dark(#ffffff, #14211d);
     --surface-2: light-dark(#faf4ea, #1a2b26);
     --surface-3: light-dark(#f3eadb, #223630);
@@ -29,9 +36,8 @@
     --brand-soft: light-dark(var(--green-50), #173229);
     --on-brand: #ffffff;
     --accent: light-dark(var(--gold-500), #e0b96a);
-    --accent-text: light-dark(var(--gold-700), #e0b96a);
+    --accent-text: light-dark(#7a5a26, #e0b96a); /* gold-700 is 4.2:1 on the gold tint; this one is 4.8:1 */
     --accent-soft: light-dark(var(--gold-50), #2b2616);
-    --header-tint: light-dark(color-mix(in srgb, var(--gold-200) 38%, transparent), transparent); /* client note: gold of the logo behind the light header, not flat white */
     --link: var(--brand);
     --focus: light-dark(#1a5fb4, #8ab4f8);
     --success: light-dark(#1e7a4a, #6fd39a);
@@ -74,6 +80,8 @@
     --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --t-fast: 120ms; --t-med: 200ms; --t-slow: 320ms;
     --header-h: 4.25rem;
+    --nav-h: 3rem;
+    --header-offset: var(--header-h); /* height of the sticky header: one row on phones, two from 1100px (layout.css) */
     --z-header: 50; --z-drawer: 90; --z-dialog: 120; --z-toast: 200;
   }
 
@@ -87,9 +95,9 @@
 
   @supports not (color: light-dark(#000, #fff)) {
     :root {
-      --bg: #fffbf5; --surface: #fff; --surface-2: #faf4ea; --surface-3: #f3eadb; --border: #e8dfd0; --border-strong: #d2c6b0; --rule: #dccfb8;
+      --bg: #fbf3e4; --bg-tint: #f1dfba; --strata-bg: #076f5f; --strata-accent: #e8d1a0; --surface: #fff; --surface-2: #faf4ea; --surface-3: #f3eadb; --border: #e8dfd0; --border-strong: #d2c6b0; --rule: #dccfb8;
       --text: #1f2421; --text-2: #3c423d; --muted: #5b5f58; --brand: #226a5a; --brand-strong: #1c5547; --brand-fill: #226a5a; --brand-soft: #eef7f4;
-      --accent: #c49952; --accent-text: #86632b; --accent-soft: #fbf6ec; --focus: #1a5fb4; --success: #1e7a4a; --warning: #9a6700; --warning-text: #7a5200; --danger: #b3261e;
+      --accent: #c49952; --accent-text: #7a5a26; --accent-soft: #fbf6ec; --focus: #1a5fb4; --success: #1e7a4a; --warning: #9a6700; --warning-text: #7a5200; --danger: #b3261e;
       --hero-bg: #174438; --pattern: #226a5a;
     }
   }

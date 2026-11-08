@@ -15,7 +15,7 @@ export function ThemeToggle({ label }: { label: string }) {
   const toggle = () => {
     const next: Theme = effective() === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    document.getElementById('hc-theme-color')?.setAttribute('content', next === 'light' ? '#fffbf5' : '#0e1815');
+    document.getElementById('hc-theme-color')?.setAttribute('content', next === 'light' ? '#f6e9cf' : '#0e1815');
     try {
       localStorage.setItem('hc-theme', next);
     } catch {

@@ -1,6 +1,10 @@
-import type { CollectionConfig } from 'payload';
+import type { Access, CollectionConfig, Where } from 'payload';
 import { contentAccess, L, localizedText, lockForReviewers, titleText } from './shared.ts';
 import { revalidateSite } from '../hooks/revalidate.ts';
+
+/** Visitors (site pages and the public REST API alike) see only published testimonials whose author agreed in writing. */
+const CONSENTED: Where = { and: [{ status: { equals: 'published' } }, { hasWrittenConsent: { equals: true } }] };
+const readConsented: Access = ({ req }) => (req.user ? true : CONSENTED);
 
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
@@ -11,7 +15,7 @@ export const Testimonials: CollectionConfig = {
     group: L('المحتوى', 'Content'),
   },
   defaultSort: '-date',
-  access: contentAccess,
+  access: { ...contentAccess, read: readConsented },
   hooks: {
     afterChange: [
       ({ doc }) => {

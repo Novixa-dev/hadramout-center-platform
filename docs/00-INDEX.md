@@ -4,7 +4,7 @@
 
 | المجلد | المحتوى |
 |---|---|
-| **ابدأ هنا (2026-11-06)** | [`manual/index.html`](manual/index.html) الدليل الشامل المصمَّم (+ `manual-ar.pdf`) · [`06-handover/HANDOVER.md`](06-handover/HANDOVER.md) وثيقة التسليم · [`client/`](client/README.md) تحليل ملفات العميل وخطة العمل (CF-01…CF-24) · [`planning/IDEAS_AND_ROADMAP.md`](planning/IDEAS_AND_ROADMAP.md) الأفكار مرتبة بالأولوية |
+| **ابدأ هنا (2026-11-06)** | [`manual/index.html`](manual/index.html) الدليل الشامل المصمَّم (+ `manual-ar.pdf`) · [`06-handover/HANDOVER.md`](06-handover/HANDOVER.md) وثيقة التسليم · [`client/`](client/README.md) تحليل ملفات العميل وخطة العمل (CF-01…CF-24) ومصفوفة تتبع المتطلبات · `06-handover/taxonomy-policy-proposal-ar.md` مقترح سياسة التصنيف لاجتماع المركز · [`planning/IDEAS_AND_ROADMAP.md`](planning/IDEAS_AND_ROADMAP.md) الأفكار مرتبة بالأولوية |
 | `01-audit` | تدقيق المستودع القديم والموقع القديم وأفضل الممارسات |
 | `02-plan` | قرار الإطار، الخطة الرئيسية، المعمارية، نظام التصميم، **الترجمة**، كتالوج الميزات، نموذج المحتوى، القرارات |
 | `03-tracking` | `TRACKER.md` — الحالة الحالية والمتبقي |

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { absolute, authorsOf, coverOf, displayDate, docHref, isLocale, makeCtx } from '../../../../../lib/ctx.ts';
 import { typeFromRoute, type ContentType } from '../../../../../lib/content-types.ts';
 import { getDoc, getDocsByIds, getSite, trInfo, type Doc } from '../../../../../lib/data.ts';
@@ -11,7 +11,6 @@ import { appConfig } from '../../../../../lib/runtime-light.ts';
 import { withHeadingIds } from '../../../../../lib/html-utils.ts';
 import { localizeLegacyMedia } from '../../../../../lib/legacy-media.ts';
 import { formatHijri } from '../../../../../lib/dates.ts';
-import { googleCalendarUrl } from '../../../../../lib/ical.ts';
 import { readingMinutes } from '../../../../../lib/arabic.ts';
 import { htmlToText } from '../../../../../lib/sanitize.ts';
 import { bibKey, formatCitation, scholarMeta, toBibtex, toCslJson, toRis, type CiteSource } from '../../../../../lib/citations.ts';
@@ -30,8 +29,15 @@ import { TocSpy } from '../../../../../components/client/Toc.tsx';
 import { TrBanner } from '../../../../../components/client/TrBanner.tsx';
 import { VideoFacade } from '../../../../../components/client/VideoFacade.tsx';
 import { PERIODICAL_NAME } from '../../../../../lib/periodical.ts';
+import { StaticPage, pageMetadata } from '../../../../../components/StaticPage.tsx';
+import { MOVED_PAGES } from '../../../../../lib/nav.ts';
+import { googleCalendarUrl } from '../../../../../lib/calendar.ts';
+import { safeHref, youtubeId } from '../../../../../lib/media-links.ts';
 
-type Props = { params: Promise<{ locale: string; section: string; id: string }> };
+/** The second segment of an editor page's URL (lowercase words and hyphens). */
+const PAGE_SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
+
+type Props = { params: Promise<{ locale: string; section: string; id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 const TITLE_KEY: Record<ContentType, string> = {
   news: 'news.title', article: 'articles.title', book: 'books.title', magazine: 'magazines.title', event: 'events.title', forum: 'forum.title', video: 'videos.title',
@@ -69,7 +75,10 @@ function citeSourceOf(type: ContentType, doc: Doc, url: string, lang: string, no
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, section, id } = await params;
   const info = typeFromRoute(section);
-  if (!info || !isLocale(locale) || !/^\d+$/.test(id)) return {};
+  if (!isLocale(locale)) return {};
+  // a section that is not a content type holds editor pages: /about/identity is the page «about/identity»
+  if (!info) return PAGE_SLUG.test(id) ? pageMetadata(makeCtx(locale), `${section}/${id}`) : {};
+  if (!/^\d+$/.test(id)) return {};
   const ctx = makeCtx(locale);
   const doc = await getDoc(info.type, Number(id), locale);
   if (!doc) return {};
@@ -152,10 +161,17 @@ function Facts({ items }: { items: [string, string | null | undefined][] }) {
   );
 }
 
-export default async function DetailPage({ params }: Props) {
+export default async function DetailPage({ params, searchParams }: Props) {
   const { locale, section, id } = await params;
   const info = typeFromRoute(section);
-  if (!info || !isLocale(locale) || !/^\d+$/.test(id)) notFound();
+  if (!isLocale(locale)) notFound();
+  if (!info) {
+    if (!PAGE_SLUG.test(id)) notFound();
+    const moved = MOVED_PAGES[`${section}/${id}`];
+    if (moved) permanentRedirect(makeCtx(locale).href(moved));
+    return <StaticPage locale={locale} slug={`${section}/${id}`} preview={(await searchParams).preview === '1'} />;
+  }
+  if (!/^\d+$/.test(id)) notFound();
   const type = info.type;
   const ctx = makeCtx(locale);
   const { t, href } = ctx;
@@ -177,9 +193,14 @@ export default async function DetailPage({ params }: Props) {
   const pdf = typeof doc.pdf === 'string' && doc.pdf ? localizeLegacyMedia(doc.pdf) : null;
   const isEvent = type === 'event' || type === 'forum';
   const eventDate = (doc.eventDate as string | undefined) ?? undefined;
-  const gcal = isEvent && eventDate ? googleCalendarUrl({ title: doc.title, start: eventDate, end: (doc.endDate as string | undefined) ?? null, location: typeof doc.venue === 'string' ? doc.venue : null, url }) : null;
   const tracks = (isEvent && Array.isArray(doc.tracks) ? doc.tracks : []) as { title: string; description?: string | null }[];
   const papers = (isEvent && Array.isArray(doc.papers) ? doc.papers : []) as { title: string; researcher: string; abstract?: string | null; fileUrl?: string | null; file?: { url?: string | null } | number | null }[];
+  const participants = (isEvent && Array.isArray(doc.participants) ? doc.participants : []) as { id?: string; name: string; role: string }[];
+  const supporters = (isEvent && Array.isArray(doc.supporters) ? doc.supporters : []) as { name: string }[];
+  const clips = (type === 'video' && Array.isArray(doc.clips) ? doc.clips : []) as { id?: string; title?: string | null; youtubeId?: string | null; url?: string | null }[];
+  const googleCal = isEvent && eventDate
+    ? googleCalendarUrl({ uid: `${section}-${doc.id}`, host: new URL(absolute('')).host, title: doc.title, start: eventDate, end: (doc.endDate as string | undefined) ?? undefined, location: doc.venue ? String(doc.venue) : undefined, url })
+    : null;
   const source = citeSourceOf(type, doc, url, locale, t('book.noYear'));
   const styles = { apa: formatCitation(source, 'apa'), mla: formatCitation(source, 'mla'), chicago: formatCitation(source, 'chicago'), harvard: formatCitation(source, 'harvard') };
   const key = bibKey(source);
@@ -251,7 +272,7 @@ export default async function DetailPage({ params }: Props) {
       ) : null}
       {type === 'book' ? <Link className="btn btn--gold" href={`${href('/contact')}?kind=book_request&book=${doc.id}&subject=${encodeURIComponent(t('contact.form.bookRequest', { title: doc.title }))}`}>{t('book.request')}</Link> : null}
       {isEvent && eventDate ? <a className="btn btn--primary" href={`/api/hc/ics/${section}/${doc.id}.ics?lang=${locale}`}><Icon name="calendar" /> {t('event.addToCalendar')}</a> : null}
-      {isEvent && gcal ? <a className="btn btn--ghost" href={gcal} target="_blank" rel="noopener noreferrer"><Icon name="calendar" /> {t('event.addToGoogle')}</a> : null}
+      {googleCal ? <a className="btn btn--secondary" href={googleCal} target="_blank" rel="noopener noreferrer"><Icon name="calendar" /> {t('event.addToGoogle')}<span className="sr-only"> ({t('a11y.newWindow')})</span></a> : null}
       {pdf || type === 'book' || isEvent ? <span className="actions__sep" aria-hidden="true" /> : null}
       {canCite ? <CitePanel label={t('tools.cite')} title={t('cite.title')} note={t('cite.note')} copyLabel={t('tools.copy')} copiedLabel={t('tools.copied')} exportLabel={t('cite.export')} closeLabel={t('nav.close')} styles={styles} files={files} /> : null}
       <ShareMenu label={t('tools.share')} title={doc.title} url={url} copyLink={t('tools.copyLink')} copied={t('tools.copied')} closeLabel={t('nav.close')} targets={{ whatsapp: t('share.whatsapp'), telegram: t('share.telegram'), x: t('share.x'), facebook: t('share.facebook') }} />
@@ -421,15 +442,27 @@ export default async function DetailPage({ params }: Props) {
             {isEvent ? (
               <Facts
                 items={[
+                  [t('event.type'), doc.kind ? t(`events.kind.${String(doc.kind)}`) : undefined],
+                  [t('event.attendance'), doc.attendance ? t(`event.attendance.${String(doc.attendance)}`) : undefined],
                   [t('meta.speaker'), doc.speaker as string | undefined],
                   [t('meta.moderator'), doc.moderator as string | undefined],
                   [t('event.chairs'), doc.chairs as string | undefined],
                   [t('meta.time'), doc.timeText as string | undefined],
                   [t('meta.venue'), doc.venue as string | undefined],
-                  [t('event.attendance'), typeof doc.attendance === 'string' ? t(`event.attendance.${doc.attendance}`) : undefined],
-                  [t('event.supporters'), doc.supporters as string | undefined],
+                  [t('event.supporters'), supporters.length ? supporters.map((x) => x.name).join('، ') : undefined],
                 ]}
               />
+            ) : null}
+
+            {participants.length ? (
+              <section className="event-people" aria-labelledby="participants-h">
+                <h2 id="participants-h" className="event-people__title">{t('event.participants')}</h2>
+                <ul>
+                  {participants.map((p, i) => (
+                    <li key={p.id ?? i}><strong>{p.name}</strong> <span className="event-people__role">{t(`event.role.${p.role}`)}</span></li>
+                  ))}
+                </ul>
+              </section>
             ) : null}
 
             {(type === 'video' || isEvent) && doc.youtubeId ? (
@@ -437,6 +470,23 @@ export default async function DetailPage({ params }: Props) {
                 <VideoFacade youtubeId={String(doc.youtubeId)} title={doc.title} label={t('video.play')} poster={`https://i.ytimg.com/vi/${doc.youtubeId}/hqdefault.jpg`} />
                 <p style={{ marginBlockStart: '0.6rem' }}><a href={`https://www.youtube.com/watch?v=${doc.youtubeId}`} target="_blank" rel="noopener noreferrer">{t('video.watchYoutube')} <Icon name="external" /></a></p>
               </div>
+            ) : null}
+
+            {clips.length ? (
+              <section className="video-clips" aria-labelledby="clips-h">
+                <h2 id="clips-h" className="event-people__title">{t('video.clips')}</h2>
+                {clips.map((c, i) => {
+                  const yt = youtubeId(c.youtubeId) ?? youtubeId(c.url);
+                  const link = safeHref(c.url);
+                  const label = c.title || `${doc.title} (${i + 2})`;
+                  return (
+                    <div key={c.id ?? i} className="video-clips__item">
+                      {yt ? <VideoFacade youtubeId={yt} title={label} label={t('video.play')} poster={`https://i.ytimg.com/vi/${yt}/hqdefault.jpg`} /> : null}
+                      {!yt && link ? <a href={link} target="_blank" rel="noopener noreferrer">{label} <Icon name="external" /></a> : <p className="video-clips__title">{label}</p>}
+                    </div>
+                  );
+                })}
+              </section>
             ) : null}
 
             {(type === 'news' || type === 'article') && cover ? (

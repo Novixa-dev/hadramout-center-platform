@@ -6,7 +6,8 @@ import { sanitizeText } from '../lib/sanitize.ts';
 import { CONTENT, type ContentType } from '../lib/content-types.ts';
 import { mergeBareTitles, splitHonorific } from '../lib/author-names.ts';
 import { DEFAULT_GLOSSARY, DEFAULT_PAGES, DEFAULT_TIMELINE } from './defaults.ts';
-import { CENTER_PAGES } from './center-pages.ts';
+import { CENTER_PAGES, CENTER_PAGES_2026_11 } from './center-pages.ts';
+import { MOVED_PAGES } from '../lib/nav.ts';
 import type { Snapshot } from '../importer/crawl.ts';
 import type { SnapshotPost } from '../importer/legacy.ts';
 
@@ -51,6 +52,12 @@ async function findOne(payload: Payload, collection: string, where: Record<strin
   return (r.docs[0] as unknown as { id: number } | undefined) ?? null;
 }
 
+/** Fresh databases: the same reading of the title that migration 20261103_160000 applies to existing rows (most specific first). */
+function eventKindFromTitle(title: string): string | undefined {
+  const words: [string, string][] = [['competition', 'مسابقة'], ['panel', 'حلقة نقاش'], ['seminar', 'ندوة'], ['conference', 'مؤتمر'], ['lecture', 'محاضرة']];
+  return words.find(([, word]) => title.includes(word))?.[0];
+}
+
 function typeFields(p: SnapshotPost, ids: { authors: number[]; category?: number; magazine?: number }): Record<string, unknown> {
   const f = p.fields;
   const d = p.data;
@@ -64,6 +71,7 @@ function typeFields(p: SnapshotPost, ids: { authors: number[]; category?: number
     case 'magazine':
       return { issueNumber: d.issue_number, pdf: d.pdf };
     case 'event':
+      return { kind: eventKindFromTitle(p.title), speaker: f.speaker, moderator: f.moderator, venue: f.venue, timeText: f.time_text, eventDate: d.event_date, endDate: d.end_date, youtubeId: d.youtube_id };
     case 'forum':
       return { speaker: f.speaker, moderator: f.moderator, venue: f.venue, timeText: f.time_text, eventDate: d.event_date, endDate: d.end_date, youtubeId: d.youtube_id };
     case 'video':
@@ -156,7 +164,8 @@ export async function seedSnapshot(payload: Payload, snapshot: Snapshot, log: (m
 
 /** Pages, timeline, glossary and site settings that the legacy site does not provide. */
 export async function seedDefaults(payload: Payload): Promise<void> {
-  for (const p of [...DEFAULT_PAGES, ...CENTER_PAGES]) {
+  for (const p of [...DEFAULT_PAGES, ...CENTER_PAGES, ...CENTER_PAGES_2026_11]) {
+    if (MOVED_PAGES[p.slug]) continue;
     if (!(await findOne(payload, 'pages', { slug: { equals: p.slug } }))) {
       await payload.create({ collection: 'pages', data: { slug: p.slug, title: p.title, body: p.body, status: 'published' }, ...OPTS });
     }

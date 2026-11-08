@@ -1,177 +1,91 @@
+import { NextResponse } from 'next/server';
 import { normalizeScholarlyArabic, auditScholarlyArabic } from '../../../../lib/arabic-assist.ts';
 import { cleanDescription, clip, describe } from '../../../../lib/seo-text.ts';
 import { htmlToText } from '../../../../lib/sanitize.ts';
 import { appConfig } from '../../../../lib/runtime-light.ts';
+import { getPayloadClient } from '../../../../lib/runtime.ts';
+import { isLangEnabled } from '../../../../config.ts';
 import { createProvider } from '../../../../i18n/translation/providers.ts';
+import { TranslationEngine } from '../../../../i18n/translation/engine.ts';
+import { TranslationError } from '../../../../i18n/translation/types.ts';
 import { getLanguage } from '../../../../i18n/languages.ts';
+import { allow } from '../../../../lib/ratelimit.ts';
+import { canEdit, staffUser } from '../../../../lib/staff.ts';
+import { ACADEMIC_TEMPLATE, MAX_ASSIST_CHARS, assistAction, firstSentences } from '../../../../lib/editorial-assist.ts';
 
 export const dynamic = 'force-dynamic';
 
+const json = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { 'cache-control': 'no-store' } });
+
+/**
+ * Editorial assistant for the admin's page editor. Staff only (editors and admins): every action runs on the server and
+ * `translate` spends the translation budget, so a visitor must never reach it.
+ */
 export async function POST(req: Request) {
+  const user = await staffUser(req.headers);
+  if (!user) return json({ error: 'unauthorized' }, 401);
+  if (!canEdit(user)) return json({ error: 'forbidden' }, 403);
+  // generous for a person, tight for a script: 60 calls per 10 minutes per account
+  if (!allow(`assist:${user.id}`, 60, 600)) return json({ error: 'rate limited' }, 429);
+
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_ASSIST_CHARS * 4) return json({ error: 'too large' }, 413);
+  let body: { action?: unknown; text?: unknown; title?: unknown; lead?: unknown; body?: unknown; targetLang?: unknown };
   try {
-    const body = (await req.json()) as {
-      action?: string;
-      text?: string;
-      title?: string;
-      lead?: string;
-      body?: string;
-      targetLang?: string;
-    };
+    body = await req.json();
+  } catch {
+    return json({ error: 'bad json' }, 400);
+  }
+  const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
+  const text = str(body.text);
+  const title = str(body.title);
+  const lead = str(body.lead);
+  const html = str(body.body);
+  if (text.length + title.length + lead.length + html.length > MAX_ASSIST_CHARS) return json({ error: 'too large' }, 413);
 
-    const action = body.action || (typeof body.text === 'string' ? 'normalize' : 'auto-fill-seo');
+  switch (assistAction(body.action, typeof body.text === 'string')) {
+    case 'normalize':
+      if (!text) return json({ error: 'missing text' }, 400);
+      return json({ normalized: normalizeScholarlyArabic(text), suggestions: auditScholarlyArabic(text) });
 
-    // 1. Scholarly Normalization & Audit
-    if (action === 'normalize') {
-      const source = typeof body.text === 'string' ? body.text : '';
-      if (!source) {
-        return new Response(JSON.stringify({ error: 'Missing text parameter' }), {
-          status: 400,
-          headers: { 'content-type': 'application/json' },
-        });
-      }
-      const normalized = normalizeScholarlyArabic(source);
-      const suggestions = auditScholarlyArabic(source);
-      return new Response(JSON.stringify({ normalized, suggestions }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      });
-    }
-
-    // 2. Auto-Fill SEO Meta Title & Description
-    if (action === 'auto-fill-seo') {
-      const title = (body.title || '').trim();
-      const lead = (body.lead || '').trim();
-      const rawBody = (body.body || '').trim();
-      const cleanBodyText = htmlToText(rawBody);
-
-      // Meta Title: crisp, under 60 chars
+    case 'auto-fill-seo': {
       const baseTitle = normalizeScholarlyArabic(title || 'مركز حضرموت للدراسات التاريخية');
-      const metaTitle = clip(baseTitle, 58);
-
-      // Meta Description: concise, informative, between 120 and 155 chars
-      let metaDescription = '';
-      if (lead) {
-        metaDescription = cleanDescription(normalizeScholarlyArabic(lead));
-      } else if (cleanBodyText) {
-        metaDescription = describe(normalizeScholarlyArabic(cleanBodyText));
-      } else {
-        metaDescription = `${baseTitle} — مركز حضرموت للدراسات التاريخية والتوثيق والنشر (المكلا، اليمن).`;
-      }
-
-      if (metaDescription.length > 155) {
-        metaDescription = clip(metaDescription, 152);
-      }
-
-      return new Response(JSON.stringify({ metaTitle, metaDescription }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      });
+      const plain = htmlToText(html);
+      const metaDescription = lead
+        ? cleanDescription(normalizeScholarlyArabic(lead))
+        : plain
+          ? describe(normalizeScholarlyArabic(plain))
+          : `${baseTitle} — مركز حضرموت للدراسات التاريخية والتوثيق والنشر (المكلا، اليمن).`;
+      return json({ metaTitle: clip(baseTitle, 58), metaDescription: metaDescription.length > 155 ? clip(metaDescription, 152) : metaDescription });
     }
 
-    // 3. Auto-Fill Lead / Overview
-    if (action === 'auto-fill-lead') {
-      const rawBody = (body.body || '').trim();
-      const cleanBodyText = htmlToText(rawBody);
-      let lead = '';
-      if (cleanBodyText) {
-        // Find first 1-2 sentences
-        const sentences = cleanBodyText.split(/(?<=[.؟!؟])\s+/);
-        lead = sentences.slice(0, 2).join(' ').trim();
-        if (lead.length > 250) {
-          lead = clip(lead, 240);
-        }
-        lead = normalizeScholarlyArabic(lead);
-      }
-      return new Response(JSON.stringify({ lead }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      });
-    }
+    case 'auto-fill-lead':
+      return json({ lead: firstSentences(htmlToText(html)) });
 
-    // 4. Academic Structure Template
-    if (action === 'academic-template') {
-      const template = `<h2>مقدمة ومدخل تاريخي</h2>
-<p>توطئة حول موضوع البحث، وسياقه التاريخي والتوثيقي في حضرموت وجنوب الجزيرة العربية...</p>
-<h2>المحاور والمباحث التوثيقية</h2>
-<p>تفصيل المبحث الأول وتحليل الوثائق والمصادر والشواهد التاريخية المرتبطة...</p>
-<h2>النتائج والتوصيات</h2>
-<p>خلاصة النتائج العلمية التي خلصت إليها هذه المادة البحثية...</p>
-<h2>المصادر والمراجع</h2>
-<ol>
-  <li>المصدر الأول: اسم الكتاب، المؤلف، الطبعة وسنة النشر.</li>
-  <li>المصدر الثاني: ...</li>
-</ol>`;
-      return new Response(JSON.stringify({ template }), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      });
-    }
+    case 'academic-template':
+      return json({ template: ACADEMIC_TEMPLATE });
 
-    // 5. Translation Assistant
-    if (action === 'translate') {
-      const targetLang = (body.targetLang || 'en').toLowerCase();
+    case 'translate': {
+      const lang = str(body.targetLang).toLowerCase();
       const cfg = appConfig();
-      const textsToTranslate = [
-        body.title || '',
-        body.lead || '',
-        body.body || '',
-      ];
-
-      // If translation provider is configured
-      if (cfg.translation.provider !== 'none') {
-        try {
-          const provider = createProvider(cfg);
-          if (provider) {
-            const result = await provider.translate({
-              texts: textsToTranslate.filter(Boolean),
-              to: targetLang,
-              toName: getLanguage(targetLang)?.english || targetLang,
-              glossary: [],
-              format: 'html',
-            });
-            let idx = 0;
-            const translatedTitle = body.title ? result.texts[idx++] : '';
-            const translatedLead = body.lead ? result.texts[idx++] : '';
-            const translatedBody = body.body ? result.texts[idx++] : '';
-            return new Response(
-              JSON.stringify({
-                translatedTitle,
-                translatedLead,
-                translatedBody,
-                provider: provider.name,
-              }),
-              { status: 200, headers: { 'content-type': 'application/json' } },
-            );
-          }
-        } catch {
-          // Fall through to smart draft generation
-        }
+      // Arabic is the source: "translating" into it would overwrite the original text
+      if (!getLanguage(lang) || lang === 'ar' || !isLangEnabled(cfg, lang)) return json({ error: 'invalid language' }, 400);
+      if (cfg.translation.provider === 'none') return json({ error: 'no-provider' }, 503);
+      const engine = new TranslationEngine({ payload: await getPayloadClient(), provider: createProvider(cfg), isLanguageEnabled: (l) => isLangEnabled(cfg, l), dailyCharLimit: cfg.translation.dailyCharLimit });
+      try {
+        const [translatedTitle, translatedLead, translatedBody] = await engine.translateFragments(lang, [
+          { text: title, html: false },
+          { text: lead, html: false },
+          { text: html, html: true },
+        ]);
+        return json({ translatedTitle, translatedLead, translatedBody });
+      } catch (err) {
+        if (err instanceof TranslationError && /limit/.test(err.message)) return json({ error: 'budget' }, 429);
+        console.error('[editorial-assist] translate', (err as Error).message);
+        return json({ error: 'translation failed' }, 502);
       }
-
-      // Offline / Smart Draft translation fallback
-      const translatedTitle = body.title ? `[${targetLang.toUpperCase()}] ${body.title}` : '';
-      const translatedLead = body.lead ? `[Draft ${targetLang.toUpperCase()}] ${body.lead}` : '';
-      const translatedBody = body.body ? `<p><em>[Draft ${targetLang.toUpperCase()} Translation]</em></p>${body.body}` : '';
-
-      return new Response(
-        JSON.stringify({
-          translatedTitle,
-          translatedLead,
-          translatedBody,
-          provider: 'draft-assistant',
-        }),
-        { status: 200, headers: { 'content-type': 'application/json' } },
-      );
     }
 
-    return new Response(JSON.stringify({ error: 'Unknown action' }), {
-      status: 400,
-      headers: { 'content-type': 'application/json' },
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
-      status: 500,
-      headers: { 'content-type': 'application/json' },
-    });
+    default:
+      return json({ error: 'unknown action' }, 400);
   }
 }

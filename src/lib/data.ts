@@ -245,85 +245,114 @@ export async function listTimeline(lang: string): Promise<TimelineEntry[]> {
   return res.docs as unknown as TimelineEntry[];
 }
 
+type MediaRef = { url?: string | null; alt?: string | null; width?: number | null; height?: number | null } | number | null;
+
 export interface AnnouncementDoc {
   id: number;
   title: string;
-  pinned?: boolean;
+  kind?: 'conference' | 'seminar' | 'lecture' | 'forum' | 'call' | 'event' | null;
+  pinned?: boolean | null;
+  showOnHome?: boolean | null;
+  cover?: MediaRef;
+  excerpt?: string | null;
+  venue?: string | null;
+  link?: string | null;
   body?: string | null;
   attachmentUrl?: string | null;
-  attachment?: { url?: string | null } | number | null;
+  attachment?: MediaRef;
   eventDate?: string | null;
   expiresAt?: string | null;
   publishedAt?: string | null;
 }
 
-export async function listActiveAnnouncements(lang: string): Promise<AnnouncementDoc[]> {
-  const payload = await getPayloadClient();
-  const now = new Date().toISOString();
-  try {
-    const res = await payload.find({
-      collection: 'announcements',
-      where: {
-        and: [
-          PUBLISHED,
-          { pinned: { equals: true } },
-          {
-            or: [
-              { expiresAt: { exists: false } },
-              { expiresAt: { greater_than: now } },
-            ],
-          },
+/**
+ * Still current: before its expiry date, or — without one — until the end of the event day (the Center: «ينتهي الإعلان
+ * بانتهاء تاريخ تنفيذه»). An announcement with neither date stays until an editor archives it.
+ */
+export function activeAnnouncementWhere(now: Date): Where {
+  const startOfToday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString();
+  return {
+    and: [
+      PUBLISHED,
+      {
+        or: [
+          { expiresAt: { greater_than: now.toISOString() } },
+          { and: [{ expiresAt: { exists: false } }, { eventDate: { greater_than_equal: startOfToday } }] },
+          { and: [{ expiresAt: { exists: false } }, { eventDate: { exists: false } }] },
         ],
       },
-      limit: 3,
-      locale: lang as never,
-      fallbackLocale: 'ar',
-      depth: 1,
-    });
-    return res.docs as unknown as AnnouncementDoc[];
-  } catch {
-    return [];
-  }
+    ],
+  };
+}
+
+/** Current announcements, soonest event first; `where` narrows to the top bar (pinned) or the home page. */
+export async function listAnnouncements(lang: string, opts: { only?: 'pinned' | 'home'; limit?: number } = {}): Promise<AnnouncementDoc[]> {
+  const payload = await getPayloadClient();
+  const base = activeAnnouncementWhere(new Date());
+  const extra: Where[] = opts.only === 'pinned' ? [{ pinned: { equals: true } }] : opts.only === 'home' ? [{ showOnHome: { equals: true } }] : [];
+  const res = await payload.find({
+    collection: 'announcements',
+    where: { and: [base, ...extra] },
+    sort: 'eventDate',
+    limit: opts.limit ?? 50,
+    locale: lang as never,
+    fallbackLocale: 'ar',
+    depth: 1,
+  });
+  return res.docs as unknown as AnnouncementDoc[];
+}
+
+/** One published announcement (expired ones included: an old calendar link keeps working); null when there is none. */
+export async function getAnnouncement(id: number, lang: string): Promise<AnnouncementDoc | null> {
+  const payload = await getPayloadClient();
+  const res = await payload.find({ collection: 'announcements', where: { and: [PUBLISHED, { id: { equals: id } }] }, limit: 1, depth: 0, locale: lang as never, fallbackLocale: 'ar' });
+  return (res.docs[0] as unknown as AnnouncementDoc | undefined) ?? null;
+}
+
+export interface AudioClip {
+  id?: string | null;
+  title?: string | null;
+  file?: MediaRef;
+  url?: string | null;
 }
 
 export interface AudioDoc {
   id: number;
   title: string;
+  excerpt?: string | null;
+  series?: 'library' | 'saqaya' | null;
+  episode?: number | null;
   audioUrl?: string | null;
-  audioFile?: { url?: string | null } | number | null;
+  audioFile?: MediaRef;
+  clips?: AudioClip[] | null;
   presenter?: string | null;
   program?: string | null;
   duration?: string | null;
-  cover?: { url?: string | null } | number | null;
+  cover?: MediaRef;
   body?: string | null;
   publishedAt?: string | null;
 }
 
-export async function listAudio(lang: string, limit = 20): Promise<AudioDoc[]> {
+export async function listAudio(lang: string, opts: { series?: 'library' | 'saqaya'; limit?: number } = {}): Promise<AudioDoc[]> {
   const payload = await getPayloadClient();
-  try {
-    const res = await payload.find({
-      collection: 'audio',
-      where: PUBLISHED,
-      sort: '-publishedAt',
-      limit,
-      locale: lang as never,
-      fallbackLocale: 'ar',
-      depth: 1,
-    });
-    return res.docs as unknown as AudioDoc[];
-  } catch {
-    return [];
-  }
+  const res = await payload.find({
+    collection: 'audio',
+    where: opts.series ? { and: [PUBLISHED, { series: { equals: opts.series } }] } : PUBLISHED,
+    sort: opts.series === 'saqaya' ? '-episode' : '-publishedAt',
+    limit: opts.limit ?? 50,
+    locale: lang as never,
+    fallbackLocale: 'ar',
+    depth: 1,
+  });
+  return res.docs as unknown as AudioDoc[];
 }
 
 export interface PartnerDoc {
   id: number;
   name: string;
   category?: 'academic' | 'research' | 'cultural' | 'governmental' | null;
-  description?: string | null;
-  logo?: { url?: string | null } | number | null;
-  logoUrl?: string | null;
+  summary?: string | null;
+  logo?: MediaRef;
   website?: string | null;
   order?: number | null;
   hasWrittenConsent?: boolean | null;
@@ -335,59 +364,49 @@ export interface TestimonialDoc {
   personTitle?: string | null;
   institution?: string | null;
   quote: string;
-  avatar?: { url?: string | null } | number | null;
-  avatarUrl?: string | null;
-  context?: string | null;
+  avatar?: MediaRef;
+  source?: string | null;
+  date?: string | null;
   hasWrittenConsent?: boolean | null;
 }
 
-export async function listApprovedPartners(lang: string, limit = 50): Promise<PartnerDoc[]> {
+/** Published partners by display order. Names are public; a logo is shown only with the partner's written consent. */
+export async function listPartners(lang: string, limit = 100): Promise<PartnerDoc[]> {
   const payload = await getPayloadClient();
-  try {
-    const res = await payload.find({
-      collection: 'partners',
-      where: {
-        and: [
-          PUBLISHED,
-          { hasWrittenConsent: { equals: true } },
-        ],
-      },
-      sort: 'order',
-      limit,
-      locale: lang as never,
-      fallbackLocale: 'ar',
-      depth: 1,
-    });
-    return res.docs as unknown as PartnerDoc[];
-  } catch {
-    return [];
-  }
+  const res = await payload.find({ collection: 'partners', where: PUBLISHED, sort: 'order', limit, locale: lang as never, fallbackLocale: 'ar', depth: 1 });
+  return (res.docs as unknown as PartnerDoc[]).map((p) => (p.hasWrittenConsent ? p : { ...p, logo: null }));
 }
 
-export async function listApprovedTestimonials(lang: string, limit = 20): Promise<TestimonialDoc[]> {
+/** Published testimonials whose authors agreed in writing to publication. */
+export async function listApprovedTestimonials(lang: string, limit = 50): Promise<TestimonialDoc[]> {
   const payload = await getPayloadClient();
-  try {
-    const res = await payload.find({
-      collection: 'testimonials',
-      where: {
-        and: [
-          PUBLISHED,
-          { hasWrittenConsent: { equals: true } },
-        ],
-      },
-      sort: '-createdAt',
-      limit,
-      locale: lang as never,
-      fallbackLocale: 'ar',
-      depth: 1,
-    });
-    return res.docs as unknown as TestimonialDoc[];
-  } catch {
-    return [];
-  }
+  const res = await payload.find({
+    collection: 'testimonials',
+    where: { and: [PUBLISHED, { hasWrittenConsent: { equals: true } }] },
+    sort: '-createdAt',
+    limit,
+    locale: lang as never,
+    fallbackLocale: 'ar',
+    depth: 1,
+  });
+  return res.docs as unknown as TestimonialDoc[];
 }
 
-
+/** Published pages filed under a section page (`about/identity` under `about`), in menu order then title. */
+export async function listChildPages(parent: string, lang: string): Promise<{ slug: string; title: string; lead?: string | null }[]> {
+  const payload = await getPayloadClient();
+  const res = await payload.find({
+    collection: 'pages',
+    where: { and: [PUBLISHED, { slug: { like: `${parent}/` } }] },
+    sort: 'navOrder',
+    limit: 50,
+    depth: 0,
+    locale: lang as never,
+    fallbackLocale: 'ar',
+    select: { slug: true, title: true, lead: true } as never,
+  });
+  return (res.docs as unknown as { slug: string; title: string; lead?: string | null }[]).filter((d) => d.slug.startsWith(`${parent}/`));
+}
 
 export interface NavPageDoc {
   id: number;
@@ -400,23 +419,14 @@ export interface NavPageDoc {
 
 export async function listNavPages(lang: string): Promise<NavPageDoc[]> {
   const payload = await getPayloadClient();
-  try {
-    const res = await payload.find({
-      collection: 'pages',
-      where: {
-        and: [
-          PUBLISHED,
-          { navPlacement: { not_equals: 'none' } },
-        ],
-      },
-      sort: 'navOrder',
-      limit: 100,
-      locale: lang as never,
-      fallbackLocale: 'ar',
-      depth: 0,
-    });
-    return (res.docs as unknown as NavPageDoc[]).filter((d) => d.navPlacement && d.navPlacement !== ('none' as never));
-  } catch {
-    return [];
-  }
+  const res = await payload.find({
+    collection: 'pages',
+    where: { and: [PUBLISHED, { navPlacement: { not_equals: 'none' } }] },
+    sort: 'navOrder',
+    limit: 100,
+    locale: lang as never,
+    fallbackLocale: 'ar',
+    depth: 0,
+  });
+  return (res.docs as unknown as NavPageDoc[]).filter((d) => d.navPlacement && d.navPlacement !== ('none' as never));
 }

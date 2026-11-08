@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
-import { FieldDescription, FieldError, FieldLabel, useField, useTranslation } from '@payloadcms/ui';
+import { FieldDescription, FieldError, FieldLabel, useField, useLocale, useTranslation } from '@payloadcms/ui';
 import { getTranslation } from '@payloadcms/translations';
 import type { TextareaFieldClientComponent } from 'payload';
 import { EditorContent, useEditor } from '@tiptap/react';
@@ -20,6 +20,8 @@ type Cmd = { label: string; title: string; run: () => void; active?: boolean; di
 
 export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, field, readOnly }) => {
   const { i18n } = useTranslation();
+  // the language of the content being edited (not the admin interface language): translation fills that locale
+  const contentLocale = useLocale()?.code || 'ar';
   const t = editorStrings(i18n.language);
   const { value, setValue, path, showError, disabled } = useField<string>({ potentiallyStalePath: pathFromProps });
   const locked = Boolean(readOnly || disabled);
@@ -122,6 +124,11 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
   // Auto-translate editor content to current admin interface language
   const translateCurrentBody = async () => {
     if (!editor || editor.isEmpty) return;
+    // Arabic is the source text: translating "into" it would replace the original
+    if (contentLocale === 'ar') {
+      showFeedback(t.translateUnavailable);
+      return;
+    }
     if (!window.confirm(t.translateConfirm)) return;
     try {
       const res = await fetch('/api/hc/editorial-assist', {
@@ -130,10 +137,11 @@ export const HtmlField: TextareaFieldClientComponent = ({ path: pathFromProps, f
         body: JSON.stringify({
           action: 'translate',
           body: editor.getHTML(),
-          targetLang: i18n.language || 'en',
+          targetLang: contentLocale,
         }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       if (data.translatedBody) {
         editor.commands.setContent(data.translatedBody, { emitUpdate: true });
         showFeedback(t.translateSuccess);

@@ -13,9 +13,14 @@ import * as migration_20261031_020508_add_audio_and_announcements from './202610
 import * as migration_20261031_024246_add_partners_and_testimonials from './20261031_024246_add_partners_and_testimonials';
 import * as migration_20261031_025843_add_author_honorific from './20261031_025843_add_author_honorific';
 import * as migration_20261031_070000_enhance_pages_schema from './20261031_070000_enhance_pages_schema';
+import * as migration_20261103_154435_center_feedback_fields from './20261103_154435_center_feedback_fields';
+import * as migration_20261103_154557_partners_logo_optional from './20261103_154557_partners_logo_optional';
+import * as migration_20261103_160000_center_book_content from './20261103_160000_center_book_content';
 import * as migration_20261106_120000_split_author_honorifics from './20261106_120000_split_author_honorifics';
 import * as migration_20261106_130000_add_center_pages from './20261106_130000_add_center_pages';
 import * as migration_20261106_140000_add_event_supporters_attendance from './20261106_140000_add_event_supporters_attendance';
+import * as migration_20261108_120000_reconcile_center_feedback from './20261108_120000_reconcile_center_feedback';
+import * as migration_20261108_130000_book_records from './20261108_130000_book_records';
 
 export const migrations = [
   {
@@ -86,12 +91,27 @@ export const migrations = [
   {
     up: migration_20261031_025843_add_author_honorific.up,
     down: migration_20261031_025843_add_author_honorific.down,
-    name: '20261031_025843_add_author_honorific'
+    name: '20261031_025843_add_author_honorific',
   },
   {
     up: migration_20261031_070000_enhance_pages_schema.up,
     down: migration_20261031_070000_enhance_pages_schema.down,
-    name: '20261031_070000_enhance_pages_schema'
+    name: '20261031_070000_enhance_pages_schema',
+  },
+  {
+    up: migration_20261103_154435_center_feedback_fields.up,
+    down: migration_20261103_154435_center_feedback_fields.down,
+    name: '20261103_154435_center_feedback_fields',
+  },
+  {
+    up: migration_20261103_154557_partners_logo_optional.up,
+    down: migration_20261103_154557_partners_logo_optional.down,
+    name: '20261103_154557_partners_logo_optional',
+  },
+  {
+    up: migration_20261103_160000_center_book_content.up,
+    down: migration_20261103_160000_center_book_content.down,
+    name: '20261103_160000_center_book_content',
   },
   {
     up: migration_20261106_120000_split_author_honorifics.up,
@@ -107,5 +127,15 @@ export const migrations = [
     up: migration_20261106_140000_add_event_supporters_attendance.up,
     down: migration_20261106_140000_add_event_supporters_attendance.down,
     name: '20261106_140000_add_event_supporters_attendance'
+  },
+  {
+    up: migration_20261108_120000_reconcile_center_feedback.up,
+    down: migration_20261108_120000_reconcile_center_feedback.down,
+    name: '20261108_120000_reconcile_center_feedback',
+  },
+  {
+    up: migration_20261108_130000_book_records.up,
+    down: migration_20261108_130000_book_records.down,
+    name: '20261108_130000_book_records',
   },
 ];

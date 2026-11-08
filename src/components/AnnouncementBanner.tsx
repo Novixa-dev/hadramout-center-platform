@@ -1,100 +1,54 @@
 'use client';
-import { useState } from 'react';
-import type { AnnouncementDoc } from '../lib/data.ts';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { Icon } from './Icon.tsx';
 
 interface Props {
-  announcements: AnnouncementDoc[];
-  calendarLabel: string;
-  closeLabel: string;
+  id: number;
+  title: string;
+  when: string | null;
+  href: string;
+  labels: { kicker: string; more: string; close: string };
 }
 
-export function AnnouncementBanner({ announcements, calendarLabel, closeLabel }: Props) {
+const KEY = 'hc-announcement-closed';
+
+/**
+ * The pinned announcement above the header, until it expires (the server stops sending it). Closing hides this one
+ * announcement for the visitor (remembered in the browser); a new pinned announcement shows again.
+ */
+export function AnnouncementBanner({ id, title, when, href, labels }: Props) {
   const [closed, setClosed] = useState(false);
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(KEY) === String(id)) setClosed(true);
+    } catch {
+      // storage blocked: the banner simply stays
+    }
+  }, [id]);
+  if (closed) return null;
 
-  if (closed || !announcements.length) return null;
-
-  const current = announcements[0];
-  if (!current) return null;
+  const close = () => {
+    setClosed(true);
+    try {
+      localStorage.setItem(KEY, String(id));
+    } catch {
+      // storage blocked: closed for this page view only
+    }
+  };
 
   return (
-    <aside
-      className="announcement-banner no-print"
-      aria-label={current.title}
-      style={{
-        backgroundColor: 'var(--brand-fill, #1a2e26)',
-        color: '#ffffff',
-        paddingBlock: 'var(--space-2, 0.5rem)',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.4)',
-        position: 'relative',
-        zIndex: 50,
-      }}
-    >
-      <div
-        className="container"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 'var(--space-2, 0.5rem)',
-          fontSize: 'var(--step--1, 0.9rem)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flex: '1 1 auto' }}>
-          <span
-            style={{
-              backgroundColor: 'var(--gold, #d4af37)',
-              color: '#000',
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              padding: '0.15rem 0.5rem',
-              borderRadius: '3px',
-              textTransform: 'uppercase',
-            }}
-          >
-            <Icon name="info" />
-          </span>
-          <strong style={{ fontWeight: 600 }}>{current.title}</strong>
-          {current.eventDate ? (
-            <span style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.85rem' }}>
-              ({current.eventDate.slice(0, 10)})
-            </span>
-          ) : null}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {current.eventDate ? (
-            <a
-              href={`/api/hc/ics/announcements/${current.id}.ics`}
-              className="btn btn--secondary"
-              style={{
-                fontSize: '0.75rem',
-                padding: '0.2rem 0.5rem',
-                color: '#fff',
-                borderColor: 'rgba(255, 255, 255, 0.3)',
-              }}
-            >
-              <Icon name="calendar" /> {calendarLabel}
-            </a>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => setClosed(true)}
-            aria-label={closeLabel}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'rgba(255, 255, 255, 0.7)',
-              cursor: 'pointer',
-              padding: '0.25rem',
-              display: 'inline-flex',
-              alignItems: 'center',
-            }}
-          >
-            <Icon name="close" />
-          </button>
-        </div>
+    <aside className="announce-bar no-print" aria-label={labels.kicker}>
+      <div className="container announce-bar__row">
+        <span className="announce-bar__kicker"><Icon name="info" /> {labels.kicker}</span>
+        <Link className="announce-bar__text" href={href}>
+          <strong>{title}</strong>
+          {when ? <span className="announce-bar__when">{when}</span> : null}
+          <span className="announce-bar__more">{labels.more}</span>
+        </Link>
+        <button type="button" className="icon-btn announce-bar__close" onClick={close} aria-label={labels.close}>
+          <Icon name="close" />
+        </button>
       </div>
     </aside>
   );

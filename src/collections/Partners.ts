@@ -39,7 +39,9 @@ export const Partners: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: L('شعار المؤسسة', 'Institution logo'),
-      required: true,
+      // the name is public; the logo only with the partner's written consent (also through the public REST API)
+      access: { read: ({ req, doc }) => Boolean(req.user) || Boolean((doc as { hasWrittenConsent?: boolean } | undefined)?.hasWrittenConsent) },
+      admin: { description: L('اختياري؛ يظهر فقط مع الموافقة الخطية أدناه. بدونه يظهر الاسم ومجالات التعاون.', 'Optional; shown only with the written consent below. Without it the name and collaboration areas are shown.') },
     },
     {
       name: 'website',

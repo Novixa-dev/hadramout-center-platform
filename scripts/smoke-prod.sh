@@ -90,6 +90,37 @@ sug=$(body "/api/hc/suggest?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA&lang=")
 case "$sug" in *'"href":"/ar/'*) echo "ok   typeahead falls back to ar and returns hits";; *'"href":"//'*) echo "FAIL typeahead produced a protocol-relative href"; fail=1;; *) echo "FAIL typeahead returned no hits: $sug" | cut -c1-160; fail=1;; esac
 body /api/hc/health | grep -q '"users"' && { echo "FAIL health discloses user existence"; fail=1; } || echo "ok   health body"
 body /ar/articles | grep -q "المرجع : مجلة" && { echo "FAIL citation boilerplate leaked into the list"; fail=1; } || echo "ok   no citation boilerplate in cards"
+
+# the Center's feedback (2026-10-27) and decade book: every menu destination answers, the new pages and filters work
+nav_paths=$(cd "$ROOT" && node --input-type=module -e "const m = await import('./src/lib/nav.ts'); console.log(m.navPaths().join('\n'))")
+nav_bad=0; nav_n=0
+for path in $nav_paths; do
+  nav_n=$((nav_n + 1)); code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/ar${path%/}")
+  [ "$code" = 200 ] || { echo "FAIL menu link /ar$path $code"; nav_bad=1; fail=1; }
+done
+[ "$nav_bad" = 0 ] && echo "ok   all $nav_n menu and utility-bar destinations answer 200"
+check /en/about/identity 200; check /ar/about/no-such-page 404; check /ar/about/Bad_Slug 404; check /ar/governance 200
+case "$(body /ar/about/identity)" in *'عقد من المنجزات والتحديات'*'الأهداف الاستراتيجية'*) echo "ok   identity page carries the decade-book text and source";; *) echo "FAIL identity page content"; fail=1;; esac
+# the decade book's records (src/seed/book-records-data.ts): new rows exist, papers render, p. 67's shifted lecturer column stays out
+case "$(body '/ar/events?kind=conference')" in *'المؤتمر العلمي الرابع'*'المؤتمر العلمي السابع'*|*'المؤتمر العلمي السابع'*'المؤتمر العلمي الرابع'*) echo "ok   book: conferences 4 and 7 listed";; *) echo "FAIL book: conferences 4 and 7 missing"; fail=1;; esac
+case "$(body /ar/about/achievements)" in *'/ar/events?kind=panel'*) echo "ok   book: achievements page links the panels";; *) echo "FAIL book: achievements page"; fail=1;; esac
+case "$(body /ar/about/media-work)" in *'حلوى السيد'*'5:57'*|*'حوارات ثقافية'*'حلوى السيد'*) echo "ok   book: film list on the media page";; *) echo "FAIL book: film list missing"; fail=1;; esac
+case "$(body /ar/about/outreach)" in *'المعهد'*|*'جامعة حضرموت'*) echo "ok   book: outreach page";; *) echo "FAIL book: outreach page"; fail=1;; esac
+case "$(body /ar/about)" in *'class="child-pages"'*'/ar/about/chairman-message'*) echo "ok   about lists its sub-pages";; *) echo "FAIL about hub has no sub-page list"; fail=1;; esac
+partners=$(body /ar/partners | grep -o 'class="partner-card"' | wc -l)
+[ "$partners" -ge 14 ] && echo "ok   partners page lists $partners institutions" || { echo "FAIL partners page lists $partners"; fail=1; }
+case "$(body '/ar/events?kind=conference')" in *'<h1'*'المؤتمرات'*) echo "ok   events filtered by type carry the type as title";; *) echo "FAIL /ar/events?kind=conference title"; fail=1;; esac
+case "$(body /ar/submit)" in *'8000'*|*'DEC-09'*|*'hadramout-center.org'*) echo "FAIL /submit still shows invented rules or contacts"; fail=1;; *) echo "ok   /submit has no invented publishing rules";; esac
+case "$(body /sitemap.xml)" in *'/ar/about/identity'*) echo "ok   sitemap lists editor pages";; *) echo "FAIL sitemap misses /ar/about/identity"; fail=1;; esac
+case "$(body /sitemap.xml)" in *'/ar/about/advisors'*) echo "FAIL sitemap lists a noindex page"; fail=1;; *) echo "ok   sitemap leaves out noindex pages";; esac
+check /og/ar/platforms.png 200; check /og/ar/constructor.png 404
+# security fixes of this pass: staff-only assistant, no draft leaks through ?preview=1 or calendar files, dead route gone
+assist=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' -d '{"action":"translate","title":"x","targetLang":"en"}' "http://127.0.0.1:$PORT/api/hc/editorial-assist")
+[ "$assist" = 401 ] && echo "ok   editorial assistant refuses visitors" || { echo "FAIL editorial-assist answered $assist without a session"; fail=1; }
+check /api/hc/calendar/events/1 404
+node -e "const { DatabaseSync } = require('node:sqlite'); const db = new DatabaseSync(process.argv[1]); db.exec(\"INSERT INTO pages (slug, status) SELECT 'smoke-draft', 'draft' WHERE NOT EXISTS (SELECT 1 FROM pages WHERE slug = 'smoke-draft'); INSERT INTO pages_locales (title, body, _locale, _parent_id) SELECT 'draft', '<p>smoke-secret-draft</p>', 'ar', id FROM pages WHERE slug = 'smoke-draft' AND NOT EXISTS (SELECT 1 FROM pages_locales l WHERE l._parent_id = pages.id)\")" "$DB_DIR/payload.db"
+draft=$(curl -s -w '\n%{http_code}' "http://127.0.0.1:$PORT/ar/smoke-draft?preview=1")
+case "$draft" in *smoke-secret-draft*) echo "FAIL ?preview=1 shows a draft to a visitor"; fail=1;; *404) echo "ok   ?preview=1 does not show drafts to visitors";; *) echo "FAIL draft preview answered $(echo "$draft" | tail -1)"; fail=1;; esac
 # production mode is indexable and has no preview banner (also on the prerendered 404 page)
 prod_headers=$(curl -s -D - -o /dev/null "http://127.0.0.1:$PORT/ar" | tr -d '\r')
 case "$prod_headers" in *[Xx]-[Rr]obots-[Tt]ag:*) echo "FAIL production sends X-Robots-Tag"; fail=1;; *) echo "ok   production has no X-Robots-Tag";; esac

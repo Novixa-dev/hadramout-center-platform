@@ -6,6 +6,7 @@ import { resolve } from 'node:path';
 import { getPayload } from 'payload';
 import config from '@payload-config';
 import { readSnapshot, seedDefaults, seedSnapshot } from '../src/seed/seed.ts';
+import { applyBookRecords, type RawDb } from '../src/seed/book-records.ts';
 import { reindexAll } from '../src/lib/reindex.ts';
 
 const args = new Map(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k as string, v ?? 'true'] as const; }));
@@ -25,6 +26,8 @@ if (!args.has('defaults-only')) {
   const report = await seedSnapshot(payload, readSnapshot(file), log);
   log(JSON.stringify(report));
 }
+
+log(`✔ book records ${JSON.stringify(await applyBookRecords((payload.db as unknown as { drizzle: RawDb }).drizzle))}`);
 
 const n = await reindexAll(payload);
 log(`✔ search index rebuilt (${n} documents)`);

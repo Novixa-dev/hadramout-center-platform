@@ -6,73 +6,14 @@ import { Icon, SocialIcon, type SocialName } from './Icon.tsx';
 import { LangPicker } from './client/LangPicker.tsx';
 import { ThemeToggle } from './client/ThemeToggle.tsx';
 import { MobileMenu } from './client/MobileMenu.tsx';
-import { PriorityNav, type NavItem } from './client/PriorityNav.tsx';
+import { MainNav, type MenuEntry } from './client/MainNav.tsx';
+import { NAV_TREE, UTILITY_LINKS, isGroup, type NavEntry } from '../lib/nav.ts';
 import { SearchToggle } from './client/SearchToggle.tsx';
 import { NewsletterForm } from './client/NewsletterForm.tsx';
 import type { SearchLabels } from './client/SearchBox.tsx';
 import type { getSite, NavPageDoc } from '../lib/data.ts';
 
 type Site = Awaited<ReturnType<typeof getSite>>;
-
-/**
- * Header menu, grouped as the Center proposed it (client report, 2025): About the Center · Media Center · Research & Studies ·
- * Programs & Projects · Contact. Sections the Center still has to write (governance, digital platforms) are left out until they
- * exist; editors can add pages to the bar or to "More" from the admin (navPlacement).
- */
-const GROUPS = [
-  {
-    key: 'nav.group.about',
-    links: [
-      { key: 'nav.about', path: '/about' },
-      { key: 'nav.vision', path: '/vision-mission' },
-      { key: 'nav.goals', path: '/strategic-goals' },
-      { key: 'nav.organization', path: '/organization' },
-      { key: 'nav.decade', path: '/decade' },
-      { key: 'nav.partnerships', path: '/partnerships' },
-    ],
-  },
-  {
-    key: 'nav.group.media',
-    links: [
-      { key: 'nav.news', path: '/news' },
-      { key: 'nav.audio', path: '/audio' },
-      { key: 'nav.videos', path: '/videos' },
-    ],
-  },
-  {
-    key: 'nav.group.research',
-    links: [
-      { key: 'nav.articles', path: '/articles' },
-      { key: 'nav.topics', path: '/topics' },
-      { key: 'nav.authors', path: '/authors' },
-      { key: 'nav.timeline', path: '/timeline' },
-      { key: 'nav.submit', path: '/submit' },
-    ],
-  },
-  {
-    key: 'nav.group.programs',
-    links: [
-      { key: 'nav.events', path: '/events' },
-      { key: 'nav.forum', path: '/forum' },
-      { key: 'nav.magazines', path: '/magazines' },
-      { key: 'nav.books', path: '/books' },
-      { key: 'nav.future', path: '/future-plan' },
-      { key: 'nav.library', path: '/digital-library' },
-    ],
-  },
-] as const;
-
-/** Footer "explore" column: the content sections, flat (the header groups them). */
-const FOOTER_EXPLORE = [
-  { key: 'nav.news', path: '/news' },
-  { key: 'nav.articles', path: '/articles' },
-  { key: 'nav.books', path: '/books' },
-  { key: 'nav.magazines', path: '/magazines' },
-  { key: 'nav.events', path: '/events' },
-  { key: 'nav.videos', path: '/videos' },
-  { key: 'nav.topics', path: '/topics' },
-  { key: 'nav.forum', path: '/forum' },
-] as const;
 
 export interface LangOption {
   code: string;
@@ -105,51 +46,85 @@ export function searchLabels(ctx: Ctx): SearchLabels {
   };
 }
 
-export function Header({ ctx, site, langs, navPages = [] }: { ctx: Ctx; site: Site; langs: LangOption[]; navPages?: NavPageDoc[] }) {
+/** The menu tree in this language, plus pages an editor placed in the menu from the admin (top level or under About). */
+function menuEntries(ctx: Ctx, navPages: NavPageDoc[]): MenuEntry[] {
   const { t, href } = ctx;
-  const primaryDynamic = navPages
-    .filter((p) => p.navPlacement === 'primary')
-    .map((p) => ({ href: href(`/${p.slug}`), label: p.navLabel || p.title }));
-  const dropdownDynamic = navPages
-    .filter((p) => p.navPlacement === 'dropdown')
-    .map((p) => ({ href: href(`/${p.slug}`), label: p.navLabel || p.title }));
+  const build = (e: NavEntry): MenuEntry => (isGroup(e) ? { label: t(e.key), items: e.items.map(build) } : { href: href(e.path), label: t(e.key) });
+  const page = (p: NavPageDoc): MenuEntry => ({ href: href(`/${p.slug}`), label: p.navLabel || p.title });
+  const entries = NAV_TREE.map(build);
+  const about = entries[NAV_TREE.findIndex((e) => e.key === 'nav.g.about')];
+  if (about && 'items' in about) about.items.push(...navPages.filter((p) => p.navPlacement === 'dropdown').map(page));
+  const top = navPages.filter((p) => p.navPlacement === 'primary').map(page);
+  // editor pages go before «اتصل بنا», which stays last as the Center asked
+  return [...entries.slice(0, -1), ...top, ...entries.slice(-1)];
+}
 
-  const primaryItems: NavItem[] = [
-    ...GROUPS.map((g) => ({ label: t(g.key), children: g.links.map((l) => ({ href: href(l.path), label: t(l.key) })) })),
-    { href: href('/contact'), label: t('nav.contact') },
-    ...primaryDynamic,
-  ];
+/** The slim bar above the header: store, members, research and magazine submissions, support, languages. */
+export function UtilityBar({ ctx, langs }: { ctx: Ctx; langs: LangOption[] }) {
+  const { t, href } = ctx;
+  return (
+    <div className="utilbar">
+      <div className="container utilbar__row">
+        <nav aria-label={t('util.label')}>
+          <ul className="utilbar__list">
+            {UTILITY_LINKS.map((u) => (
+              <li key={u.key}>
+                <Link prefetch={false} className="utilbar__link" href={href(u.path)}>
+                  <Icon name={u.icon} />
+                  <span className="utilbar__text">{t(u.key)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <LangPicker current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
+      </div>
+    </div>
+  );
+}
 
-  const moreItems = dropdownDynamic;
-
+export function Header({ ctx, site, navPages = [] }: { ctx: Ctx; site: Site; navPages?: NavPageDoc[] }) {
+  const { t, href } = ctx;
+  const entries = menuEntries(ctx, navPages);
   return (
     <header className="site-header">
       <div className="container site-header__bar">
-        <Link className="brand" href={href('/')}>
-          <img className="brand__mark" src="/brand/logo-icon.svg" alt="" width={32} height={57} />
+        <Link prefetch={false} className="brand" href={href('/')}>
+          <img className="brand__mark" src="/brand/logo-icon.svg" alt="" width={28} height={58} />
           <span className="brand__text">
             <span className="brand__name">{site.shortName || site.name}</span>
             <span className="brand__sub">{t('header.sub')}</span>
           </span>
         </Link>
-        <nav className="nav" aria-label={t('nav.main')}>
-          <PriorityNav items={primaryItems} more={moreItems} moreLabel={t('nav.more')} />
-        </nav>
         <div className="header-tools">
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
-          <LangPicker current={ctx.lang.code} currentNative={ctx.lang.native} options={langs} labels={{ pick: t('lang.pick'), title: t('lang.title'), search: t('lang.search'), popular: t('lang.popular'), all: t('lang.all'), note: t('lang.note'), close: t('nav.close'), none: t('lang.none'), machine: t('lang.machine') }} />
           <span className="theme-desktop"><ThemeToggle label={t('theme.toggle')} /></span>
-          <MobileMenu
-            label={t('nav.menu')}
-            closeLabel={t('nav.close')}
-            items={[{ href: href('/'), label: t('nav.home') }, ...primaryItems, ...moreItems, { href: href('/saved'), label: t('saved.title') }]}
-            footer={<ThemeToggle label={t('theme.toggle')} />}
-          />
+          <MobileMenu label={t('nav.menu')} closeLabel={t('nav.close')} entries={[...entries, { href: href('/saved'), label: t('saved.title') }]} footer={<ThemeToggle label={t('theme.toggle')} />} />
         </div>
       </div>
+      <nav className="nav" aria-label={t('nav.main')}>
+        <div className="container">
+          <MainNav entries={entries} />
+        </div>
+      </nav>
     </header>
   );
 }
+
+/** Footer «استكشف» column: the archive sections and media libraries. */
+const FOOTER_EXPLORE = [
+  { key: 'nav.news', path: '/news' },
+  { key: 'nav.articles', path: '/articles' },
+  { key: 'nav.books', path: '/books' },
+  { key: 'nav.magazines', path: '/magazines' },
+  { key: 'nav.events', path: '/events' },
+  { key: 'nav.forum', path: '/forum' },
+  { key: 'nav.videos', path: '/videos' },
+  { key: 'nav.audio', path: '/audio' },
+  { key: 'nav.podcast', path: '/podcast' },
+  { key: 'nav.announcements', path: '/announcements' },
+  { key: 'nav.topics', path: '/topics' },
+] as const;
 
 export function Footer({ ctx, site, navPages = [] }: { ctx: Ctx; site: Site; navPages?: NavPageDoc[] }) {
   const { t, href } = ctx;
@@ -196,36 +171,38 @@ export function Footer({ ctx, site, navPages = [] }: { ctx: Ctx; site: Site; nav
             <h3>{t('footer.explore')}</h3>
             <ul>
               {FOOTER_EXPLORE.map((n) => (
-                <li key={n.path}><Link href={href(n.path)}>{t(n.key)}</Link></li>
+                <li key={n.path}><Link prefetch={false} href={href(n.path)}>{t(n.key)}</Link></li>
               ))}
-              <li><Link href={href('/audio')}>{t('nav.audio')}</Link></li>
               {footerExploreDynamic.map((p) => (
-                <li key={p.slug}><Link href={href(`/${p.slug}`)}>{p.navLabel || p.title}</Link></li>
+                <li key={p.slug}><Link prefetch={false} href={href(`/${p.slug}`)}>{p.navLabel || p.title}</Link></li>
               ))}
             </ul>
           </nav>
           <nav aria-label={t('footer.research')}>
             <h3>{t('footer.research')}</h3>
             <ul>
-              <li><Link href={href('/search')}>{t('nav.search')}</Link></li>
-              <li><Link href={href('/authors')}>{t('nav.authors')}</Link></li>
-              <li><Link href={href('/timeline')}>{t('nav.timeline')}</Link></li>
-              <li><Link href={href('/submit')}>{t('nav.submit')}</Link></li>
-              <li><Link href={href('/saved')}>{t('saved.title')}</Link></li>
+              <li><Link prefetch={false} href={href('/search')}>{t('nav.search')}</Link></li>
+              <li><Link prefetch={false} href={href('/authors')}>{t('nav.authors')}</Link></li>
+              <li><Link prefetch={false} href={href('/timeline')}>{t('nav.timeline')}</Link></li>
+              <li><Link prefetch={false} href={href('/submit')}>{t('nav.submit')}</Link></li>
+              <li><Link prefetch={false} href={href('/saved')}>{t('saved.title')}</Link></li>
               <li><a href={`/feeds/${ctx.lang.code}/all.xml`}>{t('footer.rss')}</a></li>
             </ul>
           </nav>
           <nav aria-label={t('footer.about')}>
             <h3>{t('footer.about')}</h3>
             <ul>
-              <li><Link href={href('/about')}>{t('nav.about')}</Link></li>
-              <li><Link href={href('/contact')}>{t('nav.contact')}</Link></li>
-              <li><Link href={href('/privacy')}>{t('footer.privacy')}</Link></li>
-              <li><Link href={href('/terms')}>{t('footer.terms')}</Link></li>
-              <li><Link href={href('/accessibility')}>{t('footer.accessibility')}</Link></li>
-              <li><Link href={href('/novixa')}>{t('footer.novixa')}</Link></li>
+              <li><Link prefetch={false} href={href('/about')}>{t('nav.about')}</Link></li>
+              <li><Link prefetch={false} href={href('/governance/regulations')}>{t('nav.g.governance')}</Link></li>
+              <li><Link prefetch={false} href={href('/partners')}>{t('nav.partners')}</Link></li>
+              <li><Link prefetch={false} href={href('/support')}>{t('util.support')}</Link></li>
+              <li><Link prefetch={false} href={href('/contact')}>{t('nav.contact')}</Link></li>
+              <li><Link prefetch={false} href={href('/privacy')}>{t('footer.privacy')}</Link></li>
+              <li><Link prefetch={false} href={href('/terms')}>{t('footer.terms')}</Link></li>
+              <li><Link prefetch={false} href={href('/accessibility')}>{t('footer.accessibility')}</Link></li>
+              <li><Link prefetch={false} href={href('/novixa')}>{t('footer.novixa')}</Link></li>
               {footerAboutDynamic.map((p) => (
-                <li key={p.slug}><Link href={href(`/${p.slug}`)}>{p.navLabel || p.title}</Link></li>
+                <li key={p.slug}><Link prefetch={false} href={href(`/${p.slug}`)}>{p.navLabel || p.title}</Link></li>
               ))}
             </ul>
           </nav>
@@ -239,7 +216,7 @@ export function Footer({ ctx, site, navPages = [] }: { ctx: Ctx; site: Site; nav
         </div>
         <div className="site-footer__legal">
           <span>© {new Date().getFullYear()} {site.name} — {t('footer.rights')}</span>
-          <span>{t('footer.built')} <Link href={href('/novixa')}>Novixa</Link></span>
+          <span>{t('footer.built')} <Link prefetch={false} href={href('/novixa')}>Novixa</Link></span>
         </div>
       </div>
     </footer>

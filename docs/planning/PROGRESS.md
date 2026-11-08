@@ -1,6 +1,6 @@
 # Progress and continuation point
 
-**Last updated:** 2026-11-08 · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
+**Last updated:** 2026-11-08 (client files checked item by item: [conflicts list](../client/05-book-vs-site-conflicts-ar.md)) · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
 
 ## Audit coverage
@@ -155,6 +155,35 @@ Known, not fixed: 4,004 images in article bodies have no alt text (editorial wor
 | Raw client PDFs are git-ignored (public repository); the root audit prompt moved to `docs/archive/` | — |
 
 Still waiting on the Center: logo asset (CF-05), chairman's word and board/team names (CF-07a), governance documents (CF-08), publishing-ethics texts (CF-10), podcast files (CF-14), partner logos with consent (CF-17), testimonials (CF-18), taxonomy policy (CF-19), and **confirmation of every figure and name taken from the book (CF-24)**.
+## 2026-11-03 — the Center's feedback report and decade book
+
+| Change | Evidence |
+|---|---|
+| Audit of the 2026-10-31 "stage B" work: `editorial-assist` was open to visitors and spent the translation budget; `?preview=1` showed drafts to anyone; `/submit` published invented publishing/peer-review rules (and an internal id, and a made-up fallback email); announcement `.ics` + an unused calendar route read drafts; `/audio` and `/submit` had no share card; sitemap hard-coded six pages; inline-styled components | probes on live (assistant answered 200 without a session); code review |
+| Fixes for all of the above + REST consent filters for testimonials/partner logos (from the security-reviewer pass, which found nothing exploitable in the new code) | smoke asserts 401 / draft 404 / dead route 404 / no invented rules / OG key 404 |
+| Menu in the Center's order with sub-levels (`src/lib/nav.ts`, desktop dropdowns, phone accordions), utility bar, gold light theme | unit test for the order and labels; smoke: all 40 menu destinations 200; screenshots 1440/390 light/dark |
+| About pages from the decade book, governance/support/exhibition pages, 14 partners, event type (44/53 typed from titles), forum category, participants/supporters/attendance, audio clips + Saqaya series, video clips, announcements page + home section + Google Calendar, partners/testimonials/platforms/podcast pages | migrations `20261103_*` up/down/up on real data; smoke; unit tests (224/224) |
+| Local verification | check 224/224; build 0 warnings; smoke SMOKE_RESULT; redirect matrix 1,603/0; SEO audit 0/0; cutover-check 37/0 |
+
+**Waiting on the Center:** the 3D logo file, governance texts, names of the board/team/advisors and committee members, publishing standards/ethics/AI policy, testimonials, partner logo consents, Saqaya recordings, the categorisation decision ([proposal](../06-handover/taxonomy-policy-proposal-ar.md)), and which text is «كلمة رئيس المركز».
+
+## 2026-11-08 — both client files checked item by item against the database and code
+
+The earlier traceability matrix called several book items "partial, editorial". Measured against the database, the gap was larger: no event had papers, participants or an attendance value; conferences 4, 6 and 7 were missing; forum 11/41, seminars 6/12, panels 5/12. The PDF's text layer is usable (the docs said it was not), so the tables were transcribed and checked against the page images.
+
+| Change | Evidence |
+|---|---|
+| `src/seed/book-records-data.ts` + `applyBookRecords` (seeder and migration `20261108_130000_book_records`): 56 new records, 52 matched, 310 papers, 26 participants, 4 books. Fills only what is empty; idempotent; reversible | existing-DB copy: up, down, up give identical counts, 0 unmatched; fresh migrate + seed gives the same; 8 new unit tests |
+| Book vs announcements: lecturer column on printed p. 67 contradicts the announcements on 7 of 8 comparable lectures, so it is not used; 7 dates corrected only where a second source supports the book; 7 more left unchanged | [conflicts list for the Center](../client/05-book-vs-site-conflicts-ar.md) |
+| New pages `about/achievements`, `about/outreach`; TV-episode and film lists on `about/media-work`; seventh conference on `decade`; both pages added to the menu | smoke checks |
+| Stash-pop conflicts resolved; matrix and action plan brought up to date | — |
+| `/ar/studies` returned 500 (read `searchParams` without `force-dynamic` under the locale layout's static params); now dynamic and uses `fixed` for its category | smoke: all menu destinations 200 |
+| Utility bar widened the page at 768 px (818 px Arabic, 911 px English): icons only up to 1000 px, list scrolls inside the bar | e2e responsive journey at 320/360/768/1024 |
+| Menu, footer and utility links no longer prefetch: 17–23 RSC requests per page, and links differing only by `#fragment` fetched one URL twice and hung about 30 s on the browser's cache lock | e2e theme and language journeys |
+| Verification | check 253/253; knip clean; build; smoke 0 failures; SEO 0/0; redirect matrix 1,603/0; e2e 55/55; site sweep 87 pages 0/0; admin e2e 65/65; live migration order rehearsed from `origin/master` with a seeded database |
+
+**Open owner decision:** commit `2f335bb` put the Center's two internal PDFs in the public repository, against the rule in `docs/client/README.md`.
+**Deploying this:** the migration rebuilds the search index itself; if its log warns otherwise, run `npm run db:seed -- --defaults-only`.
 
 ## Next actionable tasks (in order)
 

@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom';
 import axe from 'axe-core';
 const base = process.env.BASE ?? 'http://127.0.0.1:3100';
-const pages = ['/ar', '/en', '/ar/news', '/ar/news/300', '/ar/articles/909', '/ar/books', '/ar/books/30', '/ar/search?q=حضرموت', '/ar/authors', '/ar/timeline', '/ar/contact', '/ar/about'];
+const pages = ['/ar', '/en', '/ar/news', '/ar/news/300', '/ar/articles/909', '/ar/books', '/ar/books/30', '/ar/search?q=حضرموت', '/ar/authors', '/ar/timeline', '/ar/contact', '/ar/about', '/ar/about/identity', '/ar/platforms', '/ar/partners', '/ar/submit', '/ar/podcast', '/ar/announcements', '/ar/audio', '/ar/events?kind=conference'];
 let bad = 0;
 for (const p of pages) {
   const html = await (await fetch(base + encodeURI(p))).text();

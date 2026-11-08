@@ -1,12 +1,10 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { absolute, isLocale, makeCtx } from '../../../../lib/ctx.ts';
+import { notFound, permanentRedirect } from 'next/navigation';
+import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
+import { MOVED_PAGES } from '../../../../lib/nav.ts';
 import { typeFromRoute, type ContentType } from '../../../../lib/content-types.ts';
-import { getPage, trInfo } from '../../../../lib/data.ts';
-import { htmlToText } from '../../../../lib/sanitize.ts';
-import { StaticPage, readyLangsOf } from '../../../../components/StaticPage.tsx';
+import { StaticPage, pageMetadata } from '../../../../components/StaticPage.tsx';
 import { buildMetadata } from '../../../../lib/seo.ts';
-import { describe } from '../../../../lib/seo-text.ts';
 import { activeFilters, isCustomised, parseListQuery } from '../../../../lib/list-query.ts';
 import { Listing } from '../../../../components/Listing.tsx';
 import { PageHead } from '../../../../components/PageHead.tsx';
@@ -25,30 +23,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const info = typeFromRoute(section);
   if (!isLocale(locale)) return {};
   const ctx = makeCtx(locale);
-  if (!info) {
-    const page = await getPage(section, locale);
-    if (!page) return {};
-    const title = page.metaTitle || page.title;
-    const description = page.metaDescription || describe(htmlToText(page.body ?? ''));
-    const ogImg = typeof page.ogImage === 'object' && page.ogImage && 'url' in page.ogImage && page.ogImage.url ? page.ogImage : null;
-    const heroImg = !ogImg && typeof page.heroImage === 'object' && page.heroImage && 'url' in page.heroImage && page.heroImage.url ? page.heroImage : null;
-    const chosenMedia = ogImg || heroImg;
-    const pageImage = chosenMedia?.url ? absolute(chosenMedia.url) : null;
-    return buildMetadata({
-      ctx,
-      path: `/${section}`,
-      title,
-      description,
-      card: { kind: 'pages', id: page.id },
-      image: pageImage,
-      imageWidth: chosenMedia?.width,
-      imageHeight: chosenMedia?.height,
-      imageType: chosenMedia?.mimeType ?? undefined,
-      readyLangs: readyLangsOf(page as never),
-      incomplete: locale !== 'ar' && trInfo(page as never, locale).status !== 'complete',
-      noindex: Boolean(page.noindex),
-    });
-  }
+  if (!info) return pageMetadata(ctx, section);
   const sp = await searchParams;
   const q = parseListQuery(sp, info.type);
   const only = activeFilters(q);
@@ -71,11 +46,15 @@ export default async function SectionPage({ params, searchParams }: Props) {
   const sp = await searchParams;
   const info = typeFromRoute(section);
   if (!isLocale(locale)) notFound();
+  const moved = MOVED_PAGES[section];
+  if (moved) permanentRedirect(makeCtx(locale).href(moved));
   const isPreview = sp.preview === '1';
   if (!info) return <StaticPage locale={locale} slug={section} preview={isPreview} />;
   const ctx = makeCtx(locale);
   const { t } = ctx;
-  const title = t(TITLE_KEY[info.type]);
+  // /events?kind=conference is the menu's «مؤتمرات»: name the list after the type
+  const kind = info.type === 'event' ? parseListQuery(sp, info.type).kind : undefined;
+  const title = kind ? t(`events.kind.${kind}`) : t(TITLE_KEY[info.type]);
   return (
     <>
       <PageHead ctx={ctx} crumbs={[{ name: title }]} title={title} lead={t(LEAD_KEY[info.type])} />

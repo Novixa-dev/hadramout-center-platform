@@ -3,22 +3,20 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icon } from '../Icon.tsx';
-import type { NavItem } from './PriorityNav.tsx';
+import { groupHasCurrent, isCurrentHref, isMenuGroup, type MenuEntry, type MenuGroup } from './MainNav.tsx';
 
 interface Props {
   label: string;
   closeLabel: string;
-  items: NavItem[];
+  entries: MenuEntry[];
   footer?: ReactNode;
 }
 
-export function MobileMenu({ label, closeLabel, items, footer }: Props) {
+export function MobileMenu({ label, closeLabel, entries, footer }: Props) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const panel = useRef<HTMLDivElement>(null);
   const btn = useRef<HTMLButtonElement>(null);
-
-  const isHere = (href: string) => pathname === href || (href.split('/').length > 2 && pathname.startsWith(`${href}/`));
 
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
@@ -31,7 +29,7 @@ export function MobileMenu({ label, closeLabel, items, footer }: Props) {
       }
       // keep Tab inside the open drawer
       if (e.key === 'Tab' && panel.current) {
-        const f = [...panel.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')];
+        const f = [...panel.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),summary')].filter((el) => el.offsetParent !== null);
         const first = f[0];
         const last = f[f.length - 1];
         if (e.shiftKey && document.activeElement === first) {
@@ -64,26 +62,43 @@ export function MobileMenu({ label, closeLabel, items, footer }: Props) {
             <Icon name="close" />
           </button>
           <nav className="drawer__nav" aria-label={label}>
-            {items.map((i) =>
-              'children' in i ? (
-                <section key={i.label} className="drawer__group" aria-label={i.label}>
-                  <p className="drawer__head">{i.label}</p>
-                  {i.children.map((c) => (
-                    <Link key={c.href} href={c.href} aria-current={isHere(c.href) ? 'page' : undefined} onClick={() => setOpen(false)}>
-                      {c.label}
-                    </Link>
-                  ))}
-                </section>
-              ) : (
-                <Link key={i.href} href={i.href} aria-current={isHere(i.href) ? 'page' : undefined} onClick={() => setOpen(false)}>
-                  {i.label}
-                </Link>
-              ),
-            )}
+            {entries.map((e) => (isMenuGroup(e) ? <DrawerGroup key={e.label} group={e} pathname={pathname} close={() => setOpen(false)} /> : <DrawerLink key={e.href} href={e.href} label={e.label} pathname={pathname} close={() => setOpen(false)} />))}
           </nav>
           {footer ? <div className="drawer__foot">{footer}</div> : null}
         </div>
       </div>
     </>
+  );
+}
+
+function DrawerLink({ href, label, pathname, close }: { href: string; label: string; pathname: string; close: () => void }) {
+  return (
+    <Link prefetch={false} href={href} aria-current={isCurrentHref(pathname, href) ? 'page' : undefined} onClick={close}>
+      {label}
+    </Link>
+  );
+}
+
+/** A menu section as a native disclosure: opened by default when it holds the current page; nested groups get a heading. */
+function DrawerGroup({ group, pathname, close }: { group: MenuGroup; pathname: string; close: () => void }) {
+  return (
+    <details className="drawer__group" open={groupHasCurrent(pathname, group) || undefined}>
+      <summary>
+        {group.label}
+        <Icon name="down" className="icon drawer__chev" />
+      </summary>
+      <div className="drawer__sub">
+        {group.items.map((e) =>
+          isMenuGroup(e) ? (
+            <div key={e.label} className="drawer__subgroup">
+              <p className="drawer__heading">{e.label}</p>
+              {e.items.filter((x) => !isMenuGroup(x)).map((l) => 'href' in l ? <DrawerLink key={l.href} href={l.href} label={l.label} pathname={pathname} close={close} /> : null)}
+            </div>
+          ) : (
+            <DrawerLink key={e.href} href={e.href} label={e.label} pathname={pathname} close={close} />
+          ),
+        )}
+      </div>
+    </details>
   );
 }

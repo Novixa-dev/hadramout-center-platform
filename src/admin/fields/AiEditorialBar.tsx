@@ -44,6 +44,7 @@ export const AiEditorialBar: React.FC = () => {
         }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       if (data.metaTitle) {
         dispatchFields({ type: 'UPDATE', path: 'metaTitle', value: data.metaTitle });
       }
@@ -76,6 +77,7 @@ export const AiEditorialBar: React.FC = () => {
         }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       if (data.lead) {
         dispatchFields({ type: 'UPDATE', path: 'lead', value: data.lead });
         setModified(true);
@@ -101,6 +103,7 @@ export const AiEditorialBar: React.FC = () => {
         body: JSON.stringify({ action: 'academic-template' }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       if (data.template) {
         dispatchFields({ type: 'UPDATE', path: 'body', value: data.template });
         setModified(true);
@@ -119,6 +122,11 @@ export const AiEditorialBar: React.FC = () => {
       showFeedback(lang === 'ar' ? 'لا يوجد محتوى لترجمته حالياً.' : 'No content available to translate.');
       return;
     }
+    // Arabic is the source text: translating "into" it would replace the original
+    if (currentLocale === 'ar') {
+      showFeedback(lang === 'ar' ? 'اختر لغة المحتوى الهدف (غير العربية) من مبدّل اللغة أعلى الصفحة، ثم أعد المحاولة.' : 'Switch the content language (top of the page) to the target language first; Arabic is the source.');
+      return;
+    }
     setLoadingAction('translate');
     try {
       const res = await fetch('/api/hc/editorial-assist', {
@@ -133,6 +141,7 @@ export const AiEditorialBar: React.FC = () => {
         }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
       if (data.translatedTitle) {
         dispatchFields({ type: 'UPDATE', path: 'title', value: data.translatedTitle });
       }
@@ -144,8 +153,15 @@ export const AiEditorialBar: React.FC = () => {
       }
       setModified(true);
       showFeedback(lang === 'ar' ? `تمت الترجمة الآلية للغة (${currentLocale.toUpperCase()}) بنجاح!` : `Auto-translated to (${currentLocale.toUpperCase()}) successfully!`);
-    } catch {
-      showFeedback(lang === 'ar' ? 'تعذر إتمام الترجمة.' : 'Failed to complete translation.');
+    } catch (err) {
+      const reason = (err as Error).message;
+      showFeedback(
+        reason === 'no-provider'
+          ? lang === 'ar' ? 'الترجمة الآلية غير مفعّلة على هذا الخادم.' : 'Machine translation is not enabled on this server.'
+          : reason === 'budget'
+            ? lang === 'ar' ? 'بلغت ميزانية الترجمة اليومية حدّها؛ أعد المحاولة غداً.' : 'The daily translation budget is used up; try again tomorrow.'
+            : lang === 'ar' ? 'تعذر إتمام الترجمة.' : 'Failed to complete translation.',
+      );
     } finally {
       setLoadingAction(null);
     }

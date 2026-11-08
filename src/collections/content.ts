@@ -2,6 +2,7 @@ import type { CollectionConfig, Field } from 'payload';
 import { baseFields, contentAccess, L, localizedText, lockForReviewers, markEdited, titleText } from './shared.ts';
 import { contentHooks } from '../hooks/content.ts';
 import type { CollectionSlug } from '../lib/content-types.ts';
+import { EVENT_KIND_VALUES } from '../lib/list-query.ts';
 
 /** Builds one content collection from the shared base fields plus its own. */
 function contentCollection(
@@ -95,24 +96,49 @@ export const Magazines = contentCollection(
   { columns: ['title', 'issueNumber', 'status'] },
 );
 
+/** Kinds the Center lists under «الفعاليات» (feedback report 2026-10-27), plus discussion panels from the decade book. */
+const EVENT_KINDS = EVENT_KIND_VALUES;
+const EVENT_KIND_LABELS: Record<(typeof EVENT_KINDS)[number], Record<string, string>> = {
+  conference: L('مؤتمر', 'Conference'),
+  seminar: L('ندوة', 'Seminar'),
+  panel: L('حلقة نقاش', 'Panel discussion'),
+  lecture: L('محاضرة', 'Lecture'),
+  virtual: L('لقاء افتراضي', 'Virtual meeting'),
+  competition: L('مسابقة', 'Competition'),
+  other: L('أخرى', 'Other'),
+};
+
+type ParticipantRole = 'speaker' | 'researcher' | 'presenter' | 'chair' | 'moderator' | 'guest';
+
 const eventFields: Field[] = [
+  {
+    type: 'row',
+    fields: [
+      {
+        name: 'kind',
+        type: 'select',
+        index: true,
+        label: L('نوع الفعالية', 'Event type'),
+        options: EVENT_KINDS.map((value) => ({ value, label: EVENT_KIND_LABELS[value] })),
+        admin: { width: '50%', description: L('يحدد القسم الذي تظهر فيه الفعالية في القائمة (مؤتمرات، ندوات، محاضرات…).', 'Decides the menu section the event appears in (conferences, seminars, lectures…).') },
+      },
+      {
+        name: 'attendance',
+        type: 'select',
+        label: L('طريقة الحضور', 'Attendance'),
+        options: [
+          { label: L('حضوري', 'In person'), value: 'onsite' },
+          { label: L('افتراضي (عن بُعد)', 'Virtual (online)'), value: 'virtual' },
+          { label: L('حضوري وافتراضي', 'In person and online'), value: 'hybrid' },
+        ],
+        admin: { width: '50%' },
+      },
+    ],
+  },
   localizedText('speaker', L('المتحدث', 'Speaker')),
   localizedText('moderator', L('مدير الجلسة', 'Moderator')),
   localizedText('venue', L('المكان', 'Venue')),
   localizedText('timeText', L('الوقت', 'Time')),
-  localizedText('supporters', L('الجهات الداعمة', 'Supporters'), {
-    admin: { description: L('الجهات الراعية أو الداعمة للفعالية، مفصولة بفواصل.', 'Sponsors or supporting bodies, separated by commas.') },
-  }),
-  {
-    name: 'attendance',
-    type: 'select',
-    label: L('طريقة الحضور', 'Attendance'),
-    options: [
-      { label: L('حضوري', 'In person'), value: 'onsite' },
-      { label: L('افتراضي (عن بُعد)', 'Virtual (online)'), value: 'virtual' },
-      { label: L('حضوري وافتراضي', 'In person and online'), value: 'hybrid' },
-    ],
-  },
   {
     type: 'row',
     fields: [
@@ -133,6 +159,44 @@ const eventFields: Field[] = [
   },
   localizedText('chairs', L('رؤساء الجلسات العلمية', 'Session Chairs')),
   {
+    name: 'participants',
+    type: 'array',
+    label: L('المشاركون (الضيوف والمتحدثون ومدراء الجلسات)', 'Participants (guests, speakers, session chairs)'),
+    labels: { singular: L('مشارك', 'Participant'), plural: L('المشاركون', 'Participants') },
+    admin: { description: L('أضف كل مشارك بدوره؛ يتيح أكثر من ضيف في المنتدى والبودكاست.', 'One row per person with their role; allows several guests for forum events.') },
+    fields: [
+      {
+        type: 'row',
+        fields: [
+          titleText('name', L('الاسم', 'Name'), { required: true, admin: { width: '60%' } }),
+          {
+            name: 'role',
+            type: 'select',
+            required: true,
+            defaultValue: 'speaker',
+            label: L('الدور', 'Role'),
+            options: [
+              { value: 'speaker', label: L('متحدث', 'Speaker') },
+              { value: 'researcher', label: L('باحث مشارك', 'Researcher') },
+              { value: 'presenter', label: L('مقدم عرض / محاضر', 'Presenter / lecturer') },
+              { value: 'chair', label: L('رئيس جلسة', 'Session chair') },
+              { value: 'moderator', label: L('مدير الجلسة', 'Moderator') },
+              { value: 'guest', label: L('ضيف', 'Guest') },
+            ] satisfies { value: ParticipantRole; label: Record<string, string> }[],
+            admin: { width: '40%' },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'supporters',
+    type: 'array',
+    label: L('الجهات الداعمة', 'Supporters'),
+    labels: { singular: L('جهة داعمة', 'Supporter'), plural: L('الجهات الداعمة', 'Supporters') },
+    fields: [titleText('name', L('اسم الجهة', 'Name'), { required: true })],
+  },
+  {
     name: 'papers',
     type: 'array',
     label: L('الأوراق البحثية وجلسات العمل', 'Research Papers & Sessions'),
@@ -148,7 +212,7 @@ const eventFields: Field[] = [
 
 export const Events = contentCollection('events', { singular: L('مؤتمر / ندوة', 'Conference / seminar'), plural: L('المؤتمرات والندوات', 'Conferences & seminars') }, eventFields, { columns: ['title', 'eventDate', 'status'] });
 
-export const ForumEvents = contentCollection('forum-events', { singular: L('فعالية منتدى', 'Forum event'), plural: L('منتدى عميد الوفاء', 'Ameed Al-Wafa Forum') }, eventFields, { columns: ['title', 'eventDate', 'status'] });
+export const ForumEvents = contentCollection('forum-events', { singular: L('فعالية منتدى', 'Forum event'), plural: L('منتدى عميد الوفاء', 'Ameed Al-Wafa Forum') }, [...eventFields, categoryField], { columns: ['title', 'eventDate', 'status'] });
 
 export const Videos = contentCollection(
   'videos',
@@ -158,5 +222,22 @@ export const Videos = contentCollection(
     { name: 'embedUrl', type: 'text', label: L('رابط تضمين آخر', 'Other embed URL') },
     localizedText('guest', L('الضيف', 'Guest')),
     { name: 'duration', type: 'text', label: L('المدة', 'Duration') },
+    {
+      name: 'clips',
+      type: 'array',
+      label: L('مقاطع إضافية', 'More clips'),
+      labels: { singular: L('مقطع', 'Clip'), plural: L('مقاطع', 'Clips') },
+      admin: { description: L('لسلسلة من عدة أجزاء: معرّف يوتيوب أو رابط لكل مقطع.', 'For a multi-part recording: a YouTube ID or a link per part.') },
+      fields: [
+        titleText('title', L('عنوان المقطع', 'Clip title')),
+        {
+          type: 'row',
+          fields: [
+            { name: 'youtubeId', type: 'text', label: L('معرّف يوتيوب', 'YouTube ID'), admin: { width: '40%' } },
+            { name: 'url', type: 'text', label: L('أو رابط', 'Or a link'), admin: { width: '60%' } },
+          ],
+        },
+      ],
+    },
   ],
 );
