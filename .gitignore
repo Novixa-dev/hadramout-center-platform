@@ -59,4 +59,4 @@ tsconfig.tsbuildinfo
 *.local.md
 
 # raw files received from the client (internal feedback + unpublished material): the repository is public, only our analysis is committed (docs/client)
-clients-notes-and-files/
+#clients-notes-and-files/
