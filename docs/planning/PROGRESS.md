@@ -17,6 +17,8 @@ Decisions worth knowing:
 
 Next steps: CF-PLATFORM-CONTENT, CF-PLATFORM-MAIL, CF-CACHE-ACCOUNT, CF-EVENT-ENDDATES in `BACKLOG.md`.
 
+**Admin dashboard redesign (2026-11-11), mobile first.** `src/admin/EditorialDashboard.tsx` + the «Dashboard» block of `src/app/(payload)/custom.scss`. A green masthead with the Center's pattern says in one sentence how much visitors are waiting on (`waitingLine` in `src/admin/i18n.ts`, Arabic plural agreement, unit-tested); «ما يحتاج انتباهك» is one list (receipts, orders, pledges, volunteers, messages, reviews), empty queues named once in a quiet line, and the editors' own backlog (articles without a topic, latest event) apart under «ترتيب المحتوى», not counted as waiting. Phone order: attention, create, recent edits, content status, tools, shortcuts; two columns from 880 px of dashboard width (container query). `scripts/admin-e2e.mjs` reads counts from `data-count`.
+
 ## Audit coverage
 
 | Area | Status | Document |

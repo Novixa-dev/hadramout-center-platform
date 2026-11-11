@@ -161,8 +161,11 @@ await journey('admin dashboard numbers and language switch', async (page) => {
   const news = rows.find((r) => r[0] === 'الأخبار');
   check(news && Number(news[2].replace(/\D/g, '') || 0) === drafts, 'news draft count equals the database', `${news?.[2]} vs ${drafts}`);
   const uncategorised = await countOf('articles', '&where[status][equals]=published&where[category][exists]=false');
-  const cardText = await page.$$eval('.hc-card', (cs) => cs.map((c) => c.textContent).join(' | '));
-  check(cardText.includes(uncategorised.toLocaleString('en')), 'uncategorised-articles card equals the database', `${uncategorised} not in ${cardText.slice(0, 160)}`);
+  // a queue with something new is a row with its count; an empty one is named in the quiet line with data-count="0"
+  const shown = await page.$eval('.hc-dash [data-key="uncat"]', (a) => Number(a.dataset.count)).catch(() => null);
+  check(shown === uncategorised, 'uncategorised-articles count equals the database', `${shown} vs ${uncategorised}`);
+  const line = await page.$eval('.hc-mast__line', (p) => p.textContent).catch(() => '');
+  check(/ينتظرك|لا شيء ينتظرك/.test(line), 'the masthead says how much is waiting', line);
   // every link on the dashboard opens a page that exists
   const hrefs = [...new Set(await page.$$eval('.hc-dash a[href^="/admin"]', (as) => as.map((a) => a.getAttribute('href'))))];
   const bad = [];

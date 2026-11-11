@@ -1,18 +1,17 @@
 import type { CollectionSlug, Payload, Where } from 'payload';
 import { loadConfig } from '../config.ts';
-import { dashboardStrings, fill } from './i18n.ts';
+import { dashboardStrings, fill, waitingLine } from './i18n.ts';
 import { listUrl } from './links.ts';
 import { ScholarlyNormalizerWidget } from './components/ScholarlyNormalizerWidget.tsx';
 import { Icon, type IconName } from './icons.tsx';
 
 /**
- * The modern admin home, above Payload's own collection list:
- * - Quick Actions bar for instant creation of pages, articles, audio, announcements, and news
- * - Real-time attention cards with animated status alerts
- * - Overview of all 11 content collections (published / drafts / archived)
- * - Scholarly Arabic quick punctuation normalizer tool
- * - Recent updates with locale and type metadata
- * - Translation usage budget meter and quick navigation shortcuts
+ * The admin home, above Payload's own collection list. Mobile first, in order of urgency:
+ * - a masthead that says in one sentence how much is waiting
+ * - what needs attention (requests, receipts, reviews…) as one list; empty queues are named once, quietly
+ * - creating new content, recent edits, the state of every section (published / drafts / archived)
+ * - the scholarly punctuation tool, today's machine-translation budget and shortcuts
+ * On a wide screen the same blocks sit in two columns (custom.scss, container query on .hc-dash).
  * Every number is a real count run with the signed-in user's own access (overrideAccess: false).
  */
 
@@ -97,156 +96,191 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
   const statusLabel = (s?: string) => (s === 'published' ? t.published : s === 'archived' ? t.archived : t.drafts);
   const limit = loadConfig().translation.dailyCharLimit;
 
-  const cards: { key: string; icon: IconName; label: string; n: number; href: string; hint: string }[] = [];
-  if (pendingReviews !== null) cards.push({ key: 'reviews', icon: 'review', label: t.pendingReviews, n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: t.pendingReviewsHint });
-  if (newMessages !== null) cards.push({ key: 'messages', icon: 'message', label: t.newMessages, n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: t.newMessagesHint });
-  if (newOrders) cards.push({ key: 'orders', icon: 'message', label: t.newOrders, n: newOrders, href: listUrl('orders', { status: { equals: 'new' } }), hint: t.newRequestsHint });
-  if (newPledges) cards.push({ key: 'pledges', icon: 'message', label: t.newPledges, n: newPledges, href: listUrl('pledges', { status: { equals: 'new' } }), hint: t.newRequestsHint });
-  if (newVolunteers) cards.push({ key: 'volunteers', icon: 'message', label: t.newVolunteers, n: newVolunteers, href: listUrl('volunteers', { status: { equals: 'new' } }), hint: t.newRequestsHint });
-  if (newReceipts) cards.push({ key: 'receipts', icon: 'message', label: t.newReceipts, n: newReceipts, href: listUrl('receipts', { status: { equals: 'new' } }), hint: t.newReceiptsHint });
-  if (!staff && translationIssues !== null) cards.push({ key: 'tr', icon: 'language', label: t.translationIssues, n: translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: t.translationIssuesHint });
-  if (uncategorised !== null) cards.push({ key: 'uncat', icon: 'tag', label: t.uncategorised, n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: t.uncategorisedHint });
-  const waiting = cards.some((c) => c.n > 0);
+  // Everything that waits for someone. Items with something new become rows; the rest are named once, quietly, below them.
+  // `upkeep` is the editors' own backlog (articles without a topic): listed, but not counted as people waiting for an answer.
+  type Task = { key: string; icon: IconName; label: string; quiet: string; n: number | null; href: string; hint: string; upkeep?: boolean };
+  const all: Task[] = [
+    { key: 'receipts', icon: 'receipt', label: t.newReceipts, quiet: t.qReceipts, n: newReceipts, href: listUrl('receipts', { status: { equals: 'new' } }), hint: t.newReceiptsHint },
+    { key: 'orders', icon: 'cart', label: t.newOrders, quiet: t.qOrders, n: newOrders, href: listUrl('orders', { status: { equals: 'new' } }), hint: t.newRequestsHint },
+    { key: 'pledges', icon: 'heart', label: t.newPledges, quiet: t.qPledges, n: newPledges, href: listUrl('pledges', { status: { equals: 'new' } }), hint: t.newRequestsHint },
+    { key: 'volunteers', icon: 'hand', label: t.newVolunteers, quiet: t.qVolunteers, n: newVolunteers, href: listUrl('volunteers', { status: { equals: 'new' } }), hint: t.newRequestsHint },
+    { key: 'messages', icon: 'message', label: t.newMessages, quiet: t.qMessages, n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: t.newMessagesHint },
+    { key: 'reviews', icon: 'review', label: t.pendingReviews, quiet: t.qReviews, n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: t.pendingReviewsHint },
+    { key: 'tr', icon: 'language', label: t.translationIssues, quiet: t.qTranslation, n: staff ? null : translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: t.translationIssuesHint },
+    { key: 'uncat', icon: 'tag', label: t.uncategorised, quiet: t.qUncategorised, n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: t.uncategorisedHint, upkeep: true },
+  ];
+  const tasks = all.filter((task) => task.n !== null);
+  const active = tasks.filter((task) => !task.upkeep && (task.n ?? 0) > 0);
+  const quiet = tasks.filter((task) => task.n === 0);
+  const upkeep = tasks.filter((task) => task.upkeep && (task.n ?? 0) > 0);
+  const waitingTotal = active.reduce((sum, task) => sum + (task.n ?? 0), 0);
+  const row = (task: Task) => (
+    <li key={task.key}>
+      <a href={task.href} className="hc-inbox__row" data-key={task.key} data-count={task.n ?? 0}>
+        <span className="hc-inbox__icon"><Icon name={task.icon} /></span>
+        <span className="hc-inbox__text">
+          <span className="hc-inbox__label">{task.label}</span>
+          <span className="hc-inbox__hint">{task.hint}</span>
+        </span>
+        <span className="hc-inbox__n">{nf.format(task.n ?? 0)}</span>
+        <span className="hc-inbox__go"><Icon name="chevron" /></span>
+      </a>
+    </li>
+  );
+  const showEvent = latestEvent !== null && staff;
+  const waiting = waitingLine(lang, waitingTotal, (n) => nf.format(n));
   const roleName = role === 'admin' ? t.roleAdmin : role === 'reviewer' ? t.roleReviewer : t.roleEditor;
 
   return (
     <div className="hc-dash">
-      <div className="hc-dash__head">
-        <div>
-          <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name ?? '' })}</h1>
-          <p className="hc-dash__date">{df.format(new Date())}</p>
-          <p className="hc-dash__lead">{staff ? t.leadStaff : t.leadReviewer}</p>
-        </div>
-        <span className={`hc-badge hc-badge--${role}`}>{roleName}</span>
+      {/* a div, not <header>: Payload's app header is already the page's banner landmark */}
+      <div className="hc-mast">
+        <p className="hc-mast__meta">
+          <span>{df.format(new Date())}</span>
+          <span className={`hc-badge hc-badge--${role}`}>{roleName}</span>
+        </p>
+        <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name ?? '' })}</h1>
+        <p className="hc-mast__line">{staff ? waiting : t.leadReviewer}</p>
+        {staff && waitingTotal > 0 ? <p className="hc-mast__hint">{t.waitingHint}</p> : null}
       </div>
 
-      {/* Quick Actions Bar */}
-      {staff && (
-        <section aria-label={t.quickActions} className="hc-dash__actions-section">
-          <div className="hc-dash__actions-bar">
-            <h2 className="hc-dash__actions-title">{t.quickActions}</h2>
-            <div className="hc-dash__actions-buttons">
-              {(
-                [
-                  ['news', 'news', t.newNews],
-                  ['articles', 'article', t.newArticle],
-                  ['pages', 'page', t.newPage],
-                  ['audio', 'audio', t.newAudio],
-                  ['announcements', 'announcement', t.newAnnouncement],
-                ] as const
-              ).map(([slug, icon, label], i) => (
-                <a key={slug} href={`/admin/collections/${slug}/create`} className={`hc-action-btn${i === 0 ? ' hc-action-btn--primary' : ''}`}>
-                  <Icon name={icon} />
-                  <span>{label}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Attention / Alerts Cards */}
-      <section aria-labelledby="hc-dash-attention" className="hc-dash__section">
-        <h2 id="hc-dash-attention" className="hc-dash__h2">{t.attention}</h2>
-        {!waiting ? <p className="hc-dash__clear">{t.allClear}</p> : null}
-        <ul className="hc-cards" role="list">
-          {cards.map((c) => (
-            <li key={c.key}>
-              <a href={c.href} className={`hc-card${c.n > 0 ? ' hc-card--act' : ''}`}>
-                <span className="hc-card__icon"><Icon name={c.icon} /></span>
-                <span className="hc-card__n">{nf.format(c.n)}</span>
-                <span className="hc-card__label">{c.label}</span>
-                <span className="hc-card__hint">{c.hint}</span>
-              </a>
-            </li>
-          ))}
-          {latestEvent !== null && staff ? (
-            <li>
-              <a href={listUrl('events')} className="hc-card">
-                <span className="hc-card__icon"><Icon name="calendar" /></span>
-                <span className="hc-card__date">{latestEvent ? df.format(new Date(latestEvent)) : t.noEvent}</span>
-                <span className="hc-card__label">{t.latestEvent}</span>
-                <span className="hc-card__hint">{t.latestEventHint}</span>
-              </a>
-            </li>
-          ) : null}
-        </ul>
-      </section>
-
-      {/* Main Content Grid: Content Overview & Recent Updates */}
-      <div className="hc-dash__grid">
-        <section aria-labelledby="hc-dash-content" className="hc-dash__section hc-panel">
-          <h2 id="hc-dash-content" className="hc-dash__h2">{t.content}</h2>
-          <div className="hc-table-wrap">
-            <table className="hc-table">
-              <thead>
-                <tr>
-                  <th scope="col">{t.section}</th>
-                  <th scope="col">{t.published}</th>
-                  <th scope="col">{t.drafts}</th>
-                  <th scope="col">{t.archived}</th>
-                  {staff ? <th scope="col"><span className="hc-sr">{t.create}</span></th> : null}
-                </tr>
-              </thead>
-              <tbody>
-                {overview.map((c) => {
-                  const name = lang === 'ar' ? c.ar : c.en;
-                  const cell = (n: number | null, status: string) =>
-                    n === null ? '—' : n === 0 ? <span className="hc-zero">0</span> : <a href={listUrl(c.slug, { status: { equals: status } })}>{nf.format(n)}</a>;
-                  return (
-                    <tr key={c.slug}>
-                      <th scope="row">
-                        <a href={listUrl(c.slug)}>{name}</a>
-                      </th>
-                      <td>{cell(c.published, 'published')}</td>
-                      <td>{cell(c.draft, 'draft')}</td>
-                      <td>{cell(c.archived, 'archived')}</td>
-                      {staff ? (
-                        <td className="hc-table__action">
-                          <a className="hc-add" href={`/admin/collections/${c.slug}/create`} aria-label={fill(t.createNew, { label: name })}>
-                            <Icon name="plus" /><span className="hc-add__label">{t.create}</span>
-                          </a>
-                        </td>
-                      ) : null}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section aria-labelledby="hc-dash-recent" className="hc-dash__section hc-panel">
-          <h2 id="hc-dash-recent" className="hc-dash__h2">{t.recent}</h2>
-          {recent.length ? (
-            <ol className="hc-recent" role="list">
-              {recent.map((r) => (
-                <li key={`${r.slug}-${r.id}`}>
-                  <a href={`/admin/collections/${r.slug}/${r.id}`} className="hc-recent__title" dir="auto">
-                    {r.title}
-                  </a>
-                  <span className="hc-recent__meta">
-                    {r.type} · <span className={`hc-status hc-status--${r.status ?? 'draft'}`}>{statusLabel(r.status)}</span> · {t.updated} {dtf.format(new Date(r.updatedAt))}
+      <div className="hc-dash__cols">
+        <div className="hc-dash__col hc-dash__col--main">
+          <section aria-labelledby="hc-dash-attention" className="hc-box hc-box--inbox">
+            <h2 id="hc-dash-attention" className="hc-box__title">{t.attention}</h2>
+            {active.length ? (
+              <ul className="hc-inbox" role="list">
+                {active.map(row)}
+              </ul>
+            ) : (
+              <p className="hc-box__empty">{t.allClear}</p>
+            )}
+            {quiet.length ? (
+              <p className="hc-inbox__quiet">
+                <span>{t.nothingNewIn}</span>{' '}
+                {quiet.map((task, i) => (
+                  <span key={task.key}>
+                    <a href={task.href} data-key={task.key} data-count={0}>{task.quiet}</a>
+                    {i < quiet.length - 1 ? (lang === 'ar' ? '، ' : ', ') : null}
                   </span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="hc-dash__clear">{t.recentEmpty}</p>
-          )}
-        </section>
-      </div>
+                ))}
+              </p>
+            ) : null}
+            {upkeep.length || showEvent ? (
+              <div className="hc-upkeep">
+                <h3 className="hc-upkeep__title">{t.upkeep}</h3>
+                {upkeep.length ? (
+                  <ul className="hc-inbox hc-inbox--upkeep" role="list">
+                    {upkeep.map(row)}
+                  </ul>
+                ) : null}
+                {showEvent ? (
+                  <a className="hc-inbox__event" href={listUrl('events')}>
+                    <Icon name="calendar" />
+                    <span>
+                      {t.latestEvent}: <strong>{latestEvent ? df.format(new Date(latestEvent)) : t.noEvent}</strong>
+                      <span className="hc-inbox__event-hint">{t.latestEventHint}</span>
+                    </span>
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
+          </section>
 
-      {/* Scholarly Assistant & Utility Grid */}
-      <div className="hc-dash__grid">
-        <section aria-label={t.scholarlyAssistTitle} className="hc-dash__section hc-panel">
-          <ScholarlyNormalizerWidget lang={lang} />
-        </section>
+          <section aria-labelledby="hc-dash-content" className="hc-box hc-box--content">
+            <h2 id="hc-dash-content" className="hc-box__title">{t.content}</h2>
+            <div className="hc-table-wrap">
+              <table className="hc-table">
+                <thead>
+                  <tr>
+                    <th scope="col">{t.section}</th>
+                    <th scope="col">{t.published}</th>
+                    <th scope="col">{t.drafts}</th>
+                    <th scope="col">{t.archived}</th>
+                    {staff ? <th scope="col"><span className="hc-sr">{t.create}</span></th> : null}
+                  </tr>
+                </thead>
+                <tbody>
+                  {overview.map((c) => {
+                    const name = lang === 'ar' ? c.ar : c.en;
+                    const cell = (n: number | null, status: string) =>
+                      n === null ? '—' : n === 0 ? <span className="hc-zero">0</span> : <a href={listUrl(c.slug, { status: { equals: status } })}>{nf.format(n)}</a>;
+                    return (
+                      <tr key={c.slug}>
+                        <th scope="row">
+                          <a href={listUrl(c.slug)}>{name}</a>
+                        </th>
+                        <td>{cell(c.published, 'published')}</td>
+                        <td>{cell(c.draft, 'draft')}</td>
+                        <td>{cell(c.archived, 'archived')}</td>
+                        {staff ? (
+                          <td className="hc-table__action">
+                            <a className="hc-add" href={`/admin/collections/${c.slug}/create`} aria-label={fill(t.createNew, { label: name })}>
+                              <Icon name="plus" />
+                            </a>
+                          </td>
+                        ) : null}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-        <div className="hc-dash__subgrid">
+          <section aria-labelledby="hc-dash-normalizer" className="hc-box hc-box--tool">
+            <ScholarlyNormalizerWidget lang={lang} />
+          </section>
+        </div>
+
+        <div className="hc-dash__col hc-dash__col--side">
+          {staff ? (
+            <section aria-labelledby="hc-dash-create" className="hc-box hc-box--create">
+              <h2 id="hc-dash-create" className="hc-box__title">{t.quickActions}</h2>
+              <div className="hc-create">
+                {(
+                  [
+                    ['news', 'news', t.newNews],
+                    ['articles', 'article', t.newArticle],
+                    ['pages', 'page', t.newPage],
+                    ['audio', 'audio', t.newAudio],
+                    ['announcements', 'announcement', t.newAnnouncement],
+                  ] as const
+                ).map(([slug, icon, label], i) => (
+                  <a key={slug} href={`/admin/collections/${slug}/create`} className={`hc-create__btn${i === 0 ? ' hc-create__btn--primary' : ''}`}>
+                    <Icon name={icon} />
+                    <span>{label}</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <section aria-labelledby="hc-dash-recent" className="hc-box hc-box--recent">
+            <h2 id="hc-dash-recent" className="hc-box__title">{t.recent}</h2>
+            {recent.length ? (
+              <ol className="hc-recent" role="list">
+                {recent.map((r) => (
+                  <li key={`${r.slug}-${r.id}`}>
+                    <a href={`/admin/collections/${r.slug}/${r.id}`} className="hc-recent__title" dir="auto">
+                      {r.title}
+                    </a>
+                    <span className="hc-recent__meta">
+                      <span className={`hc-status hc-status--${r.status ?? 'draft'}`}>{statusLabel(r.status)}</span>
+                      <span>{r.type}</span>
+                      <time dateTime={r.updatedAt}>{dtf.format(new Date(r.updatedAt))}</time>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="hc-box__empty">{t.recentEmpty}</p>
+            )}
+          </section>
+
           {usage !== null ? (
-            <section aria-labelledby="hc-dash-tr" className="hc-dash__section hc-panel">
-              <h2 id="hc-dash-tr" className="hc-dash__h2">{t.translation}</h2>
+            <section aria-labelledby="hc-dash-tr" className="hc-box hc-box--usage">
+              <h2 id="hc-dash-tr" className="hc-box__title">{t.translation}</h2>
               {usage > 0 && limit > 0 ? (
                 <>
                   <p className="hc-meter-label">{fill(t.translationUsed, { used: nf.format(usage), limit: nf.format(limit) })}</p>
@@ -255,13 +289,13 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
                   </meter>
                 </>
               ) : (
-                <p className="hc-dash__clear">{t.translationNone}</p>
+                <p className="hc-box__empty">{t.translationNone}</p>
               )}
             </section>
           ) : null}
 
-          <nav aria-labelledby="hc-dash-quick" className="hc-dash__section hc-panel">
-            <h2 id="hc-dash-quick" className="hc-dash__h2">{t.quick}</h2>
+          <nav aria-labelledby="hc-dash-quick" className="hc-box hc-box--links">
+            <h2 id="hc-dash-quick" className="hc-box__title">{t.quick}</h2>
             <ul className="hc-quick" role="list">
               <li><a href={`/${lang}`} target="_blank" rel="noopener"><Icon name="external" />{t.viewSite}</a></li>
               <li><a href="/admin/account"><Icon name="user" />{t.profile}</a></li>

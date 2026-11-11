@@ -2,7 +2,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { ar as payloadAr } from '@payloadcms/translations/languages/ar';
 import { en as payloadEn } from '@payloadcms/translations/languages/en';
-import { ADMIN_STRING_TABLES, ADMIN_TRANSLATIONS, adminLang, fill } from '../../src/admin/i18n.ts';
+import { ADMIN_STRING_TABLES, ADMIN_TRANSLATIONS, adminLang, fill, waitingLine } from '../../src/admin/i18n.ts';
 import { listUrl } from '../../src/admin/links.ts';
 import { registerHooks } from 'node:module';
 
@@ -121,4 +121,18 @@ describe('collection labels', () => {
   test('every collection, the site settings, groups, visible fields, options and descriptions have Arabic and English', () => {
     assert.deepEqual(problems, []);
   });
+});
+
+test('the dashboard says how much is waiting with the noun agreeing with the number', () => {
+  const ar = (n: number) => waitingLine('ar', n);
+  assert.equal(ar(0), 'لا شيء ينتظرك من الزوار الآن.');
+  assert.equal(ar(1), 'ينتظرك أمر واحد من الزوار.');
+  assert.equal(ar(2), 'ينتظرك أمران من الزوار.');
+  assert.equal(ar(3), 'ينتظرك 3 أمور من الزوار.');
+  assert.equal(ar(10), 'ينتظرك 10 أمور من الزوار.');
+  assert.equal(ar(11), 'ينتظرك 11 أمرًا من الزوار.');
+  assert.equal(ar(99), 'ينتظرك 99 أمرًا من الزوار.');
+  assert.equal(ar(100), 'ينتظرك 100 أمر من الزوار.');
+  assert.equal(waitingLine('en', 1), 'One item from visitors is waiting for you.');
+  assert.equal(waitingLine('en', 12, (n) => n.toLocaleString('en')), '12 items from visitors are waiting for you.');
 });

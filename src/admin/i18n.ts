@@ -77,7 +77,11 @@ const DASHBOARD = {
     greeting: 'أهلاً، {name}',
     section: 'القسم',
     roleAdmin: 'مدير النظام', roleEditor: 'محرر', roleReviewer: 'مراجع ترجمة',
-    leadStaff: 'نظرة على حالة الموقع وما يحتاج انتباهك. كل رقم رابط إلى القائمة المصفّاة.',
+    waiting0: 'لا شيء ينتظرك من الزوار الآن.', waiting1: 'ينتظرك أمر واحد من الزوار.', waiting2: 'ينتظرك أمران من الزوار.', waitingFew: 'ينتظرك {n} أمور من الزوار.', waitingMany: 'ينتظرك {n} أمرًا من الزوار.', waitingOther: 'ينتظرك {n} أمر من الزوار.',
+    upkeep: 'ترتيب المحتوى',
+    waitingHint: 'كل رقم في هذه الصفحة يفتح القائمة المصفّاة.',
+    nothingNewIn: 'لا جديد في:',
+    qReviews: 'مراجعات القرّاء', qMessages: 'رسائل الزوار', qOrders: 'طلبات الكتب', qPledges: 'نوايا التبرع', qVolunteers: 'طلبات التطوع', qReceipts: 'سندات الدفع', qTranslation: 'بلاغات الترجمة', qUncategorised: 'تصنيف المقالات',
     leadReviewer: 'دورك: مراجعة الترجمة — تعدّل نصوص اللغات غير العربية فقط، والأصل العربي للقراءة.',
     attention: 'ما يحتاج انتباهك',
     allClear: 'لا شيء معلّق الآن.',
@@ -92,7 +96,7 @@ const DASHBOARD = {
     content: 'حالة المحتوى',
     published: 'منشور', drafts: 'مسودات', archived: 'مؤرشف',
     viewAll: 'عرض الكل', create: 'إضافة', createNew: 'إضافة {label}',
-    quickActions: 'إجراءات سريعة وإنشاء فوري',
+    quickActions: 'إنشاء جديد',
     newPage: 'صفحة جديدة',
     newArticle: 'مقال أو دراسة',
     newAudio: 'حلقة بودكاست',
@@ -125,7 +129,11 @@ const DASHBOARD = {
     greeting: 'Welcome, {name}',
     section: 'Section',
     roleAdmin: 'Administrator', roleEditor: 'Editor', roleReviewer: 'Translation reviewer',
-    leadStaff: 'The state of the site and what needs your attention. Every number opens the filtered list.',
+    waiting0: 'Nothing from visitors is waiting for you.', waiting1: 'One item from visitors is waiting for you.', waiting2: 'Two items from visitors are waiting for you.', waitingFew: '{n} items from visitors are waiting for you.', waitingMany: '{n} items from visitors are waiting for you.', waitingOther: '{n} items from visitors are waiting for you.',
+    upkeep: 'Content upkeep',
+    waitingHint: 'Every number on this page opens the filtered list.',
+    nothingNewIn: 'Nothing new in:',
+    qReviews: 'reader reviews', qMessages: 'visitor messages', qOrders: 'book orders', qPledges: 'donation pledges', qVolunteers: 'volunteer applications', qReceipts: 'payment receipts', qTranslation: 'translation reports', qUncategorised: 'article topics',
     leadReviewer: 'Your role: translation review — you edit non-Arabic text only; the Arabic original is read-only.',
     attention: 'Needs your attention',
     allClear: 'Nothing is waiting right now.',
@@ -140,7 +148,7 @@ const DASHBOARD = {
     content: 'Content status',
     published: 'Published', drafts: 'Drafts', archived: 'Archived',
     viewAll: 'View all', create: 'Add', createNew: 'Add {label}',
-    quickActions: 'Quick actions & immediate creation',
+    quickActions: 'Create',
     newPage: 'New page',
     newArticle: 'New article',
     newAudio: 'New podcast episode',
@@ -179,6 +187,14 @@ const HEADER = {
 export const editorStrings = (language?: string) => EDITOR[adminLang(language)];
 export const dashboardStrings = (language?: string) => DASHBOARD[adminLang(language)];
 export const headerStrings = (language?: string) => HEADER[adminLang(language)];
+
+/** «ينتظرك ٣ أمور»: Arabic agrees the noun with the number (one, two, few, many, other); English needs only one and other. */
+export function waitingLine(language: string | undefined, n: number, format: (n: number) => string = String): string {
+  const t = dashboardStrings(language);
+  if (n === 0) return t.waiting0;
+  const forms: Partial<Record<Intl.LDMLPluralRule, string>> = { one: t.waiting1, two: t.waiting2, few: t.waitingFew, many: t.waitingMany };
+  return fill(forms[new Intl.PluralRules(adminLang(language)).select(n)] ?? t.waitingOther, { n: format(n) });
+}
 
 /** `{name}` placeholders, filled from `vars`. */
 export const fill = (s: string, vars: Record<string, string | number>): string => s.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
