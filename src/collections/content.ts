@@ -1,8 +1,10 @@
 import type { CollectionConfig, Field } from 'payload';
-import { baseFields, contentAccess, L, localizedText, lockForReviewers, markEdited, titleText } from './shared.ts';
+import { baseFields, contentAccess, L, localizedText, localizedUpdate, lockForReviewers, markEdited, titleText } from './shared.ts';
 import { contentHooks } from '../hooks/content.ts';
 import type { CollectionSlug } from '../lib/content-types.ts';
 import { EVENT_KIND_VALUES } from '../lib/list-query.ts';
+import type { StoreStatus } from '../lib/platform-requests.ts';
+import { currencyOptions } from './Platforms.ts';
 
 /** Builds one content collection from the shared base fields plus its own. */
 function contentCollection(
@@ -78,6 +80,32 @@ export const Books = contentCollection(
         },
         { name: 'pages', type: 'number', label: L('عدد الصفحات', 'Pages'), min: 1 },
         { name: 'isbn', type: 'text', label: L('ردمك (ISBN)', 'ISBN') },
+      ],
+    },
+    {
+      type: 'collapsible',
+      label: L('المتجر الإلكتروني', 'Store'),
+      admin: { initCollapsed: true },
+      fields: [
+        {
+          name: 'storeStatus',
+          type: 'select',
+          defaultValue: 'on_request',
+          label: L('حالته في المتجر', 'Store status'),
+          options: [
+            { label: L('بالطلب (يؤكد المركز التوفر والسعر)', 'On request (the Center confirms availability and price)'), value: 'on_request' },
+            { label: L('متوفر', 'Available'), value: 'available' },
+            { label: L('نفد', 'Out of stock'), value: 'out_of_stock' },
+            { label: L('لا يُعرض في المتجر', 'Not listed in the store'), value: 'hidden' },
+          ] satisfies { label: Record<string, string>; value: StoreStatus }[],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'price', type: 'number', min: 0, label: L('السعر', 'Price'), admin: { width: '50%', description: L('اتركه فارغًا إن لم يُعتمد سعر: يُعرض «السعر عند الطلب».', 'Leave empty when no price is set: «price on request» is shown.') } },
+            { name: 'currency', type: 'select', options: currencyOptions, label: L('العملة', 'Currency'), admin: { width: '50%' } },
+          ],
+        },
       ],
     },
     { name: 'pdf', type: 'text', label: L('رابط ملف PDF', 'PDF link'), admin: { description: L('رابط تنزيل الكتاب إن كان متاحاً للعموم.', 'Download link when the book is publicly available.') } },
@@ -240,4 +268,41 @@ export const Videos = contentCollection(
       ],
     },
   ],
+);
+
+/**
+ * «الموسوعة الحضرمية»: the Center's encyclopedia is still being prepared (decade book pp. 18–19), so this holds no entries until its
+ * editors write them. Entries stay drafts until published; every other part of the archive (search, translation, sitemap) follows.
+ */
+export const Encyclopedia = contentCollection(
+  'encyclopedia',
+  { singular: L('مدخل موسوعي', 'Encyclopedia entry'), plural: L('الموسوعة الحضرمية', 'Hadhramout encyclopedia') },
+  [
+    {
+      name: 'entryKind',
+      type: 'select',
+      index: true,
+      label: L('نوع المدخل', 'Entry type'),
+      options: [
+        { label: L('علم (شخصية)', 'Person'), value: 'person' },
+        { label: L('مكان', 'Place'), value: 'place' },
+        { label: L('حدث', 'Event'), value: 'event' },
+        { label: L('مصطلح أو مفهوم', 'Term or concept'), value: 'term' },
+        { label: L('مؤسسة أو جماعة', 'Institution or group'), value: 'group' },
+        { label: L('أخرى', 'Other'), value: 'other' },
+      ],
+      admin: { position: 'sidebar' },
+    },
+    authorsField,
+    categoryField,
+    {
+      name: 'sources',
+      type: 'textarea',
+      localized: true,
+      label: L('المصادر', 'Sources'),
+      admin: { description: L('مصدر في كل سطر. لا يُنشر مدخل بلا مصدر.', 'One source per line. No entry is published without a source.') },
+      access: { update: localizedUpdate },
+    },
+  ],
+  { columns: ['title', 'entryKind', 'status'] },
 );

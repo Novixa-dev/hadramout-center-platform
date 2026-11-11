@@ -31,6 +31,8 @@ import { VideoFacade } from '../../../../../components/client/VideoFacade.tsx';
 import { PERIODICAL_NAME } from '../../../../../lib/periodical.ts';
 import { StaticPage, pageMetadata } from '../../../../../components/StaticPage.tsx';
 import { MOVED_PAGES } from '../../../../../lib/nav.ts';
+import { canOrder } from '../../../../../lib/platform-requests.ts';
+import { AddToCart } from '../../../../../components/client/StoreCart.tsx';
 import { googleCalendarUrl } from '../../../../../lib/calendar.ts';
 import { safeHref, youtubeId } from '../../../../../lib/media-links.ts';
 
@@ -40,7 +42,7 @@ const PAGE_SLUG = /^[a-z0-9][a-z0-9-]{0,63}$/;
 type Props = { params: Promise<{ locale: string; section: string; id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 const TITLE_KEY: Record<ContentType, string> = {
-  news: 'news.title', article: 'articles.title', book: 'books.title', magazine: 'magazines.title', event: 'events.title', forum: 'forum.title', video: 'videos.title',
+  news: 'news.title', article: 'articles.title', book: 'books.title', magazine: 'magazines.title', event: 'events.title', forum: 'forum.title', video: 'videos.title', encyclopedia: 'encyclopedia.title',
 };
 
 function readyLangsOf(doc: Doc): string[] {
@@ -270,6 +272,7 @@ export default async function DetailPage({ params, searchParams }: Props) {
           <a className="btn btn--secondary" href={pdf} download><Icon name="download" /> {t(type === 'book' ? 'book.download' : 'magazine.download')}</a>
         </>
       ) : null}
+      {type === 'book' && canOrder(doc.storeStatus) ? <AddToCart id={doc.id} title={doc.title} add={t('store.add')} added={t('store.added')} cartHref={`${href('/store')}#cart`} viewCart={t('store.viewCart')} /> : null}
       {type === 'book' ? <Link className="btn btn--gold" href={`${href('/contact')}?kind=book_request&book=${doc.id}&subject=${encodeURIComponent(t('contact.form.bookRequest', { title: doc.title }))}`}>{t('book.request')}</Link> : null}
       {isEvent && eventDate ? <a className="btn btn--primary" href={`/api/hc/ics/${section}/${doc.id}.ics?lang=${locale}`}><Icon name="calendar" /> {t('event.addToCalendar')}</a> : null}
       {googleCal ? <a className="btn btn--secondary" href={googleCal} target="_blank" rel="noopener noreferrer"><Icon name="calendar" /> {t('event.addToGoogle')}<span className="sr-only"> ({t('a11y.newWindow')})</span></a> : null}
@@ -364,6 +367,15 @@ export default async function DetailPage({ params, searchParams }: Props) {
   ) : (
     <div id="article-body" className="prose" lang={tr.bodyLang === 'ar' ? 'ar' : locale} dir={tr.bodyLang === 'ar' ? 'rtl' : ctx.lang.dir} dangerouslySetInnerHTML={{ __html: prose }} />
   )) : null;
+
+  // an encyclopedia entry names its sources, one per line
+  const sources = type === 'encyclopedia' && typeof doc.sources === 'string' ? doc.sources.split('\n').map((l) => l.trim()).filter(Boolean) : [];
+  const sourcesBlock = sources.length ? (
+    <section className="entry-sources" aria-labelledby="sources-h">
+      <h2 id="sources-h" className="section-title">{t('encyclopedia.sources')}</h2>
+      <ol>{sources.map((s, i) => <li key={i}>{s}</li>)}</ol>
+    </section>
+  ) : null;
 
   return (
     <>
@@ -503,6 +515,7 @@ export default async function DetailPage({ params, searchParams }: Props) {
             ) : null}
 
             {proseBlock}
+            {sourcesBlock}
 
             {isEvent && tracks.length > 0 ? (
               <section style={{ marginBlockStart: 'var(--space-8)' }} aria-labelledby="tracks-h">

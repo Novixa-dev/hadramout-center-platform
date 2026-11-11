@@ -1,11 +1,11 @@
 /**
- * The seven content types of the archive: legacy section, Payload collection slug, public URL segment.
+ * The content types of the archive: legacy section, Payload collection slug, public URL segment.
  * One registry so routes, importer, sitemap and search never disagree.
  */
-export const CONTENT_TYPES = ['news', 'article', 'book', 'magazine', 'event', 'forum', 'video'] as const;
+export const CONTENT_TYPES = ['news', 'article', 'book', 'magazine', 'event', 'forum', 'video', 'encyclopedia'] as const;
 export type ContentType = (typeof CONTENT_TYPES)[number];
 
-export type CollectionSlug = 'news' | 'articles' | 'books' | 'magazines' | 'events' | 'forum-events' | 'videos';
+export type CollectionSlug = 'news' | 'articles' | 'books' | 'magazines' | 'events' | 'forum-events' | 'videos' | 'encyclopedia';
 
 export interface ContentTypeInfo {
   type: ContentType;
@@ -25,6 +25,8 @@ export const CONTENT: Record<ContentType, ContentTypeInfo> = {
   event: { type: 'event', slug: 'events', route: 'events', legacy: 'events' },
   forum: { type: 'forum', slug: 'forum-events', route: 'forum', legacy: 'forum' },
   video: { type: 'video', slug: 'videos', route: 'videos', legacy: 'videos' },
+  // born here: the old site had no encyclopedia, so `legacy` names no real section
+  encyclopedia: { type: 'encyclopedia', slug: 'encyclopedia', route: 'encyclopedia', legacy: 'encyclopedia' },
 };
 
 export const COLLECTION_SLUGS = CONTENT_TYPES.map((t) => CONTENT[t].slug);
@@ -46,4 +48,5 @@ export const TRANSLATABLE_EXTRA: Record<CollectionSlug, string[]> = {
   events: ['speaker', 'moderator', 'venue', 'timeText'],
   'forum-events': ['speaker', 'moderator', 'venue', 'timeText'],
   videos: ['guest'],
+  encyclopedia: ['sources'],
 };

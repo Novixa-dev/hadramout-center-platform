@@ -32,6 +32,7 @@ const CONTENT: { slug: CollectionSlug; ar: string; en: string }[] = [
   { slug: 'forum-events', ar: 'منتدى عميد الوفاء', en: 'Forum' },
   { slug: 'audio', ar: 'الصوتيات والبودكاست', en: 'Audio & Podcasts' },
   { slug: 'videos', ar: 'المرئيات', en: 'Videos' },
+  { slug: 'encyclopedia', ar: 'الموسوعة الحضرمية', en: 'Encyclopedia' },
   { slug: 'announcements', ar: 'الإعلانات والبيانات', en: 'Announcements' },
   { slug: 'partners', ar: 'الشركاء والجهات', en: 'Partners' },
   { slug: 'pages', ar: 'الصفحات التعريفية', en: 'Pages' },
@@ -60,6 +61,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
     }
   };
 
+  const [newOrders, newPledges, newVolunteers, newReceipts] = await Promise.all((['orders', 'pledges', 'volunteers', 'receipts'] as const).map((c) => (staff ? count(c, { status: { equals: 'new' } }) : null)));
   const [pendingReviews, newMessages, translationIssues, uncategorised, overview, latestEvent, recentLists, usage] = await Promise.all([
     staff ? count('reviews', { status: { equals: 'pending' } }) : null,
     staff ? count('messages', { status: { equals: 'new' } }) : null,
@@ -98,6 +100,10 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
   const cards: { key: string; icon: IconName; label: string; n: number; href: string; hint: string }[] = [];
   if (pendingReviews !== null) cards.push({ key: 'reviews', icon: 'review', label: t.pendingReviews, n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: t.pendingReviewsHint });
   if (newMessages !== null) cards.push({ key: 'messages', icon: 'message', label: t.newMessages, n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: t.newMessagesHint });
+  if (newOrders) cards.push({ key: 'orders', icon: 'message', label: t.newOrders, n: newOrders, href: listUrl('orders', { status: { equals: 'new' } }), hint: t.newRequestsHint });
+  if (newPledges) cards.push({ key: 'pledges', icon: 'message', label: t.newPledges, n: newPledges, href: listUrl('pledges', { status: { equals: 'new' } }), hint: t.newRequestsHint });
+  if (newVolunteers) cards.push({ key: 'volunteers', icon: 'message', label: t.newVolunteers, n: newVolunteers, href: listUrl('volunteers', { status: { equals: 'new' } }), hint: t.newRequestsHint });
+  if (newReceipts) cards.push({ key: 'receipts', icon: 'message', label: t.newReceipts, n: newReceipts, href: listUrl('receipts', { status: { equals: 'new' } }), hint: t.newReceiptsHint });
   if (!staff && translationIssues !== null) cards.push({ key: 'tr', icon: 'language', label: t.translationIssues, n: translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: t.translationIssuesHint });
   if (uncategorised !== null) cards.push({ key: 'uncat', icon: 'tag', label: t.uncategorised, n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: t.uncategorisedHint });
   const waiting = cards.some((c) => c.n > 0);

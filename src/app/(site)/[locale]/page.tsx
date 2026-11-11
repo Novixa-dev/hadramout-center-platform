@@ -19,6 +19,8 @@ type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  // `/nope.js` reaches this route as locale "nope.js"; without the guard getSite threw and a missing file answered 500, not 404
+  if (!isLocale(locale)) return {};
   const ctx = makeCtx(locale);
   const site = await getSite(locale);
   const full = `${site.name} — ${ctx.t('home.hero.eyebrow')}`;

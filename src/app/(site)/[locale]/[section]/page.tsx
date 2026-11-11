@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { rowCount } from '../../../../lib/facets.ts';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { MOVED_PAGES } from '../../../../lib/nav.ts';
@@ -12,10 +14,10 @@ import { PageHead } from '../../../../components/PageHead.tsx';
 type Props = { params: Promise<{ locale: string; section: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 const TITLE_KEY: Record<ContentType, string> = {
-  news: 'news.title', article: 'articles.title', book: 'books.title', magazine: 'magazines.title', event: 'events.title', forum: 'forum.title', video: 'videos.title',
+  news: 'news.title', article: 'articles.title', book: 'books.title', magazine: 'magazines.title', event: 'events.title', forum: 'forum.title', video: 'videos.title', encyclopedia: 'encyclopedia.title',
 };
 const LEAD_KEY: Record<ContentType, string> = {
-  news: 'news.lead', article: 'articles.lead', book: 'books.lead', magazine: 'magazines.lead', event: 'events.lead', forum: 'forum.intro', video: 'videos.lead',
+  news: 'news.lead', article: 'articles.lead', book: 'books.lead', magazine: 'magazines.lead', event: 'events.lead', forum: 'forum.intro', video: 'videos.lead', encyclopedia: 'encyclopedia.lead',
 };
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
@@ -35,7 +37,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     title: ctx.t(TITLE_KEY[info.type]),
     description: ctx.t(LEAD_KEY[info.type]),
     card: { key: section },
-    noindex: Boolean(topicOnly) || isCustomised(q, info.type),
+    // the encyclopedia page says «nothing published yet» until its first entry: not a page for search engines
+    noindex: Boolean(topicOnly) || isCustomised(q, info.type) || (info.type === 'encyclopedia' && (await rowCount('encyclopedia')) === 0),
     page: q.page,
     pageLabel: ctx.t('list.pageN', { page: q.page }),
   });
@@ -58,7 +61,14 @@ export default async function SectionPage({ params, searchParams }: Props) {
   return (
     <>
       <PageHead ctx={ctx} crumbs={[{ name: title }]} title={title} lead={t(LEAD_KEY[info.type])} />
-      <Listing ctx={ctx} type={info.type} basePath={`/${section}`} searchParams={sp} title={title} crumbs={[]} description={t(LEAD_KEY[info.type])} />
+      {info.type === 'encyclopedia' && (await rowCount('encyclopedia')) === 0 ? (
+        // nothing to search or sort yet: say so once, rather than an empty list under a search box
+        <div className="container section">
+          <p className="notice notice--info">{t('encyclopedia.preparing')} <Link prefetch={false} href={ctx.href('/digital-library')}>{t('encyclopedia.sourcesLink')}</Link>.</p>
+        </div>
+      ) : (
+        <Listing ctx={ctx} type={info.type} basePath={`/${section}`} searchParams={sp} title={title} crumbs={[]} description={t(LEAD_KEY[info.type])} />
+      )}
     </>
   );
 }

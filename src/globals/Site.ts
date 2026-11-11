@@ -43,6 +43,22 @@ export const Site: GlobalConfig = {
         { name: 'youtube', type: 'text', label: L('يوتيوب', 'YouTube') },
       ],
     },
+    {
+      name: 'donation',
+      type: 'group',
+      label: L('التبرعات', 'Donations'),
+      admin: { description: L('تظهر في صفحة منصة التبرعات. اتركها فارغة حتى يعتمدها المركز: لا تُعرض بيانات تحويل غير معتمدة.', 'Shown on the donations page. Leave empty until the Center approves them: no unapproved transfer details are shown.') },
+      fields: [
+        { name: 'instructions', type: 'textarea', localized: true, label: L('طرق التحويل المعتمدة (حسابات، جهات)', 'Approved ways to transfer (accounts, agents)') },
+        {
+          name: 'paymentUrl',
+          type: 'text',
+          label: L('رابط الدفع الإلكتروني', 'Online payment link'),
+          validate: (v: string | null | undefined) => !v || /^https:\/\/[^\s]+$/.test(v) || 'https:// فقط / https:// only',
+          admin: { description: L('رابط بوابة دفع معتمدة باسم المركز، إن وُجدت. لا يقبل الموقع نفسه أي دفع.', "An approved gateway in the Center's name, if any. The site itself accepts no payment.") },
+        },
+      ],
+    },
     { name: 'reviewsEnabled', type: 'checkbox', defaultValue: true, label: L('تفعيل مراجعات القراء', 'Enable reader reviews'), admin: { description: L('تظهر المراجعة بعد موافقة المحرر فقط.', 'A review is shown only after an editor approves it.') } },
     { name: 'translationMeta', type: 'json', admin: { hidden: true } },
   ],

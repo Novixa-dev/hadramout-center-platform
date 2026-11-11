@@ -56,6 +56,10 @@
   .select { padding-inline-end: 2rem; }
   .textarea { min-block-size: 8rem; resize: vertical; }
   .input::placeholder, .textarea::placeholder { color: var(--muted); }
+  /* a picture upload (payment receipts): the picker button looks like the site's buttons, not the browser's grey one */
+  .input[type='file'] { padding-block: 0.4rem; cursor: pointer; }
+  .input[type='file']::file-selector-button { margin-inline-end: 0.75rem; padding: 0.4rem 0.9rem; min-block-size: 2rem; border: 1px solid var(--border-strong); border-radius: var(--r-sm); background: var(--surface-3); color: var(--text); font: inherit; cursor: pointer; }
+  .input[type='file']:hover::file-selector-button { background: var(--brand-soft); }
   .input:hover, .select:hover, .textarea:hover { border-color: var(--muted); }
   .input[aria-invalid='true'], .textarea[aria-invalid='true'] { border-color: var(--danger); }
   .form-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }

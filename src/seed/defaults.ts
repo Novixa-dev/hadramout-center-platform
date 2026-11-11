@@ -1,3 +1,4 @@
+import { PRIVACY_PLATFORMS_HTML } from './privacy-platforms.ts';
 /**
  * Content that is NOT in the legacy site and is therefore written (and clearly reviewable) here.
  * Rule: nothing in this file may state an institutional fact that cannot be traced to the legacy
@@ -45,8 +46,9 @@ export const DEFAULT_PAGES: DefaultPage[] = [
 <ul>
 <li><strong>نموذج التواصل وطلب الكتب:</strong> الاسم والبريد والرسالة، لنرد عليك.</li>
 <li><strong>النشرة البريدية:</strong> بريدك الإلكتروني وتاريخ موافقتك، ويمكنك إلغاء الاشتراك في أي وقت.</li>
-<li><strong>المحفوظات:</strong> تُحفظ في متصفحك وحده ولا تُرسل إلينا.</li>
+<li><strong>المحفوظات:</strong> تُحفظ في متصفحك وحده، ولا تُنسخ إلى حسابك إلا حين تطلب ذلك.</li>
 </ul>
+${PRIVACY_PLATFORMS_HTML}
 <h2>الترجمة الآلية</h2>
 <p>عند اختيار لغة غير العربية قد تُرسل نصوص الصفحة (وليس بياناتك الشخصية) إلى خدمة ترجمة لإنتاج النسخة المترجمة، وتُخزَّن الترجمة على خادم المركز.</p>
 <h2>التواصل</h2>

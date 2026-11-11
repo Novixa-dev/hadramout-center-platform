@@ -39,6 +39,7 @@ const SELECT: Record<ContentType, Record<string, true>> = {
   event: { title: true, publishedAt: true, datePrecision: true, eventDate: true, kind: true, cover: true, coverUrl: true, featured: true },
   forum: { title: true, publishedAt: true, datePrecision: true, eventDate: true, cover: true, coverUrl: true, featured: true },
   video: { title: true, publishedAt: true, datePrecision: true, cover: true, coverUrl: true, featured: true },
+  encyclopedia: { title: true, publishedAt: true, datePrecision: true, category: true, authors: true, cover: true, coverUrl: true, featured: true },
 };
 
 function toRow(type: ContentType, d: Raw): Row {

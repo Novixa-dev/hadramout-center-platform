@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { absolute, isLocale, makeCtx } from '../../../../lib/ctx.ts';
+import { rowCount } from '../../../../lib/facets.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
 import { breadcrumbJsonLd, jsonLdString } from '../../../../lib/jsonld.ts';
 import { PageHead } from '../../../../components/PageHead.tsx';
@@ -10,16 +11,16 @@ import { SourceNote, StatusBadge } from '../../../../components/InfoBits.tsx';
 type Props = { params: Promise<{ locale: string }> };
 
 /**
- * «المنصات الرقمية» as the Center listed them (feedback report 2026-10-27; all marked «تحت الإنشاء»). Each section states
- * its real status and, where something already exists, points to it. The Khizana text is the decade book's (pp. 186–187).
+ * «المنصات الرقمية» as the Center listed them (feedback report 2026-10-27). Each section states its real status and opens the
+ * platform. The store and donations are «by request»: the site takes no payment. The Khizana text is the decade book's (pp. 186–187).
  * Section ids are linked from the menu and the utility bar.
  */
-const BUILDING: { id: string; next?: { path: string; key: string } }[] = [
-  { id: 'cultural' },
-  { id: 'members', next: { path: '/saved', key: 'saved.title' } },
-  { id: 'store', next: { path: '/contact', key: 'nav.contact' } },
-  { id: 'donations', next: { path: '/support', key: 'util.support' } },
-  { id: 'volunteering', next: { path: '/contact', key: 'nav.contact' } },
+const PLATFORMS: { id: string; path: string; status: 'platforms.status.live' | 'platforms.status.request' }[] = [
+  { id: 'cultural', path: '/culture', status: 'platforms.status.live' },
+  { id: 'members', path: '/account', status: 'platforms.status.live' },
+  { id: 'store', path: '/store', status: 'platforms.status.request' },
+  { id: 'donations', path: '/donate', status: 'platforms.status.request' },
+  { id: 'volunteering', path: '/volunteer', status: 'platforms.status.live' },
 ];
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -34,6 +35,7 @@ export default async function PlatformsPage({ params }: Props) {
   if (!isLocale(locale)) notFound();
   const ctx = makeCtx(locale);
   const { t, href, lang } = ctx;
+  const entries = await rowCount('encyclopedia');
   const crumbs = breadcrumbJsonLd([
     { name: t('nav.home'), url: absolute(`/${lang.code}`) },
     { name: t('platforms.title'), url: absolute(`/${lang.code}/platforms`) },
@@ -68,16 +70,16 @@ export default async function PlatformsPage({ params }: Props) {
         <section id="encyclopedia" className="info-section" aria-labelledby="encyclopedia-h">
           <h2 id="encyclopedia-h">{t('platforms.encyclopedia.title')} <StatusBadge kind="building">{t('status.preparing')}</StatusBadge></h2>
           <p>{t('platforms.encyclopedia.text')}</p>
+          <p>{t('platforms.encyclopedia.count', { n: entries })}</p>
           <SourceNote ctx={ctx} pages="18–19" />
+          <Link prefetch={false} className="btn btn--secondary btn--sm" href={href('/encyclopedia')}>{t('platforms.open')}<span className="sr-only">: {t('platforms.encyclopedia.title')}</span></Link>
         </section>
 
-        {BUILDING.map(({ id, next }) => (
+        {PLATFORMS.map(({ id, path, status }) => (
           <section key={id} id={id} className="info-section" aria-labelledby={`${id}-h`}>
-            <h2 id={`${id}-h`}>{t(`platforms.${id}.title`)} <StatusBadge kind="building">{t('status.building')}</StatusBadge></h2>
-            <p>
-              {t(`platforms.${id}.text`)}
-              {next ? <> <Link href={href(next.path)}>{t(next.key)}</Link>.</> : null}
-            </p>
+            <h2 id={`${id}-h`}>{t(`platforms.${id}.title`)} <StatusBadge kind="live">{t(status)}</StatusBadge></h2>
+            <p>{t(`platforms.${id}.text`)}</p>
+            <Link prefetch={false} className="btn btn--secondary btn--sm" href={href(path)}>{t('platforms.open')}<span className="sr-only">: {t(`platforms.${id}.title`)}</span></Link>
           </section>
         ))}
       </div>

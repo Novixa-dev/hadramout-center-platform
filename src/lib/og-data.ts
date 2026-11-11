@@ -127,6 +127,11 @@ async function staticPageCard(lang: string, id: number): Promise<{ input: OgInpu
 const PAGE_TITLES: Record<string, { title: string; lead?: string }> = {
   home: { title: 'home.hero.title', lead: 'home.hero.lead' },
   news: { title: 'news.title' },
+  encyclopedia: { title: 'encyclopedia.title', lead: 'encyclopedia.lead' },
+  culture: { title: 'culture.title', lead: 'culture.lead' },
+  store: { title: 'store.title', lead: 'store.lead' },
+  donate: { title: 'donate.title', lead: 'donate.lead' },
+  volunteer: { title: 'volunteer.title', lead: 'volunteer.lead' },
   articles: { title: 'articles.title', lead: 'articles.lead' },
   books: { title: 'books.title', lead: 'books.lead' },
   magazines: { title: 'magazines.title', lead: 'magazines.lead' },

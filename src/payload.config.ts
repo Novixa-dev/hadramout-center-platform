@@ -11,7 +11,8 @@ import { Users } from './collections/Users.ts';
 import { Media } from './collections/Media.ts';
 import { Authors } from './collections/Authors.ts';
 import { Categories } from './collections/Categories.ts';
-import { News, Articles, Books, Magazines, Events, ForumEvents, Videos } from './collections/content.ts';
+import { News, Articles, Books, Magazines, Events, ForumEvents, Videos, Encyclopedia } from './collections/content.ts';
+import { Members, Orders, Pledges, Receipts, Volunteers } from './collections/Platforms.ts';
 import { Pages } from './collections/Pages.ts';
 import { Timeline } from './collections/Timeline.ts';
 import { Reviews } from './collections/Reviews.ts';
@@ -53,7 +54,7 @@ export default buildConfig({
   },
   i18n: { supportedLanguages: { ar, en }, fallbackLanguage: 'ar', translations: ADMIN_TRANSLATIONS },
   localization: { locales: PAYLOAD_LOCALES, defaultLocale: DEFAULT_LOCALE, fallback: true },
-  collections: [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Audio, Announcements, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, TranslationUsage, Users],
+  collections: [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Encyclopedia, Audio, Announcements, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, Orders, Pledges, Receipts, Volunteers, Members, TranslationUsage, Users],
   globals: [Site],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

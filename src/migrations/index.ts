@@ -21,6 +21,8 @@ import * as migration_20261106_130000_add_center_pages from './20261106_130000_a
 import * as migration_20261106_140000_add_event_supporters_attendance from './20261106_140000_add_event_supporters_attendance';
 import * as migration_20261108_120000_reconcile_center_feedback from './20261108_120000_reconcile_center_feedback';
 import * as migration_20261108_130000_book_records from './20261108_130000_book_records';
+import * as migration_20261109_125858_platforms from './20261109_125858_platforms';
+import * as migration_20261111_141033_receipts from './20261111_141033_receipts';
 
 export const migrations = [
   {
@@ -116,17 +118,17 @@ export const migrations = [
   {
     up: migration_20261106_120000_split_author_honorifics.up,
     down: migration_20261106_120000_split_author_honorifics.down,
-    name: '20261106_120000_split_author_honorifics'
+    name: '20261106_120000_split_author_honorifics',
   },
   {
     up: migration_20261106_130000_add_center_pages.up,
     down: migration_20261106_130000_add_center_pages.down,
-    name: '20261106_130000_add_center_pages'
+    name: '20261106_130000_add_center_pages',
   },
   {
     up: migration_20261106_140000_add_event_supporters_attendance.up,
     down: migration_20261106_140000_add_event_supporters_attendance.down,
-    name: '20261106_140000_add_event_supporters_attendance'
+    name: '20261106_140000_add_event_supporters_attendance',
   },
   {
     up: migration_20261108_120000_reconcile_center_feedback.up,
@@ -137,5 +139,15 @@ export const migrations = [
     up: migration_20261108_130000_book_records.up,
     down: migration_20261108_130000_book_records.down,
     name: '20261108_130000_book_records',
+  },
+  {
+    up: migration_20261109_125858_platforms.up,
+    down: migration_20261109_125858_platforms.down,
+    name: '20261109_125858_platforms',
+  },
+  {
+    up: migration_20261111_141033_receipts.up,
+    down: migration_20261111_141033_receipts.down,
+    name: '20261111_141033_receipts',
   },
 ];

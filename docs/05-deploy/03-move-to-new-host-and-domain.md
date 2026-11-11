@@ -70,7 +70,8 @@
 4. حوّل DNS إلى الخادم الجديد (أو غيّر وجهة Cloudflare).
 5. **فور ظهور النطاق:** `node scripts/cutover-check.mjs https://النطاق-النهائي` — يجب أن تنجح كل الفحوص (canonical، hreflang، sitemap، robots، رؤوس الفهرسة، التحويلات 301 من الروابط القديمة، البطاقات، الصحة). أي فشل ⇒ لا تُكمل.
 6. أعد تشغيل `seo-audit.mjs` وراقب `/api/hc/health` وسجلات الحاوية.
-7. **Cloudflare:** SSL = Full (strict)؛ قاعدة تخزين مؤقت تتجاوز `/admin` و`/api/*` و**`/sw.js`** (حالياً Cloudflare يفرض `max-age=14400` على ملف الـservice worker)؛ قاعدة اختيارية لتخزين HTML المجهول مع Purge عند النشر (تحتاج رمز Cache Purge)؛ أوقف Rocket Loader وAuto Minify (يكسران CSP)؛ فعّل Always Use HTTPS.
+7. **Cloudflare:** SSL = Full (strict)؛ قاعدة تخزين مؤقت تتجاوز `/admin` و`/api/*` و**`/*/account`** وكل طلب يحمل ملف الارتباط **`hc_member`** (وإلا قد تُعرض بيانات عضو لزائر آخر إن فُرض تخزين HTML) و**`/sw.js`** (حالياً Cloudflare يفرض `max-age=14400` على ملف الـservice worker)؛ قاعدة اختيارية لتخزين HTML المجهول مع Purge عند النشر (تحتاج رمز Cache Purge)؛ أوقف Rocket Loader وAuto Minify (يكسران CSP)؛ فعّل Always Use HTTPS.
+   - **صور سندات الدفع** `/api/receipts/file/*` يرسلها الخادم بـ`Cache-Control: private, no-store`. لا تجعل أي قاعدة في Cloudflare «تتجاهل إعدادات التخزين من الخادم» (Ignore origin cache-control) على `/api/*`، وإلا خُزّنت صورة سند وعُرضت لغير الفريق.
 
 ## 6. المرحلة د — بعد الإطلاق (أول 30 يوماً)
 

@@ -50,9 +50,19 @@ const nextConfig: NextConfig = {
       // legacy-media sets its own sandboxing CSP in its route; a config header here would replace it (Next keeps the first value)
       { source: '/((?!admin|api|legacy-media).*)', headers: [{ key: 'Content-Security-Policy', value: CSP }] },
       { source: '/admin/:path*', headers: NO_FOREIGN_FRAMES },
-      { source: '/api/:path((?!media/file/).*)', headers: NO_FOREIGN_FRAMES },
+      { source: '/api/:path((?!media/file/|receipts/file/).*)', headers: NO_FOREIGN_FRAMES },
       // uploaded files: the config header replaces Payload's own file CSP, so it must carry its script ban as well
       { source: '/api/media/file/:path*', headers: [{ key: 'Content-Security-Policy', value: `script-src 'none'; frame-src 'none'; ${ADMIN_CSP}` }, { key: 'X-Frame-Options', value: 'SAMEORIGIN' }] },
+      // payment receipts are staff-only personal data: a CDN caches .jpg by extension unless told not to, and would then hand a
+      // receipt to anyone who asks for its address
+      {
+        source: '/api/receipts/file/:path*',
+        headers: [
+          { key: 'Content-Security-Policy', value: `script-src 'none'; frame-src 'none'; ${ADMIN_CSP}` },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      },
     ];
   },
   // Legacy item URLs (/articles/9597) are rewritten to the id-mapping handler here, not in proxy.ts: a rewrite returned by the proxy is

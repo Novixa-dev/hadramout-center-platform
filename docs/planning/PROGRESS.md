@@ -1,7 +1,21 @@
 # Progress and continuation point
 
-**Last updated:** 2026-11-08 (client files checked item by item: [conflicts list](../client/05-book-vs-site-conflicts-ar.md)) · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
+**Last updated:** 2026-11-11 (payment receipts added to the store and donations; 2026-11-09 digital platforms built: [handover](../client/06-platforms-handover-ar.md); 2026-11-08: client files checked item by item, [conflicts list](../client/05-book-vs-site-conflicts-ar.md)) · **Latest review:** [REVIEW_2026-10-28_ADMIN](../reports/REVIEW_2026-10-28_ADMIN.md) (admin) · [REVIEW_2026-10-27](../reports/REVIEW_2026-10-27.md) (site) · **Readiness:** [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · **Access/roles:** [ACCESS_AND_ACCOUNTS](../06-handover/ACCESS_AND_ACCOUNTS.md) · **Tests:** [test runbook](../04-qa/02-test-runbook.md) · **Next:** [NEXT_PLAN §3c](NEXT_PLAN.md) orders everything still open. **State (2026-10-21):** PRs #12–#33 (incl. Dependabot #22–#30) are merged and deployed to the **staging/review site** `hadramout-center.novixa.dev` (noindex, preview banner, `SITE_ENV` unset). It moves to a new host and domain after the Center approves. All launch gates and their owners: [ROADMAP](ROADMAP.md).
 **Related:** [BASELINE_REPORT](../reports/BASELINE_REPORT.md) · [RELEASE_READINESS](../reports/RELEASE_READINESS.md) · [architecture audit](../architecture/SYSTEM_ARCHITECTURE.md) · [data audit](../architecture/DATA_MODEL_AND_TAXONOMY.md) · [migration plan](../migration/CONTENT_MIGRATION_PLAN.md)
+
+## Digital platforms (2026-11-09)
+
+Built: reader accounts (`/account`), store with cart and orders (`/store`), donation pledges (`/donate`), volunteer applications (`/volunteer`), the encyclopedia as an eighth content type (`/encyclopedia`, empty until editors write entries) and a cultural hub drawn from the archive (`/culture`). Staff handle requests in the admin group «الأعضاء والطلبات».
+
+Decisions worth knowing:
+- **Members are not a Payload auth collection, on purpose.** `collections/shared.ts` treats any `req.user` as staff, so a reader must never become one. They have their own cookie `hc_member` (`src/lib/member-crypto.ts`, `src/lib/members.ts`). Do not change this without rewriting those access rules.
+- **The site takes no money.** Orders and pledges wait for staff. `site.donation.paymentUrl` links to a gateway if the Center ever has one.
+- **Payment receipts (2026-11-11).** After transferring outside the site, a visitor uploads a photo of the receipt (`POST /api/hc/receipts`, multipart) proved by the request's reference plus its email. Photos are re-encoded to JPEG with sharp (no EXIF/GPS, no appended payload), stored in `DATA_DIR/receipts` (outside public media, in `backup.sh`), served only to editors/admins with `Cache-Control: private, no-store` (a CDN caches `.jpg` by extension otherwise). Max 8 MB, 5 per request, HEIC refused with an explanation. The photo cannot be replaced; staff set its status and must verify the money arrived before marking a request paid.
+- **No email exists,** so there is no verification or reset: staff set a temporary password in the admin.
+- **`scripts/platform-check.mjs` writes rows and refuses non-local hosts;** `scripts/e2e.mjs` stays read-only for live runs.
+- Security review: a reused member id let a deleted account's token open the next account (reproduced, fixed with a random first `sessionVersion`, regression-tested). Also fixed: unbounded input before limits, email-based lockout, IPv6 buckets, staff rewriting visitor data.
+
+Next steps: CF-PLATFORM-CONTENT, CF-PLATFORM-MAIL, CF-CACHE-ACCOUNT, CF-EVENT-ENDDATES in `BACKLOG.md`.
 
 ## Audit coverage
 

@@ -12,7 +12,7 @@ export const revalidate = 3600;
 const TTL_MS = 60 * 60 * 1000;
 
 /** Pages rendered by code (not stored in the pages collection); /search and /saved are noindex and never listed. */
-const STATIC_PAGES = ['/timeline', '/contact', '/submit', '/platforms', '/audio', '/podcast', '/announcements', '/partners'];
+const STATIC_PAGES = ['/timeline', '/contact', '/submit', '/platforms', '/audio', '/podcast', '/announcements', '/partners', '/culture', '/store', '/donate', '/volunteer'];
 let cached: { at: number; xml: string } | null = null;
 
 export async function GET() {
@@ -29,7 +29,6 @@ export async function GET() {
   for (const t of CONTENT_TYPES) {
     const info = CONTENT[t];
     const listEntry: Entry = { path: `/${info.route}`, langs: ui };
-    entries.push(listEntry);
     const res = await payload.find({
       collection: info.slug,
       where: { status: { equals: 'published' } },
@@ -39,6 +38,8 @@ export async function GET() {
       locale: 'ar',
       select: { translationMeta: true, updatedAt: true } as never,
     });
+    // a section with nothing published (the encyclopedia before its first entry) is noindex: it has no place here
+    if (res.docs.length > 0) entries.push(listEntry);
     for (const d of res.docs as unknown as { id: number; updatedAt: string; translationMeta?: Record<string, Record<string, unknown>> | null }[]) {
       if (!listEntry.lastmod || d.updatedAt > listEntry.lastmod) listEntry.lastmod = d.updatedAt;
       const langs = ['ar'];

@@ -304,8 +304,8 @@ export async function Listing({ ctx, type, basePath, searchParams, fixed, hide =
               <p>{userActive.length ? t('list.empty.filters') : t('list.empty.none')}</p>
               {userActive.length ? <Link className="btn btn--primary btn--sm" href={clearHref}>{t('list.clear')}</Link> : null}
             </div>
-          ) : type === 'article' ? (
-            <EntryList ctx={ctx} docs={items} type="article" compact={q.view === 'compact'} />
+          ) : type === 'article' || type === 'encyclopedia' ? (
+            <EntryList ctx={ctx} docs={items} type={type} compact={q.view === 'compact'} />
           ) : type === 'event' || type === 'forum' ? (
             <div className="event-list">{items.map((d) => <EventRow key={d.id} ctx={ctx} doc={d} type={type} />)}</div>
           ) : type === 'book' && q.view === 'list' ? (

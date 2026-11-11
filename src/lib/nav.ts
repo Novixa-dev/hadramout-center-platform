@@ -112,13 +112,13 @@ export const NAV_TREE: NavEntry[] = [
   {
     key: 'nav.g.platforms',
     items: [
-      { key: 'nav.platforms.members', path: '/platforms#members' },
-      { key: 'nav.platforms.store', path: '/platforms#store' },
+      { key: 'nav.platforms.members', path: '/account' },
+      { key: 'nav.platforms.store', path: '/store' },
       { key: 'nav.platforms.khizana', path: '/digital-library' },
-      { key: 'nav.platforms.encyclopedia', path: '/platforms#encyclopedia' },
-      { key: 'nav.platforms.cultural', path: '/platforms#cultural' },
-      { key: 'nav.platforms.donations', path: '/platforms#donations' },
-      { key: 'nav.platforms.volunteering', path: '/platforms#volunteering' },
+      { key: 'nav.platforms.encyclopedia', path: '/encyclopedia' },
+      { key: 'nav.platforms.cultural', path: '/culture' },
+      { key: 'nav.platforms.donations', path: '/donate' },
+      { key: 'nav.platforms.volunteering', path: '/volunteer' },
       { key: 'nav.platforms.overview', path: '/platforms' },
     ],
   },
@@ -127,8 +127,8 @@ export const NAV_TREE: NavEntry[] = [
 
 /** The utility bar above the header (report, «شريط القائمة الفرعية»); the language list sits at its end. */
 export const UTILITY_LINKS: (NavLink & { icon: 'cart' | 'user' | 'edit' | 'book' | 'heart' })[] = [
-  { key: 'util.store', path: '/platforms#store', icon: 'cart' },
-  { key: 'util.members', path: '/platforms#members', icon: 'user' },
+  { key: 'util.store', path: '/store#cart', icon: 'cart' },
+  { key: 'util.members', path: '/account', icon: 'user' },
   { key: 'util.research', path: '/submit#send', icon: 'edit' },
   { key: 'util.magazine', path: '/submit#magazine', icon: 'book' },
   { key: 'util.support', path: '/support', icon: 'heart' },

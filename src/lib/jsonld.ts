@@ -74,6 +74,8 @@ export function contentJsonLd({ type, doc, url, lang, image, org, authorUrl, pdf
         ...(issue ? { isPartOf: { '@type': 'PublicationIssue', name: issue.name, url: issue.url } } : {}),
         ...(pdf ? { encoding: { '@type': 'MediaObject', contentUrl: pdf, encodingFormat: 'application/pdf' } } : {}),
       };
+    case 'encyclopedia':
+      return { ...base, '@type': 'Article', articleSection: 'Encyclopedia', ...(authors.length ? { author: authors } : {}), publisher };
     case 'news':
       return { ...base, '@type': 'NewsArticle', publisher, author: authors.length ? authors : publisher, ...(date ? { datePublished: date } : {}) };
     case 'book':

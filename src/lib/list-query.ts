@@ -21,6 +21,7 @@ export const FACETS: Record<ContentType, readonly FacetName[]> = {
   event: ['q', 'kind', 'when', 'year'],
   forum: ['q', 'when', 'year'],
   video: ['q'],
+  encyclopedia: ['q'],
 };
 
 /** Facets that need the sidebar (the text search lives in its own bar above the results). */
@@ -35,9 +36,10 @@ export const VIEWS: Record<ContentType, readonly View[]> = {
   event: ['list'],
   forum: ['list'],
   video: ['grid'],
+  encyclopedia: ['list'],
 };
 
-export const PER_PAGE: Record<ContentType, number> = { news: 12, article: 20, book: 18, magazine: 18, event: 12, forum: 12, video: 12 };
+export const PER_PAGE: Record<ContentType, number> = { news: 12, article: 20, book: 18, magazine: 18, event: 12, forum: 12, video: 12, encyclopedia: 30 };
 export const COMPACT_PER_PAGE = 40;
 
 export interface ListQuery {

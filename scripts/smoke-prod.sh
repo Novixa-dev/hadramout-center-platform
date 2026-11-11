@@ -81,6 +81,11 @@ reset=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: applica
 reset_case=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' -d '{"email":"nobody@example.org"}' "http://127.0.0.1:$PORT/api/users/Forgot-Password")
 [ "$reset_case" = 403 ] && echo "ok   the refusal also holds for a case-changed path" || { echo "FAIL Forgot-Password answered $reset_case"; fail=1; }
 case "$(curl -s -D - -o /dev/null "http://127.0.0.1:$PORT/api/media/file/nope.png" | tr -d '\r')" in *script-src\ \'none\'*frame-ancestors*) echo "ok   uploaded files keep a script ban";; *) echo "FAIL /api/media/file CSP lacks script-src 'none'"; fail=1;; esac
+# a missing file at the root (an old link, a bot probing /wp-login.php) reaches the [locale] route: it must be a 404, not a crash
+for missing in /nope.js /nope.png; do
+  code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT$missing")
+  [ "$code" = 404 ] && echo "ok   a missing file $missing answers 404" || { echo "FAIL a missing file $missing answered $code"; fail=1; }
+done
 # the admin is Arabic until staff pick a language, whatever the browser asks for
 case "$(curl -s -H 'Accept-Language: en-US,en;q=0.9' "http://127.0.0.1:$PORT/admin/login")" in *'lang="ar"'*) echo "ok   admin sign-in is Arabic by default";; *) echo "FAIL admin sign-in follows the browser language"; fail=1;; esac
 # capture first: `grep -q` quits at the first match, the 34 KB feed then hits a closed pipe and `pipefail` reported a failure at random
@@ -113,7 +118,9 @@ case "$(body '/ar/events?kind=conference')" in *'<h1'*'المؤتمرات'*) ech
 case "$(body /ar/submit)" in *'8000'*|*'DEC-09'*|*'hadramout-center.org'*) echo "FAIL /submit still shows invented rules or contacts"; fail=1;; *) echo "ok   /submit has no invented publishing rules";; esac
 case "$(body /sitemap.xml)" in *'/ar/about/identity'*) echo "ok   sitemap lists editor pages";; *) echo "FAIL sitemap misses /ar/about/identity"; fail=1;; esac
 case "$(body /sitemap.xml)" in *'/ar/about/advisors'*) echo "FAIL sitemap lists a noindex page"; fail=1;; *) echo "ok   sitemap leaves out noindex pages";; esac
-check /og/ar/platforms.png 200; check /og/ar/constructor.png 404
+check /og/ar/platforms.png 200; check /og/ar/store.png 200; check /og/ar/constructor.png 404
+# the digital platforms: accounts, requests and their walls. Writes rows, so only here on this throwaway copy, never against a live site.
+(cd "$ROOT" && node scripts/platform-check.mjs "http://127.0.0.1:$PORT" --db "$DB_DIR/payload.db") || fail=1
 # security fixes of this pass: staff-only assistant, no draft leaks through ?preview=1 or calendar files, dead route gone
 assist=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' -d '{"action":"translate","title":"x","targetLang":"en"}' "http://127.0.0.1:$PORT/api/hc/editorial-assist")
 [ "$assist" = 401 ] && echo "ok   editorial assistant refuses visitors" || { echo "FAIL editorial-assist answered $assist without a session"; fail=1; }

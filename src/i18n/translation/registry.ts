@@ -27,6 +27,7 @@ export const TRANSLATABLE: Record<TranslatableSlug, FieldSpec[]> = {
   events: contentFields('events'),
   'forum-events': contentFields('forum-events'),
   videos: contentFields('videos'),
+  encyclopedia: contentFields('encyclopedia'),
   authors: [
     { name: 'name', format: 'text' },
     { name: 'bio', format: 'text' },

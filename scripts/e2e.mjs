@@ -228,6 +228,46 @@ await journey('contact form and admin login page', async (page) => {
   check(Boolean(await page.$('input[type=password]')) && Boolean(await page.$('input[type=email], input[name=email]')), 'the admin login form renders');
 });
 
+// 7a ── digital platforms: everything short of sending (this script never writes to the server) ──────
+await journey('digital platforms', async (page) => {
+  await go(page, '/ar/store');
+  const add = await page.$('.store-book button[aria-pressed=false]');
+  check(Boolean(add), 'the store lists books that can be added to the cart');
+  check((await page.$eval('main', (m) => m.textContent)).includes('لا يتم أي دفع'), 'the store says plainly that nothing is paid on the site');
+  await add.click();
+  await page.waitForSelector('.cart-line', { timeout: 5000 });
+  check((await page.$$('.cart-line')).length === 1, 'adding a book puts one line in the cart');
+  check(await page.$eval('.store-cart form', (f) => !f.checkValidity()), 'the empty order form is invalid in the browser');
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.waitForSelector('.cart-line', { timeout: 5000 });
+  check(true, 'the cart survives a reload');
+  await page.click('.cart-line .icon-btn');
+  await page.waitForSelector('.store-cart .empty-state', { timeout: 5000 });
+  check(true, 'removing the last line empties the cart');
+
+  await go(page, '/ar/account');
+  check(Boolean(await page.$('input[type=password]')), 'a visitor is offered the sign-in form');
+  await page.click('.link-btn');
+  await page.waitForSelector('input[name=name]', { timeout: 5000 });
+  check(await page.$eval('input[name=password]', (e) => e.minLength === 10 && e.autocomplete === 'new-password'), 'the sign-up form asks for a new password of 10 or more characters');
+
+  await go(page, '/ar/donate');
+  check((await page.$eval('main', (m) => m.textContent)).includes('لا يُخصم أي مبلغ'), 'the donations page says plainly that it takes no money');
+  check(await page.$eval('main form', (f) => !f.checkValidity()), 'the empty pledge form is invalid');
+  check(await page.$eval('#receipt form', (f) => !f.checkValidity() && f.querySelector('input[type=file]')?.accept === 'image/jpeg,image/png,image/webp'), 'the donations page offers a receipt upload that needs a picture');
+  await go(page, '/ar/donate?ref=hc-d-2026-abcdef#receipt');
+  const prefilled = await page.waitForFunction(() => document.querySelector('#receipt input[name=reference]')?.value === 'HC-D-2026-ABCDEF', { timeout: 5000 }).then(() => true, () => false);
+  check(prefilled, 'a link from the account page fills in the reference');
+  await go(page, '/ar/store');
+  check(Boolean(await page.$('#receipt form input[type=file][name=receipt]')), 'the store offers the receipt upload too');
+  await go(page, '/ar/volunteer');
+  check(await page.$eval('main form', (f) => !f.checkValidity()), 'the empty volunteer form is invalid');
+  await go(page, '/ar/culture');
+  check((await page.$$('.culture__door')).length === 6, 'the cultural platform opens its six sections');
+  await go(page, '/ar/encyclopedia');
+  check(Boolean(await page.$('h1')), 'the encyclopedia page renders');
+});
+
 // 7b ── searching and filtering inside a section ────────────────────────────────────────────────
 await journey('section search, sort and filters', async (page) => {
   for (const path of ['/ar/books', '/ar/news', '/ar/magazines', '/ar/videos', '/ar/events']) {

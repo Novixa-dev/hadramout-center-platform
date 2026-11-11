@@ -74,6 +74,7 @@ export interface Config {
     events: Event;
     'forum-events': ForumEvent;
     videos: Video;
+    encyclopedia: Encyclopedia;
     audio: Audio;
     announcements: Announcement;
     partners: Partner;
@@ -87,6 +88,11 @@ export interface Config {
     reviews: Review;
     messages: Message;
     subscribers: Subscriber;
+    orders: Order;
+    pledges: Pledge;
+    receipts: Receipt;
+    volunteers: Volunteer;
+    members: Member;
     'translation-usage': TranslationUsage;
     users: User;
     'payload-kv': PayloadKv;
@@ -95,7 +101,14 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    orders: {
+      receipts: 'receipts';
+    };
+    pledges: {
+      receipts: 'receipts';
+    };
+  };
   collectionsSelect: {
     news: NewsSelect<false> | NewsSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
@@ -104,6 +117,7 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     'forum-events': ForumEventsSelect<false> | ForumEventsSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
+    encyclopedia: EncyclopediaSelect<false> | EncyclopediaSelect<true>;
     audio: AudioSelect<false> | AudioSelect<true>;
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
@@ -117,6 +131,11 @@ export interface Config {
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     messages: MessagesSelect<false> | MessagesSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    pledges: PledgesSelect<false> | PledgesSelect<true>;
+    receipts: ReceiptsSelect<false> | ReceiptsSelect<true>;
+    volunteers: VolunteersSelect<false> | VolunteersSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
     'translation-usage': TranslationUsageSelect<false> | TranslationUsageSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -795,6 +814,12 @@ export interface Book {
   year?: number | null;
   pages?: number | null;
   isbn?: string | null;
+  storeStatus?: ('on_request' | 'available' | 'out_of_stock' | 'hidden') | null;
+  /**
+   * Leave empty when no price is set: «price on request» is shown.
+   */
+  price?: number | null;
+  currency?: ('YER' | 'SAR' | 'USD' | 'AED') | null;
   /**
    * Download link when the book is publicly available.
    */
@@ -1053,6 +1078,60 @@ export interface Video {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "encyclopedia".
+ */
+export interface Encyclopedia {
+  id: number;
+  title: string;
+  /**
+   * Shown on cards and search results. Generated from the text when left empty.
+   */
+  excerpt?: string | null;
+  /**
+   * Write in Arabic only — other languages are translated automatically.
+   */
+  body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
+  cover?: (number | null) | Media;
+  /**
+   * Image from the legacy site, used until it is mirrored locally.
+   */
+  coverUrl?: string | null;
+  coverAlt?: string | null;
+  status: 'draft' | 'published' | 'archived';
+  featured?: boolean | null;
+  publishedAt?: string | null;
+  /**
+   * "Estimated" is only used for sorting and never shown to readers.
+   */
+  datePrecision?: ('day' | 'month' | 'year' | 'estimated' | 'none') | null;
+  legacyId?: number | null;
+  legacyUrl?: string | null;
+  source?: ('manual' | 'legacy') | null;
+  edited?: boolean | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  entryKind?: ('person' | 'place' | 'event' | 'term' | 'group' | 'other') | null;
+  authors?: (number | Author)[] | null;
+  category?: (number | null) | Category;
+  /**
+   * One source per line. No entry is published without a source.
+   */
+  sources?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1646,6 +1725,168 @@ export interface Subscriber {
   createdAt: string;
 }
 /**
+ * No online payment: staff contact the customer with availability, price, payment and shipping.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  reference: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  address: string;
+  note?: string | null;
+  items: {
+    book?: (number | null) | Book;
+    title?: string | null;
+    quantity: number;
+    id?: string | null;
+  }[];
+  /**
+   * The member sees it in their account when the request is linked to one.
+   */
+  status: 'new' | 'confirmed' | 'paid' | 'delivered' | 'cancelled';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  receipts?: {
+    docs?: (number | Receipt)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  lang?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Reader accounts. Separate from staff accounts; they never open this admin.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members".
+ */
+export interface Member {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  /**
+   * A suspended member cannot sign in and their sessions end at once.
+   */
+  status: 'active' | 'suspended';
+  /**
+   * There is no reset email: when a member asks, type a temporary password here (10+ characters) and tell them; they change it from their account. It is neither stored nor shown.
+   */
+  temporaryPassword?: string | null;
+  lastLoginAt?: string | null;
+  passwordHash?: string | null;
+  sessionVersion?: number | null;
+  savedItems?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Receipt photos sent with orders and pledges. Check that the money really arrived before marking the request paid or received: a photo alone is no proof of payment.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "receipts".
+ */
+export interface Receipt {
+  id: number;
+  reference: string;
+  kind: 'order' | 'pledge';
+  order?: (number | null) | Order;
+  pledge?: (number | null) | Pledge;
+  amount?: number | null;
+  currency?: ('YER' | 'SAR' | 'USD' | 'AED') | null;
+  transferRef?: string | null;
+  note?: string | null;
+  /**
+   * The member sees it in their account when the request is linked to one.
+   */
+  status: 'new' | 'verified' | 'rejected';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  lang?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+/**
+ * A pledge only: the site never takes money. Staff confirm receipt by hand.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pledges".
+ */
+export interface Pledge {
+  id: number;
+  reference: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  amount?: number | null;
+  currency?: ('YER' | 'SAR' | 'USD' | 'AED') | null;
+  purpose?: string | null;
+  anonymous?: boolean | null;
+  note?: string | null;
+  /**
+   * The member sees it in their account when the request is linked to one.
+   */
+  status: 'new' | 'contacted' | 'received' | 'cancelled';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  receipts?: {
+    docs?: (number | Receipt)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  lang?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "volunteers".
+ */
+export interface Volunteer {
+  id: number;
+  reference: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  city?: string | null;
+  areas: ('documents' | 'digitization' | 'research' | 'translation' | 'events' | 'media' | 'other')[];
+  availability?: string | null;
+  experience: string;
+  /**
+   * The member sees it in their account when the request is linked to one.
+   */
+  status: 'new' | 'reviewing' | 'accepted' | 'declined';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  lang?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "translation-usage".
  */
@@ -1836,6 +2077,10 @@ export interface PayloadLockedDocument {
         value: number | Video;
       } | null)
     | ({
+        relationTo: 'encyclopedia';
+        value: number | Encyclopedia;
+      } | null)
+    | ({
         relationTo: 'audio';
         value: number | Audio;
       } | null)
@@ -1886,6 +2131,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'subscribers';
         value: number | Subscriber;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'pledges';
+        value: number | Pledge;
+      } | null)
+    | ({
+        relationTo: 'receipts';
+        value: number | Receipt;
+      } | null)
+    | ({
+        relationTo: 'volunteers';
+        value: number | Volunteer;
+      } | null)
+    | ({
+        relationTo: 'members';
+        value: number | Member;
       } | null)
     | ({
         relationTo: 'translation-usage';
@@ -2016,6 +2281,9 @@ export interface BooksSelect<T extends boolean = true> {
   year?: T;
   pages?: T;
   isbn?: T;
+  storeStatus?: T;
+  price?: T;
+  currency?: T;
   pdf?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -2207,6 +2475,33 @@ export interface VideosSelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "encyclopedia_select".
+ */
+export interface EncyclopediaSelect<T extends boolean = true> {
+  title?: T;
+  excerpt?: T;
+  body?: T;
+  cover?: T;
+  coverUrl?: T;
+  coverAlt?: T;
+  status?: T;
+  featured?: T;
+  publishedAt?: T;
+  datePrecision?: T;
+  legacyId?: T;
+  legacyUrl?: T;
+  source?: T;
+  edited?: T;
+  translationMeta?: T;
+  entryKind?: T;
+  authors?: T;
+  category?: T;
+  sources?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2626,6 +2921,123 @@ export interface SubscribersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  reference?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  address?: T;
+  note?: T;
+  items?:
+    | T
+    | {
+        book?: T;
+        title?: T;
+        quantity?: T;
+        id?: T;
+      };
+  status?: T;
+  member?: T;
+  staffNotes?: T;
+  receipts?: T;
+  lang?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pledges_select".
+ */
+export interface PledgesSelect<T extends boolean = true> {
+  reference?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  amount?: T;
+  currency?: T;
+  purpose?: T;
+  anonymous?: T;
+  note?: T;
+  status?: T;
+  member?: T;
+  staffNotes?: T;
+  receipts?: T;
+  lang?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "receipts_select".
+ */
+export interface ReceiptsSelect<T extends boolean = true> {
+  reference?: T;
+  kind?: T;
+  order?: T;
+  pledge?: T;
+  amount?: T;
+  currency?: T;
+  transferRef?: T;
+  note?: T;
+  status?: T;
+  member?: T;
+  staffNotes?: T;
+  lang?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "volunteers_select".
+ */
+export interface VolunteersSelect<T extends boolean = true> {
+  reference?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  city?: T;
+  areas?: T;
+  availability?: T;
+  experience?: T;
+  status?: T;
+  member?: T;
+  staffNotes?: T;
+  lang?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  status?: T;
+  temporaryPassword?: T;
+  lastLoginAt?: T;
+  passwordHash?: T;
+  sessionVersion?: T;
+  savedItems?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "translation-usage_select".
  */
 export interface TranslationUsageSelect<T extends boolean = true> {
@@ -2761,6 +3173,16 @@ export interface Site {
     youtube?: string | null;
   };
   /**
+   * Shown on the donations page. Leave empty until the Center approves them: no unapproved transfer details are shown.
+   */
+  donation?: {
+    instructions?: string | null;
+    /**
+     * An approved gateway in the Center's name, if any. The site itself accepts no payment.
+     */
+    paymentUrl?: string | null;
+  };
+  /**
    * A review is shown only after an editor approves it.
    */
   reviewsEnabled?: boolean | null;
@@ -2802,6 +3224,12 @@ export interface SiteSelect<T extends boolean = true> {
         instagram?: T;
         telegram?: T;
         youtube?: T;
+      };
+  donation?:
+    | T
+    | {
+        instructions?: T;
+        paymentUrl?: T;
       };
   reviewsEnabled?: T;
   translationMeta?: T;
