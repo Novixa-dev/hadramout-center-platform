@@ -95,7 +95,8 @@ const DASHBOARD = {
     noEvent: 'لا توجد فعالية منشورة بعد',
     content: 'حالة المحتوى',
     published: 'منشور', drafts: 'مسودات', archived: 'مؤرشف', draft: 'مسودة',
-    shareOf: 'حجمه بين أقسام الأرشيف',
+    // the words after each number in the home page's strip (messages/ar.json home.stats.*)
+    statArticles: 'مقالة ودراسة', statBooks: 'كتاباً', statIssues: 'عدداً من المجلة', statEvents: 'ندوة ومؤتمراً', statNews: 'خبراً',
     newWindow: '(تُفتح في نافذة جديدة)',
     viewAll: 'عرض الكل', create: 'إضافة', createNew: 'إضافة {label}',
     quickActions: 'إنشاء جديد',
@@ -149,7 +150,7 @@ const DASHBOARD = {
     noEvent: 'No published event yet',
     content: 'Content status',
     published: 'Published', drafts: 'Drafts', archived: 'Archived', draft: 'Draft',
-    shareOf: 'Its size among the archive’s sections',
+    statArticles: 'articles & studies', statBooks: 'books', statIssues: 'magazine issues', statEvents: 'seminars & conferences', statNews: 'news items',
     newWindow: '(opens in a new window)',
     viewAll: 'View all', create: 'Add', createNew: 'Add {label}',
     quickActions: 'Create',

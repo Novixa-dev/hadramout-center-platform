@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@payloadcms/ui';
+import { Icon } from '../icons.tsx';
 
 export const NavHomeLink: React.FC = () => {
   const { i18n } = useTranslation();
@@ -18,7 +19,7 @@ export const NavHomeLink: React.FC = () => {
         className={`hc-nav-home__link ${isHome ? 'active' : ''}`}
         aria-current={isHome ? 'page' : undefined}
       >
-        <span className="hc-nav-home__icon">🏠</span>
+        <span className="hc-nav-home__icon"><Icon name="home" /></span>
         <span className="hc-nav-home__label">{label}</span>
       </Link>
     </div>

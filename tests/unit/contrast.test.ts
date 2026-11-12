@@ -107,25 +107,52 @@ describe('high-contrast tokens (prefers-contrast: more) reach WCAG AAA', () => {
 
 describe('admin dashboard colours (src/app/(payload)/custom.scss)', () => {
   const scss = readFileSync('src/app/(payload)/custom.scss', 'utf8');
-  const dark = scss.slice(scss.indexOf("html[data-theme='dark'] {"));
+  const block = (selector: string) => {
+    const at = scss.indexOf(`${selector} {`);
+    if (at < 0) throw new Error(`${selector} not found`);
+    return scss.slice(at, scss.indexOf('\n}', at));
+  };
   const pick = (src: string, name: string): string => {
-    const m = src.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`));
+    const m = src.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6}|rgb\\([^)]*\\))`));
     if (!m) throw new Error(`--${name} not found`);
     return m[1] as string;
   };
   const base = (n: number) => pick(scss, `color-base-${n}`);
-  // Payload maps elevation-0 / -650 to base-0 / -650 in light and to base-900 / -250 in dark
-  const theme = { light: { bg: base(0), e650: base(650), gold: pick(scss, 'hc-gold-text') }, dark: { bg: base(900), e650: base(250), gold: pick(dark, 'hc-gold-text') } };
-  const mix = (a: string, pct: number, b: string): string => {
-    const ch = (h: string, i: number) => parseInt(h.slice(1 + i * 2, 3 + i * 2), 16);
-    return `#${[0, 1, 2].map((i) => Math.round(ch(a, i) * pct + ch(b, i) * (1 - pct)).toString(16).padStart(2, '0')).join('')}`;
+  const light = block('.hc-dash');
+  const dark = block("html[data-theme='dark'] .hc-dash");
+  // a token the dark block does not redefine keeps its light value, as in CSS
+  const token = (mode: 'light' | 'dark', name: string) => (mode === 'dark' && new RegExp(`--${name}:`).test(dark) ? pick(dark, name) : pick(light, name));
+  // Payload's page background: elevation-0 is base-0 in light and base-900 in dark
+  const page = { light: base(0), dark: base(900) };
+  const hex = (c: number[]) => `#${c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('')}`;
+  const rgb = (h: string) => [0, 2, 4].map((i) => parseInt(h.slice(1 + i, 3 + i), 16));
+  /** An `rgb(r g b / a)` colour over a solid background, as the browser paints it. */
+  const solid = (c: string, under: string): string => {
+    const m = c.match(/rgb\((\d+)\s+(\d+)\s+(\d+)\s*\/\s*([\d.]+)\)/);
+    if (!m) return c;
+    const a = Number(m[4]);
+    return hex([1, 2, 3].map((i, k) => Number(m[i]) * a + (rgb(under)[k] as number) * (1 - a)));
   };
-  const gold = pick(scss, 'hc-gold');
   for (const mode of ['light', 'dark'] as const) {
-    test(`${mode}: gold counts and draft chips, and the zero counts, reach 4.5:1`, () => {
-      const t = theme[mode];
-      for (const pct of [0.22, 0.24]) assert.ok(ratio(t.gold, mix(gold, pct, t.bg)) >= 4.5, `gold text on ${pct * 100}% gold: ${ratio(t.gold, mix(gold, pct, t.bg)).toFixed(2)}`);
-      assert.ok(ratio(t.e650, t.bg) >= 4.5, `zero count: ${ratio(t.e650, t.bg).toFixed(2)}`);
+    test(`${mode}: dashboard text, numbers, date squares, chips and the gold button reach 4.5:1`, () => {
+      const bg = page[mode];
+      const t = (n: string) => token(mode, n);
+      const pairs: [string, string, string][] = [
+        ['text on page', t('d-text'), bg],
+        ['secondary text on page', t('d-text-2'), bg],
+        ['muted text on page', t('d-muted'), bg],
+        ['muted text on the head band', t('d-muted'), t('d-surface-2')],
+        ['secondary text on the head band', t('d-text-2'), t('d-surface-2')],
+        ['green numbers on page', t('d-brand'), bg],
+        ['green numbers on the head band', t('d-brand'), t('d-surface-2')],
+        ['white on the date squares', t('d-on-brand'), t('d-brand-fill')],
+        ['backlog square text', t('d-text-2'), t('d-surface-3')],
+        ['gold text on its tint', t('d-accent-text'), solid(t('d-accent-soft'), bg)],
+        ['dark text on the gold button', t('d-on-accent'), t('d-accent')],
+        ['green on its tint (status, hover)', t('d-brand'), t('d-brand-soft')],
+      ];
+      const low = pairs.filter(([, fg, back]) => ratio(fg, back) < 4.5).map(([what, fg, back]) => `${what}: ${ratio(fg, back).toFixed(2)}`);
+      assert.deepEqual(low, []);
     });
   }
 });

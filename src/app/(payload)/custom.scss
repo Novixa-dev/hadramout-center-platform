@@ -53,6 +53,7 @@
   --hc-gold-text: #7a5a26; /* 4.8:1 on the gold-tinted counts and chips, as in src/styles/tokens.css */
   --hc-brand: var(--color-success-650);
   --hc-brand-hover: var(--color-success-750);
+  --hc-brand-fill: #226a5a; /* the site's --brand-fill: white on it is 6.4:1 */
   --hc-on-brand: #fff;
   --hc-brand-soft: var(--color-success-50);
   --hc-focus: #1a5fb4;
@@ -64,6 +65,7 @@
 }
 
 html[data-theme='dark'] {
+  --hc-brand-fill: #2a836e; /* the site's dark --brand-fill: white on it is 4.6:1 */
   --hc-gold-text: #e0b96a;
   --hc-brand: var(--color-success-300);
   --hc-brand-hover: var(--color-success-200);
@@ -262,292 +264,311 @@ html[data-theme='dark'] {
   color: var(--theme-elevation-650);
 }
 
-/* ── Dashboard (src/admin/EditorialDashboard.tsx) — mobile first ───────────────────────────────────────────
-   One column on a phone, in order of urgency: masthead, what needs attention, create, recent edits, content status,
-   tools. From 880 px of dashboard width (a container query: Payload's side nav takes part of the window) the first
-   three sit in the wide column and the rest beside them. The masthead is the one bold element; every other block is a quiet hairline box.
-   Radii follow the hierarchy: masthead 16, boxes 12, controls 8, counts 999. */
-:root {
-  --hc-mast-bg: #0f4a3d;
-  --hc-mast-ink: #fffbf5;
-  --hc-mast-soft: rgb(255 251 245 / 0.82);
-  --hc-mast-gold: #e8c98a;
+/* ── Dashboard (src/admin/EditorialDashboard.tsx) — mobile first, in the public site's own visual language ──────────────
+   The same parts as the site, so the admin reads as the back office of the same house: the page head (a band of paper with
+   the Center's pattern and a Naskh title), the home page's strip of numbers, section headings with a short gold rule, rows
+   with the square «date block» of the event lists, outlined chips and the gold button. Colours are the site's tokens
+   (src/styles/tokens.css), light and dark. Sections are open, not boxed, as on the site; only the tool sits on a panel.
+   Columns: the sections are in the DOM in phone order; from 880 px of dashboard width (a container query: Payload's side
+   nav takes part of the window) the work sits in the wide column and the reference beside it. */
+.hc-dash {
+  --d-surface-2: #faf4ea;
+  --d-surface-3: #f3eadb;
+  --d-border: #e8dfd0;
+  --d-border-strong: #d2c6b0;
+  --d-text: #1f2421;
+  --d-text-2: #3c423d;
+  --d-muted: #5b5f58;
+  --d-brand: #226a5a;
+  --d-brand-fill: #226a5a;
+  --d-brand-soft: #eef7f4;
+  --d-on-brand: #ffffff;
+  --d-accent: #c49952;
+  --d-accent-hover: #cfa860;
+  --d-on-accent: #2b2008;
+  --d-accent-text: #7a5a26;
+  --d-accent-soft: #fbf6ec;
+  --d-pattern: #226a5a;
+
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-block-end: 32px;
+  color: var(--d-text);
 }
-html[data-theme='dark'] {
-  --hc-mast-bg: #143a31;
+html[data-theme='dark'] .hc-dash {
+  --d-surface-2: #1a2b26;
+  --d-surface-3: #223630;
+  --d-border: #2a3c36;
+  --d-border-strong: #3c534b;
+  --d-text: #ece8df;
+  --d-text-2: #cfd5cd;
+  --d-muted: #a8b1aa;
+  --d-brand: #5cc4a9;
+  --d-brand-fill: #2a836e;
+  --d-brand-soft: #173229;
+  --d-accent: #c49952;
+  --d-accent-text: #e0b96a;
+  --d-accent-soft: rgb(224 185 106 / 0.12);
+  --d-pattern: #cfa860;
 }
 
 .hc-icon { flex: none; inline-size: 1.25em; block-size: 1.25em; }
 
-.hc-dash {
-  container-type: inline-size;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-block-end: 24px;
-}
-
-/* Masthead: the day in one sentence, on the Center's green with its diamond pattern fading in from the end side. */
-.hc-mast {
+/* Page head: as .page-head on the site — paper band, hairline, the pattern faint at the start of the title. */
+.hc-head {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 18px 18px 40px;
+  padding: 20px 18px 16px;
+  border: 1px solid var(--d-border);
   border-radius: 16px;
-  background: var(--hc-mast-bg);
-  color: var(--hc-mast-ink);
+  background: var(--d-surface-2);
 
-  &::after {
+  &::before {
     content: '';
     position: absolute;
     inset-block: 0;
     inset-inline-end: 0;
-    inline-size: min(70%, 460px);
+    inline-size: min(34rem, 60%);
     z-index: -1;
-    background: var(--hc-mast-gold);
-    opacity: 0.16;
-    -webkit-mask: url('/brand/pattern.svg') 0 0 / 44px 44px repeat, linear-gradient(to left, #000 15%, transparent);
-    -webkit-mask-composite: source-in;
-    mask: url('/brand/pattern.svg') 0 0 / 44px 44px repeat, linear-gradient(to left, #000 15%, transparent);
-    mask-composite: intersect;
+    opacity: 0.07;
+    background-color: var(--d-pattern);
+    -webkit-mask-image: url('/brand/pattern.svg');
+    mask-image: url('/brand/pattern.svg');
+    -webkit-mask-size: 44px;
+    mask-size: 44px;
   }
 }
-html[dir='ltr'] .hc-mast::after {
-  -webkit-mask: url('/brand/pattern.svg') 0 0 / 44px 44px repeat, linear-gradient(to right, #000 15%, transparent);
-  -webkit-mask-composite: source-in;
-  mask: url('/brand/pattern.svg') 0 0 / 44px 44px repeat, linear-gradient(to right, #000 15%, transparent);
-  mask-composite: intersect;
-}
-/* Shibam's mud-brick towers along the bottom edge, as on the site's home page: the one memorable element of the admin. A shade
-   of the masthead itself, so the text above keeps its contrast and the towers read as a horizon, not as a picture. */
-.hc-mast__skyline {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: -1px;
-  z-index: -1;
-  inline-size: 100%;
-  block-size: 34px;
-  color: rgb(255 251 245 / 0.07);
-  pointer-events: none;
-}
-.hc-mast__meta {
+html[dir='rtl'] .hc-head::before { inset-inline-end: auto; inset-inline-start: 0; }
+.hc-head__meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 10px;
-  margin: 0 0 6px;
-  font-size: 0.8125rem;
-  color: var(--hc-mast-soft);
-}
-.hc-dash__title {
   margin: 0;
-  font-family: var(--hc-font-display);
-  font-size: clamp(1.55rem, 1.25rem + 1.4vw, 2.2rem);
-  line-height: 1.45;
-  color: var(--hc-mast-ink);
-}
-.hc-mast__line {
-  margin: 6px 0 0;
-  max-inline-size: 46ch;
-  font-size: 1.0625rem;
-  font-weight: 600;
-  line-height: 1.7;
-}
-.hc-mast__hint {
-  margin: 2px 0 0;
-  font-size: 0.8125rem;
-  color: var(--hc-mast-soft);
+  font-size: 0.875rem;
+  color: var(--d-muted);
 }
 .hc-badge {
   display: inline-flex;
   align-items: center;
-  padding: 1px 10px;
+  min-block-size: 1.75rem;
+  padding-inline: 10px;
   border-radius: 999px;
-  font-size: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--d-accent) 40%, transparent);
+  background: var(--d-accent-soft);
+  color: var(--d-accent-text);
+  font-size: 0.8125rem;
   font-weight: 600;
-  border: 1px solid rgb(232 201 138 / 0.5);
-  background: rgb(255 255 255 / 0.06);
-  color: var(--hc-mast-gold);
+}
+.hc-dash .hc-dash__title {
+  margin: 6px 0 0;
+  font-family: var(--hc-font-display);
+  font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--d-text);
+}
+.hc-mast__line {
+  margin: 4px 0 0;
+  max-inline-size: 52rem;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--d-text-2);
 }
 
-/* Columns: the boxes are in the DOM in phone order, so what is seen, read aloud and tabbed through agree at every width
-   and zoom level (CSS `order` would move only the picture). Each column holds one unbroken run of that order. */
+/* The home page's strip: big numbers in Naskh with the words after them, each a link to its published list. */
+.hc-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 12px 0 0;
+  border-block-start: 1px solid var(--d-border);
+
+  a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    min-block-size: 44px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    &:hover strong { color: var(--d-accent-text); }
+  }
+  strong {
+    font-family: var(--hc-font-display);
+    font-size: 1.625rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--d-brand);
+    font-variant-numeric: tabular-nums;
+  }
+  span { font-size: 0.9375rem; color: var(--d-text-2); }
+}
+
 .hc-dash__cols,
 .hc-dash__col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 28px;
 }
 
-.hc-box {
-  min-inline-size: 0;
-  padding: 16px;
-  border: 1px solid var(--theme-elevation-150);
-  border-radius: 12px;
-  background: var(--theme-elevation-0);
+/* Sections: open, under a Naskh heading with the site's short gold rule (.section-head). */
+.hc-sec { min-inline-size: 0; }
+.hc-sec__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-block-end: 8px;
+
+  h2 {
+    position: relative;
+    margin: 0;
+    padding-block-end: 10px;
+    font-family: var(--hc-font-display);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--d-text);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-end: 0;
+      inline-size: 3rem;
+      block-size: 3px;
+      border-radius: 2px;
+      background: var(--d-accent);
+    }
+  }
 }
-.hc-box__title {
-  margin: 0 0 10px;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.5;
+.hc-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-block-size: 44px;
+  color: var(--d-brand);
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { text-decoration: underline; text-underline-offset: 3px; }
 }
-.hc-box__empty {
-  margin: 0;
-  color: var(--theme-elevation-650);
+.hc-empty {
+  margin: 8px 0 0;
+  color: var(--d-muted);
 }
 
-/* What needs attention: one list, the count in a gold pill, the whole row a link. */
-.hc-inbox {
+/* Rows, as in the site's event lists: a square with the number where an event shows its day, the title, one line of help. */
+.hc-rows {
   list-style: none;
   margin: 0;
   padding: 0;
 
-  li + li { border-block-start: 1px solid var(--theme-elevation-100); }
+  li + li { border-block-start: 1px solid var(--d-border); }
 }
-.hc-inbox__row {
+.hc-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  min-block-size: 56px;
-  padding-block: 10px;
+  gap: 14px;
+  padding-block: 12px;
   color: inherit;
   text-decoration: none;
 
-  &:hover .hc-inbox__label { color: var(--hc-brand); text-decoration: underline; text-underline-offset: 3px; }
+  &:hover .hc-row__title { color: var(--d-brand); }
 }
-.hc-inbox__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 36px;
-  block-size: 36px;
-  border-radius: 8px;
-  background: var(--hc-brand-soft);
-  color: var(--hc-brand);
+.hc-tile {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  inline-size: 3.75rem;
+  min-block-size: 3.75rem;
+  padding-block: 6px;
+  border-radius: 10px;
+  background: var(--d-brand-fill);
+  color: var(--d-on-brand);
+  line-height: 1.15;
+  text-align: center;
+
+  strong { font-size: 1.375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  span { font-size: 0.75rem; font-weight: 600; }
 }
-.hc-inbox__text {
+/* the editors' own backlog: the site's «past» date block, so it never looks like someone waiting */
+.hc-tile--quiet { background: var(--d-surface-3); color: var(--d-text-2); }
+.hc-row__text { display: flex; flex-direction: column; gap: 2px; min-inline-size: 0; }
+.hc-row__title {
   display: flex;
-  flex-direction: column;
-  min-inline-size: 0;
-}
-.hc-inbox__label { font-weight: 600; line-height: 1.5; }
-.hc-inbox__hint {
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--theme-elevation-650);
-}
-.hc-inbox__n {
-  min-inline-size: 2.25rem;
-  padding: 1px 10px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--hc-gold) 24%, var(--theme-elevation-0));
-  color: var(--hc-gold-text);
+  align-items: center;
+  gap: 6px;
   font-size: 1rem;
   font-weight: 700;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+  color: var(--d-text);
+
+  .hc-icon { inline-size: 1.05em; block-size: 1.05em; color: var(--d-muted); }
 }
-.hc-inbox__go {
-  display: inline-flex;
-  color: var(--theme-elevation-450);
-}
-html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
-.hc-inbox__quiet {
+.hc-row__hint { font-size: 0.875rem; line-height: 1.6; color: var(--d-muted); }
+.hc-row__go { display: inline-flex; color: var(--d-muted); }
+html[dir='ltr'] .hc-row__go, html[dir='ltr'] .hc-more .hc-icon { transform: scaleX(-1); }
+.hc-quiet {
   margin: 10px 0 0;
   padding-block-start: 10px;
-  border-block-start: 1px dashed var(--theme-elevation-150);
-  font-size: 0.8125rem;
+  border-block-start: 1px dashed var(--d-border-strong);
+  font-size: 0.875rem;
   line-height: 2;
-  color: var(--theme-elevation-650);
+  color: var(--d-muted);
 
   a {
     color: inherit;
     text-decoration: underline;
-    text-decoration-color: var(--theme-elevation-300);
+    text-decoration-color: var(--d-border-strong);
     text-underline-offset: 3px;
-    &:hover { color: var(--hc-brand); text-decoration-color: currentColor; }
+    &:hover { color: var(--d-brand); text-decoration-color: currentColor; }
   }
 }
-/* The editors' own backlog, after what visitors wait for: a smaller heading and a neutral count. */
-.hc-upkeep {
-  margin-block-start: 14px;
-  padding-block-start: 12px;
-  border-block-start: 1px solid var(--theme-elevation-150);
-}
-.hc-upkeep__title {
-  margin: 0 0 2px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--theme-elevation-750);
-}
-.hc-inbox--upkeep .hc-inbox__n {
-  background: var(--theme-elevation-100);
-  color: var(--theme-elevation-800);
-}
-.hc-inbox--upkeep .hc-inbox__icon {
-  background: var(--theme-elevation-50);
-  color: var(--theme-elevation-650);
-}
-.hc-inbox__event {
+
+/* Chips: the site's outlined chips, and its gold button for the one thing editors create most. */
+.hc-chips {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-block-start: 8px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: var(--theme-elevation-50);
-  color: inherit;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  text-decoration: none;
-
-  .hc-icon { margin-block-start: 2px; color: var(--hc-brand); }
-  &:hover strong { color: var(--hc-brand); }
-}
-.hc-inbox__event-hint {
-  display: block;
-  font-size: 0.8125rem;
-  color: var(--theme-elevation-650);
-}
-
-/* Create: every type visible at once (no sideways scrolling that hides some), the news button first and full width. */
-.hc-create {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex-wrap: wrap;
   gap: 8px;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
 }
-.hc-create__btn {
-  display: flex;
+.hc-chip {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-block-size: 48px;
-  padding: 8px 12px;
-  border: 1px solid var(--theme-elevation-150);
-  border-radius: 8px;
-  background: var(--theme-elevation-50);
-  color: var(--theme-text);
-  font-size: 0.875rem;
+  gap: 6px;
+  min-block-size: 44px;
+  padding-inline: 16px;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--d-text-2);
+  font-size: 0.9375rem;
   font-weight: 600;
-  line-height: 1.4;
   text-decoration: none;
 
-  &:hover { border-color: var(--hc-brand); color: var(--hc-brand); background: var(--hc-brand-soft); }
-  .hc-icon { color: var(--hc-brand); }
+  .hc-icon { color: var(--d-brand); }
+  &:hover { border-color: var(--d-brand); background: var(--d-brand-soft); color: var(--d-brand); }
 }
-.hc-create__btn--primary {
-  grid-column: 1 / -1;
-  justify-content: center;
-  background: var(--hc-brand);
-  border-color: var(--hc-brand);
-  color: var(--hc-on-brand);
+.hc-chip--gold {
+  border-color: var(--d-accent);
+  background: var(--d-accent);
+  color: var(--d-on-accent);
 
   .hc-icon { color: inherit; }
-  &:hover { background: var(--hc-brand-hover); border-color: var(--hc-brand-hover); color: var(--hc-on-brand); }
+  &:hover { border-color: var(--d-accent-hover); background: var(--d-accent-hover); color: var(--d-on-accent); }
 }
 
-/* Content status: a real table (one row per section), numbers centred under their heading. */
+/* Content status: a plain table, as the site sets tables: hairlines, numbers in green, drafts in gold. */
 .hc-table-wrap { overflow-x: auto; }
 .hc-table {
   inline-size: 100%;
@@ -555,67 +576,38 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
   font-variant-numeric: tabular-nums;
 
   th, td {
-    padding: 6px 4px;
-    border-block-end: 1px solid var(--theme-elevation-100);
+    padding: 9px 6px;
+    border-block-end: 1px solid var(--d-border);
     text-align: center;
   }
   thead th {
-    font-size: 0.75rem;
+    padding-block-start: 4px;
+    font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--theme-elevation-650);
+    color: var(--d-muted);
   }
   thead th:first-child, tbody th { text-align: start; }
-  tbody th { font-weight: 600; line-height: 1.5; padding-block: 8px 6px; }
+  tbody th { font-weight: 600; line-height: 1.5; }
+  tbody th a { color: var(--d-text); text-decoration: none; &:hover { color: var(--d-brand); text-decoration: underline; } }
   tbody tr:last-child > * { border-block-end: 0; }
-  a {
-    color: var(--hc-brand);
-    text-decoration: none;
-    &:hover { text-decoration: underline; }
-  }
 }
-.hc-table__action { inline-size: 1%; }
-.hc-zero { color: var(--theme-elevation-650); font-weight: 400; } /* a count, not a disabled control: 4.5:1 */
-.hc-count { font-weight: 600; }
-/* drafts are unfinished work: the same gold as the counts that wait for someone */
+.hc-count {
+  color: var(--d-brand);
+  font-weight: 700;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
 .hc-count--draft {
   display: inline-block;
   min-inline-size: 2rem;
   padding: 0 8px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--hc-gold) 22%, var(--theme-elevation-0));
-  .hc-table & { color: var(--hc-gold-text); }
+  background: var(--d-accent-soft);
+  color: var(--d-accent-text);
 }
-/* each section's size against the largest one: the archive's shelves at a glance */
-.hc-shelf {
-  display: block;
-  block-size: 4px;
-  margin-block-start: 4px;
-  border-radius: 999px;
-  background: var(--theme-elevation-100);
-  overflow: hidden;
+.hc-zero { color: var(--d-muted); }
 
-  span {
-    display: block;
-    block-size: 100%;
-    min-inline-size: 2px;
-    border-radius: inherit;
-    background: color-mix(in srgb, var(--hc-brand) 70%, var(--theme-elevation-0));
-  }
-}
-/* quiet until wanted: a 44 px target with no frame of its own, so twelve of them do not read as a second table */
-.hc-add {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: 44px;
-  block-size: 44px;
-  border-radius: 8px;
-  color: var(--theme-elevation-650);
-  .hc-table & { color: var(--theme-elevation-650); }
-  &:hover { background: var(--hc-brand-soft); .hc-table & { color: var(--hc-brand); } }
-}
-
-/* Recent edits: the title (two lines at most), then status, section and time. */
+/* Recent edits: the site's list rows — the title, then status, section and time. */
 .hc-recent {
   list-style: none;
   margin: 0;
@@ -625,10 +617,9 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding-block: 10px;
-    border-block-end: 1px solid var(--theme-elevation-100);
-    &:first-child { padding-block-start: 0; }
-    &:last-child { border-block-end: 0; padding-block-end: 0; }
+    padding-block: 12px;
+    border-block-end: 1px solid var(--d-border);
+    &:last-child { border-block-end: 0; }
   }
 }
 .hc-recent__title {
@@ -636,11 +627,11 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  color: var(--theme-text);
-  font-weight: 600;
-  line-height: 1.6;
+  color: var(--d-text);
+  font-weight: 700;
+  line-height: 1.7;
   text-decoration: none;
-  &:hover { color: var(--hc-brand); text-decoration: underline; }
+  &:hover { color: var(--d-brand); text-decoration: underline; }
 }
 .hc-recent__meta {
   display: flex;
@@ -648,46 +639,30 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
   align-items: center;
   gap: 2px 10px;
   font-size: 0.8125rem;
-  color: var(--theme-elevation-650);
+  color: var(--d-muted);
 }
 .hc-status {
   padding: 0 8px;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  line-height: 1.7;
-  background: var(--theme-elevation-100);
-  color: var(--theme-elevation-750);
+  line-height: 1.8;
+  background: var(--d-surface-3);
+  color: var(--d-text-2);
 }
-.hc-status--published { background: var(--hc-brand-soft); color: var(--hc-brand); }
-.hc-status--draft { background: color-mix(in srgb, var(--hc-gold) 22%, var(--theme-elevation-0)); color: var(--hc-gold-text); }
+.hc-status--published { background: var(--d-brand-soft); color: var(--d-brand); }
+.hc-status--draft { background: var(--d-accent-soft); color: var(--d-accent-text); }
 
-.hc-meter-label { margin: 0 0 8px; }
+/* The tool is the one thing on a panel: it is a workbench, not a list. */
+.hc-sec--tool {
+  padding: 16px;
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: var(--d-surface-2);
+}
+
+.hc-meter-label { margin: 8px 0; color: var(--d-text-2); }
 .hc-meter { inline-size: 100%; block-size: 10px; }
-
-.hc-quick {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-
-  a {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-block-size: 44px;
-    padding: 6px 10px;
-    border: 1px solid var(--theme-elevation-100);
-    border-radius: 8px;
-    color: var(--theme-text);
-    font-size: 0.875rem;
-    line-height: 1.4;
-    text-decoration: none;
-    &:hover { border-color: var(--hc-brand); color: var(--hc-brand); }
-  }
-}
 
 .hc-normalizer-btn { min-block-size: 44px; }
 
@@ -699,23 +674,21 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
 }
 
 @container (min-width: 600px) {
-  .hc-mast { padding: 24px 28px 52px; }
-  .hc-mast__skyline { block-size: 48px; }
-  .hc-mast__line { font-size: 1.25rem; }
-  .hc-box { padding: 18px 20px; }
-  .hc-table th, .hc-table td { padding: 8px 8px; }
-  .hc-table thead th { font-size: 0.8125rem; }
+  .hc-head { padding: 28px 32px 18px; }
+  .hc-mast__line { font-size: 1.1875rem; }
+  /* across the whole band, as the home page's strip spans the page */
+  .hc-stats { justify-content: space-between; gap: 4px 24px; }
 }
 
 @container (min-width: 880px) {
-  .hc-dash { gap: 20px; }
+  .hc-dash { gap: 36px; }
   .hc-dash__cols {
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
     align-items: start;
-    gap: 20px;
+    gap: 48px;
   }
-  .hc-dash__col { gap: 20px; }
+  .hc-dash__col { gap: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1242,15 +1215,16 @@ html[data-theme='dark'] .hc-serp-card__title {
     color: var(--hc-brand);
     text-decoration: none !important;
   }
+  /* the site's filled green (brand-fill), with white: not the light mint that is only for text on the dark theme */
   &.active, &[aria-current='page'] {
-    background: var(--hc-brand);
-    color: var(--hc-on-brand);
-    border-color: var(--hc-brand);
+    background: var(--hc-brand-fill);
+    color: #fff;
+    border-color: var(--hc-brand-fill);
     font-weight: 700;
   }
 }
 .hc-nav-home__icon {
-  font-size: 1.1rem;
+  display: inline-flex;
   line-height: 1;
 }
 

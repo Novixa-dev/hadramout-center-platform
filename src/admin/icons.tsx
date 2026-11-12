@@ -23,6 +23,7 @@ const PATHS = {
   hand: 'M7 11V5.5a1.5 1.5 0 0 1 3 0V10M10 9.5v-6a1.5 1.5 0 0 1 3 0V10M13 9.5V5a1.5 1.5 0 0 1 3 0v6M16 8.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L4 15.2a1.6 1.6 0 0 1 2.4-2.1L7 14',
   receipt: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3',
   chevron: 'M15 6l-6 6 6 6',
+  home: 'M4 11l8-7 8 7M6 9.5V20h4.5v-5.5h3V20H18V9.5',
 } as const;
 
 export type IconName = keyof typeof PATHS;
