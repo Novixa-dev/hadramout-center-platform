@@ -4,6 +4,7 @@ import { dashboardStrings, fill, waitingLine } from './i18n.ts';
 import { listUrl } from './links.ts';
 import { ScholarlyNormalizerWidget } from './components/ScholarlyNormalizerWidget.tsx';
 import { Icon, type IconName } from './icons.tsx';
+import { Skyline } from '../components/Skyline.tsx';
 
 /**
  * The admin home, above Payload's own collection list. Mobile first, in order of urgency:
@@ -95,7 +96,9 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
   const [newOrders, newPledges, newVolunteers, newReceipts] = await requestCounts;
 
   const recent = recentLists.flat().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 8);
-  const statusLabel = (s?: string) => (s === 'published' ? t.published : s === 'archived' ? t.archived : t.drafts);
+  const statusLabel = (s?: string) => (s === 'published' ? t.published : s === 'archived' ? t.archived : t.draft);
+  // the largest section sets the length of every section's bar: the archive's shelves side by side
+  const shelf = Math.max(1, ...overview.map((c) => c.published ?? 0));
   const limit = loadConfig().translation.dailyCharLimit;
 
   // Everything that waits for someone. Items with something new become rows; the rest are named once, quietly, below them.
@@ -144,6 +147,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
         <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name || user.email || '' })}</h1>
         <p className="hc-mast__line">{staff ? waiting : t.leadReviewer}</p>
         {staff && waitingTotal > 0 ? <p className="hc-mast__hint">{t.waitingHint}</p> : null}
+        <Skyline className="hc-mast__skyline" />
       </div>
 
       {/* In the DOM in phone order, which is also the reading and focus order. From 880 px the two halves of that order sit
@@ -253,12 +257,21 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
                 <tbody>
                   {overview.map((c) => {
                     const name = lang === 'ar' ? c.ar : c.en;
+                    // none is a quiet dash on screen and still «0» for a screen reader; drafts waiting to be finished stand out in gold
                     const cell = (n: number | null, status: string) =>
-                      n === null ? '—' : n === 0 ? <span className="hc-zero">0</span> : <a href={listUrl(c.slug, { status: { equals: status } })}>{nf.format(n)}</a>;
+                      n === null ? (
+                        '—'
+                      ) : n === 0 ? (
+                        <span className="hc-zero"><span aria-hidden="true">–</span><span className="hc-sr">0</span></span>
+                      ) : (
+                        <a className={status === 'draft' ? 'hc-count hc-count--draft' : 'hc-count'} href={listUrl(c.slug, { status: { equals: status } })}>{nf.format(n)}</a>
+                      );
+                    const share = Math.round(((c.published ?? 0) / shelf) * 100);
                     return (
                       <tr key={c.slug}>
                         <th scope="row">
                           <a href={listUrl(c.slug)}>{name}</a>
+                          <span className="hc-shelf" title={t.shareOf} aria-hidden="true"><span style={{ inlineSize: `${share}%` }} /></span>
                         </th>
                         <td>{cell(c.published, 'published')}</td>
                         <td>{cell(c.draft, 'draft')}</td>
@@ -301,10 +314,10 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
           <nav aria-labelledby="hc-dash-quick" className="hc-box hc-box--links">
             <h2 id="hc-dash-quick" className="hc-box__title">{t.quick}</h2>
             <ul className="hc-quick" role="list">
-              <li><a href={`/${lang}`} target="_blank" rel="noopener"><Icon name="external" />{t.viewSite}</a></li>
+              <li><a href={`/${lang}`} target="_blank" rel="noopener"><Icon name="external" />{t.viewSite}<span className="hc-sr"> {t.newWindow}</span></a></li>
               <li><a href="/admin/account"><Icon name="user" />{t.profile}</a></li>
               {role === 'admin' ? <li><a href="/admin/collections/users"><Icon name="users" />{t.users}</a></li> : null}
-              <li><a href={GUIDE_URL} target="_blank" rel="noopener"><Icon name="book" />{t.guide}</a></li>
+              <li><a href={GUIDE_URL} target="_blank" rel="noopener"><Icon name="book" />{t.guide}<span className="hc-sr"> {t.newWindow}</span></a></li>
             </ul>
           </nav>
         </div>

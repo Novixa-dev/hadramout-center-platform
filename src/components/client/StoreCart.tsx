@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Icon } from '../Icon.tsx';
 import { MAX_ORDER_LINES, MAX_QUANTITY } from '../../lib/platform-values.ts';
-import { Consent, ContactFields, Done, errorText, offerReceipt, usePrefill, type Labels } from './PlatformForms.tsx';
+import { Consent, ContactFields, Done, errorText, flagField, offerReceipt, Submit, usePrefill, type Labels } from './PlatformForms.tsx';
 
 /** The cart lives in this browser until the order is sent; the server re-checks every book, so titles here are for display only. */
 
@@ -49,20 +49,39 @@ function useCart(): Line[] | null {
   return lines;
 }
 
-export function AddToCart({ id, title, add, added, cartHref, viewCart }: { id: number; title: string; add: string; added: string; cartHref?: string; viewCart?: string }) {
+/**
+ * Add a book, or, once it is in the cart, say so and offer to remove it or go to the cart. Separate controls, each named for what it
+ * does, rather than one toggle whose name changes under the reader. Focus follows the change, so it never drops to the page.
+ */
+export function AddToCart({ id, title, add, added, remove, cartHref, viewCart }: { id: number; title: string; add: string; added: string; remove: string; cartHref?: string; viewCart?: string }) {
   const lines = useCart();
   const inCart = lines?.some((l) => l.id === id) ?? false;
-  const toggle = () => {
-    const now = read();
-    write(now.some((l) => l.id === id) ? now.filter((l) => l.id !== id) : [...now, { id, title, quantity: 1 }].slice(0, MAX_ORDER_LINES));
+  const box = useRef<HTMLSpanElement>(null);
+  const moved = useRef(false);
+  useEffect(() => {
+    if (!moved.current) return;
+    moved.current = false;
+    box.current?.querySelector<HTMLElement>(inCart ? '.cart-add__remove' : '.cart-add__add')?.focus();
+  }, [inCart]);
+  const change = (next: boolean) => {
+    moved.current = true;
+    const now = read().filter((l) => l.id !== id);
+    write(next ? [...now, { id, title, quantity: 1 }].slice(0, MAX_ORDER_LINES) : now);
   };
   return (
-    <>
-      <button type="button" className={`btn btn--sm ${inCart ? 'btn--secondary' : 'btn--gold'}`} aria-pressed={inCart} aria-label={`${inCart ? added : add}: ${title}`} onClick={toggle}>
-        <Icon name={inCart ? 'check' : 'cart'} /> {inCart ? added : add}
-      </button>
-      {inCart && cartHref ? <a className="btn btn--secondary btn--sm" href={cartHref}>{viewCart}</a> : null}
-    </>
+    <span className="cart-add" ref={box}>
+      {inCart ? (
+        <>
+          <span className="cart-add__state"><Icon name="check" /> {added}</span>
+          <button type="button" className="btn btn--secondary btn--sm cart-add__remove" aria-label={`${remove}: ${title}`} onClick={() => change(false)}>{remove}</button>
+          {cartHref ? <a className="btn btn--secondary btn--sm" href={cartHref}>{viewCart}</a> : null}
+        </>
+      ) : (
+        <button type="button" className="btn btn--gold btn--sm cart-add__add" aria-label={`${add}: ${title}`} onClick={() => change(true)}>
+          <Icon name="cart" /> {add}
+        </button>
+      )}
+    </span>
   );
 }
 
@@ -84,11 +103,19 @@ export function CartPanel({ lang, labels, privacyHref, booksHref }: { lang: stri
   if (lines.length === 0) return <p className="empty-state">{labels.cartEmpty} <a href={booksHref}>{labels.browse}</a></p>;
 
   const setQuantity = (id: number, quantity: number) => write(read().map((l) => (l.id === id ? { ...l, quantity: Math.max(1, Math.min(MAX_QUANTITY, quantity || 1)) } : l)));
-  const remove = (id: number) => write(read().filter((l) => l.id !== id));
+  // focus goes to the next line's remove button, or the previous one, or the cart's heading when the cart is now empty
+  const remove = (id: number) => {
+    const at = lines.findIndex((l) => l.id === id);
+    const next = lines[at + 1] ?? lines[at - 1];
+    write(read().filter((l) => l.id !== id));
+    requestAnimationFrame(() => (document.querySelector<HTMLElement>(next ? `[data-remove="${next.id}"]` : '#cart-h') ?? undefined)?.focus());
+  };
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const d = new FormData(e.currentTarget);
+    if (busy) return;
+    const f = e.currentTarget;
+    const d = new FormData(f);
     setBusy(true);
     setError('');
     try {
@@ -102,7 +129,11 @@ export function CartPanel({ lang, labels, privacyHref, booksHref }: { lang: stri
         write([]);
         setDone({ reference: data.reference });
         if (data.reference) offerReceipt(data.reference, String(d.get('email') ?? ''));
-      } else setError(errorText(labels, res.status === 429 ? 'limit' : (data.error ?? 'failed')));
+      } else {
+        const code = res.status === 429 ? 'limit' : (data.error ?? 'failed');
+        setError(errorText(labels, code));
+        flagField(f, code);
+      }
     } catch {
       setError(errorText(labels, 'failed'));
     }
@@ -119,7 +150,7 @@ export function CartPanel({ lang, labels, privacyHref, booksHref }: { lang: stri
               <span className="sr-only">{labels.quantity}: {l.title}</span>
               <QuantityInput value={l.quantity} onCommit={(n) => setQuantity(l.id, n)} />
             </label>
-            <button type="button" className="icon-btn" onClick={() => remove(l.id)} aria-label={`${labels.remove}: ${l.title}`}><Icon name="close" /></button>
+            <button type="button" className="icon-btn" data-remove={l.id} onClick={() => remove(l.id)} aria-label={`${labels.remove}: ${l.title}`}><Icon name="close" /></button>
           </li>
         ))}
       </ul>
@@ -128,10 +159,7 @@ export function CartPanel({ lang, labels, privacyHref, booksHref }: { lang: stri
         <div className="field field--full"><label htmlFor="o-address">{labels.address}</label><textarea id="o-address" className="textarea" name="address" required minLength={5} maxLength={500} autoComplete="street-address" /></div>
         <div className="field field--full"><label htmlFor="o-note">{labels.note}</label><textarea id="o-note" className="textarea" name="note" maxLength={2000} /></div>
         <Consent labels={labels} privacyHref={privacyHref} />
-        <div className="field--full">
-          <button className="btn btn--primary" type="submit" disabled={busy} aria-busy={busy}>{labels.send}</button>
-          {error ? <p className="notice notice--err platform-error" role="alert">{error}</p> : null}
-        </div>
+        <Submit busy={busy} label={labels.send as string} error={error} />
       </form>
     </div>
   );

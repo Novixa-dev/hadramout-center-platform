@@ -273,3 +273,17 @@ describe('payment receipts', () => {
     assert.ok(!(Receipts.upload as { mimeTypes: string[] }).mimeTypes.some((m) => m !== 'image/jpeg'));
   });
 });
+
+test('amounts read naturally: Arabic abbreviations (no number–noun agreement to break), plural names elsewhere', async () => {
+  const { formatMoney } = await import('../../src/lib/money.ts');
+  assert.match(formatMoney(15000, 'YER', 'ar'), /15,000\s*ر\.ي\./);
+  assert.ok(!/دولار/.test(formatMoney(15, 'USD', 'ar')), 'no «15 دولار» in Arabic');
+  assert.equal(formatMoney(15, 'USD', 'en'), '15 US dollars');
+  assert.equal(formatMoney(1, 'USD', 'en'), '1 US dollar');
+  assert.equal(formatMoney(2.5, 'XXQ', 'en'), '2.5 XXQ');
+});
+
+test('the password hint «{n} أحرف» is good Arabic only for 3 to 10', async () => {
+  const { PASSWORD_MIN } = await import('../../src/lib/platform-values.ts');
+  assert.ok(PASSWORD_MIN >= 3 && PASSWORD_MIN <= 10, 'above 10 the message must say «حرفًا»');
+});

@@ -231,12 +231,15 @@ await journey('contact form and admin login page', async (page) => {
 // 7a ── digital platforms: everything short of sending (this script never writes to the server) ──────
 await journey('digital platforms', async (page) => {
   await go(page, '/ar/store');
-  const add = await page.$('.store-book button[aria-pressed=false]');
+  const add = await page.$('.store-book .cart-add__add');
   check(Boolean(add), 'the store lists books that can be added to the cart');
   check((await page.$eval('main', (m) => m.textContent)).includes('لا يتم أي دفع'), 'the store says plainly that nothing is paid on the site');
   await add.click();
   await page.waitForSelector('.cart-line', { timeout: 5000 });
   check((await page.$$('.cart-line')).length === 1, 'adding a book puts one line in the cart');
+  // the add button gives way to «in the cart» + remove; focus follows to remove, so it never drops to the page
+  const onRemove = await page.$eval('.store-book .cart-add__remove', (b) => b === document.activeElement).catch(() => false);
+  check(onRemove, 'after adding, focus is on that book’s remove button');
   check(await page.$eval('.store-cart form', (f) => !f.checkValidity()), 'the empty order form is invalid in the browser');
   await page.reload({ waitUntil: 'networkidle0' });
   await page.waitForSelector('.cart-line', { timeout: 5000 });
@@ -244,6 +247,8 @@ await journey('digital platforms', async (page) => {
   await page.click('.cart-line .icon-btn');
   await page.waitForSelector('.store-cart .empty-state', { timeout: 5000 });
   check(true, 'removing the last line empties the cart');
+  await page.waitForFunction(() => document.activeElement?.id === 'cart-h', { timeout: 3000 }).catch(() => undefined);
+  check(await page.evaluate(() => document.activeElement?.id === 'cart-h'), 'focus moves to the cart heading once the cart is empty');
 
   await go(page, '/ar/account');
   check(Boolean(await page.$('input[type=password]')), 'a visitor is offered the sign-in form');

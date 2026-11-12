@@ -6,6 +6,8 @@ import { isLocale, makeCtx, type Ctx } from '../../../../lib/ctx.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
 import { currentMember, requestsOf, type MemberRequests } from '../../../../lib/members.ts';
 import { accountLabels } from '../../../../lib/platform-labels.ts';
+import { formatDate } from '../../../../lib/dates.ts';
+import { formatMoney } from '../../../../lib/money.ts';
 import { PageHead } from '../../../../components/PageHead.tsx';
 import { DeleteAccount, PasswordForm, ProfileForm, SavedSync, SignIn, SignOut } from '../../../../components/client/AccountForms.tsx';
 
@@ -21,12 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildMetadata({ ctx, path: '/account', title: ctx.t('account.title'), description: ctx.t('account.lead'), card: { key: 'platforms' }, noindex: true });
 }
 
-function day(iso: string, lang: string): string {
-  return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-EG-u-nu-latn' : lang, { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(iso));
-}
-
 function Requests({ ctx, requests }: { ctx: Ctx; requests: MemberRequests }) {
   const { t, lang, href } = ctx;
+  const list = new Intl.ListFormat(lang.code, { type: 'conjunction' });
   // an order or a pledge can carry a receipt photo: its newest one's state, or a link to send one while the request is open
   const receipt = (reference: string, status: string, page: '/store' | '/donate') => {
     const sent = requests.receipts[reference];
@@ -38,7 +37,7 @@ function Requests({ ctx, requests }: { ctx: Ctx; requests: MemberRequests }) {
     ...requests.orders.map((r) => ({
       key: r.reference,
       kind: t('account.req.order'),
-      detail: (r.items ?? []).map((i) => (i.quantity && i.quantity > 1 ? `${i.title} × ${i.quantity}` : i.title)).join('، '),
+      detail: list.format((r.items ?? []).map((i) => (i.quantity && i.quantity > 1 ? `${i.title ?? ''} × ${i.quantity}` : (i.title ?? ''))).filter(Boolean)),
       status: t(`account.status.${r.status}`),
       receipt: receipt(r.reference, r.status, '/store'),
       at: r.createdAt,
@@ -46,7 +45,7 @@ function Requests({ ctx, requests }: { ctx: Ctx; requests: MemberRequests }) {
     ...requests.pledges.map((r) => ({
       key: r.reference,
       kind: t('account.req.pledge'),
-      detail: r.amount ? `${r.amount} ${r.currency ?? ''}`.trim() : '',
+      detail: r.amount ? (r.currency ? formatMoney(r.amount, r.currency, lang.code) : String(r.amount)) : '',
       status: t(`account.status.${r.status}`),
       receipt: receipt(r.reference, r.status, '/donate'),
       at: r.createdAt,
@@ -74,7 +73,7 @@ function Requests({ ctx, requests }: { ctx: Ctx; requests: MemberRequests }) {
               <td dir="ltr" translate="no">{r.key}</td>
               <td>{r.kind}</td>
               <td>{r.detail}</td>
-              <td>{day(r.at, lang.code)}</td>
+              <td>{formatDate(r.at, lang.code)}</td>
               <td>{r.status}</td>
               <td>{r.receipt}</td>
             </tr>
@@ -117,7 +116,7 @@ export default async function AccountPage({ params }: Props) {
   const requests = await requestsOf(member.id);
   return (
     <>
-      <PageHead ctx={ctx} crumbs={crumbs} title={t('account.welcome', { name: member.name })} lead={member.email} />
+      <PageHead ctx={ctx} crumbs={crumbs} title={t('account.welcome', { name: member.name })} lead={`\u2068${member.email}\u2069`} />
       <div className="container container--narrow section info-page">
         <section className="info-section" aria-labelledby="requests-h">
           <h2 id="requests-h">{t('account.requests')}</h2>

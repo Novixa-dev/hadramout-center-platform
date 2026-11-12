@@ -1,5 +1,7 @@
 import type { Ctx } from './ctx.ts';
-import { CURRENCIES, VOLUNTEER_AREAS } from './platform-values.ts';
+import { CURRENCIES, MAX_RECEIPT_BYTES, PASSWORD_MIN, VOLUNTEER_AREAS } from './platform-values.ts';
+
+const MAX_RECEIPT_MB = MAX_RECEIPT_BYTES / 1024 / 1024;
 
 /** The strings the platform forms need in the browser, looked up on the server so client bundles stay free of message files. */
 
@@ -16,10 +18,11 @@ export function formLabels(ctx: Ctx): Record<string, string> {
     privacy: t('forms.privacy'),
     done: t('forms.done'),
     reference: t('forms.reference'),
+    keepReference: t('forms.keepReference'),
     send: t('forms.send'),
     note: t('forms.note'),
   };
-  for (const code of ERRORS) out[`err.${code}`] = t(`forms.err.${code}`);
+  for (const code of ERRORS) out[`err.${code}`] = code === 'size' ? t('forms.err.size', { mb: MAX_RECEIPT_MB }) : t(`forms.err.${code}`);
   return out;
 }
 
@@ -60,7 +63,7 @@ export function receiptLabels(ctx: Ctx): Record<string, string> {
     email: t('receipt.email'),
     referenceHint: t('receipt.referenceHint'),
     file: t('receipt.file'),
-    fileHint: t('receipt.fileHint'),
+    fileHint: t('receipt.fileHint', { mb: MAX_RECEIPT_MB }),
     amount: t('receipt.amount'),
     currency: t('donate.currency'),
     transferRef: t('receipt.transferRef'),
@@ -97,7 +100,7 @@ export function accountLabels(ctx: Ctx): Record<string, string> {
     login: t('account.login'),
     register: t('account.register'),
     password: t('account.password'),
-    passwordHint: t('account.passwordHint', { n: 10 }),
+    passwordHint: t('account.passwordHint', { n: PASSWORD_MIN }),
     noAccount: t('account.noAccount'),
     haveAccount: t('account.haveAccount'),
     forgot: t('account.forgot'),
@@ -111,6 +114,10 @@ export function accountLabels(ctx: Ctx): Record<string, string> {
     savedRestore: t('account.savedRestore'),
     savedBackedUp: t('account.savedBackedUp'),
     savedRestored: t('account.savedRestored'),
+    savedNothing: t('account.savedNothing'),
+    savedReplaceWarn: t('account.savedReplaceWarn'),
+    savedReplace: t('account.savedReplace'),
+    cancel: t('account.cancel'),
     deleteTitle: t('account.deleteTitle'),
     deleteNote: t('account.deleteNote'),
     deleteConfirm: t('account.deleteConfirm'),

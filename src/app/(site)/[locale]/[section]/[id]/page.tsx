@@ -272,7 +272,7 @@ export default async function DetailPage({ params, searchParams }: Props) {
           <a className="btn btn--secondary" href={pdf} download><Icon name="download" /> {t(type === 'book' ? 'book.download' : 'magazine.download')}</a>
         </>
       ) : null}
-      {type === 'book' && canOrder(doc.storeStatus) ? <AddToCart id={doc.id} title={doc.title} add={t('store.add')} added={t('store.added')} cartHref={`${href('/store')}#cart`} viewCart={t('store.viewCart')} /> : null}
+      {type === 'book' && canOrder(doc.storeStatus) ? <AddToCart id={doc.id} title={doc.title} add={t('store.add')} added={t('store.added')} remove={t('store.remove')} cartHref={`${href('/store')}#cart`} viewCart={t('store.viewCart')} /> : null}
       {type === 'book' ? <Link className="btn btn--gold" href={`${href('/contact')}?kind=book_request&book=${doc.id}&subject=${encodeURIComponent(t('contact.form.bookRequest', { title: doc.title }))}`}>{t('book.request')}</Link> : null}
       {isEvent && eventDate ? <a className="btn btn--primary" href={`/api/hc/ics/${section}/${doc.id}.ics?lang=${locale}`}><Icon name="calendar" /> {t('event.addToCalendar')}</a> : null}
       {googleCal ? <a className="btn btn--secondary" href={googleCal} target="_blank" rel="noopener noreferrer"><Icon name="calendar" /> {t('event.addToGoogle')}<span className="sr-only"> ({t('a11y.newWindow')})</span></a> : null}

@@ -5,6 +5,7 @@ import { absolute, authorsOf, docHref, isLocale, makeCtx } from '../../../../lib
 import { getPayloadClient } from '../../../../lib/runtime.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
 import { breadcrumbJsonLd, jsonLdString } from '../../../../lib/jsonld.ts';
+import { formatMoney } from '../../../../lib/money.ts';
 import { receiptLabels, storeLabels } from '../../../../lib/platform-labels.ts';
 import { canOrder } from '../../../../lib/platform-requests.ts';
 import type { Doc } from '../../../../lib/data.ts';
@@ -59,7 +60,7 @@ export default async function StorePage({ params }: Props) {
       <div className="container section">
         <p className="notice notice--info store-note">{t('store.howItWorks')}</p>
         <section id="cart" className="info-section store-cart" aria-labelledby="cart-h">
-          <h2 id="cart-h">{t('store.cart')}</h2>
+          <h2 id="cart-h" tabIndex={-1}>{t('store.cart')}</h2>
           <CartPanel lang={lang.code} labels={storeLabels(ctx)} privacyHref={href('/privacy')} booksHref="#books" />
         </section>
         <section id="books" aria-labelledby="books-h" className="store-books">
@@ -68,7 +69,7 @@ export default async function StorePage({ params }: Props) {
             {books.map((doc) => {
               const authors = authorsOf(doc);
               const status = doc.storeStatus as string | undefined;
-              const price = typeof doc.price === 'number' ? `${doc.price} ${doc.currency ? t(`forms.cur.${doc.currency as string}`) : ''}`.trim() : t('store.priceOnRequest');
+              const price = typeof doc.price === 'number' ? (doc.currency ? formatMoney(doc.price, doc.currency as string, lang.code) : String(doc.price)) : t('store.priceOnRequest');
               return (
                 <article key={doc.id} className="book">
                   <div className="book__cover">
@@ -76,9 +77,9 @@ export default async function StorePage({ params }: Props) {
                   </div>
                   <div className="stack store-book">
                     <h3 className="book__title"><Link prefetch={false} href={docHref(ctx, 'book', doc.id)}>{doc.title}</Link></h3>
-                    {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => (a.honorific ? `${a.honorific} ` : '') + a.name).join('، ')}</p> : null}
+                    {authors.length ? <p className="book__author" dir="auto">{new Intl.ListFormat(lang.code, { type: 'conjunction' }).format(authors.map((a) => (a.honorific ? `${a.honorific} ` : '') + a.name))}</p> : null}
                     <p className="book__meta">{status === 'out_of_stock' ? t('store.outOfStock') : price}</p>
-                    {canOrder(status) ? <AddToCart id={doc.id} title={doc.title} add={t('store.add')} added={t('store.added')} cartHref="#cart" viewCart={t('store.viewCart')} /> : null}
+                    {canOrder(status) ? <AddToCart id={doc.id} title={doc.title} add={t('store.add')} added={t('store.added')} remove={t('store.remove')} cartHref="#cart" viewCart={t('store.viewCart')} /> : null}
                   </div>
                 </article>
               );

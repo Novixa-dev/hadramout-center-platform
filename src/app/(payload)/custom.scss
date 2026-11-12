@@ -292,7 +292,7 @@ html[data-theme='dark'] {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 18px 18px 20px;
+  padding: 18px 18px 40px;
   border-radius: 16px;
   background: var(--hc-mast-bg);
   color: var(--hc-mast-ink);
@@ -317,6 +317,18 @@ html[dir='ltr'] .hc-mast::after {
   -webkit-mask-composite: source-in;
   mask: url('/brand/pattern.svg') 0 0 / 44px 44px repeat, linear-gradient(to right, #000 15%, transparent);
   mask-composite: intersect;
+}
+/* Shibam's mud-brick towers along the bottom edge, as on the site's home page: the one memorable element of the admin. A shade
+   of the masthead itself, so the text above keeps its contrast and the towers read as a horizon, not as a picture. */
+.hc-mast__skyline {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -1px;
+  z-index: -1;
+  inline-size: 100%;
+  block-size: 34px;
+  color: rgb(255 251 245 / 0.07);
+  pointer-events: none;
 }
 .hc-mast__meta {
   display: flex;
@@ -553,7 +565,7 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
     color: var(--theme-elevation-650);
   }
   thead th:first-child, tbody th { text-align: start; }
-  tbody th { font-weight: 600; line-height: 1.5; }
+  tbody th { font-weight: 600; line-height: 1.5; padding-block: 8px 6px; }
   tbody tr:last-child > * { border-block-end: 0; }
   a {
     color: var(--hc-brand);
@@ -563,15 +575,44 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
 }
 .hc-table__action { inline-size: 1%; }
 .hc-zero { color: var(--theme-elevation-650); font-weight: 400; } /* a count, not a disabled control: 4.5:1 */
+.hc-count { font-weight: 600; }
+/* drafts are unfinished work: the same gold as the counts that wait for someone */
+.hc-count--draft {
+  display: inline-block;
+  min-inline-size: 2rem;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--hc-gold) 22%, var(--theme-elevation-0));
+  .hc-table & { color: var(--hc-gold-text); }
+}
+/* each section's size against the largest one: the archive's shelves at a glance */
+.hc-shelf {
+  display: block;
+  block-size: 4px;
+  margin-block-start: 4px;
+  border-radius: 999px;
+  background: var(--theme-elevation-100);
+  overflow: hidden;
+
+  span {
+    display: block;
+    block-size: 100%;
+    min-inline-size: 2px;
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--hc-brand) 70%, var(--theme-elevation-0));
+  }
+}
+/* quiet until wanted: a 44 px target with no frame of its own, so twelve of them do not read as a second table */
 .hc-add {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: 40px;
-  block-size: 40px;
-  border: 1px solid var(--theme-elevation-150);
+  inline-size: 44px;
+  block-size: 44px;
   border-radius: 8px;
-  &:hover { border-color: var(--hc-brand); background: var(--hc-brand-soft); }
+  color: var(--theme-elevation-650);
+  .hc-table & { color: var(--theme-elevation-650); }
+  &:hover { background: var(--hc-brand-soft); .hc-table & { color: var(--hc-brand); } }
 }
 
 /* Recent edits: the title (two lines at most), then status, section and time. */
@@ -658,7 +699,8 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
 }
 
 @container (min-width: 600px) {
-  .hc-mast { padding: 24px 28px 26px; }
+  .hc-mast { padding: 24px 28px 52px; }
+  .hc-mast__skyline { block-size: 48px; }
   .hc-mast__line { font-size: 1.25rem; }
   .hc-box { padding: 18px 20px; }
   .hc-table th, .hc-table td { padding: 8px 8px; }
@@ -674,7 +716,6 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
     gap: 20px;
   }
   .hc-dash__col { gap: 20px; }
-  .hc-normalizer-btn { min-block-size: 38px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -690,20 +731,39 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
   white-space: nowrap;
 }
 
-/* Payload's collection cards under the dashboard: a compact, scannable list of every section. */
+/* Payload's own section cards under the dashboard: an index of every section, in even rows of quiet 44 px chips (two on a
+   phone) under small group headings with a hairline, so it reads as the back of the book rather than a second dashboard. */
+.dashboard .collections__wrap { gap: 0; }
+.dashboard .collections__group { gap: 0; }
 .dashboard .collections__card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
   gap: 8px;
 }
+@media (max-width: 599px) {
+  .dashboard .collections__card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 .dashboard .collections__card-list .card {
-  min-height: 0;
-  padding-block: 12px;
-  border-radius: var(--style-radius-m);
+  min-height: 44px;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border-color: var(--theme-elevation-100);
+  background: var(--theme-elevation-0);
   box-shadow: none;
-  &:hover { border-color: var(--hc-brand); }
+  &:hover { border-color: var(--hc-brand); background: var(--hc-brand-soft); }
+}
+.dashboard .collections__card-list .card__title {
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 .dashboard .collections__label {
-  font-size: 1.05rem;
+  margin-block: 16px 10px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--theme-elevation-150);
+  font-size: 0.875rem;
   font-weight: 700;
+  color: var(--theme-elevation-750);
 }
 
 /* ── Rich-text body editor (src/admin/fields/HtmlField.tsx) ───────────────────────────────────────────── */
