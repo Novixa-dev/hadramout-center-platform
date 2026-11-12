@@ -251,6 +251,7 @@ export const ADMIN_STRING_TABLES = { EDITOR, DASHBOARD, HEADER, NOTIFY } as cons
  *   interface language in the account settings, which confused editors. It now says what it is.
  */
 export const ADMIN_TRANSLATIONS = {
-  ar: { general: { locale: 'لغة المحتوى', locales: 'لغات المحتوى' } },
-  en: { general: { locale: 'Content language', locales: 'Content languages' } },
+  // Payload's own Arabic misspells «إنشاء» (hamza under the alif) on every list's create button
+  ar: { general: { locale: 'لغة المحتوى', locales: 'لغات المحتوى', createNew: 'إنشاء جديد' } },
+  en: { general: { locale: 'Content language', locales: 'Content languages', createNew: 'Create New' } },
 };

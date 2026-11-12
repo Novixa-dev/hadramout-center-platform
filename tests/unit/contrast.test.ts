@@ -118,8 +118,8 @@ describe('admin dashboard colours (src/app/(payload)/custom.scss)', () => {
     return m[1] as string;
   };
   const base = (n: number) => pick(scss, `color-base-${n}`);
-  const light = block('.hc-dash, .app-header, .nav');
-  const dark = block("html[data-theme='dark'] :is(.hc-dash, .app-header, .nav)");
+  const light = block('body');
+  const dark = block("html[data-theme='dark'] body");
   // a token the dark block does not redefine keeps its light value, as in CSS
   const token = (mode: 'light' | 'dark', name: string) => (mode === 'dark' && new RegExp(`--${name}:`).test(dark) ? pick(dark, name) : pick(light, name));
   // Payload's page background: elevation-0 is base-0 in light and base-900 in dark
@@ -150,6 +150,9 @@ describe('admin dashboard colours (src/app/(payload)/custom.scss)', () => {
         ['gold text on its tint', t('d-accent-text'), solid(t('d-accent-soft'), bg)],
         ['dark text on the gold button', t('d-on-accent'), t('d-accent')],
         ['green on its tint (status, hover)', t('d-brand'), t('d-brand-soft')],
+        ['text in a field', t('d-text'), t('d-field')],
+        ['placeholder and help in a field', t('d-muted'), t('d-field')],
+        ['secondary text on the grey chip', t('d-text-2'), t('d-surface-3')],
       ];
       const low = pairs.filter(([, fg, back]) => ratio(fg, back) < 4.5).map(([what, fg, back]) => `${what}: ${ratio(fg, back).toFixed(2)}`);
       assert.deepEqual(low, []);

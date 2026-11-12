@@ -44,6 +44,8 @@ export const Users: CollectionConfig = {
     admin: ({ req }) => Boolean(req.user),
   },
   fields: [
+    // display only (stores nothing): the account's head card, with sign-out on your own profile (src/admin/components/ProfileCard.tsx)
+    { name: 'profileCard', type: 'ui', label: L('بطاقة الحساب', 'Account card'), admin: { components: { Field: '/admin/components/ProfileCard#ProfileCard' }, disableListColumn: true } },
     { name: 'name', type: 'text', required: true, label: L('الاسم', 'Name') },
     {
       name: 'role',

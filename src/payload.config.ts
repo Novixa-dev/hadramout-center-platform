@@ -27,6 +27,7 @@ import { TASKS } from './jobs/tasks.ts';
 import { DEFAULT_LOCALE, PAYLOAD_LOCALES } from './i18n/locales.ts';
 import { migrations } from './migrations/index.ts';
 import { ADMIN_TRANSLATIONS } from './admin/i18n.ts';
+import { withStatusCells } from './collections/status-cells.ts';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -42,19 +43,22 @@ export default buildConfig({
     // "28 October 2026 · 20:05" / «28 أكتوبر 2026 · 20:05»: one pattern for both languages (date-fns cannot vary it per
     // language); the default ("October 28th 2026, 8:05 PM") came out as «أكتوبر 28 ,2026 8:05 م» in Arabic.
     dateFormat: 'd MMMM yyyy · HH:mm',
+    // the person's initial on the site's green (src/admin/components/Avatar.tsx), not Payload's grey silhouette
+    avatar: { Component: '/admin/components/Avatar#Avatar' },
     components: {
       graphics: { Logo: '/admin/Brand#Logo', Icon: '/admin/Brand#Icon' },
       actions: ['/admin/HeaderActions#HeaderActions'],
       beforeLogin: ['/admin/HeaderActions#LoginLanguage'],
       beforeDashboard: ['/admin/EditorialDashboard#EditorialDashboard'],
       beforeNavLinks: ['/admin/components/NavHomeLink#NavHomeLink'],
+      logout: { Button: '/admin/components/LogoutButton#LogoutButton' },
       // No email adapter is configured: Payload's own screen would promise a reset email that never leaves the server.
       views: { forgot: { Component: '/admin/ForgotPassword#ForgotPassword', path: '/forgot' } },
     },
   },
   i18n: { supportedLanguages: { ar, en }, fallbackLanguage: 'ar', translations: ADMIN_TRANSLATIONS },
   localization: { locales: PAYLOAD_LOCALES, defaultLocale: DEFAULT_LOCALE, fallback: true },
-  collections: [News, Articles, Books, Magazines, Events, ForumEvents, Videos, Encyclopedia, Audio, Announcements, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, Orders, Pledges, Receipts, Volunteers, Members, TranslationUsage, Users],
+  collections: withStatusCells([News, Articles, Books, Magazines, Events, ForumEvents, Videos, Encyclopedia, Audio, Announcements, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, Orders, Pledges, Receipts, Volunteers, Members, TranslationUsage, Users]),
   globals: [Site],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

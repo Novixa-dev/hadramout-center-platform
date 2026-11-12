@@ -271,8 +271,9 @@ html[data-theme='dark'] {
    (src/styles/tokens.css), light and dark. Sections are open, not boxed, as on the site; only the tool sits on a panel.
    Columns: the sections are in the DOM in phone order; from 880 px of dashboard width (a container query: Payload's side
    nav takes part of the window) the work sits in the wide column and the reference beside it. */
-/* The site's colours (src/styles/tokens.css) for the admin's own parts: the dashboard, the header and the sidebar. */
-.hc-dash, .app-header, .nav {
+/* The site's colours (src/styles/tokens.css) for the whole admin: on body, so drawers and popups opened in a portal get them too. */
+body {
+  --d-field: #ffffff;
   --d-surface-2: #faf4ea;
   --d-surface-3: #f3eadb;
   --d-border: #e8dfd0;
@@ -299,7 +300,8 @@ html[data-theme='dark'] {
   margin-block-end: 32px;
   color: var(--d-text);
 }
-html[data-theme='dark'] :is(.hc-dash, .app-header, .nav) {
+html[data-theme='dark'] body {
+  --d-field: #1a2b26;
   --d-surface-2: #1a2b26;
   --d-surface-3: #223630;
   --d-border: #2a3c36;
@@ -1082,6 +1084,364 @@ html[dir='rtl'] :is(.nav__link.active, .nav__link:has(.nav__link-indicator)) { b
 @media (prefers-reduced-motion: reduce) {
   .hc-switch__track, .hc-switch__thumb { transition: none; }
 }
+
+/* ── Lists, forms and the profile (Payload's own views), in the site's language ─────────────────────────────────────────
+   Payload's styles sit in a cascade layer (`@layer payload-default`), so these plain rules win without `!important`; that also
+   means they win over Payload's own :hover/:focus, which is why every state is restated here. */
+
+/* Page titles: Naskh, as on the site; list titles carry the short gold rule of the site's section headings. */
+.list-header__title,
+.doc-header__title {
+  font-family: var(--hc-font-display);
+  font-weight: 700;
+  color: var(--d-text);
+}
+.list-header__title {
+  position: relative;
+  padding-block-end: 12px;
+  font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.4rem);
+  line-height: 1.4;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 0;
+    inline-size: 3rem;
+    block-size: 3px;
+    border-radius: 2px;
+    background: var(--d-accent);
+  }
+}
+/* centred on the title's words, not on the words plus the room for its gold rule */
+.list-header__title-and-actions { align-items: flex-start; gap: 12px 16px; }
+.list-header__title-actions { padding-block-start: clamp(2px, 0.4rem + 0.3vw, 10px); }
+.doc-header__title { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.9rem); line-height: 1.6; }
+
+/* Buttons: the site's green button, outlined chips for the rest, the gold button for «create». */
+.btn--style-primary {
+  --bg-color: var(--d-brand-fill);
+  --color: #fff;
+  --hover-bg: #1c5547;
+  --hover-color: #fff;
+}
+html[data-theme='dark'] .btn--style-primary { --hover-bg: #226a5a; }
+.btn--style-primary.btn--disabled {
+  --bg-color: var(--d-surface-3);
+  --color: var(--d-muted);
+  --hover-bg: var(--d-surface-3);
+  --hover-color: var(--d-muted);
+}
+.btn--style-secondary {
+  --color: var(--d-text-2);
+  --btn-border: 1px solid var(--d-border-strong);
+  --hover-color: var(--d-brand);
+  --hover-btn-border: 1px solid var(--d-brand);
+  --hover-bg: var(--d-brand-soft);
+}
+:is(.btn--style-primary, .btn--style-secondary).btn--size-medium {
+  min-block-size: 40px;
+  padding-inline: 18px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.list-create-new-doc__create-new-button.btn--style-pill {
+  --bg-color: var(--d-accent);
+  --color: var(--d-on-accent);
+  --hover-bg: var(--d-accent-hover);
+  --hover-color: var(--d-on-accent);
+  min-block-size: 36px;
+  padding-inline: 16px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+/* Search and list controls: the site's rounded search field, chips beside it, no grey slab. */
+.list-controls .search-bar {
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.list-controls .search-filter__input {
+  min-block-size: 44px;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 999px;
+  background: var(--d-field);
+  color: var(--d-text);
+  box-shadow: none;
+
+  &::placeholder { color: var(--d-muted); }
+  &:focus { border-color: var(--d-brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 22%, transparent); outline: 0; }
+}
+.list-controls .search-bar > svg { color: var(--d-muted); }
+.list-controls .pill--style-light {
+  min-block-size: 36px;
+  padding-inline: 14px;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--d-text-2);
+  font-weight: 600;
+
+  &:hover, &[aria-expanded='true'] { border-color: var(--d-brand); background: var(--d-brand-soft); color: var(--d-brand); }
+}
+
+/* The table: hairlines instead of grey stripes, a quiet header, the row lit in the site's green under the pointer. */
+.table {
+  thead th {
+    padding-block: 10px;
+    border-block-end: 1px solid var(--d-border-strong);
+    color: var(--d-muted);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  tbody tr:nth-child(odd) { background: transparent; }
+  tbody td {
+    padding-block: 12px;
+    border-block-end: 1px solid var(--d-border);
+    color: var(--d-text-2);
+    line-height: 1.7;
+  }
+  tbody tr:hover td { background: var(--d-brand-soft); }
+  tbody td.cell-title a,
+  tbody td:nth-child(2) > a {
+    color: var(--d-text);
+    font-weight: 600;
+    &:hover { color: var(--d-brand); }
+  }
+}
+.sort-column__label { font-weight: 700; }
+
+/* Pagination: round page buttons, the current one in the site's green. */
+.paginator { gap: 4px; align-items: center; }
+.paginator__page {
+  min-inline-size: 36px;
+  block-size: 36px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  color: var(--d-text-2);
+  font-weight: 600;
+
+  &:hover { background: var(--d-brand-soft); color: var(--d-brand); }
+}
+.paginator__page--is-current,
+.paginator__page--is-current:hover { background: var(--d-brand-fill); color: #fff; }
+.clickable-arrow { border-radius: 999px; }
+
+/* «الحالة» as chips (src/admin/components/StatusCell.tsx) */
+.hc-status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.9;
+  white-space: nowrap;
+}
+.hc-status-chip--done { background: var(--d-brand-soft); color: var(--d-brand); }
+.hc-status-chip--waiting { background: var(--d-accent-soft); color: var(--d-accent-text); border-color: color-mix(in srgb, var(--d-accent) 40%, transparent); }
+.hc-status-chip--progress { border-color: var(--d-border-strong); color: var(--d-text-2); }
+.hc-status-chip--closed { background: var(--d-surface-3); color: var(--d-text-2); }
+
+/* Forms: the site's fields — 44 px, rounded 10, a clear border, the green ring on focus — and its labels and help text. */
+:is(
+  .field-type.text:not(.has-many) input,
+  .field-type.email input,
+  .field-type.password input,
+  .field-type.number:not(.has-many) input,
+  .field-type.textarea textarea,
+  .date-time-picker .react-datepicker__input-container input,
+  .react-select .rs__control,
+  .edit-upload__input input,
+  .file-field__filename,
+  .point input
+) {
+  min-block-size: 44px;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 10px;
+  background: var(--d-field);
+  color: var(--d-text);
+  box-shadow: none;
+
+  &:hover { border-color: var(--d-muted); }
+  &:focus, &:focus-within { border-color: var(--d-brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 22%, transparent); outline: 0; }
+}
+.react-select .rs__control--is-focused { border-color: var(--d-brand); box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 22%, transparent); }
+:is(.field-type.text, .field-type.textarea, .field-type.email, .field-type.number).error :is(input, textarea),
+.react-select.error .rs__control { border-color: var(--theme-error-500); }
+:is(.field-type input, .field-type textarea)::placeholder { color: var(--d-muted); }
+:is(.field-type, .read-only) :is(input, textarea):disabled,
+.field-type.read-only :is(input, textarea) { background: var(--d-surface-2); color: var(--d-text-2); }
+label.field-label:not(.unstyled) {
+  padding-block-end: 6px;
+  color: var(--d-text-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.field-description { color: var(--d-muted); font-size: 0.8125rem; line-height: 1.7; }
+.react-select .rs__menu {
+  border: 1px solid var(--d-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgb(20 14 4 / 0.16);
+}
+.react-select .rs__option--is-focused { background: var(--d-brand-soft); color: var(--d-brand); }
+.react-select .rs__option--is-selected { background: var(--d-brand-fill); color: #fff; }
+
+/* The edit view's bar (save, more) and side column: a hairline under the bar, the side column on the site's paper band. */
+.doc-controls { border-block-end: 1px solid var(--d-border); }
+.document-fields__sidebar-wrap { background: var(--d-surface-2); }
+@media (max-width: 1024px) {
+  .document-fields__sidebar-wrap { background: transparent; }
+}
+
+/* Groups, arrays, collapsibles and tabs: one quiet card each, radius 12, as the site's panels. */
+.collapsible,
+.array-field__row,
+.blocks-field__row {
+  border-color: var(--d-border);
+  border-radius: 12px;
+}
+.collapsible__toggle-wrap { background: var(--d-surface-2); border-radius: 12px 12px 0 0; }
+.tabs-field__tab-button { font-weight: 600; color: var(--d-text-2); }
+.tabs-field__tab-button--active { color: var(--d-brand); }
+
+/* The profile: the sign-in block as the site's paper panel, the settings under a Naskh heading with the gold rule. */
+.auth-fields {
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: var(--d-surface-2);
+}
+.payload-settings > h3 {
+  position: relative;
+  margin-block-end: 16px;
+  padding-block-end: 10px;
+  font-family: var(--hc-font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 0;
+    inline-size: 3rem;
+    block-size: 3px;
+    border-radius: 2px;
+    background: var(--d-accent);
+  }
+}
+
+/* The account's head card (src/admin/components/ProfileCard.tsx): initial, name, email, role, and sign-out on your own. */
+.hc-profile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-block-end: 8px;
+  padding: 18px 20px;
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: var(--d-surface-2);
+}
+.hc-profile__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 56px;
+  block-size: 56px;
+  border-radius: 999px;
+  background: var(--d-brand-fill);
+  color: #fff;
+  font-family: var(--hc-font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.hc-profile__text { flex: 1 1 14rem; min-inline-size: 0; }
+.hc-profile__name {
+  margin: 0;
+  font-family: var(--hc-font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--d-text);
+}
+.hc-profile__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 2px 0 0;
+  font-size: 0.875rem;
+  color: var(--d-muted);
+}
+.hc-profile__role,
+.hc-profile__you {
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.9;
+}
+.hc-profile__role { background: var(--d-accent-soft); color: var(--d-accent-text); border: 1px solid color-mix(in srgb, var(--d-accent) 40%, transparent); }
+.hc-profile__you { background: var(--d-brand-soft); color: var(--d-brand); }
+.hc-profile__out {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 44px;
+  padding-inline: 16px;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 999px;
+  color: var(--d-text-2);
+  font-weight: 600;
+  text-decoration: none;
+
+  svg { color: var(--d-muted); }
+  &:hover { border-color: var(--d-text-2); background: var(--d-surface-3); color: var(--d-text); }
+}
+html[dir='rtl'] .hc-profile__out svg { transform: scaleX(-1); }
+
+/* The account button in the header (src/admin/components/Avatar.tsx): your initial on the site's green. */
+.app-header__account { border-radius: 999px; }
+.hc-avatar {
+  display: grid;
+  place-items: center;
+  /* Payload keeps a fixed 90 px for the account button before the content-language picker: 28 px fits it */
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 999px;
+  background: var(--d-brand-fill);
+  color: #fff;
+  font-family: var(--hc-font-display);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.app-header__account:hover .hc-avatar { box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 30%, transparent); }
+
+/* Sign-out at the foot of the sidebar (src/admin/components/LogoutButton.tsx): a labelled row. */
+.nav__controls { inline-size: 100%; margin-block-start: 12px; padding-block-start: 12px; border-block-start: 1px solid var(--d-border); }
+.hc-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  inline-size: 100%;
+  min-block-size: 40px;
+  padding-inline: 12px;
+  border-radius: 8px;
+  color: var(--d-text-2);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  svg { flex: none; color: var(--d-muted); }
+  &:hover { background: var(--d-surface-3); color: var(--d-text); }
+}
+html[dir='rtl'] .hc-logout svg { transform: scaleX(-1); }
 
 .hc-sr {
   position: absolute;
