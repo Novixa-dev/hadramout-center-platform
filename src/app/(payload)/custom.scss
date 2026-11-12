@@ -141,9 +141,9 @@ html[data-theme='dark'] {
    It now starts after that button (28 px, src/admin/components/Avatar.tsx) and a gap, at every width and in both directions. */
 [dir='rtl'] .app-header__localizer.localizer {
   right: unset;
-  left: calc(var(--gutter-h) + 36px);
+  left: calc(var(--gutter-h) + var(--hc-account-w, 28px) + 8px);
 }
-[dir='ltr'] .app-header__localizer.localizer { right: calc(var(--gutter-h) + 36px); }
+[dir='ltr'] .app-header__localizer.localizer { right: calc(var(--gutter-h) + var(--hc-account-w, 28px) + 8px); }
 
 .hc-actions {
   display: flex;
@@ -1408,26 +1408,61 @@ html[dir='rtl'] .hc-profile__out svg { transform: scaleX(-1); }
 
 /* The account button in the header (src/admin/components/Avatar.tsx): your initial on the site's green. */
 .app-header__account { border-radius: 999px; }
+/* The account button: a chip like the header's others — the initial, the name, an arrow for the menu. */
+.app-header__account.hc-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 36px;
+  padding-block: 3px;
+  padding-inline: 3px 10px;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 999px;
+  color: var(--d-text-2);
+  text-decoration: none;
+
+  &:hover, &[aria-expanded='true'] { border-color: var(--d-brand); background: var(--d-brand-soft); color: var(--d-brand); }
+  &:focus-visible { outline: 2px solid var(--hc-focus); outline-offset: 2px; }
+  &:focus-visible::after { display: none; }
+}
+.hc-account__name {
+  max-inline-size: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.hc-account__chevron { flex: none; color: var(--d-muted); transition: transform 160ms ease; }
+.app-header__account[aria-expanded='true'] .hc-account__chevron { transform: rotate(180deg); }
+/* The initial: on the site's green with a light inner ring and the gold edge of the site's badges, so it reads as a seal,
+   not a flat dot. */
 .hc-avatar {
   display: grid;
   place-items: center;
-  /* Payload keeps a fixed 90 px for the account button before the content-language picker: 28 px fits it */
+  flex: none;
   inline-size: 28px;
   block-size: 28px;
   border-radius: 999px;
-  background: var(--d-brand-fill);
+  background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--d-brand-fill) 70%, #fff) 0, var(--d-brand-fill) 60%);
+  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.22), 0 0 0 1.5px color-mix(in srgb, var(--d-accent) 70%, transparent);
   color: #fff;
   font-family: var(--hc-font-display);
   font-size: 0.9375rem;
   font-weight: 700;
   line-height: 1;
 }
-.app-header__account:hover .hc-avatar { box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 30%, transparent); }
+/* phones: the initial alone, the header has room for nothing more */
+@media (max-width: 560px) {
+  .app-header__account.hc-account { padding: 0; border: 0; gap: 0; background: transparent; }
+  .hc-account__name, .hc-account__chevron { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .hc-account__chevron { transition: none; } }
 
 /* The account menu (src/admin/components/Avatar.tsx): who is signed in, then the profile and sign-out. A portal on <body>,
    fixed under the account button; the site's paper card with its 16 px radius. */
 .app-header__account { cursor: pointer; }
-.app-header__account[aria-expanded='true'] .hc-avatar { box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 35%, transparent); }
 .hc-menu {
   position: fixed;
   z-index: 1000;
@@ -1455,7 +1490,8 @@ html[dir='rtl'] .hc-profile__out svg { transform: scaleX(-1); }
   inline-size: 44px;
   block-size: 44px;
   border-radius: 999px;
-  background: var(--d-brand-fill);
+  background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--d-brand-fill) 70%, #fff) 0, var(--d-brand-fill) 60%);
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.22), 0 0 0 2px color-mix(in srgb, var(--d-accent) 70%, transparent);
   color: #fff;
   font-family: var(--hc-font-display);
   font-size: 1.25rem;

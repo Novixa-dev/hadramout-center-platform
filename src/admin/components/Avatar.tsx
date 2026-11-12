@@ -50,7 +50,10 @@ export function Avatar() {
     link.setAttribute('role', 'button');
     link.setAttribute('aria-haspopup', 'true');
     link.setAttribute('aria-controls', id);
-    link.setAttribute('aria-label', t.menu);
+    // the visible name first, so the button is named by what it shows (WCAG 2.5.3), then what it does
+    const shown = user?.name || user?.email || '';
+    link.setAttribute('aria-label', shown ? `${shown}، ${t.menu}` : t.menu);
+    link.classList.add('hc-account');
     const toggle = (e: Event) => {
       // preventDefault alone is not enough: the link's own React click handler still ran router.push('/admin/account') and the
       // page left a moment after the menu opened. Stopping the event here keeps it from reaching React's listener at the root.
@@ -71,7 +74,18 @@ export function Avatar() {
       link.removeEventListener('click', toggle);
       link.removeEventListener('keydown', onKey);
     };
-  }, [id, t.menu]);
+  }, [id, t.menu, user?.name, user?.email]);
+
+  // Payload places its content-language picker a fixed distance from this button; with the name the button is wider, so the
+  // picker follows its real width (custom.scss reads --hc-account-w).
+  useEffect(() => {
+    const link = mark.current?.closest('a');
+    if (!link || typeof ResizeObserver === 'undefined') return;
+    const root = document.documentElement;
+    const observer = new ResizeObserver(() => root.style.setProperty('--hc-account-w', `${Math.round(link.getBoundingClientRect().width)}px`));
+    observer.observe(link);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const link = mark.current?.closest('a');
@@ -122,6 +136,10 @@ export function Avatar() {
       <span className="hc-avatar" aria-hidden="true" ref={mark}>
         {letter || <UserIcon />}
       </span>
+      {user?.name || user?.email ? <span className="hc-account__name" aria-hidden="true">{user?.name || user?.email}</span> : null}
+      <svg className="hc-account__chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+        <path d="M6 9l6 6 6-6" />
+      </svg>
       {open && place
         ? createPortal(
             <div
