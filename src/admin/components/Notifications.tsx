@@ -166,16 +166,20 @@ export function NotificationBell() {
       setOpen(false);
       if (back) button.current?.focus();
     };
+    // Escape closes this panel only: caught on the way down (window, capture) and stopped there, or Payload's own Escape
+    // handler on the document also closes the sidebar and takes the focus with it
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close(true);
+      if (e.key !== 'Escape') return;
+      e.stopImmediatePropagation();
+      close(true);
     };
     const onDown = (e: PointerEvent) => {
       if (!box.current?.contains(e.target as Node)) close(false);
     };
-    document.addEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
     document.addEventListener('pointerdown', onDown);
     return () => {
-      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('keydown', onKey, true);
       document.removeEventListener('pointerdown', onDown);
     };
   }, [open]);

@@ -1,5 +1,6 @@
 'use client';
 import { useAuth, useConfig, useDocumentInfo, useFormFields, useTranslation } from '@payloadcms/ui';
+import { initialOf } from '../initial.ts';
 
 /**
  * The head of a staff account (the profile, and each user an admin opens): the person's initial, name, email and role, as the
@@ -22,7 +23,7 @@ export function ProfileCard() {
   const email = useFormFields(([fields]) => (fields.email?.value as string | undefined) ?? '');
   const role = useFormFields(([fields]) => (fields.role?.value as keyof typeof t | undefined) ?? undefined);
   const own = user && id !== undefined && String(user.id) === String(id);
-  const letter = Array.from((name || email).trim())[0]?.toUpperCase() ?? '';
+  const letter = initialOf(name) || initialOf(email);
   if (!name && !email) return null;
   return (
     <div className="hc-profile">

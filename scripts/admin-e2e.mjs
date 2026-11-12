@@ -173,6 +173,15 @@ await journey('admin dashboard numbers and language switch', async (page) => {
   check(bell === listed, 'the header bell counts what the dashboard lists as waiting', `${bell} vs ${listed}`);
   const inbox = await page.$$eval('.hc-nav-inbox__n', (ns) => ns.reduce((sum, n) => sum + Number(n.textContent.replace(/\D/g, '')), 0)).catch(() => null);
   check(inbox === listed, 'the sidebar inbox counts the same', `${inbox} vs ${listed}`);
+  // the account button opens a menu (profile, sign-out) instead of leaving the page
+  await page.click('.app-header__account');
+  await page.waitForSelector('.hc-menu', { timeout: 5000 }).catch(() => undefined);
+  await new Promise((res) => setTimeout(res, 800));
+  const menu = await page.$$eval('.hc-menu a', (as) => as.map((a) => a.getAttribute('href'))).catch(() => []);
+  check(page.url().replace(/\/$/, '').endsWith('/admin') && menu.includes('/admin/account') && menu.includes('/admin/logout'), 'the account button opens a menu with the profile and sign-out, on the same page', `${page.url()} ${menu.join(' ')}`);
+  await page.keyboard.press('Escape');
+  await new Promise((res) => setTimeout(res, 300));
+  check(!(await page.$('.hc-menu')), 'Escape closes the account menu');
   // every link on the dashboard opens a page that exists
   const hrefs = [...new Set(await page.$$eval('.hc-dash a[href^="/admin"]', (as) => as.map((a) => a.getAttribute('href'))))];
   const bad = [];

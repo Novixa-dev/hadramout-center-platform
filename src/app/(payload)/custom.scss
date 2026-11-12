@@ -137,12 +137,13 @@ html[data-theme='dark'] {
     margin-left: var(--base);
   }
 }
-@media (max-width: 768px) {
-  [dir='rtl'] .app-header__localizer.localizer {
-    right: unset;
-    left: calc(var(--base) * 2);
-  }
+/* Payload places the content-language picker a fixed distance from the edge, which on phones put it over the account button.
+   It now starts after that button (28 px, src/admin/components/Avatar.tsx) and a gap, at every width and in both directions. */
+[dir='rtl'] .app-header__localizer.localizer {
+  right: unset;
+  left: calc(var(--gutter-h) + 36px);
 }
+[dir='ltr'] .app-header__localizer.localizer { right: calc(var(--gutter-h) + 36px); }
 
 .hc-actions {
   display: flex;
@@ -1422,6 +1423,107 @@ html[dir='rtl'] .hc-profile__out svg { transform: scaleX(-1); }
   line-height: 1;
 }
 .app-header__account:hover .hc-avatar { box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 30%, transparent); }
+
+/* The account menu (src/admin/components/Avatar.tsx): who is signed in, then the profile and sign-out. A portal on <body>,
+   fixed under the account button; the site's paper card with its 16 px radius. */
+.app-header__account { cursor: pointer; }
+.app-header__account[aria-expanded='true'] .hc-avatar { box-shadow: 0 0 0 3px color-mix(in srgb, var(--d-brand) 35%, transparent); }
+.hc-menu {
+  position: fixed;
+  z-index: 1000;
+  inline-size: min(18.5rem, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: var(--theme-bg);
+  color: var(--d-text);
+  box-shadow: 0 16px 40px rgb(20 14 4 / 0.18);
+  font-family: var(--font-body);
+}
+.hc-menu__who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--d-surface-2);
+}
+.hc-menu__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 999px;
+  background: var(--d-brand-fill);
+  color: #fff;
+  font-family: var(--hc-font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.hc-menu__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-inline-size: 0;
+
+  strong {
+    max-inline-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--hc-font-display);
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+  bdi {
+    max-inline-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    color: var(--d-muted);
+  }
+}
+.hc-menu__role {
+  margin-block-start: 4px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--d-accent) 40%, transparent);
+  border-radius: 999px;
+  background: var(--d-accent-soft);
+  color: var(--d-accent-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.9;
+}
+.hc-menu__list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  li + li { margin-block-start: 4px; padding-block-start: 4px; border-block-start: 1px solid var(--d-border); }
+}
+.hc-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 44px;
+  padding-inline: 12px;
+  border-radius: 10px;
+  color: var(--d-text-2);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  svg { flex: none; color: var(--d-brand); }
+  &:hover, &:focus-visible { background: var(--d-brand-soft); color: var(--d-brand); }
+  &:focus-visible { outline: 2px solid var(--hc-focus); outline-offset: 1px; }
+}
+.hc-menu__item--out {
+  svg { color: var(--d-muted); }
+  &:hover, &:focus-visible { background: var(--d-surface-3); color: var(--d-text); }
+}
+html[dir='rtl'] .hc-menu__out-icon { transform: scaleX(-1); }
 
 /* Sign-out at the foot of the sidebar (src/admin/components/LogoutButton.tsx): a labelled row. */
 .nav__controls { inline-size: 100%; margin-block-start: 12px; padding-block-start: 12px; border-block-start: 1px solid var(--d-border); }

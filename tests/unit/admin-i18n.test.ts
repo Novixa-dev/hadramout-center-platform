@@ -148,3 +148,12 @@ test('the queues: editors and admins get every visitor queue, translation review
     for (const lang of ['ar', 'en']) for (const k of [q.label, q.quiet, q.hint]) assert.ok(dashboardStrings(lang)[k], `${lang} ${k}`);
   }
 });
+
+test('the account initial is the first letter, never a symbol or a mark', async () => {
+  const { initialOf } = await import('../../src/admin/initial.ts');
+  assert.equal(initialOf('!test'), 'T');
+  assert.equal(initialOf('مدير النظام'), 'م');
+  assert.equal(initialOf('  «سالم»'), 'س');
+  assert.equal(initialOf('ahmed@example.com'), 'A');
+  assert.equal(initialOf('!!! 123'), '');
+});
