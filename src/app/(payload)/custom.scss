@@ -50,7 +50,7 @@
   --color-success-850: #083d32; --color-success-900: #0c3027; --color-success-950: #12221d;
 
   --hc-gold: #c49952;
-  --hc-gold-text: #86632b;
+  --hc-gold-text: #7a5a26; /* 4.8:1 on the gold-tinted counts and chips, as in src/styles/tokens.css */
   --hc-brand: var(--color-success-650);
   --hc-brand-hover: var(--color-success-750);
   --hc-on-brand: #fff;
@@ -264,8 +264,8 @@ html[data-theme='dark'] {
 
 /* ── Dashboard (src/admin/EditorialDashboard.tsx) — mobile first ───────────────────────────────────────────
    One column on a phone, in order of urgency: masthead, what needs attention, create, recent edits, content status,
-   tools. From 880 px of dashboard width (a container query: Payload's side nav takes part of the window) the same
-   blocks sit in two columns. The masthead is the one bold element; every other block is a quiet hairline box.
+   tools. From 880 px of dashboard width (a container query: Payload's side nav takes part of the window) the first
+   three sit in the wide column and the rest beside them. The masthead is the one bold element; every other block is a quiet hairline box.
    Radii follow the hierarchy: masthead 16, boxes 12, controls 8, counts 999. */
 :root {
   --hc-mast-bg: #0f4a3d;
@@ -358,20 +358,14 @@ html[dir='ltr'] .hc-mast::after {
   color: var(--hc-mast-gold);
 }
 
-/* Columns: on a phone the two wrappers dissolve and `order` sets the reading order across them. */
-.hc-dash__cols {
+/* Columns: the boxes are in the DOM in phone order, so what is seen, read aloud and tabbed through agree at every width
+   and zoom level (CSS `order` would move only the picture). Each column holds one unbroken run of that order. */
+.hc-dash__cols,
+.hc-dash__col {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.hc-dash__col { display: contents; }
-.hc-box--inbox { order: 1; }
-.hc-box--create { order: 2; }
-.hc-box--recent { order: 3; }
-.hc-box--content { order: 4; }
-.hc-box--tool { order: 5; }
-.hc-box--usage { order: 6; }
-.hc-box--links { order: 7; }
 
 .hc-box {
   min-inline-size: 0;
@@ -568,7 +562,7 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
   }
 }
 .hc-table__action { inline-size: 1%; }
-.hc-zero { color: var(--theme-elevation-400); }
+.hc-zero { color: var(--theme-elevation-650); font-weight: 400; } /* a count, not a disabled control: 4.5:1 */
 .hc-add {
   display: inline-flex;
   align-items: center;
@@ -679,11 +673,7 @@ html[dir='ltr'] .hc-inbox__go { transform: scaleX(-1); }
     align-items: start;
     gap: 20px;
   }
-  .hc-dash__col {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  .hc-dash__col { gap: 20px; }
   .hc-normalizer-btn { min-block-size: 38px; }
 }
 

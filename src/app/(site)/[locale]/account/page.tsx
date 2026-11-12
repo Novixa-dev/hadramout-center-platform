@@ -55,7 +55,8 @@ function Requests({ ctx, requests }: { ctx: Ctx; requests: MemberRequests }) {
   ].sort((a, b) => b.at.localeCompare(a.at));
   if (rows.length === 0) return <p className="empty-state">{t('account.noRequests')}</p>;
   return (
-    <div className="table-scroll">
+    // a focus stop, so a keyboard can scroll a table wider than the phone
+    <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="requests-h">
       <table>
         <thead>
           <tr>

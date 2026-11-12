@@ -117,7 +117,7 @@ export function CartPanel({ lang, labels, privacyHref, booksHref }: { lang: stri
             <span className="cart-line__title">{l.title}</span>
             <label className="cart-line__qty">
               <span className="sr-only">{labels.quantity}: {l.title}</span>
-              <input className="input" type="number" min={1} max={MAX_QUANTITY} value={l.quantity} dir="ltr" onChange={(e) => setQuantity(l.id, Number(e.target.value))} />
+              <QuantityInput value={l.quantity} onCommit={(n) => setQuantity(l.id, n)} />
             </label>
             <button type="button" className="icon-btn" onClick={() => remove(l.id)} aria-label={`${labels.remove}: ${l.title}`}><Icon name="close" /></button>
           </li>
@@ -134,5 +134,33 @@ export function CartPanel({ lang, labels, privacyHref, booksHref }: { lang: stri
         </div>
       </form>
     </div>
+  );
+}
+
+/** A draft while typing: clearing the field to type another number must not snap it back to 1 (that turned "3" into "13"). */
+function QuantityInput({ value, onCommit }: { value: number; onCommit: (n: number) => void }) {
+  const [draft, setDraft] = useState(String(value));
+  useEffect(() => setDraft(String(value)), [value]);
+  const commit = () => {
+    const n = Number(draft);
+    if (draft.trim() && Number.isInteger(n) && n >= 1) onCommit(n);
+    else setDraft(String(value));
+  };
+  return (
+    <input
+      className="input"
+      type="number"
+      inputMode="numeric"
+      min={1}
+      max={MAX_QUANTITY}
+      value={draft}
+      dir="ltr"
+      onChange={(e) => {
+        setDraft(e.target.value);
+        const n = Number(e.target.value);
+        if (e.target.value.trim() && Number.isInteger(n) && n >= 1) onCommit(n);
+      }}
+      onBlur={commit}
+    />
   );
 }

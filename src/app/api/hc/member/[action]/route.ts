@@ -4,7 +4,7 @@ import { getPayloadClient } from '../../../../../lib/runtime.ts';
 import { allow, clientKey } from '../../../../../lib/ratelimit.ts';
 import { isSameOrigin, readJsonObject } from '../../../../../lib/same-origin.ts';
 import { hashPassword, PASSWORD_MAX, PASSWORD_MIN, spendPasswordWork, verifyPassword } from '../../../../../lib/member-crypto.ts';
-import { cleanText, isEmail, normalizeEmail, parseSavedItems } from '../../../../../lib/platform-requests.ts';
+import { cleanText, isEmail, isPhone, normalizeEmail, parseSavedItems } from '../../../../../lib/platform-requests.ts';
 import { findMemberRowByEmail, memberRowFromToken, savedItemsOf, SESSION_COOKIE, sessionCookie, sessionToken } from '../../../../../lib/members.ts';
 
 export const dynamic = 'force-dynamic';
@@ -57,6 +57,8 @@ export async function POST(req: NextRequest, { params }: Ctx) {
     const name = cleanText(b.name, 120);
     const phone = cleanText(b.phone, 40);
     if (name.length < 2) return fail('name');
+    // the forms prefill this phone, and an order refuses one in another format
+    if (phone && !isPhone(phone)) return fail('phone');
     await update({ name, phone });
     return json({ ok: true });
   }

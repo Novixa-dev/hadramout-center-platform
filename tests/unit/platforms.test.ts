@@ -2,7 +2,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { hashPassword, readSession, signSession, SESSION_DAYS, verifyPassword } from '../../src/lib/member-crypto.ts';
 import sharp from 'sharp';
-import { canOrder, cleanText, makeReference, normalizeEmail, parseOrder, parsePledge, parseReceipt, parseSavedItems, parseVolunteer, sniffImage } from '../../src/lib/platform-requests.ts';
+import { canOrder, cleanLines, cleanText, makeReference, normalizeEmail, parseOrder, parsePledge, parseReceipt, parseSavedItems, parseVolunteer, sniffImage } from '../../src/lib/platform-requests.ts';
 import { normalizeReceipt, oneAtATime, RECEIPT_MAX_SIDE } from '../../src/lib/receipt-image.ts';
 import { PAYABLE_REFERENCE } from '../../src/lib/platform-values.ts';
 import { limitingAddress } from '../../src/lib/ratelimit.ts';
@@ -157,6 +157,27 @@ describe('oversized input', () => {
     assert.deepEqual(await readJsonObject(post('{"a":1}')), { a: 1 });
     for (const bad of ['x', '[1]', 'null', '5', `{"a":"${'x'.repeat(MAX_BODY_BYTES)}"}`]) assert.equal(await readJsonObject(post(bad)), null, bad.slice(0, 10));
     assert.equal(await readJsonObject(post('{}', { 'content-length': String(MAX_BODY_BYTES + 1) })), null);
+  });
+  test('a chunked body or a false Content-Length is cut off at the cap, not read to the end', async () => {
+    let pulled = 0;
+    const chunk = new TextEncoder().encode('x'.repeat(64 * 1024));
+    const endless = new ReadableStream<Uint8Array>({
+      pull(c) {
+        pulled++;
+        c.enqueue(chunk);
+      },
+    });
+    const req = new Request('http://x/', { method: 'POST', body: endless, headers: { 'content-length': 'abc' }, duplex: 'half' } as RequestInit);
+    assert.equal(await readJsonObject(req), null);
+    assert.ok(pulled <= MAX_BODY_BYTES / chunk.byteLength + 2, `read ${pulled} chunks`);
+  });
+  test('an address or a note keeps its lines; one-line fields still do not', () => {
+    assert.equal(cleanLines('  مبنى 4 \r\n شارع  الستين\n\n\n\nالمكلا  <b>اليمن</b> ', 500), 'مبنى 4\nشارع الستين\n\nالمكلا اليمن');
+    assert.equal(cleanText('سطر\nثان', 50), 'سطر ثان');
+    const order = parseOrder({ ...contact, address: 'مبنى 4\nشارع الستين\nالمكلا', note: 'أولًا\nثانيًا', items: [{ book: 1, quantity: 1 }] });
+    assert.ok(order.ok && order.value.address === 'مبنى 4\nشارع الستين\nالمكلا' && order.value.note === 'أولًا\nثانيًا');
+    const v = parseVolunteer({ ...contact, areas: ['documents'], experience: 'السطر الأول من الخبرة\nوالثاني' });
+    assert.ok(v.ok && v.value.experience === 'السطر الأول من الخبرة\nوالثاني');
   });
   test('text is cut to size whatever arrives', () => {
     assert.equal(cleanText('ا'.repeat(10_000), 120).length, 120);

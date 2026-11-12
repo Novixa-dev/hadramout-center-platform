@@ -104,3 +104,28 @@ describe('high-contrast tokens (prefers-contrast: more) reach WCAG AAA', () => {
     });
   }
 });
+
+describe('admin dashboard colours (src/app/(payload)/custom.scss)', () => {
+  const scss = readFileSync('src/app/(payload)/custom.scss', 'utf8');
+  const dark = scss.slice(scss.indexOf("html[data-theme='dark'] {"));
+  const pick = (src: string, name: string): string => {
+    const m = src.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})`));
+    if (!m) throw new Error(`--${name} not found`);
+    return m[1] as string;
+  };
+  const base = (n: number) => pick(scss, `color-base-${n}`);
+  // Payload maps elevation-0 / -650 to base-0 / -650 in light and to base-900 / -250 in dark
+  const theme = { light: { bg: base(0), e650: base(650), gold: pick(scss, 'hc-gold-text') }, dark: { bg: base(900), e650: base(250), gold: pick(dark, 'hc-gold-text') } };
+  const mix = (a: string, pct: number, b: string): string => {
+    const ch = (h: string, i: number) => parseInt(h.slice(1 + i * 2, 3 + i * 2), 16);
+    return `#${[0, 1, 2].map((i) => Math.round(ch(a, i) * pct + ch(b, i) * (1 - pct)).toString(16).padStart(2, '0')).join('')}`;
+  };
+  const gold = pick(scss, 'hc-gold');
+  for (const mode of ['light', 'dark'] as const) {
+    test(`${mode}: gold counts and draft chips, and the zero counts, reach 4.5:1`, () => {
+      const t = theme[mode];
+      for (const pct of [0.22, 0.24]) assert.ok(ratio(t.gold, mix(gold, pct, t.bg)) >= 4.5, `gold text on ${pct * 100}% gold: ${ratio(t.gold, mix(gold, pct, t.bg)).toFixed(2)}`);
+      assert.ok(ratio(t.e650, t.bg) >= 4.5, `zero count: ${ratio(t.e650, t.bg).toFixed(2)}`);
+    });
+  }
+});

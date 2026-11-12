@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { sanitizeText } from './sanitize.ts';
+import { sanitizeLines, sanitizeText } from './sanitize.ts';
 import { CURRENCIES, MAX_ORDER_LINES, MAX_QUANTITY, PAYABLE_REFERENCE, VOLUNTEER_AREAS, type Currency, type VolunteerArea } from './platform-values.ts';
 
 /**
@@ -28,9 +28,13 @@ export type Parsed<T> = { ok: true; value: T } | { ok: false; error: string };
 /** Cut before cleaning: parsing a huge string costs time on the one event loop, and only the first `max` characters can survive anyway. */
 export const cleanText = (v: unknown, max: number): string => (typeof v === 'string' ? sanitizeText(v.slice(0, max * 4)).slice(0, max) : '');
 const text = cleanText;
+/** cleanText for fields people write on several lines (an address, a note): the line breaks are kept. */
+export const cleanLines = (v: unknown, max: number): string => (typeof v === 'string' ? sanitizeLines(v.slice(0, max * 4)).slice(0, max) : '');
+const lines = cleanLines;
 
 export const normalizeEmail = (v: unknown): string => text(v, 200).toLowerCase();
 export const isEmail = (v: string): boolean => EMAIL.test(v);
+export const isPhone = (v: string): boolean => PHONE.test(v);
 
 /** An unguessable reference a visitor can quote to the Center: HC-O-2026-7F3K9Q (no I, L, O, 0 or 1 to misread). */
 export function makeReference(prefix: 'O' | 'D' | 'V', now = new Date()): string {
@@ -52,9 +56,19 @@ function contact(b: Raw): Parsed<Contact> {
   const phone = text(b.phone, 40);
   if (name.length < 2) return { ok: false, error: 'name' };
   if (!isEmail(email)) return { ok: false, error: 'email' };
-  if (phone && !PHONE.test(phone)) return { ok: false, error: 'phone' };
+  if (phone && !isPhone(phone)) return { ok: false, error: 'phone' };
   if (b.consent !== true) return { ok: false, error: 'consent' };
   return { ok: true, value: { name, email, phone } };
+}
+
+/** An optional amount with its currency, as a pledge or a receipt states it: both or neither. */
+function amountOf(b: Raw): Parsed<{ amount: number | null; currency: Currency | null }> {
+  const given = b.amount === undefined || b.amount === null || b.amount === '' ? null : Number(b.amount);
+  if (given === null) return { ok: true, value: { amount: null, currency: null } };
+  if (!Number.isFinite(given) || given <= 0 || given > MAX_AMOUNT) return { ok: false, error: 'amount' };
+  const currency = (CURRENCIES as readonly unknown[]).includes(b.currency) ? (b.currency as Currency) : null;
+  if (!currency) return { ok: false, error: 'currency' };
+  return { ok: true, value: { amount: Math.round(given * 100) / 100, currency } };
 }
 
 export interface OrderRequest extends Contact {
@@ -67,7 +81,7 @@ export function parseOrder(b: Raw): Parsed<OrderRequest> {
   const c = contact(b);
   if (!c.ok) return c;
   if (!c.value.phone) return { ok: false, error: 'phone' };
-  const address = text(b.address, 500);
+  const address = lines(b.address, 500);
   if (address.length < 5) return { ok: false, error: 'address' };
   if (!Array.isArray(b.items) || b.items.length === 0 || b.items.length > MAX_ORDER_LINES) return { ok: false, error: 'items' };
   const quantities = new Map<number, number>();
@@ -78,7 +92,7 @@ export function parseOrder(b: Raw): Parsed<OrderRequest> {
     if (!Number.isSafeInteger(quantity) || (quantity as number) < 1 || (quantity as number) > MAX_QUANTITY) return { ok: false, error: 'items' };
     quantities.set(book as number, Math.min(MAX_QUANTITY, (quantities.get(book as number) ?? 0) + (quantity as number)));
   }
-  return { ok: true, value: { ...c.value, address, note: text(b.note, 2000), items: [...quantities].map(([book, quantity]) => ({ book, quantity })) } };
+  return { ok: true, value: { ...c.value, address, note: lines(b.note, 2000), items: [...quantities].map(([book, quantity]) => ({ book, quantity })) } };
 }
 
 export interface PledgeRequest extends Contact {
@@ -92,19 +106,16 @@ export interface PledgeRequest extends Contact {
 export function parsePledge(b: Raw): Parsed<PledgeRequest> {
   const c = contact(b);
   if (!c.ok) return c;
-  const given = b.amount === undefined || b.amount === null || b.amount === '' ? null : Number(b.amount);
-  if (given !== null && (!Number.isFinite(given) || given <= 0 || given > MAX_AMOUNT)) return { ok: false, error: 'amount' };
-  const currency = (CURRENCIES as readonly unknown[]).includes(b.currency) ? (b.currency as Currency) : null;
-  if (given !== null && !currency) return { ok: false, error: 'currency' };
+  const money = amountOf(b);
+  if (!money.ok) return money;
   return {
     ok: true,
     value: {
       ...c.value,
-      amount: given === null ? null : Math.round(given * 100) / 100,
-      currency: given === null ? null : currency,
+      ...money.value,
       purpose: text(b.purpose, 200),
       anonymous: b.anonymous === true,
-      note: text(b.note, 2000),
+      note: lines(b.note, 2000),
     },
   };
 }
@@ -121,7 +132,7 @@ export function parseVolunteer(b: Raw): Parsed<VolunteerRequest> {
   if (!c.ok) return c;
   const areas = Array.isArray(b.areas) ? VOLUNTEER_AREAS.filter((a) => (b.areas as unknown[]).includes(a)) : [];
   if (areas.length === 0) return { ok: false, error: 'areas' };
-  const experience = text(b.experience, 3000);
+  const experience = lines(b.experience, 3000);
   if (experience.length < 10) return { ok: false, error: 'experience' };
   return { ok: true, value: { ...c.value, city: text(b.city, 120), areas, availability: text(b.availability, 200), experience } };
 }
@@ -142,20 +153,17 @@ export function parseReceipt(b: Raw): Parsed<ReceiptRequest> {
   if (!PAYABLE_REFERENCE.test(reference)) return { ok: false, error: 'reference' };
   const email = normalizeEmail(b.email);
   if (!isEmail(email)) return { ok: false, error: 'email' };
-  const given = b.amount === undefined || b.amount === null || b.amount === '' ? null : Number(b.amount);
-  if (given !== null && (!Number.isFinite(given) || given <= 0 || given > MAX_AMOUNT)) return { ok: false, error: 'amount' };
-  const currency = (CURRENCIES as readonly unknown[]).includes(b.currency) ? (b.currency as Currency) : null;
-  if (given !== null && !currency) return { ok: false, error: 'currency' };
+  const money = amountOf(b);
+  if (!money.ok) return money;
   return {
     ok: true,
     value: {
       reference,
       kind: reference.startsWith('HC-O-') ? 'order' : 'pledge',
       email,
-      amount: given === null ? null : Math.round(given * 100) / 100,
-      currency: given === null ? null : currency,
+      ...money.value,
       transferRef: text(b.transferRef, 100),
-      note: text(b.note, 1000),
+      note: lines(b.note, 1000),
     },
   };
 }

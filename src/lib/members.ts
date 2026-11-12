@@ -99,8 +99,9 @@ export async function requestsOf(memberId: number): Promise<MemberRequests> {
   const refs = [...orders.docs, ...pledges.docs].map((d) => (d as { reference: string }).reference);
   const receipts: Record<string, string> = {};
   if (refs.length) {
-    const found = await payload.find({ collection: 'receipts', where: { reference: { in: refs } }, limit: 200, depth: 0, sort: 'createdAt', overrideAccess: true, select: { reference: true, status: true } });
-    for (const r of found.docs as unknown as { reference: string; status: string }[]) receipts[r.reference] = r.status;
+    const found = await payload.find({ collection: 'receipts', where: { reference: { in: refs } }, limit: 200, depth: 0, sort: '-createdAt', overrideAccess: true, select: { reference: true, status: true } });
+    // newest first, so the latest receipt's status wins and a cut at 200 drops only the oldest
+    for (const r of found.docs as unknown as { reference: string; status: string }[]) receipts[r.reference] ??= r.status;
   }
   return { orders: orders.docs as never, pledges: pledges.docs as never, volunteers: volunteers.docs as never, receipts };
 }

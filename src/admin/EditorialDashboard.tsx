@@ -18,7 +18,7 @@ import { Icon, type IconName } from './icons.tsx';
 type Role = 'admin' | 'editor' | 'reviewer';
 interface Props {
   payload: Payload;
-  user?: { id?: number | string; name?: string; role?: Role; collection?: string } | null;
+  user?: { id?: number | string; name?: string; email?: string; role?: Role; collection?: string } | null;
   i18n?: { language?: string };
 }
 
@@ -60,7 +60,8 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
     }
   };
 
-  const [newOrders, newPledges, newVolunteers, newReceipts] = await Promise.all((['orders', 'pledges', 'volunteers', 'receipts'] as const).map((c) => (staff ? count(c, { status: { equals: 'new' } }) : null)));
+  // started, not awaited, so these counts run alongside the ones below
+  const requestCounts = Promise.all((['orders', 'pledges', 'volunteers', 'receipts'] as const).map((c) => (staff ? count(c, { status: { equals: 'new' } }) : null)));
   const [pendingReviews, newMessages, translationIssues, uncategorised, overview, latestEvent, recentLists, usage] = await Promise.all([
     staff ? count('reviews', { status: { equals: 'pending' } }) : null,
     staff ? count('messages', { status: { equals: 'new' } }) : null,
@@ -91,6 +92,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
       .then((r) => (r.docs as unknown as { charsIn?: number }[]).reduce((n, d) => n + (d.charsIn ?? 0), 0))
       .catch(() => null),
   ]);
+  const [newOrders, newPledges, newVolunteers, newReceipts] = await requestCounts;
 
   const recent = recentLists.flat().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 8);
   const statusLabel = (s?: string) => (s === 'published' ? t.published : s === 'archived' ? t.archived : t.drafts);
@@ -139,11 +141,13 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
           <span>{df.format(new Date())}</span>
           <span className={`hc-badge hc-badge--${role}`}>{roleName}</span>
         </p>
-        <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name ?? '' })}</h1>
+        <h1 className="hc-dash__title">{fill(t.greeting, { name: user.name || user.email || '' })}</h1>
         <p className="hc-mast__line">{staff ? waiting : t.leadReviewer}</p>
         {staff && waitingTotal > 0 ? <p className="hc-mast__hint">{t.waitingHint}</p> : null}
       </div>
 
+      {/* In the DOM in phone order, which is also the reading and focus order. From 880 px the two halves of that order sit
+          side by side: the work (attention, create, recent edits) in the wide column, the reference boxes beside it. */}
       <div className="hc-dash__cols">
         <div className="hc-dash__col hc-dash__col--main">
           <section aria-labelledby="hc-dash-attention" className="hc-box hc-box--inbox">
@@ -187,6 +191,52 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
             ) : null}
           </section>
 
+          {staff ? (
+            <section aria-labelledby="hc-dash-create" className="hc-box hc-box--create">
+              <h2 id="hc-dash-create" className="hc-box__title">{t.quickActions}</h2>
+              <div className="hc-create">
+                {(
+                  [
+                    ['news', 'news', t.newNews],
+                    ['articles', 'article', t.newArticle],
+                    ['pages', 'page', t.newPage],
+                    ['audio', 'audio', t.newAudio],
+                    ['announcements', 'announcement', t.newAnnouncement],
+                  ] as const
+                ).map(([slug, icon, label], i) => (
+                  <a key={slug} href={`/admin/collections/${slug}/create`} className={`hc-create__btn${i === 0 ? ' hc-create__btn--primary' : ''}`}>
+                    <Icon name={icon} />
+                    <span>{label}</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <section aria-labelledby="hc-dash-recent" className="hc-box hc-box--recent">
+            <h2 id="hc-dash-recent" className="hc-box__title">{t.recent}</h2>
+            {recent.length ? (
+              <ol className="hc-recent" role="list">
+                {recent.map((r) => (
+                  <li key={`${r.slug}-${r.id}`}>
+                    <a href={`/admin/collections/${r.slug}/${r.id}`} className="hc-recent__title" dir="auto">
+                      {r.title}
+                    </a>
+                    <span className="hc-recent__meta">
+                      <span className={`hc-status hc-status--${r.status ?? 'draft'}`}>{statusLabel(r.status)}</span>
+                      <span>{r.type}</span>
+                      <time dateTime={r.updatedAt}>{dtf.format(new Date(r.updatedAt))}</time>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="hc-box__empty">{t.recentEmpty}</p>
+            )}
+          </section>
+        </div>
+
+        <div className="hc-dash__col hc-dash__col--side">
           <section aria-labelledby="hc-dash-content" className="hc-box hc-box--content">
             <h2 id="hc-dash-content" className="hc-box__title">{t.content}</h2>
             <div className="hc-table-wrap">
@@ -230,52 +280,6 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
 
           <section aria-labelledby="hc-dash-normalizer" className="hc-box hc-box--tool">
             <ScholarlyNormalizerWidget lang={lang} />
-          </section>
-        </div>
-
-        <div className="hc-dash__col hc-dash__col--side">
-          {staff ? (
-            <section aria-labelledby="hc-dash-create" className="hc-box hc-box--create">
-              <h2 id="hc-dash-create" className="hc-box__title">{t.quickActions}</h2>
-              <div className="hc-create">
-                {(
-                  [
-                    ['news', 'news', t.newNews],
-                    ['articles', 'article', t.newArticle],
-                    ['pages', 'page', t.newPage],
-                    ['audio', 'audio', t.newAudio],
-                    ['announcements', 'announcement', t.newAnnouncement],
-                  ] as const
-                ).map(([slug, icon, label], i) => (
-                  <a key={slug} href={`/admin/collections/${slug}/create`} className={`hc-create__btn${i === 0 ? ' hc-create__btn--primary' : ''}`}>
-                    <Icon name={icon} />
-                    <span>{label}</span>
-                  </a>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <section aria-labelledby="hc-dash-recent" className="hc-box hc-box--recent">
-            <h2 id="hc-dash-recent" className="hc-box__title">{t.recent}</h2>
-            {recent.length ? (
-              <ol className="hc-recent" role="list">
-                {recent.map((r) => (
-                  <li key={`${r.slug}-${r.id}`}>
-                    <a href={`/admin/collections/${r.slug}/${r.id}`} className="hc-recent__title" dir="auto">
-                      {r.title}
-                    </a>
-                    <span className="hc-recent__meta">
-                      <span className={`hc-status hc-status--${r.status ?? 'draft'}`}>{statusLabel(r.status)}</span>
-                      <span>{r.type}</span>
-                      <time dateTime={r.updatedAt}>{dtf.format(new Date(r.updatedAt))}</time>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="hc-box__empty">{t.recentEmpty}</p>
-            )}
           </section>
 
           {usage !== null ? (

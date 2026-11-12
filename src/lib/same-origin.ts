@@ -31,11 +31,30 @@ export const MAX_BODY_BYTES = 512 * 1024;
 export async function readJsonObject(req: Request): Promise<Record<string, unknown> | null> {
   if (Number(req.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) return null;
   try {
-    const raw = await req.text();
-    if (raw.length > MAX_BODY_BYTES) return null;
+    const raw = await readCapped(req, MAX_BODY_BYTES);
+    if (raw === null) return null;
     const v = JSON.parse(raw) as unknown;
     return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
   } catch {
     return null;
   }
+}
+
+/** The body as text, read only up to `max` bytes: a chunked body or a false Content-Length cannot make the server buffer more. */
+async function readCapped(req: Request, max: number): Promise<string | null> {
+  if (!req.body) return '';
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > max) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString('utf8');
 }

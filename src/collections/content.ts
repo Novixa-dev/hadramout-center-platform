@@ -5,6 +5,7 @@ import type { CollectionSlug } from '../lib/content-types.ts';
 import { EVENT_KIND_VALUES } from '../lib/list-query.ts';
 import type { StoreStatus } from '../lib/platform-requests.ts';
 import { currencyOptions } from './Platforms.ts';
+import { DEFAULT_LOCALE } from '../i18n/locales.ts';
 
 /** Builds one content collection from the shared base fields plus its own. */
 function contentCollection(
@@ -302,6 +303,13 @@ export const Encyclopedia = contentCollection(
       label: L('المصادر', 'Sources'),
       admin: { description: L('مصدر في كل سطر. لا يُنشر مدخل بلا مصدر.', 'One source per line. No entry is published without a source.') },
       access: { update: localizedUpdate },
+      // The rule above, enforced: checked in Arabic, the language editors write in; translations follow the Arabic text.
+      validate: (value: unknown, { data, req }: { data?: { status?: string }; req?: { locale?: string | null; i18n?: { language?: string } } }) =>
+        data?.status !== 'published' || ![undefined, null, DEFAULT_LOCALE].includes(req?.locale) || (typeof value === 'string' && value.trim() !== '')
+          ? true
+          : req?.i18n?.language === 'en'
+            ? 'Add at least one source before publishing this entry.'
+            : 'أضف مصدرًا واحدًا على الأقل قبل نشر هذا المدخل.',
     },
   ],
   { columns: ['title', 'entryKind', 'status'] },

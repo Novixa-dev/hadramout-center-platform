@@ -78,7 +78,7 @@ export default async function StorePage({ params }: Props) {
                     <h3 className="book__title"><Link prefetch={false} href={docHref(ctx, 'book', doc.id)}>{doc.title}</Link></h3>
                     {authors.length ? <p className="book__author" dir="auto">{authors.map((a) => (a.honorific ? `${a.honorific} ` : '') + a.name).join('، ')}</p> : null}
                     <p className="book__meta">{status === 'out_of_stock' ? t('store.outOfStock') : price}</p>
-                    {canOrder(status) ? <AddToCart id={doc.id} title={doc.title} add={t('store.add')} added={t('store.added')} /> : null}
+                    {canOrder(status) ? <AddToCart id={doc.id} title={doc.title} add={t('store.add')} added={t('store.added')} cartHref="#cart" viewCart={t('store.viewCart')} /> : null}
                   </div>
                 </article>
               );

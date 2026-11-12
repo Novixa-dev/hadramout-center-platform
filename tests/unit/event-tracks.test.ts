@@ -6,7 +6,7 @@ import ar from '../../messages/ar.json' with { type: 'json' };
 import en from '../../messages/en.json' with { type: 'json' };
 
 registerHooks({ resolve: (spec, ctx, next) => next(spec === 'next/cache' ? 'next/cache.js' : spec, ctx) });
-const { Events, ForumEvents } = await import('../../src/collections/content.ts');
+const { Encyclopedia, Events, ForumEvents } = await import('../../src/collections/content.ts');
 
 type ArrayField = Field & { fields: Field[] };
 
@@ -87,4 +87,15 @@ describe('Event tracks, chairs, and papers configuration', () => {
       assert.notEqual(enMap[key], '', `en value for ${key} should not be empty`);
     }
   });
+});
+
+test('an encyclopedia entry is not published in Arabic without a source', () => {
+  const field = Encyclopedia.fields.find((f) => 'name' in f && f.name === 'sources') as unknown as { validate: (v: unknown, o: unknown) => true | string };
+  const ar = { locale: 'ar' };
+  assert.equal(typeof field.validate('', { data: { status: 'published' }, req: ar }), 'string');
+  assert.equal(typeof field.validate('   ', { data: { status: 'published' }, req: ar }), 'string');
+  assert.equal(field.validate('كتاب الأعلام، ص 12', { data: { status: 'published' }, req: ar }), true);
+  assert.equal(field.validate('', { data: { status: 'draft' }, req: ar }), true);
+  // a translation run writes other languages; the rule follows the Arabic text
+  assert.equal(field.validate('', { data: { status: 'published' }, req: { locale: 'en' } }), true);
 });

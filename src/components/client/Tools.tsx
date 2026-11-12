@@ -75,10 +75,13 @@ interface SaveProps {
   labels: { save: string; saved: string };
 }
 
-const KEY = 'hc-saved';
+export const SAVED_KEY = 'hc-saved';
+const KEY = SAVED_KEY;
+/** This device's reading list (the one place that reads it, so the account backup and the list page agree on its format). */
 export function readSaved(): { id: string; title: string; url: string; type: string }[] {
   try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '[]') as { id: string; title: string; url: string; type: string }[];
+    const v = JSON.parse(localStorage.getItem(KEY) ?? '[]') as unknown;
+    return Array.isArray(v) ? (v as { id: string; title: string; url: string; type: string }[]) : [];
   } catch {
     return [];
   }

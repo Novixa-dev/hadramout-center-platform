@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { PASSWORD_MIN } from '../../lib/platform-values.ts';
 import { errorText, type Labels } from './PlatformForms.tsx';
+import { readSaved, SAVED_KEY } from './Tools.tsx';
 
 /** Sign-in, sign-up and account actions. The session lives in an http-only cookie that this code never sees. */
 
@@ -126,15 +127,6 @@ interface SavedRow {
   url: string;
   type: string;
 }
-const SAVED_KEY = 'hc-saved';
-const readLocal = (): SavedRow[] => {
-  try {
-    const v = JSON.parse(localStorage.getItem(SAVED_KEY) ?? '[]') as SavedRow[];
-    return Array.isArray(v) ? v : [];
-  } catch {
-    return [];
-  }
-};
 
 /** Copying the reading list is always the reader's explicit choice: a device's list stays private until they press the button. */
 export function SavedSync({ labels }: { labels: Labels }) {
@@ -142,17 +134,19 @@ export function SavedSync({ labels }: { labels: Labels }) {
   const [error, setError] = useState('');
   const backup = async () => {
     setError('');
-    const res = await call('saved', { items: readLocal() });
+    setMessage('');
+    const res = await call('saved', { items: readSaved() });
     if (res.ok) setMessage(labels.savedBackedUp as string);
     else setError(errorText(labels, res.code));
   };
   const restore = async () => {
     setError('');
+    setMessage('');
     try {
       const res = await fetch('/api/hc/member/saved');
       if (!res.ok) throw new Error('failed');
       const { items } = (await res.json()) as { items: SavedRow[] };
-      const local = readLocal();
+      const local = readSaved();
       const known = new Set(local.map((i) => i.id));
       localStorage.setItem(SAVED_KEY, JSON.stringify([...local, ...items.filter((i) => !known.has(i.id))]));
       setMessage(labels.savedRestored as string);

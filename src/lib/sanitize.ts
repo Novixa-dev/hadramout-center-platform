@@ -96,15 +96,27 @@ export function sanitizeBody(input: string): string {
 
 /** Strip every tag: titles, excerpts and other plain fields. */
 export function sanitizeText(input: string): string {
+  return plainText(input).replace(/\s+/g, ' ').trim();
+}
+
+/** Like sanitizeText, but keeps the writer's line breaks (an address, a note): spaces collapse inside a line, at most one blank line in a row. */
+export function sanitizeLines(input: string): string {
+  return plainText(input)
+    .replace(/\r\n?/g, '\n')
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/ ?\n ?/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function plainText(input: string): string {
   return sanitizeHtml(input ?? '', { allowedTags: [], allowedAttributes: {}, textFilter: (t) => t.replaceAll(NBSP, ' ') })
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     // last, or "&amp;lt;" (the literal text "&lt;") would be decoded twice into "<"
-    .replace(/&amp;/g, '&')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/&amp;/g, '&');
 }
 
 /** Plain text of (sanitized) HTML with block boundaries turned into spaces. */
