@@ -951,6 +951,47 @@ html[dir='ltr'] .hc-row__go, html[dir='ltr'] .hc-more .hc-icon { transform: scal
 
 /* The sidebar */
 .nav { background: var(--d-surface-2); }
+
+/* The Center's mark and name at the top of the sidebar, as in the site's header. It takes the band Payload leaves empty above
+   the links (the nav's top padding, the header's height) and stays there while the links scroll under it; the collapse
+   button keeps its place at the other end of the same band. */
+.hc-nav-brand {
+  position: sticky;
+  /* sticky offsets count from inside the scroll box's padding: minus that padding pins it to the sidebar's very top */
+  inset-block-start: calc(-1 * var(--nav-padding-block-start, 56px));
+  z-index: 1;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: var(--app-header-height, 56px);
+  margin-block-start: calc(-1 * var(--nav-padding-block-start, 56px));
+  margin-inline: calc(-1 * var(--nav-padding-inline-start, 20px)) calc(-1 * var(--nav-padding-inline-end, 20px));
+  margin-block-end: 8px;
+  padding-block: 8px;
+  /* Payload's collapse button is pinned at the sidebar's start edge in a strip as wide as the page gutter: the mark starts after it */
+  padding-inline: var(--gutter-h, 60px) var(--nav-padding-inline-end, 20px);
+  border-block-end: 1px solid var(--d-border);
+  background: var(--d-surface-2);
+}
+/* on a phone the gutter is narrow but the drawer's close button (✕) is not */
+@media (max-width: 768px) {
+  .hc-nav-brand { padding-inline-start: 56px; }
+}
+.hc-nav-brand__mark { flex: none; inline-size: auto; block-size: 40px; }
+.hc-nav-brand__text { display: flex; flex-direction: column; min-inline-size: 0; }
+.hc-nav-brand__name {
+  font-family: var(--hc-font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--d-text);
+}
+.hc-nav-brand__sub {
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--d-muted);
+}
 .nav-group {
   inline-size: 100%;
   margin-block-start: 6px;
