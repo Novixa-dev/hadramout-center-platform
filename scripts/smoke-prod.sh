@@ -26,6 +26,7 @@ fail=0
 check() { code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT$1"); [ "$code" = "$2" ] && echo "ok   $1 $code" || { echo "FAIL $1 $code (want $2)"; fail=1; }; }
 check /api/hc/health 200; check /ar 200; check /en 200; check /ar/articles 200; check /ar/articles/909 200; check "/ar/search?q=%D8%AD%D8%B6%D8%B1%D9%85%D9%88%D8%AA" 200
 check /ar/authors 200; check /ar/timeline 200; check /ar/about 200; check /ar/contact 200; check /ar/saved 200; check /sitemap.xml 200; check /robots.txt 200
+check /api/hc/waiting 401   # staff's notification counts: nothing for a visitor
 check /feeds/ar/all.xml 200; check /articles/9597 301; check /admin 200; check /ar/nope 404; check /nope 307; check /de 200
 
 # regression checks for fixed defects (see docs/planning/PROGRESS.md)

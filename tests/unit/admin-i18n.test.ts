@@ -136,3 +136,15 @@ test('the dashboard says how much is waiting with the noun agreeing with the num
   assert.equal(waitingLine('en', 1), 'One item from visitors is waiting for you.');
   assert.equal(waitingLine('en', 12, (n) => n.toLocaleString('en')), '12 items from visitors are waiting for you.');
 });
+
+test('the queues: editors and admins get every visitor queue, translation reviewers only their reports, each with a filtered list', async () => {
+  const { queuesFor, queueHref, QUEUES } = await import('../../src/admin/queues.ts');
+  const { dashboardStrings } = await import('../../src/admin/i18n.ts');
+  assert.deepEqual(queuesFor('editor').map((q) => q.key), ['receipts', 'orders', 'pledges', 'volunteers', 'messages', 'reviews']);
+  assert.deepEqual(queuesFor('admin').map((q) => q.key), queuesFor('editor').map((q) => q.key));
+  assert.deepEqual(queuesFor('reviewer').map((q) => q.key), ['tr']);
+  for (const q of QUEUES) {
+    assert.match(queueHref(q), /^\/admin\/collections\/[a-z-]+\?where\[/, q.key);
+    for (const lang of ['ar', 'en']) for (const k of [q.label, q.quiet, q.hint]) assert.ok(dashboardStrings(lang)[k], `${lang} ${k}`);
+  }
+});

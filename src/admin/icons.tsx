@@ -24,6 +24,8 @@ const PATHS = {
   receipt: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3',
   chevron: 'M15 6l-6 6 6 6',
   home: 'M4 11l8-7 8 7M6 9.5V20h4.5v-5.5h3V20H18V9.5',
+  bell: 'M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0',
+  close: 'M6 6l12 12M18 6L6 18',
 } as const;
 
 export type IconName = keyof typeof PATHS;

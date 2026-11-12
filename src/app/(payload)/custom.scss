@@ -271,7 +271,8 @@ html[data-theme='dark'] {
    (src/styles/tokens.css), light and dark. Sections are open, not boxed, as on the site; only the tool sits on a panel.
    Columns: the sections are in the DOM in phone order; from 880 px of dashboard width (a container query: Payload's side
    nav takes part of the window) the work sits in the wide column and the reference beside it. */
-.hc-dash {
+/* The site's colours (src/styles/tokens.css) for the admin's own parts: the dashboard, the header and the sidebar. */
+.hc-dash, .app-header, .nav {
   --d-surface-2: #faf4ea;
   --d-surface-3: #f3eadb;
   --d-border: #e8dfd0;
@@ -289,7 +290,8 @@ html[data-theme='dark'] {
   --d-accent-text: #7a5a26;
   --d-accent-soft: #fbf6ec;
   --d-pattern: #226a5a;
-
+}
+.hc-dash {
   container-type: inline-size;
   display: flex;
   flex-direction: column;
@@ -297,7 +299,7 @@ html[data-theme='dark'] {
   margin-block-end: 32px;
   color: var(--d-text);
 }
-html[data-theme='dark'] .hc-dash {
+html[data-theme='dark'] :is(.hc-dash, .app-header, .nav) {
   --d-surface-2: #1a2b26;
   --d-surface-3: #223630;
   --d-border: #2a3c36;
@@ -693,6 +695,351 @@ html[dir='ltr'] .hc-row__go, html[dir='ltr'] .hc-more .hc-icon { transform: scal
 
 @media (prefers-reduced-motion: reduce) {
   .hc-dash * { transition: none !important; }
+}
+
+/* ── Header and sidebar, in the site's language (src/admin/HeaderActions.tsx, components/Notifications.tsx, NavHomeLink.tsx) ─
+   Header shortcuts are the site's outlined chips; the bell carries the gold count. The sidebar is a quiet column of links
+   with the site's green for hover and the current page, small group labels, and the inbox of new requests at the top. */
+.app-header__bg { border-block-end: 1px solid var(--d-border); }
+
+.hc-actions { gap: 8px; }
+.hc-actions__site,
+.hc-actions__lang {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border-color: var(--d-border-strong);
+  background: transparent;
+  color: var(--d-text-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  &:hover { border-color: var(--d-brand); background: var(--d-brand-soft); color: var(--d-brand); }
+}
+/* Payload's content-language picker, as the same chip */
+.app-header .localizer-button {
+  min-block-size: 36px;
+  padding-inline: 14px;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 999px;
+  color: var(--d-text-2);
+  font-size: 0.875rem;
+}
+/* The breadcrumb's dashboard picker was sized before the Arabic font loaded and clipped «لوحة التحكّم» to «حكّم». */
+.step-nav .dashboard-breadcrumb-select .rs__value-container {
+  overflow: visible;
+  padding: 0;
+}
+.step-nav .dashboard-breadcrumb-select .rs__single-value {
+  position: static;
+  max-width: none;
+  overflow: visible;
+  transform: none;
+  font-weight: 600;
+  color: var(--d-text);
+}
+
+/* On a phone the header has room for its controls only: on the dashboard the breadcrumb repeats the page's own title, so it
+   gives way to them (the Center's mark still leads home). Other pages keep their trail, clipped at its end. */
+@media (max-width: 560px) {
+  .step-nav:has(.dashboard-breadcrumb-select) > span:not(.step-nav__last),
+  .step-nav__last:has(.dashboard-breadcrumb-select) { display: none; }
+}
+
+/* The bell */
+.hc-bell { position: relative; }
+.hc-bell__btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 40px;
+  block-size: 40px;
+  padding: 0;
+  border: 1px solid var(--d-border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--d-text-2);
+  cursor: pointer;
+
+  .hc-icon { inline-size: 20px; block-size: 20px; }
+  &:hover, &[aria-expanded='true'] { border-color: var(--d-brand); background: var(--d-brand-soft); color: var(--d-brand); }
+}
+.hc-bell__n {
+  position: absolute;
+  inset-block-start: -5px;
+  inset-inline-end: -5px;
+  min-inline-size: 20px;
+  block-size: 20px;
+  padding-inline: 5px;
+  border-radius: 999px;
+  background: var(--d-accent);
+  color: var(--d-on-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 2px var(--theme-bg);
+}
+.hc-bell__panel {
+  position: absolute;
+  inset-block-start: calc(100% + 10px);
+  inset-inline-end: 0;
+  z-index: 100;
+  inline-size: min(23rem, calc(100vw - 32px));
+  padding: 16px;
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: var(--theme-bg);
+  color: var(--d-text);
+  box-shadow: 0 16px 40px rgb(20 14 4 / 0.18);
+  white-space: normal;
+  text-align: start;
+
+  &:focus { outline: none; }
+  &:focus-visible { outline: 2px solid var(--hc-focus); outline-offset: 2px; }
+}
+.hc-bell__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block-end: 4px;
+
+  h2 {
+    position: relative;
+    margin: 0;
+    padding-block-end: 8px;
+    font-family: var(--hc-font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.5;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-end: 0;
+      inline-size: 2.5rem;
+      block-size: 3px;
+      border-radius: 2px;
+      background: var(--d-accent);
+    }
+  }
+}
+.hc-bell__close {
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--d-muted);
+  cursor: pointer;
+  &:hover { background: var(--d-surface-3); color: var(--d-text); }
+}
+.hc-bell__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  li + li { border-block-start: 1px solid var(--d-border); }
+}
+.hc-bell__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 10px;
+  color: inherit;
+  text-decoration: none;
+  &:hover strong { color: var(--d-brand); }
+}
+.hc-bell__tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: 10px;
+  background: var(--d-brand-fill);
+  color: var(--d-on-brand);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.hc-bell__text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  strong { font-size: 0.9375rem; line-height: 1.6; }
+  span { font-size: 0.8125rem; line-height: 1.6; color: var(--d-muted); }
+}
+.hc-bell__empty { margin: 8px 0; color: var(--d-muted); }
+.hc-bell__alerts {
+  margin-block-start: 8px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--d-border);
+}
+.hc-bell__note { margin: 4px 0 0; font-size: 0.8125rem; line-height: 1.7; color: var(--d-muted); }
+.hc-bell__all {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  margin-block-start: 4px;
+  color: var(--d-brand);
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { text-decoration: underline; text-underline-offset: 3px; }
+}
+
+/* An on/off switch (role="switch"): the track turns the site's green when on. */
+.hc-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--d-text);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+.hc-switch__track {
+  position: relative;
+  flex: none;
+  inline-size: 40px;
+  block-size: 24px;
+  border-radius: 999px;
+  background: var(--d-border-strong);
+  transition: background 160ms ease;
+}
+.hc-switch__thumb {
+  position: absolute;
+  inset-block-start: 3px;
+  inset-inline-start: 3px;
+  inline-size: 18px;
+  block-size: 18px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  transition: inset-inline-start 160ms ease;
+}
+.hc-switch[aria-checked='true'] {
+  .hc-switch__track { background: var(--d-brand-fill); }
+  .hc-switch__thumb { inset-inline-start: 19px; }
+}
+.hc-switch:focus-visible { outline: 2px solid var(--hc-focus); outline-offset: 2px; border-radius: 8px; }
+
+/* Phones: the panel spans the screen under the header instead of hanging off the bell. */
+@media (max-width: 768px) {
+  .hc-bell__panel {
+    position: fixed;
+    inset-inline: 16px;
+    inset-block-start: calc(var(--app-header-height, 56px) + 8px);
+    inline-size: auto;
+  }
+}
+@media (pointer: coarse) {
+  .hc-actions__site, .hc-actions__lang, .app-header .localizer-button { min-block-size: 44px; }
+  .hc-bell__btn { inline-size: 44px; block-size: 44px; }
+}
+
+/* The sidebar */
+.nav { background: var(--d-surface-2); }
+.nav-group {
+  inline-size: 100%;
+  margin-block-start: 6px;
+  padding-block-start: 6px;
+  border-block-start: 1px solid var(--d-border);
+}
+.nav-group__toggle {
+  min-block-size: 40px;
+  margin: 0;
+  padding-inline: 12px 6px;
+  align-items: center;
+  color: var(--d-muted);
+
+  &:hover, &:focus-visible { color: var(--d-text); }
+}
+.nav-group__label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: inherit;
+}
+.nav-group__indicator svg .stroke { stroke: currentColor; }
+.nav__link {
+  inline-size: 100%;
+  min-block-size: 40px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: var(--d-text-2);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.nav a.nav__link:hover,
+.nav a.nav__link:focus-visible {
+  background: var(--d-brand-soft);
+  color: var(--d-brand);
+  text-decoration: none;
+}
+/* the current page: the site's green, with a bar at the start edge (Payload's thin indicator sat outside the column) */
+.nav__link.active,
+.nav__link:has(.nav__link-indicator) {
+  padding-inline-start: 12px;
+  background: var(--d-brand-soft);
+  color: var(--d-brand);
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 var(--d-brand);
+}
+html[dir='rtl'] :is(.nav__link.active, .nav__link:has(.nav__link-indicator)) { box-shadow: inset -3px 0 0 var(--d-brand); }
+.nav__link-indicator { display: none; }
+
+.hc-nav-inbox { margin-block-start: 12px; }
+.hc-nav-inbox__title {
+  margin: 0 0 2px;
+  padding-inline: 12px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 2;
+  color: var(--d-muted);
+}
+.hc-nav-inbox__list { list-style: none; margin: 0; padding: 0; }
+.hc-nav-inbox__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 40px;
+  padding-inline: 12px;
+  border-radius: 8px;
+  color: var(--d-text-2);
+  font-size: 0.9375rem;
+  text-decoration: none;
+
+  .hc-icon { flex: none; inline-size: 18px; block-size: 18px; color: var(--d-brand); }
+  &:hover { background: var(--d-brand-soft); color: var(--d-brand); }
+}
+.hc-nav-inbox__label { flex: 1; min-inline-size: 0; }
+.hc-nav-inbox__n {
+  min-inline-size: 1.75rem;
+  padding-inline: 7px;
+  border-radius: 999px;
+  background: var(--d-accent);
+  color: var(--d-on-accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.hc-nav-inbox__none { margin: 0; padding-inline: 12px; font-size: 0.875rem; line-height: 2; color: var(--d-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-switch__track, .hc-switch__thumb { transition: none; }
 }
 
 .hc-sr {

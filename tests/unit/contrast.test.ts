@@ -118,8 +118,8 @@ describe('admin dashboard colours (src/app/(payload)/custom.scss)', () => {
     return m[1] as string;
   };
   const base = (n: number) => pick(scss, `color-base-${n}`);
-  const light = block('.hc-dash');
-  const dark = block("html[data-theme='dark'] .hc-dash");
+  const light = block('.hc-dash, .app-header, .nav');
+  const dark = block("html[data-theme='dark'] :is(.hc-dash, .app-header, .nav)");
   // a token the dark block does not redefine keeps its light value, as in CSS
   const token = (mode: 'light' | 'dark', name: string) => (mode === 'dark' && new RegExp(`--${name}:`).test(dark) ? pick(dark, name) : pick(light, name));
   // Payload's page background: elevation-0 is base-0 in light and base-900 in dark

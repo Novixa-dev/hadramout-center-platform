@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useTranslation } from '@payloadcms/ui';
 import { headerStrings } from './i18n.ts';
+import { NotificationBell } from './components/Notifications.tsx';
 
 /**
  * One-click switch of the admin's *interface* language (Arabic ⇄ English). It calls Payload's own server action (the one
@@ -37,7 +38,7 @@ export function LanguageSwitch() {
   );
 }
 
-/** Header shortcuts: the language switch and a link to the public site in the same language. */
+/** Header shortcuts: a link to the public site in the same language, the language switch, and the notification bell. */
 export function HeaderActions() {
   const { i18n } = useTranslation();
   const lang = i18n.language === 'en' ? 'en' : 'ar';
@@ -49,6 +50,7 @@ export function HeaderActions() {
         <span aria-hidden="true"> ↗</span>
       </a>
       <LanguageSwitch />
+      <NotificationBell />
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { dashboardStrings, fill, waitingLine } from './i18n.ts';
 import { listUrl } from './links.ts';
 import { ScholarlyNormalizerWidget } from './components/ScholarlyNormalizerWidget.tsx';
 import { Icon, type IconName } from './icons.tsx';
+import { queueByKey, queueHref } from './queues.ts';
+import { waitingCounts } from '../lib/waiting.ts';
 
 /**
  * The admin home, above Payload's own collection list. Mobile first, in order of urgency:
@@ -69,12 +71,9 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
     }
   };
 
-  // started, not awaited, so these counts run alongside the ones below
-  const requestCounts = Promise.all((['orders', 'pledges', 'volunteers', 'receipts'] as const).map((c) => (staff ? count(c, { status: { equals: 'new' } }) : null)));
-  const [pendingReviews, newMessages, translationIssues, uncategorised, overview, latestEvent, recentLists, usage] = await Promise.all([
-    staff ? count('reviews', { status: { equals: 'pending' } }) : null,
-    staff ? count('messages', { status: { equals: 'new' } }) : null,
-    count('messages', { and: [{ status: { equals: 'new' } }, { kind: { equals: 'translation_issue' } }] }),
+  // the queues visitors wait on: the same counts as the header's bell and the sidebar's inbox (src/admin/queues.ts)
+  const [queues, uncategorised, overview, latestEvent, recentLists, usage] = await Promise.all([
+    waitingCounts(payload, user as never),
     staff ? count('articles', { and: [{ status: { equals: 'published' } }, { category: { exists: false } }] }) : null,
     Promise.all(
       CONTENT.map(async (c) => {
@@ -101,7 +100,6 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
       .then((r) => (r.docs as unknown as { charsIn?: number }[]).reduce((n, d) => n + (d.charsIn ?? 0), 0))
       .catch(() => null),
   ]);
-  const [newOrders, newPledges, newVolunteers, newReceipts] = await requestCounts;
 
   const recent = recentLists.flat().sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 8);
   const statusLabel = (s?: string) => (s === 'published' ? t.published : s === 'archived' ? t.archived : t.draft);
@@ -113,13 +111,10 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
   // `upkeep` is the editors' own backlog (articles without a topic): listed, but not counted as people waiting for an answer.
   type Task = { key: string; icon: IconName; label: string; quiet: string; n: number | null; href: string; hint: string; upkeep?: boolean };
   const all: Task[] = [
-    { key: 'receipts', icon: 'receipt', label: t.newReceipts, quiet: t.qReceipts, n: newReceipts, href: listUrl('receipts', { status: { equals: 'new' } }), hint: t.newReceiptsHint },
-    { key: 'orders', icon: 'cart', label: t.newOrders, quiet: t.qOrders, n: newOrders, href: listUrl('orders', { status: { equals: 'new' } }), hint: t.newRequestsHint },
-    { key: 'pledges', icon: 'heart', label: t.newPledges, quiet: t.qPledges, n: newPledges, href: listUrl('pledges', { status: { equals: 'new' } }), hint: t.newRequestsHint },
-    { key: 'volunteers', icon: 'hand', label: t.newVolunteers, quiet: t.qVolunteers, n: newVolunteers, href: listUrl('volunteers', { status: { equals: 'new' } }), hint: t.newRequestsHint },
-    { key: 'messages', icon: 'message', label: t.newMessages, quiet: t.qMessages, n: newMessages, href: listUrl('messages', { status: { equals: 'new' } }), hint: t.newMessagesHint },
-    { key: 'reviews', icon: 'review', label: t.pendingReviews, quiet: t.qReviews, n: pendingReviews, href: listUrl('reviews', { status: { equals: 'pending' } }), hint: t.pendingReviewsHint },
-    { key: 'tr', icon: 'language', label: t.translationIssues, quiet: t.qTranslation, n: staff ? null : translationIssues, href: listUrl('messages', { kind: { equals: 'translation_issue' }, status: { equals: 'new' } }), hint: t.translationIssuesHint },
+    ...queues.flatMap(({ key, n }): Task[] => {
+      const q = queueByKey(key);
+      return q ? [{ key, icon: q.icon, label: t[q.label], quiet: t[q.quiet], n, href: queueHref(q), hint: t[q.hint] }] : [];
+    }),
     { key: 'uncat', icon: 'tag', label: t.uncategorised, quiet: t.qUncategorised, n: uncategorised, href: listUrl('articles', { category: { exists: 'false' }, status: { equals: 'published' } }), hint: t.uncategorisedHint, upkeep: true },
   ];
   const tasks = all.filter((task) => task.n !== null);

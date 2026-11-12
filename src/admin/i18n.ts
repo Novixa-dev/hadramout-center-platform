@@ -189,7 +189,45 @@ const HEADER = {
   en: { switchTo: 'العربية', switchLabel: 'Switch the interface to Arabic', viewSite: 'View site', brand: 'Hadhramout Center', brandSub: 'Admin' },
 } as const;
 
+const NOTIFY = {
+  ar: {
+    title: 'الإشعارات',
+    bellNone: 'الإشعارات: لا جديد',
+    bellSome: 'الإشعارات: {n} بانتظارك',
+    inbox: 'الوارد',
+    nothingNew: 'لا جديد الآن.',
+    openAll: 'لوحة التحكم',
+    browserOff: 'تنبيه المتصفح عند وصول جديد',
+    browserOn: 'تنبيهات المتصفح مفعّلة',
+    browserBlocked: 'المتصفح يمنع التنبيهات لهذا الموقع. اسمح بها من إعدادات الموقع في المتصفح (رمز القفل بجانب العنوان).',
+    browserUnsupported: 'هذا المتصفح لا يدعم التنبيهات.',
+    browserNote: 'تصل التنبيهات ما دامت لوحة التحكم مفتوحة في نافذة أو تبويب.',
+    arrived: 'وصل جديد: {label}',
+    arrivedBody: 'بانتظارك الآن: {n}',
+    updated: 'آخر تحديث {time}',
+    close: 'إغلاق',
+  },
+  en: {
+    title: 'Notifications',
+    bellNone: 'Notifications: nothing new',
+    bellSome: 'Notifications: {n} waiting',
+    inbox: 'Inbox',
+    nothingNew: 'Nothing new right now.',
+    openAll: 'Dashboard',
+    browserOff: 'Alert me in the browser when something arrives',
+    browserOn: 'Browser alerts are on',
+    browserBlocked: 'The browser blocks alerts for this site. Allow them in the site settings (the lock icon beside the address).',
+    browserUnsupported: 'This browser does not support alerts.',
+    browserNote: 'Alerts arrive while the admin is open in a window or tab.',
+    arrived: 'New: {label}',
+    arrivedBody: 'Waiting now: {n}',
+    updated: 'Updated {time}',
+    close: 'Close',
+  },
+} as const;
+
 export const editorStrings = (language?: string) => EDITOR[adminLang(language)];
+export const notifyStrings = (language?: string) => NOTIFY[adminLang(language)];
 export const dashboardStrings = (language?: string) => DASHBOARD[adminLang(language)];
 export const headerStrings = (language?: string) => HEADER[adminLang(language)];
 
@@ -205,7 +243,7 @@ export function waitingLine(language: string | undefined, n: number, format: (n:
 export const fill = (s: string, vars: Record<string, string | number>): string => s.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
 
 /** Exposed for the parity test. */
-export const ADMIN_STRING_TABLES = { EDITOR, DASHBOARD, HEADER } as const;
+export const ADMIN_STRING_TABLES = { EDITOR, DASHBOARD, HEADER, NOTIFY } as const;
 
 /**
  * Overrides of Payload's own interface strings (merged over @payloadcms/translations).

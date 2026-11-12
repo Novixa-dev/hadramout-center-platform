@@ -166,6 +166,13 @@ await journey('admin dashboard numbers and language switch', async (page) => {
   check(shown === uncategorised, 'uncategorised-articles count equals the database', `${shown} vs ${uncategorised}`);
   const line = await page.$eval('.hc-mast__line', (p) => p.textContent).catch(() => '');
   check(/ينتظرك|لا شيء ينتظرك/.test(line), 'the masthead says how much is waiting', line);
+  // the header bell and the dashboard read the same queues (src/admin/queues.ts): their totals must agree
+  await page.waitForSelector('.hc-bell__btn[data-total]', { timeout: 15000 }).catch(() => undefined);
+  const bell = await page.$eval('.hc-bell__btn', (b) => Number(b.dataset.total)).catch(() => null);
+  const listed = await page.$$eval('.hc-dash .hc-row[data-key]:not([data-key="uncat"])', (as) => as.reduce((sum, a) => sum + Number(a.dataset.count), 0));
+  check(bell === listed, 'the header bell counts what the dashboard lists as waiting', `${bell} vs ${listed}`);
+  const inbox = await page.$$eval('.hc-nav-inbox__n', (ns) => ns.reduce((sum, n) => sum + Number(n.textContent.replace(/\D/g, '')), 0)).catch(() => null);
+  check(inbox === listed, 'the sidebar inbox counts the same', `${inbox} vs ${listed}`);
   // every link on the dashboard opens a page that exists
   const hrefs = [...new Set(await page.$$eval('.hc-dash a[href^="/admin"]', (as) => as.map((a) => a.getAttribute('href'))))];
   const bad = [];
