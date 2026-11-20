@@ -60,3 +60,4 @@ export async function ensureStaff(payload: Payload, specs: StaffSpec[], password
   }
   return result;
 }
+

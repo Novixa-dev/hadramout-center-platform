@@ -12,6 +12,10 @@ on:
         description: "Force shipping the tools image (otherwise only shipped when the server does not have it yet)"
         type: boolean
         default: false
+      create_staff:
+        description: "Create the staff accounts in the STAFF_ACCOUNTS secret that do not exist (password: STAFF_PASSWORD). Needs with_tools"
+        type: boolean
+        default: false
       tag:
         description: "Roll back to this already-loaded image tag (e.g. sha-1a2b3c4); skips the build"
         required: false
@@ -167,6 +171,20 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "${DEPLOY_USER}@${DEPLOY_HOST}" \
             "cd '${APP_DIR}' && chmod +x scripts/*.sh && ./scripts/deploy.sh '${IMAGE}:${TAG}'"
+
+      # Manual runs only (create_staff, with with_tools so the tools image has the script): creates the accounts in the
+      # STAFF_ACCOUNTS secret that do not exist yet, with STAFF_PASSWORD. Values go over stdin and into the one-off tools
+      # container's environment only: never into .env, a command line or the log (the script prints counts).
+      - name: Staff accounts
+        if: ${{ github.event.inputs.create_staff == 'true' && github.event.inputs.tag == '' }}
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          STAFF_ACCOUNTS: ${{ secrets.STAFF_ACCOUNTS }}
+          STAFF_PASSWORD: ${{ secrets.STAFF_PASSWORD }}
+        run: |
+          printf '%s\n%s\n' "${STAFF_ACCOUNTS}" "${STAFF_PASSWORD}" | ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "${DEPLOY_USER}@${DEPLOY_HOST}" \
+            "cd '${APP_DIR}' && chmod +x scripts/*.sh && ./scripts/staff-ensure.sh"
 
       - name: Public health check
         run: |
