@@ -227,7 +227,7 @@ The earlier traceability matrix called several book items "partial, editorial". 
 | Verification | check 253/253; knip clean; build; smoke 0 failures; SEO 0/0; redirect matrix 1,603/0; e2e 55/55; site sweep 87 pages 0/0; admin e2e 65/65; live migration order rehearsed from `origin/master` with a seeded database |
 
 **Open owner decision:** commit `2f335bb` put the Center's two internal PDFs in the public repository, against the rule in `docs/client/README.md`.
-**Deploying this:** the migration rebuilds the search index itself; if its log warns otherwise, run `npm run db:seed -- --defaults-only`.
+**Deploying this:** the migration rebuilds the search index itself; if its log warns otherwise, run `SEED_DEFAULTS_ONLY=1 npm run db:seed` (`payload run` drops `--` arguments, so the old `-- --defaults-only` never took effect).
 
 ## Next actionable tasks (in order)
 
