@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Fast-forward every claude/* branch (remote and local) to origin/master.
+ * Fast-forward every claude/* branch and the `main` mirror (remote and local) to origin/master.
  * Refuses to touch a branch that is not already contained in master.
  * Batches remote branch updates into a single atomic push.
  */
@@ -20,6 +20,17 @@ try {
 
   const pushSpecs = [];
   let skipped = 0;
+
+  // `main` mirrors `master` for people and tools that expect that name (deploys still run from master only);
+  // it is created when missing and, like claude/*, only ever fast-forwarded
+  let hasMain = true;
+  try {
+    run('git rev-parse -q --verify refs/remotes/origin/main');
+  } catch {
+    hasMain = false;
+  }
+  if (hasMain) remoteClaudeRefs.push('origin/main');
+  else pushSpecs.push('master:refs/heads/main');
 
   for (const ref of remoteClaudeRefs) {
     const branchName = ref.replace(/^origin\//, '');
@@ -51,7 +62,7 @@ try {
     }
     console.log('Remote branches updated successfully.');
   } else {
-    console.log('All remote claude/* branches are already up to date with origin/master.');
+    console.log('All remote claude/* branches and main are already up to date with origin/master.');
   }
 
   // Local branches
