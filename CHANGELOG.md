@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.18.0] - 2026-11-20
+### Promotions ("ads"), the meeting minutes checked, SEO pass, Next.js 16.4.5
+- **Promotions** (new `promotions` collection, «الإعلانات الترويجية»): the Center's own campaigns in four formats (top bar, in-page card on the home page and at the end of reading pages, popup that is a bottom sheet on phones, corner notice), each with a start and end **date and time**, target pages and devices, priority, close and frequency rules, and a purpose label (event, new release, call for papers, donation, project, store, volunteering, partner, notice). A pre-paint script built from the same rule function keeps start/end exact to the minute on cached pages with no layout shift; overlays never appear on arrival. Anonymous daily view/click/close counts (`POST /api/hc/promo`, no cookie or IP, Do-Not-Track respected) and a statistics panel in the edit view; schedule chips in the list; a quick-create chip and a row on the dashboard. Public REST shows only started promotions. Design: `docs/planning/PROMOTIONS_DESIGN.md`. Migration `20261119_235429_promotions` (also drops two unused receipt columns left by a schema drift; down restores them).
+- **Meeting of 2026-11-06:** every point and recommendation compared with the code and the live site: `docs/client/07-meeting-2026-11-06-traceability-ar.md`. The «دعم أنشطة المركز» page no longer says donations are "under construction" (migration `20261120_010000_support_page_links`, only where the seeded text is untouched).
+- **SEO:** live audit of 26 routes and `docs/planning/SEO_PLAN.md`; breadcrumb JSON-LD on announcements, partners, testimonials and audio; the home page's image alt text no longer repeats the site name.
+- **Accessibility:** the floating corner notice keeps keyboard focus clear of itself (WCAG 2.4.11); popup is a native modal dialog (focus in, Escape, focus back); contrast tests cover the new colour pairs.
+- **Dependencies:** Next.js 16.4.1 → 16.4.5 (three medium advisories in Cache Components / `use cache`, unused here; `next build` had started refusing to run).
+- **Tests:** 15 unit tests (rules, pre-paint script parity, links, counts), `scripts/promo-check.mjs` in `npm run smoke` (19 checks), real-Chrome checks of every format at 390/1440 px in light and dark with axe.
+
 ## [5.17.0] - 2026-11-08
 ### Admin dashboard redesign, mobile first
 - **Icons:** the dashboard used emoji as icons; replaced by one inline SVG set (`src/admin/icons.tsx`, stroke icons in `currentColor`, theme-aware, `aria-hidden`).

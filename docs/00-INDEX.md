@@ -4,6 +4,7 @@
 
 | المجلد | المحتوى |
 |---|---|
+| **الجديد (2026-11-20)** | [`planning/PLAN_2026-11-20.md`](planning/PLAN_2026-11-20.md) خطة العمل ومتتبّعها · [`client/07-meeting-2026-11-06-traceability-ar.md`](client/07-meeting-2026-11-06-traceability-ar.md) مطابقة محضر الاجتماع الثاني مع الموقع · [`planning/PROMOTIONS_DESIGN.md`](planning/PROMOTIONS_DESIGN.md) تصميم الإعلانات الترويجية · [`planning/SEO_PLAN.md`](planning/SEO_PLAN.md) تدقيق وخطة SEO والمشاركة الاجتماعية |
 | **ابدأ هنا (2026-11-06)** | [`manual/index.html`](manual/index.html) الدليل الشامل المصمَّم (+ `manual-ar.pdf`) · [`06-handover/HANDOVER.md`](06-handover/HANDOVER.md) وثيقة التسليم · [`client/`](client/README.md) تحليل ملفات العميل وخطة العمل (CF-01…CF-24) ومصفوفة تتبع المتطلبات · `06-handover/taxonomy-policy-proposal-ar.md` مقترح سياسة التصنيف لاجتماع المركز · [`planning/IDEAS_AND_ROADMAP.md`](planning/IDEAS_AND_ROADMAP.md) الأفكار مرتبة بالأولوية |
 | `01-audit` | تدقيق المستودع القديم والموقع القديم وأفضل الممارسات |
 | `02-plan` | قرار الإطار، الخطة الرئيسية، المعمارية، نظام التصميم، **الترجمة**، كتالوج الميزات، نموذج المحتوى، القرارات |
