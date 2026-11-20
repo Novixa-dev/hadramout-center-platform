@@ -270,4 +270,27 @@
   .review { padding-block: 1rem; border-block-end: 1px solid var(--border); display: grid; gap: 0.35rem; }
   .review__head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; font-size: var(--step--1); color: var(--muted); }
   .review__head strong { color: var(--text); }
+
+  /* ── forms: password reveal, directions, validation after interaction ───────────────────────── */
+  .pw-field { position: relative; display: block; direction: ltr; }
+  .pw-field .input { padding-inline-end: 3rem; }
+  .pw-field__toggle { position: absolute; inset-block: 0; inset-inline-end: 0; display: grid; place-items: center; inline-size: 2.75rem; border-radius: var(--r-md); background: transparent; color: var(--muted); -webkit-tap-highlight-color: transparent; }
+  .pw-field__toggle:hover, .pw-field__toggle[aria-pressed='true'] { color: var(--brand); }
+  .pw-field__toggle .icon { inline-size: 1.25rem; block-size: 1.25rem; }
+  /* addresses, phones and links read left to right; an empty field keeps the page's direction for its Arabic hint */
+  :is(input[type='email'], input[type='tel'], input[type='url']) { direction: ltr; }
+  :is(input[type='email'], input[type='tel'], input[type='url']):placeholder-shown { direction: inherit; }
+  /* red only once the visitor has touched the field or tried to send, never on arrival */
+  :is(.input, .select, .textarea):user-invalid { border-color: var(--danger); }
+  :is(.input, .select, .textarea):user-invalid:focus-visible { outline-color: var(--danger); }
+
+  /* ── restrained motion (all of it off under prefers-reduced-motion, see base.css) ───────────── */
+  .btn:active:not(:disabled) { transform: translateY(1px) scale(0.985); }
+  .btn[aria-busy='true'] { cursor: progress; opacity: 0.85; }
+  /* disclosures (filters, FAQ, menu groups) open smoothly where the browser can animate to auto height */
+  @supports (interpolate-size: allow-keywords) {
+    :root { interpolate-size: allow-keywords; }
+    details::details-content { block-size: 0; overflow: clip; transition: block-size var(--t-med) var(--ease), content-visibility var(--t-med) allow-discrete; }
+    details[open]::details-content { block-size: auto; }
+  }
 }

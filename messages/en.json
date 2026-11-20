@@ -781,5 +781,7 @@
   "promo.kind.notice": "Notice",
   "promo.close": "Close this promotion",
   "promo.details": "Details",
-  "promo.region": "From the Center"
+  "promo.region": "From the Center",
+  "form.showPassword": "Show password",
+  "form.hidePassword": "Hide password"
 }

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { PASSWORD_MIN } from '../../lib/platform-values.ts';
 import { errorText, flagField, useFocusOnShow, type Labels } from './PlatformForms.tsx';
+import { PasswordInput } from './PasswordInput.tsx';
 import { readSaved, SAVED_KEY } from './Tools.tsx';
 
 /** Sign-in, sign-up and account actions. The session lives in an http-only cookie that this code never sees. */
@@ -70,7 +71,7 @@ export function SignIn({ labels, privacyHref }: { labels: Labels; privacyHref: s
         <div className="field"><label htmlFor="a-email">{labels.email}</label><input id="a-email" className="input" type="email" name="email" required maxLength={200} autoComplete={isLogin ? 'username' : 'email'} dir="ltr" /></div>
         <div className="field">
           <label htmlFor="a-password">{labels.password}</label>
-          <input id="a-password" className="input" type="password" name="password" required minLength={isLogin ? 1 : PASSWORD_MIN} maxLength={200} autoComplete={isLogin ? 'current-password' : 'new-password'} dir="ltr" aria-describedby={isLogin ? undefined : 'a-password-hint'} />
+          <PasswordInput show={labels.showPassword ?? ''} hide={labels.hidePassword ?? ''} id="a-password" name="password" required minLength={isLogin ? 1 : PASSWORD_MIN} maxLength={200} autoComplete={isLogin ? 'current-password' : 'new-password'} aria-describedby={isLogin ? undefined : 'a-password-hint'} />
           {isLogin ? null : <span className="field__hint" id="a-password-hint">{labels.passwordHint}</span>}
         </div>
         {isLogin ? null : (
@@ -132,8 +133,8 @@ export function PasswordForm({ labels }: { labels: Labels }) {
         if (await run('password', Object.fromEntries(new FormData(f)), f)) f.reset();
       }}
     >
-      <div className="field"><label htmlFor="pw-current">{labels.currentPassword}</label><input id="pw-current" className="input" type="password" name="current" required autoComplete="current-password" dir="ltr" /></div>
-      <div className="field"><label htmlFor="pw-next">{labels.newPassword}</label><input id="pw-next" className="input" type="password" name="next" required minLength={PASSWORD_MIN} maxLength={200} autoComplete="new-password" dir="ltr" aria-describedby="pw-next-hint" /><span className="field__hint" id="pw-next-hint">{labels.passwordHint}</span></div>
+      <div className="field"><label htmlFor="pw-current">{labels.currentPassword}</label><PasswordInput show={labels.showPassword ?? ''} hide={labels.hidePassword ?? ''} id="pw-current" name="current" required autoComplete="current-password" /></div>
+      <div className="field"><label htmlFor="pw-next">{labels.newPassword}</label><PasswordInput show={labels.showPassword ?? ''} hide={labels.hidePassword ?? ''} id="pw-next" name="next" required minLength={PASSWORD_MIN} maxLength={200} autoComplete="new-password" aria-describedby="pw-next-hint" /><span className="field__hint" id="pw-next-hint">{labels.passwordHint}</span></div>
       <div className="field--full">
         <Button busy={busy} kind="secondary">{labels.changePassword}</Button>
         {ok ? <p className="notice notice--ok platform-error" role="status">{labels.passwordChanged}</p> : null}
@@ -255,7 +256,7 @@ export function DeleteAccount({ labels }: { labels: Labels }) {
           if (await run('delete', Object.fromEntries(new FormData(f)), f)) reload();
         }}
       >
-        <div className="field"><label htmlFor="d-current">{labels.currentPassword}</label><input id="d-current" className="input" type="password" name="current" required autoComplete="current-password" dir="ltr" /></div>
+        <div className="field"><label htmlFor="d-current">{labels.currentPassword}</label><PasswordInput show={labels.showPassword ?? ''} hide={labels.hidePassword ?? ''} id="d-current" name="current" required autoComplete="current-password" /></div>
         <div className="field--full">
           <Button busy={busy} kind="secondary">{labels.deleteConfirm}</Button>
           <Err text={error} />

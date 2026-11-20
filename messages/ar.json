@@ -781,5 +781,7 @@
   "promo.kind.notice": "تنبيه",
   "promo.close": "إغلاق الإعلان",
   "promo.details": "التفاصيل",
-  "promo.region": "إعلان من المركز"
+  "promo.region": "إعلان من المركز",
+  "form.showPassword": "إظهار كلمة المرور",
+  "form.hidePassword": "إخفاء كلمة المرور"
 }

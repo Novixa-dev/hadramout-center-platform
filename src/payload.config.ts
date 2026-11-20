@@ -53,6 +53,7 @@ export default buildConfig({
       beforeDashboard: ['/admin/EditorialDashboard#EditorialDashboard'],
       beforeNavLinks: ['/admin/components/NavHomeLink#NavHomeLink'],
       logout: { Button: '/admin/components/LogoutButton#LogoutButton' },
+      providers: ['/admin/components/PasswordReveal#PasswordReveal'],
       // No email adapter is configured: Payload's own screen would promise a reset email that never leaves the server.
       views: { forgot: { Component: '/admin/ForgotPassword#ForgotPassword', path: '/forgot' } },
     },

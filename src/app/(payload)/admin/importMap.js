@@ -14,6 +14,7 @@ import { HeaderActions as HeaderActions_ff71ff1ea2dd40c5fc32284ea0e10ec4 } from 
 import { EditorialDashboard as EditorialDashboard_15751f34f7a88e71e022021a5881c9e4 } from '../../../admin/EditorialDashboard'
 import { LoginLanguage as LoginLanguage_ff71ff1ea2dd40c5fc32284ea0e10ec4 } from '../../../admin/HeaderActions'
 import { NavHomeLink as NavHomeLink_eba37e4e0bd74a9c5501b29dc90ccb67 } from '../../../admin/components/NavHomeLink'
+import { PasswordReveal as PasswordReveal_6b514c4e29640c9c08ef3987e168800b } from '../../../admin/components/PasswordReveal'
 import { ForgotPassword as ForgotPassword_dce4cd58119646aa41678ee28b27d116 } from '../../../admin/ForgotPassword'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -35,6 +36,7 @@ export const importMap = {
   "/admin/EditorialDashboard#EditorialDashboard": EditorialDashboard_15751f34f7a88e71e022021a5881c9e4,
   "/admin/HeaderActions#LoginLanguage": LoginLanguage_ff71ff1ea2dd40c5fc32284ea0e10ec4,
   "/admin/components/NavHomeLink#NavHomeLink": NavHomeLink_eba37e4e0bd74a9c5501b29dc90ccb67,
+  "/admin/components/PasswordReveal#PasswordReveal": PasswordReveal_6b514c4e29640c9c08ef3987e168800b,
   "/admin/ForgotPassword#ForgotPassword": ForgotPassword_dce4cd58119646aa41678ee28b27d116,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

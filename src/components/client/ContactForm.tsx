@@ -27,11 +27,11 @@ export function ContactForm({ lang, kind, subject, pageUrl, bookId, labels }: Pr
   return (
     <form onSubmit={onSubmit} className="form-grid" noValidate={false}>
       <div className="field"><label htmlFor="c-name">{labels.name}</label><input id="c-name" className="input" name="name" required maxLength={120} autoComplete="name" /></div>
-      <div className="field"><label htmlFor="c-email">{labels.email}</label><input id="c-email" className="input" type="email" name="email" required maxLength={200} autoComplete="email" /></div>
-      <div className="field"><label htmlFor="c-phone">{labels.phone}</label><input id="c-phone" className="input" type="tel" name="phone" maxLength={40} autoComplete="tel" /></div>
+      <div className="field"><label htmlFor="c-email">{labels.email}</label><input id="c-email" className="input" type="email" name="email" required maxLength={200} autoComplete="email" inputMode="email" spellCheck={false} /></div>
+      <div className="field"><label htmlFor="c-phone">{labels.phone}</label><input id="c-phone" className="input" type="tel" name="phone" maxLength={40} autoComplete="tel" inputMode="tel" /></div>
       <div className="field"><label htmlFor="c-subject">{labels.subject}</label><input id="c-subject" className="input" name="subject" required maxLength={200} defaultValue={subject} /></div>
       <div className="field field--full"><label htmlFor="c-msg">{labels.message}</label><textarea id="c-msg" className="textarea" name="body" required minLength={5} maxLength={5000} /></div>
-      <input className="hp" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+      <input className="hp" type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" aria-label="website" />
       <div className="field--full">
         <button className="btn btn--primary" type="submit" disabled={state === 'busy'} aria-busy={state === 'busy'}>{labels.send}</button>
         {state === 'error' ? <p className="notice notice--err" role="alert" style={{ marginBlockStart: '0.75rem' }}>{labels.error}</p> : null}

@@ -95,6 +95,8 @@ export function accountLabels(ctx: Ctx): Record<string, string> {
   const { t } = ctx;
   return {
     ...formLabels(ctx),
+    showPassword: t('form.showPassword'),
+    hidePassword: t('form.hidePassword'),
     loginTitle: t('account.loginTitle'),
     registerTitle: t('account.registerTitle'),
     login: t('account.login'),

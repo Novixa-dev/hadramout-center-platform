@@ -2227,3 +2227,26 @@ html[data-theme='dark'] .hc-serp-card__title {
   direction: ltr;
   text-align: start;
 }
+
+/* Show/hide on every password field (src/admin/components/PasswordReveal.tsx); passwords read left to right */
+.field-type.password input { direction: ltr; }
+.hc-pw-wrap { position: relative; direction: ltr; } /* same side as the left-to-right value: the button never covers text */
+.hc-pw-wrap input { padding-inline-end: 48px !important; }
+.hc-pw-toggle {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 2px;
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--d-muted, #5b5f58);
+  cursor: pointer;
+}
+.hc-pw-toggle svg { inline-size: 20px; block-size: 20px; }
+.hc-pw-toggle:hover, .hc-pw-toggle[aria-pressed='true'] { color: var(--d-brand, #226a5a); }
+.hc-pw-toggle:focus-visible { outline: 2px solid var(--d-brand, #226a5a); outline-offset: -2px; }
