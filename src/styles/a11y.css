@@ -1,5 +1,12 @@
 /* Accessibility overrides that must beat component rules (utilities layer comes after components and pages). */
 @layer utilities {
+  /* phones and touch screens: 16 px at least in every field, or iOS Safari zooms the whole page when one is tapped
+     (the sort menus were 15 px); here because the page layer sizes some fields smaller */
+  @media (pointer: coarse), (max-width: 760px) {
+    :is(input, select, textarea):not([type=checkbox], [type=radio], [type=range], [type=file]) { font-size: max(1rem, 1em); }
+  }
+  @media (pointer: coarse) { .toolbar .select { min-block-size: 2.75rem; } }
+
   /* Windows "contrast themes" / forced colors: the browser replaces our colours with the user's palette. Keep boundaries and focus visible. */
   @media (forced-colors: active) {
     :focus-visible { outline: 3px solid Highlight; outline-offset: 2px; }

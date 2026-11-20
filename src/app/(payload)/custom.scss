@@ -2209,3 +2209,21 @@ html[data-theme='dark'] .hc-serp-card__title {
   display: flex;
   align-items: center;
 }
+
+/* Phones: Payload's row-selection bar (fixed to the bottom) measured 422 px on a 390 px screen and pushed every list
+   32 px sideways, clipping the title. Pin it to both edges instead of a width. */
+.collection-list__list-selection {
+  inset-inline: 0;
+  inline-size: auto;
+  max-inline-size: 100vw;
+  box-sizing: border-box;
+  padding-inline: var(--gutter-h, 16px);
+}
+.collection-list__list-selection-actions { flex-wrap: wrap; min-inline-size: 0; }
+
+/* Links, addresses and slugs read left to right, also in the Arabic admin («/donate», not «donate/») */
+.field-type.text :is(input[id$='Url'], input[id$='__url'], input[id='field-url'], input[id='field-link'], input[id='field-website'], input[id='field-slug']),
+.field-type.email input {
+  direction: ltr;
+  text-align: start;
+}

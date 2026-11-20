@@ -31,6 +31,10 @@
     .utilbar__text { position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     .utilbar__link { inline-size: 2.5rem; justify-content: center; padding-inline: 0; }
   }
+  @media (max-width: 1000px) and (pointer: coarse) {
+    .utilbar__link { inline-size: 2.75rem; min-block-size: 2.75rem; }
+    .utilbar .lang-trigger { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
+  }
 
   /* ── header: brand + tools; from 1100px the main menu gets its own row ─────────────────────── */
   .site-header { position: sticky; inset-block-start: 0; z-index: var(--z-header); background: var(--bg-tint); border-block-end: 1px solid var(--border); }
@@ -101,8 +105,14 @@
   .site-footer { background: var(--hero-bg); color: var(--hero-text); position: relative; overflow: hidden; margin-block-start: var(--section); }
   .site-footer a { color: #cfe9e0; }
   .site-footer a:hover { color: #fff; }
-  .footer-news { display: grid; gap: var(--space-4) var(--space-8); align-items: center; padding-block: var(--space-8); border-block-end: 1px solid rgb(255 255 255 / 0.14); }
-  @media (min-width: 900px) { .footer-news { grid-template-columns: 1fr minmax(20rem, 28rem); } }
+  /* minmax(0, 1fr): on a phone the column may shrink below the form's natural width (it overflowed the screen at 360 px) */
+  .footer-news { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4) var(--space-8); align-items: center; padding-block: var(--space-8); border-block-end: 1px solid rgb(255 255 255 / 0.14); }
+  .nl-inline { display: grid; gap: 0.6rem; min-inline-size: 0; }
+  .nl-inline__row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .nl-inline__row .input { flex: 1 1 12rem; min-inline-size: 0; inline-size: auto; background: #fff; color: #1f2421; }
+  .nl-inline__row .btn { flex: 0 0 auto; }
+  .footer-news .notice { color: var(--text); } /* a light notice on the dark footer */
+  @media (min-width: 900px) { .footer-news { grid-template-columns: minmax(0, 1fr) minmax(20rem, 28rem); } }
   .footer-news h2 { font-size: var(--step-2); color: #fff; }
   .footer-news p { color: #c4dad2; margin-block-start: 0.4rem; max-inline-size: 34rem; }
   .site-footer__grid { display: grid; gap: var(--space-6) var(--space-8); padding-block: var(--space-8) var(--space-6); grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); }
