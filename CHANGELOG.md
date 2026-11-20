@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.21.0] - 2026-11-20
+### Forms, sign-in and sign-out, events in search
+- **Show/hide password** on every password field: the member sign-in, sign-up, change-password and delete-account forms (`PasswordInput`), and every Payload password field in the admin, sign-in included (`PasswordReveal`, an admin provider that attaches to Payload's own markup). A real toggle: `aria-pressed`, named for what it does next, focus and caret stay in the field, and the button sits at the end of the left-to-right value.
+- **Directions and validation:** e-mail, phone and URL fields read left to right everywhere, while an empty field keeps its Arabic hint right to left; the admin's password field too. Fields turn red only after the visitor has touched them or tried to send (`:user-invalid`), never on arrival. Contact form: e-mail and phone keyboards on phones.
+- **Motion, restrained:** a press effect on buttons, and disclosures (filters, FAQ, menu groups) open smoothly where the browser can animate to an automatic height. All of it is off under reduced motion.
+- **Sign-out:** the platform checks now prove that member sign-out clears the session cookie and the account is no longer recognised; the admin sign-out was already checked by `admin-e2e` (70/70) and is checked again in a real browser.
+- **SEO:** dated announcements are schema.org `Event`s on `/announcements` (SEO_PLAN item 7).
+
 ## [5.20.0] - 2026-11-20
 ### Social previews, staff accounts on the live site
 - **Open Graph:** the first `og:image` (the one WhatsApp, Facebook, X and Telegram show in a 1.91:1 frame) is the 1200×630 card unless the content image is known to be landscape; book covers no longer lead and get cropped to a strip (the card frames them, the cover follows for pickers). `twitter:image` follows the same rule. Direction controls from imported titles (U+2066–U+2069, LRM/RLM) are stripped from every meta text. A description that only repeated the title (many imported events) is built from the page's own facts: type, title, date, place, the Center.

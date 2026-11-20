@@ -15,6 +15,8 @@
 
 **Later on 2026-11-20 (CHANGELOG 5.19.0):** mobile-first pass (live audit after deploy: 69 page loads at 360/390 px, 0 horizontal scroll, 0 fields under 16 px, 0 text under 12 px); `main` mirrors `master`; `npm run staff:ensure` and working seed options. **Staff accounts on the server (5.20.0):** created by a manual Deploy run (`with_tools` + `create_staff`) from the GitHub secrets `STAFF_ACCOUNTS`/`STAFF_PASSWORD`, which were removed afterwards; see CHANGELOG 5.20.0 and ACCESS_AND_ACCOUNTS. The requested password is weak for a public admin: change it after the first sign-in.
 
+**5.21.0 (2026-11-20):** show/hide password on the site and in the admin (sign-in included), field directions and after-interaction validation, restrained motion, sign-out proven for members and staff, Event JSON-LD for dated announcements. The three staff accounts were created on the server by the manual Deploy run (`create_staff`), checked by signing in on the live login page, and the two secrets were deleted afterwards.
+
 Next: the Center enters its first promotions and reviews them on staging; SEO_PLAN §3 items 7–9; launch items unchanged (domain, `SITE_ENV=production`, Search Console, Cloudflare cache rule).
 
 ## Digital platforms (2026-11-09)

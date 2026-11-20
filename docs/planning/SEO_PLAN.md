@@ -36,7 +36,7 @@
 6. Editorial: alt text for the 4,004 images in article bodies (list in the quality report); summaries for the documents that still use generated excerpts.
 
 ### Improvements we can build (no outside input)
-7. `Event` structured data for dated announcements with a venue (eligible for event rich results). Small.
+7. ~~`Event` structured data for dated announcements~~ — DONE 2026-11-20 (`announcementEventsJsonLd`).
 8. `Book` → `offers` (price, availability) for books sold in the store, once the Center sets prices. Small.
 9. `ItemList` of `Organization` on `/partners`. Small, low value.
 
