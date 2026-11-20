@@ -1273,12 +1273,12 @@ export interface Promotion {
    */
   ctaUrl?: string | null;
   /**
-   * Optional; shown on the card and popup. Prefer 1200×630 or 4:3, with alt text in the library.
+   * Optional; shown on the card and popup. Prefer 1200×630 with alt text in the library. Edges are cropped on different screens: keep important text out of the image.
    */
   image?: (number | null) | Media;
   targeting: {
     /**
-     * Leave empty for every page. A section includes its own pages (Books = the list and every book).
+     * Leave empty for every page. A section includes its own pages (Books = the list and every book). A card shows only on the home page and on reading pages (an article, book, issue, event…), so choosing «Store», for example, does not show it.
      */
     pages?:
       | (
@@ -1313,11 +1313,11 @@ export interface Promotion {
   };
   behaviour: {
     /**
-     * A popup can always be closed.
+     * A popup and a corner notice can always be closed.
      */
     dismissible?: boolean | null;
     /**
-     * 0 = until the visitor closes the browser.
+     * 0 = until the visitor closes the tab.
      */
     hideDays: number;
     frequency: 'once' | 'session' | 'always';
@@ -1328,7 +1328,7 @@ export interface Promotion {
     delay: number;
   };
   /**
-   * Bar: one line above every page (hidden while an official announcement is pinned). Card: on the home page after the hero and at the end of reading pages. Popup: a window after a delay, a bottom sheet on phones. Corner: a small card in a corner of the screen.
+   * Bar: one line above every page (hidden while an official announcement is pinned). Card: on the home page after the numbers strip and official announcements, and after the text on reading pages. Popup: a window after a delay, a bottom sheet on phones. Corner: a small card in a corner of the screen.
    */
   format: 'bar' | 'card' | 'popup' | 'corner';
   /**
