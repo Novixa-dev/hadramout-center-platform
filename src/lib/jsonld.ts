@@ -215,6 +215,32 @@ export function personJsonLd(args: { name: string; url: string; lang: string; bi
 }
 
 /** Safe to embed inside <script type="application/ld+json">. */
+/**
+ * Dated announcements as schema.org Events (conferences, lectures, calls with a deadline), so search engines can list
+ * them as events. Undated ones are left out: an Event needs a start date. Times are kept when the editor gave one.
+ */
+export function announcementEventsJsonLd(
+  items: { id: number; title: string; excerpt?: string | null; eventDate?: string | null; venue?: string | null; image?: string | null }[],
+  o: { pageUrl: string; lang: string; org: OrgRef },
+): Record<string, unknown> | null {
+  const events = items
+    .filter((a) => a.eventDate && !Number.isNaN(Date.parse(a.eventDate)))
+    .map((a) => ({
+      '@type': 'Event',
+      '@id': `${o.pageUrl}#announcement-${a.id}`,
+      name: a.title,
+      url: `${o.pageUrl}#announcement-${a.id}`,
+      startDate: a.eventDate,
+      inLanguage: o.lang,
+      eventStatus: 'https://schema.org/EventScheduled',
+      organizer: { '@type': 'Organization', name: o.org.name, url: o.org.origin },
+      ...(a.excerpt ? { description: a.excerpt } : {}),
+      ...(a.venue ? { location: { '@type': 'Place', name: a.venue, address: a.venue } } : {}),
+      ...(a.image ? { image: a.image } : {}),
+    }));
+  return events.length ? { '@context': 'https://schema.org', '@graph': events } : null;
+}
+
 export function jsonLdString(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
 }

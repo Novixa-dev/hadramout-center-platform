@@ -295,6 +295,11 @@ const nextRow = db.prepare('SELECT id FROM members WHERE email = ?').get(victimE
 check(next.status === 200 && nextRow?.id === row.id, 'the next sign-up received the deleted account id (the case under test)', `${next.status} ${nextRow?.id} ${row.id}`);
 check((await (await get('/api/hc/member/me', session)).json()).member === null, "the deleted account's token does not open the new account");
 check((await (await get('/api/hc/member/me', pair(next.cookie))).json()).member?.email === victimEmail, 'the new account works with its own token');
+// sign-out: the browser is told to drop the session cookie, and without it the account is no longer recognised
+const out = await post('/api/hc/member/logout', {}, { cookie: pair(next.cookie) });
+const cleared = out.cookies.find((c) => c.startsWith('hc_member='));
+check(out.status === 200 && Boolean(cleared) && /max-age=0|expires=thu, 01 jan 1970/i.test(cleared ?? ''), 'sign-out clears the session cookie', cleared);
+check((await (await get('/api/hc/member/me')).json()).member === null, 'after sign-out the browser reads no member');
 const big = await fetch(`${base}/api/hc/member/login`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-forwarded-for': `${visitor.slice(0, -1)}8` }, body: JSON.stringify({ email: '<a'.repeat(400_000), password: 'x' }) });
 check(big.status === 400, 'an oversized body is refused before any work', String(big.status));
 
