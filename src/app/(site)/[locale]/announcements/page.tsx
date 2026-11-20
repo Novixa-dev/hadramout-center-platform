@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { absolute, isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { listAnnouncements } from '../../../../lib/data.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
+import { CrumbsJsonLd } from '../../../../components/CrumbsJsonLd.tsx';
 import { PageHead } from '../../../../components/PageHead.tsx';
 import { AnnouncementCard } from '../../../../components/AnnouncementCard.tsx';
 
@@ -29,6 +30,7 @@ export default async function AnnouncementsPage({ params }: Props) {
       <div className="container section announce-list">
         {items.length ? items.map((a) => <AnnouncementCard key={a.id} ctx={ctx} item={a} host={host} />) : <p className="empty-state">{t('announcements.empty')}</p>}
       </div>
+      <CrumbsJsonLd ctx={ctx} name={t('announcements.title')} path="/announcements" />
     </>
   );
 }

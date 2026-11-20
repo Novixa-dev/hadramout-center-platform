@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { listAudio } from '../../../../lib/data.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
+import { CrumbsJsonLd } from '../../../../components/CrumbsJsonLd.tsx';
 import { PageHead } from '../../../../components/PageHead.tsx';
 import { AudioItem } from '../../../../components/AudioItem.tsx';
 
@@ -32,6 +33,7 @@ export default async function AudioPage({ params }: Props) {
         </p>
         {items.length ? items.map((item) => <AudioItem key={item.id} ctx={ctx} item={item} />) : <p className="empty-state">{t('audio.empty')}</p>}
       </div>
+      <CrumbsJsonLd ctx={ctx} name={t('audio.title')} path="/audio" />
     </>
   );
 }

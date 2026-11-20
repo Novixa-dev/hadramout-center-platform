@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { listApprovedTestimonials } from '../../../../lib/data.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
+import { CrumbsJsonLd } from '../../../../components/CrumbsJsonLd.tsx';
 import { PageHead } from '../../../../components/PageHead.tsx';
 
 type Props = { params: Promise<{ locale: string }> };
@@ -46,6 +47,7 @@ export default async function TestimonialsPage({ params }: Props) {
           <p className="empty-state">{t('testimonials.empty')}</p>
         )}
       </div>
+      <CrumbsJsonLd ctx={ctx} name={t('testimonials.title')} path="/testimonials" />
     </>
   );
 }

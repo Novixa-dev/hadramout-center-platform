@@ -87,7 +87,8 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
   const baseTitle = m.absoluteTitle ? clip(m.title, 70) : titlePart(withPage(m.title, page, m.pageLabel ?? String(page)));
   const description = describe(m.description, site.description, site.tagline);
   const cardImage = cardUrl(lang, m.card ?? { key: 'home' });
-  const imageAlt = clip(m.imageAlt ?? `${m.title} — ${site.name}`, 200);
+  // a title that already names the site (the home page) is not followed by the name a second time
+  const imageAlt = clip(m.imageAlt ?? (m.title.includes(site.name) ? m.title : `${m.title} — ${site.name}`), 200);
 
   // If a direct content image is provided (book cover, news photo, etc.), it is the primary og:image.
   // The branded 1200×630 canvas card is included as secondary image for landscape card pickers.

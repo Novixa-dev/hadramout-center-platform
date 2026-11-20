@@ -4,6 +4,7 @@ import { isLocale, makeCtx } from '../../../../lib/ctx.ts';
 import { listPartners } from '../../../../lib/data.ts';
 import { buildMetadata } from '../../../../lib/seo.ts';
 import { mediaUrl, safeHref } from '../../../../lib/media-links.ts';
+import { CrumbsJsonLd } from '../../../../components/CrumbsJsonLd.tsx';
 import { PageHead } from '../../../../components/PageHead.tsx';
 import { Icon } from '../../../../components/Icon.tsx';
 
@@ -52,6 +53,7 @@ export default async function PartnersPage({ params }: Props) {
         )}
         {partners.length ? <p className="source-note">{t('partners.source')}</p> : null}
       </div>
+      <CrumbsJsonLd ctx={ctx} name={t('partners.title')} path="/partners" />
     </>
   );
 }
