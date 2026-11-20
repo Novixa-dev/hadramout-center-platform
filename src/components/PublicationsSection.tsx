@@ -24,10 +24,6 @@ export function PublicationsSection({ ctx, books }: PublicationsSectionProps) {
           id="center-publications"
           isRtl={isAr}
           theme="dark"
-          badge={{
-            label: isAr ? 'إصدارات ومطبوعات' : 'Center Publications',
-            icon: 'book',
-          }}
           title={isAr ? 'إصدارات المركز' : 'Center Publications'}
           description={
             isAr

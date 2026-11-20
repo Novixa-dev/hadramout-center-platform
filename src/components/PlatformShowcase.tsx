@@ -148,43 +148,6 @@ export function PlatformShowcase({ ctx }: { ctx: Ctx }) {
     imageAlt: isAr ? 'مجلة حضرموت الثقافية المحكمة' : 'Hadramout Cultural Journal',
   };
 
-  // Left Column Card 2: Platform Gateway & Consultation
-  const platformGatewayCard: DualCardItem = {
-    id: 'platform-gateway-card',
-    tag: isAr ? 'منظومة المنصة والتوثيق' : 'Platform & Documentation',
-    brand: isAr ? 'Hadramout Center · منصة مركز حضرموت' : 'Hadramout Center · Digital Platform',
-    title: isAr
-      ? 'منصة مركز حضرموت، بوابتكم لتوثيق التاريخ ونشر المعرفة'
-      : 'Hadramout Center Platform, Your Gateway to History & Heritage',
-    description: isAr
-      ? 'نسخة تجريبية قيد التطوير للمراجعة — نرحب بملاحظات المؤرخين والباحثين، ونسعد باستقبال طلبات التوثيق والأرشفة التاريخية والاستشارات العلمية.'
-      : 'A developmental preview for review — welcoming feedback from researchers and historians, as well as documentation and scholarly consultation requests.',
-    featuresTitle: isAr ? 'الميزات التوثيقية والاستشارية:' : 'Consultation & Research Features:',
-    features: isAr
-      ? [
-          'استقبال طلبات حفظ وتوثيق المجموعات الوثائقية وسجلات الأسر التاريخية',
-          'تقديم الاستشارات العلمية والتاريخية الموثقة للأكاديميين والمؤسسات',
-          'ربط متكامل مع مصادر التراث ومكتبة إصدارات ومجلات المركز',
-        ]
-      : [
-          'Receiving requests for archiving family documents and historical records',
-          'Providing verified academic consultations for researchers and institutions',
-          'Integrated linkage with heritage archives, books, and journal issues',
-        ],
-    meta1: {
-      label: isAr ? 'حالة المنظومة' : 'Platform Status',
-      value: isAr ? 'نسخة تجريبية للمراجعة' : 'Preview Edition',
-    },
-    meta2: {
-      label: isAr ? 'مجال الخدمة' : 'Service Domain',
-      value: isAr ? 'توثيق وتاريخ حضرموت' : 'History & Archives',
-    },
-    ctaLabel: isAr ? 'طلب استشارة وبحث تاريخي' : 'Request Research Consultation',
-    ctaHref: href('/about'),
-    imageSrc: '/brand/showcase-publications.png',
-    imageAlt: isAr ? 'منصة مركز حضرموت للدراسات التاريخية' : 'Hadramout Center Platform',
-  };
-
   return (
     <section className="platform-showcase" id="platform-preview" aria-labelledby="platform-preview-title" data-aos="fade-up">
       <div className="container">
@@ -339,115 +302,67 @@ export function PlatformShowcase({ ctx }: { ctx: Ctx }) {
             </div>
           </article>
 
-          {/* Left Column: Two visually independent cards with 24px vertical gap (Requirement 4) */}
-          <div className="left-column-cards">
-            {/* Left Card 1: Hadramout Journal */}
-            <article className="featured-card featured-card--journal">
-              <div className="featured-card__media-wrap">
-                <div className="featured-card__media">
-                  <Image
-                    src={journalCard.imageSrc}
-                    alt={journalCard.imageAlt}
-                    fill
-                    sizes="(max-width: 900px) 100vw, 580px"
-                    className="featured-card__img"
-                  />
-                  <div className="featured-card__overlay" />
-                  <span className="featured-card__badge">
-                    <Icon name="rosette" className="featured-card__badge-icon" />
-                    <span>{journalCard.tag}</span>
-                  </span>
+          {/* Left-Hand Card: Hadramout Journal */}
+          <article className="featured-card featured-card--journal">
+            <div className="featured-card__media-wrap">
+              <div className="featured-card__media">
+                <Image
+                  src={journalCard.imageSrc}
+                  alt={journalCard.imageAlt}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 580px"
+                  className="featured-card__img"
+                />
+                <div className="featured-card__overlay" />
+                <span className="featured-card__badge">
+                  <Icon name="rosette" className="featured-card__badge-icon" />
+                  <span>{journalCard.tag}</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="featured-card__body">
+              <span className="featured-card__brand">{journalCard.brand}</span>
+              <h3 className="featured-card__title">{journalCard.title}</h3>
+              <p className="featured-card__desc">{journalCard.description}</p>
+
+              {/* Features Checklist */}
+              <div className="featured-card__features-wrap">
+                <h4 className="featured-card__features-title">{journalCard.featuresTitle}</h4>
+                <ul className="featured-card__features-list">
+                  {journalCard.features.map((feat, fIdx) => (
+                    <li key={fIdx} className="featured-card__feature-item">
+                      <span className="featured-card__check" aria-hidden="true">
+                        <Icon name="check" className="featured-card__check-icon" />
+                      </span>
+                      <span className="featured-card__feature-text">{feat}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Metadata Highlight Panel */}
+              <div className="featured-card__metadata">
+                <div className="featured-card__meta-item">
+                  <span className="featured-card__meta-label">{journalCard.meta1.label}</span>
+                  <strong className="featured-card__meta-val">{journalCard.meta1.value}</strong>
+                </div>
+                <div className="featured-card__meta-divider" aria-hidden="true" />
+                <div className="featured-card__meta-item">
+                  <span className="featured-card__meta-label">{journalCard.meta2.label}</span>
+                  <strong className="featured-card__meta-val">{journalCard.meta2.value}</strong>
                 </div>
               </div>
 
-              <div className="featured-card__body">
-                <span className="featured-card__brand">{journalCard.brand}</span>
-                <h3 className="featured-card__title">{journalCard.title}</h3>
-                <p className="featured-card__desc">{journalCard.description}</p>
-
-                {/* Features Checklist */}
-                <div className="featured-card__features-wrap">
-                  <h4 className="featured-card__features-title">{journalCard.featuresTitle}</h4>
-                  <ul className="featured-card__features-list">
-                    {journalCard.features.map((feat, fIdx) => (
-                      <li key={fIdx} className="featured-card__feature-item">
-                        <span className="featured-card__check" aria-hidden="true">
-                          <Icon name="check" className="featured-card__check-icon" />
-                        </span>
-                        <span className="featured-card__feature-text">{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Metadata Highlight Panel */}
-                <div className="featured-card__metadata">
-                  <div className="featured-card__meta-item">
-                    <span className="featured-card__meta-label">{journalCard.meta1.label}</span>
-                    <strong className="featured-card__meta-val">{journalCard.meta1.value}</strong>
-                  </div>
-                  <div className="featured-card__meta-divider" aria-hidden="true" />
-                  <div className="featured-card__meta-item">
-                    <span className="featured-card__meta-label">{journalCard.meta2.label}</span>
-                    <strong className="featured-card__meta-val">{journalCard.meta2.value}</strong>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className="featured-card__cta-wrap">
-                  <Link href={journalCard.ctaHref} className="featured-card__cta">
-                    <span>{journalCard.ctaLabel}</span>
-                    <Icon name="arrow" className="featured-card__cta-arrow" />
-                  </Link>
-                </div>
+              {/* CTA Button */}
+              <div className="featured-card__cta-wrap">
+                <Link href={journalCard.ctaHref} className="featured-card__cta">
+                  <span>{journalCard.ctaLabel}</span>
+                  <Icon name="arrow" className="featured-card__cta-arrow" />
+                </Link>
               </div>
-            </article>
-
-            {/* Left Card 2: Platform Gateway & Consultation */}
-            <article className="featured-card featured-card--platform">
-              <div className="featured-card__body">
-                <span className="featured-card__brand">{platformGatewayCard.brand}</span>
-                <h3 className="featured-card__title">{platformGatewayCard.title}</h3>
-                <p className="featured-card__desc">{platformGatewayCard.description}</p>
-
-                {/* Features Checklist */}
-                <div className="featured-card__features-wrap">
-                  <h4 className="featured-card__features-title">{platformGatewayCard.featuresTitle}</h4>
-                  <ul className="featured-card__features-list">
-                    {platformGatewayCard.features.map((feat, fIdx) => (
-                      <li key={fIdx} className="featured-card__feature-item">
-                        <span className="featured-card__check" aria-hidden="true">
-                          <Icon name="check" className="featured-card__check-icon" />
-                        </span>
-                        <span className="featured-card__feature-text">{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Metadata Highlight Panel */}
-                <div className="featured-card__metadata">
-                  <div className="featured-card__meta-item">
-                    <span className="featured-card__meta-label">{platformGatewayCard.meta1.label}</span>
-                    <strong className="featured-card__meta-val">{platformGatewayCard.meta1.value}</strong>
-                  </div>
-                  <div className="featured-card__meta-divider" aria-hidden="true" />
-                  <div className="featured-card__meta-item">
-                    <span className="featured-card__meta-label">{platformGatewayCard.meta2.label}</span>
-                    <strong className="featured-card__meta-val">{platformGatewayCard.meta2.value}</strong>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className="featured-card__cta-wrap">
-                  <Link href={platformGatewayCard.ctaHref} className="featured-card__cta featured-card__cta--secondary">
-                    <span>{platformGatewayCard.ctaLabel}</span>
-                    <Icon name="arrow" className="featured-card__cta-arrow" />
-                  </Link>
-                </div>
-              </div>
-            </article>
-          </div>
+            </div>
+          </article>
         </div>
       </div>
     </section>

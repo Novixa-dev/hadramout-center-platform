@@ -52,10 +52,6 @@ export function HomeEditorial({ ctx, news, events, forum }: HomeEditorialProps) 
         {/* Section Header */}
         <div className="news-events-head">
           <div className="news-events-head__info">
-            <span className="news-events-head__badge">
-              <Icon name="file" className="news-events-head__badge-icon" />
-              <span>{isAr ? 'الأخبار والأنشطة' : 'News & Activities'}</span>
-            </span>
             <h2 id="news-events-heading" className="news-events-head__title">
               {isAr ? 'آخر الأخبار والفعاليات' : 'Latest News & Events'}
             </h2>
