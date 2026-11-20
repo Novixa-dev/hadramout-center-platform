@@ -55,7 +55,7 @@
 | تغيير لغة اللوحة | زر English / العربية في الشريط العلوي وفي صفحة الدخول. العربية هي الافتراضية أياً كانت لغة المتصفح |
 | المدير الوحيد فقد كلمته | على الخادم: نسخة احتياطية أولاً، ثم إعادة تعيين عبر Payload (`npm run payload` داخل الحاوية) — عملية مطوّر، وتُوثّق في `CREDENTIALS.local.md` |
 | أول مدير على قاعدة جديدة | `ADMIN_EMAIL` و`ADMIN_PASSWORD` في `.env` ثم `npm run db:seed` (لا يعمل إن وُجد مستخدم) |
-| حسابات فريق (مديرون/محررون) دفعة واحدة — جديد 2026-11-20 | `STAFF_ACCOUNTS="admin@novixa.dev:admin:Novixa, admin@hadramout.center:admin"` و`STAFF_PASSWORD='…'` (12 حرفاً فأكثر) ثم `npm run staff:ensure`؛ على الخادم: `docker compose run --rm -e STAFF_ACCOUNTS -e STAFF_PASSWORD tools npm run staff:ensure`. يُنشئ الناقص فقط؛ `STAFF_RESET_PASSWORD=1` يعيد تعيين كلمة المرور والدور للموجود. **كلمات المرور لا تُكتب في المستودع أبداً (المستودع عام)**، وتُغيَّر بعد أول دخول |
+| حسابات فريق (مديرون/محررون) دفعة واحدة — جديد 2026-11-20 | `STAFF_ACCOUNTS="admin@novixa.dev:admin:Novixa, admin@hadramout.center:admin"` و`STAFF_PASSWORD='…'` (12 حرفاً فأكثر) ثم `npm run staff:ensure`؛ على الموقع الحي دون دخول الخادم: ضع السرّين `STAFF_ACCOUNTS` و`STAFF_PASSWORD` في GitHub (Settings ← Secrets ← Actions) ثم شغّل «Deploy to Production Server» يدوياً مع `with_tools` و`create_staff`؛ القيم تمر عبر stdin إلى حاوية الأدوات فقط ولا تُكتب في `.env` ولا في السجل (يطبع الأعداد فقط)، ويُستحسن حذف السرّين بعدها. يُنشئ الناقص فقط؛ `STAFF_RESET_PASSWORD=1` يعيد تعيين كلمة المرور والدور للموجود. **كلمات المرور لا تُكتب في المستودع أبداً (المستودع عام)**، وتُغيَّر بعد أول دخول |
 | تعطيل حساب | تغيير كلمة المرور أو حذف المستخدم (المدير فقط) |
 
 ## 5. البيانات المزروعة (seed)
