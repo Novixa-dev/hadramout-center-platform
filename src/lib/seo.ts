@@ -90,36 +90,16 @@ export async function buildMetadata(m: MetaInput): Promise<Metadata> {
   // a title that already names the site (the home page) is not followed by the name a second time
   const imageAlt = clip(m.imageAlt ?? (m.title.includes(site.name) ? m.title : `${m.title} — ${site.name}`), 200);
 
-  // If a direct content image is provided (book cover, news photo, etc.), it is the primary og:image.
-  // The branded 1200×630 canvas card is included as secondary image for landscape card pickers.
-  const ogImages = m.image
-    ? [
-        {
-          url: m.image,
-          alt: imageAlt,
-          ...(m.imageWidth ? { width: m.imageWidth } : {}),
-          ...(m.imageHeight ? { height: m.imageHeight } : {}),
-          type: m.imageType || mimeTypeOf(m.image),
-        },
-        {
-          url: cardImage,
-          width: 1200,
-          height: 630,
-          alt: imageAlt,
-          type: 'image/png',
-        },
-      ]
-    : [
-        {
-          url: cardImage,
-          width: 1200,
-          height: 630,
-          alt: imageAlt,
-          type: 'image/png',
-        },
-      ];
-
-  const twitterImage = m.image ?? cardImage;
+  // The first og:image is the one WhatsApp, Facebook, X and Telegram show, in a wide 1.91:1 frame. A content image (book
+  // cover, news photo) leads only when it is known to be landscape; a portrait cover would be cropped to a strip, so the
+  // 1200×630 card (which frames the cover) leads and the content image follows for pickers that offer a choice.
+  const card = { url: cardImage, width: 1200, height: 630, alt: imageAlt, type: 'image/png' };
+  const content = m.image
+    ? { url: m.image, alt: imageAlt, ...(m.imageWidth ? { width: m.imageWidth } : {}), ...(m.imageHeight ? { height: m.imageHeight } : {}), type: m.imageType || mimeTypeOf(m.image) }
+    : null;
+  const landscape = Boolean(content && m.imageWidth && m.imageHeight && m.imageWidth / m.imageHeight >= 1.5);
+  const ogImages = content ? (landscape ? [content, card] : [card, content]) : [card];
+  const twitterImage = landscape && m.image ? m.image : cardImage;
   const handle = twitterHandle(site.social?.x);
   const ogType = m.type ?? 'website';
   const og = {

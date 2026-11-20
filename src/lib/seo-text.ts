@@ -5,10 +5,12 @@
  */
 
 const WS = /\s+/g;
+/** Direction controls from imported titles (U+2066–U+2069, LRM/RLM, embeddings) show as stray marks in previews. */
+const BIDI = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
 
 /** Collapse whitespace and cut at a word boundary with an ellipsis when longer than `max`. */
 export function clip(text: string | null | undefined, max: number): string {
-  const t = (text ?? '').replace(WS, ' ').trim();
+  const t = (text ?? '').replace(BIDI, '').replace(WS, ' ').trim();
   if (t.length <= max) return t;
   const cut = t.slice(0, max - 1);
   const atWord = cut.replace(/[\s,;:،؛.\-–—]+\S*$/u, '');
@@ -28,6 +30,7 @@ export function cleanDescription(text: string | null | undefined): string {
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ')
     .replace(/[*_`#>]+/g, '')
+    .replace(BIDI, '')
     .replace(WS, ' ')
     .trim();
 }

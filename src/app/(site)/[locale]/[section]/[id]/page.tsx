@@ -125,11 +125,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ? doc.publishedAt
         : null;
 
+  // many imported events carry no summary, or one that only repeats the title: describe them from their own facts
+  const same = (a: string, b: string) => a.replace(/\W+/gu, '') === b.replace(/\W+/gu, '');
+  let description = describe(doc.excerpt, htmlToText(doc.body ?? ''));
+  if (!description || same(description, doc.title)) {
+    const site = await getSite(locale);
+    const when = doc.publishedAt && doc.datePrecision !== 'estimated' && doc.datePrecision !== 'none' ? displayDate(doc, locale) : '';
+    const venue = typeof doc.venue === 'string' ? doc.venue : '';
+    description = describe([`${ctx.t(`card.type.${info.type}`)}: ${doc.title}`, when, venue, site.name].filter(Boolean).join('، '));
+  }
   return buildMetadata({
     ctx,
     path: `/${section}/${id}`,
     title: doc.title,
-    description: describe(doc.excerpt, htmlToText(doc.body ?? '')),
+    description,
     card: { kind: section, id: doc.id, v: doc.updatedAt ? Date.parse(doc.updatedAt) : undefined },
     image: ogImage,
     imageAlt: ogImageAlt,
