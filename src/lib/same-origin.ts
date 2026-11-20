@@ -41,7 +41,7 @@ export async function readJsonObject(req: Request): Promise<Record<string, unkno
 }
 
 /** The body as text, read only up to `max` bytes: a chunked body or a false Content-Length cannot make the server buffer more. */
-async function readCapped(req: Request, max: number): Promise<string | null> {
+export async function readCapped(req: Request, max: number): Promise<string | null> {
   if (!req.body) return '';
   const reader = req.body.getReader();
   const chunks: Uint8Array[] = [];

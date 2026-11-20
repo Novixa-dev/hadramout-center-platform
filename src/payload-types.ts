@@ -77,6 +77,7 @@ export interface Config {
     encyclopedia: Encyclopedia;
     audio: Audio;
     announcements: Announcement;
+    promotions: Promotion;
     partners: Partner;
     testimonials: Testimonial;
     authors: Author;
@@ -120,6 +121,7 @@ export interface Config {
     encyclopedia: EncyclopediaSelect<false> | EncyclopediaSelect<true>;
     audio: AudioSelect<false> | AudioSelect<true>;
     announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
+    promotions: PromotionsSelect<false> | PromotionsSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
@@ -1247,6 +1249,122 @@ export interface Announcement {
   createdAt: string;
 }
 /**
+ * The Center's campaigns on the site: an event, a new release, a call for papers, a donation drive, a store offer… Each has a format, a start and end to the minute, and the pages and devices it shows on. Counts are anonymous: nothing about visitors is stored.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions".
+ */
+export interface Promotion {
+  id: number;
+  /**
+   * One short, clear line (up to 90 characters). Translated automatically.
+   */
+  headline: string;
+  /**
+   * One or two lines (up to 240 characters). Not shown in the top bar.
+   */
+  text?: string | null;
+  /**
+   * e.g. Register now, Order the book. Empty = «Details».
+   */
+  ctaLabel?: string | null;
+  /**
+   * A site path such as /donate or /events/12 (the language is added), or an https:// URL
+   */
+  ctaUrl?: string | null;
+  /**
+   * Optional; shown on the card and popup. Prefer 1200×630 or 4:3, with alt text in the library.
+   */
+  image?: (number | null) | Media;
+  targeting: {
+    /**
+     * Leave empty for every page. A section includes its own pages (Books = the list and every book).
+     */
+    pages?:
+      | (
+          | 'home'
+          | 'articles'
+          | 'books'
+          | 'magazines'
+          | 'events'
+          | 'forum'
+          | 'news'
+          | 'videos'
+          | 'audio'
+          | 'podcast'
+          | 'announcements'
+          | 'encyclopedia'
+          | 'culture'
+          | 'store'
+          | 'donate'
+          | 'volunteer'
+          | 'submit'
+          | 'about'
+          | 'support'
+          | 'partners'
+          | 'search'
+          | 'authors'
+          | 'topics'
+          | 'timeline'
+          | 'contact'
+        )[]
+      | null;
+    device: 'all' | 'mobile' | 'desktop';
+  };
+  behaviour: {
+    /**
+     * A popup can always be closed.
+     */
+    dismissible?: boolean | null;
+    /**
+     * 0 = until the visitor closes the browser.
+     */
+    hideDays: number;
+    frequency: 'once' | 'session' | 'always';
+    trigger: 'delay' | 'scroll';
+    /**
+     * At least 3 s: nothing covers the page on arrival.
+     */
+    delay: number;
+  };
+  /**
+   * Bar: one line above every page (hidden while an official announcement is pinned). Card: on the home page after the hero and at the end of reading pages. Popup: a window after a delay, a bottom sheet on phones. Corner: a small card in a corner of the screen.
+   */
+  format: 'bar' | 'card' | 'popup' | 'corner';
+  /**
+   * Shown as a small label above the headline.
+   */
+  kind: 'event' | 'release' | 'call' | 'donation' | 'project' | 'store' | 'volunteer' | 'partner' | 'notice';
+  tone: 'brand' | 'gold' | 'paper';
+  /**
+   * In your device's time. Honoured to the minute, even on cached pages.
+   */
+  startAt: string;
+  /**
+   * Empty = until switched off by hand.
+   */
+  endAt?: string | null;
+  /**
+   * When two of the same format overlap, the higher priority shows (then the newest). One per format per page.
+   */
+  priority: number;
+  /**
+   * «Published» with a later start = scheduled.
+   */
+  status: 'draft' | 'published';
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
  */
@@ -2089,6 +2207,10 @@ export interface PayloadLockedDocument {
         value: number | Announcement;
       } | null)
     | ({
+        relationTo: 'promotions';
+        value: number | Promotion;
+      } | null)
+    | ({
         relationTo: 'partners';
         value: number | Partner;
       } | null)
@@ -2554,6 +2676,42 @@ export interface AnnouncementsSelect<T extends boolean = true> {
   eventDate?: T;
   expiresAt?: T;
   publishedAt?: T;
+  status?: T;
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions_select".
+ */
+export interface PromotionsSelect<T extends boolean = true> {
+  headline?: T;
+  text?: T;
+  ctaLabel?: T;
+  ctaUrl?: T;
+  image?: T;
+  targeting?:
+    | T
+    | {
+        pages?: T;
+        device?: T;
+      };
+  behaviour?:
+    | T
+    | {
+        dismissible?: T;
+        hideDays?: T;
+        frequency?: T;
+        trigger?: T;
+        delay?: T;
+      };
+  format?: T;
+  kind?: T;
+  tone?: T;
+  startAt?: T;
+  endAt?: T;
+  priority?: T;
   status?: T;
   translationMeta?: T;
   updatedAt?: T;

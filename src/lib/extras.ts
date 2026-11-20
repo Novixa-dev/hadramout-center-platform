@@ -4,7 +4,7 @@ import { Store } from '../db/store.ts';
 /**
  * "Extras" database: derived or aggregate data that must never live in Payload's schema —
  * the full-text index (rebuildable from content), anonymous page-view counters, search-query
- * statistics and small rate-limit buckets. A separate SQLite file keeps Payload's schema
+ * statistics, anonymous promotion counts (views/clicks/closes per day) and small rate-limit buckets. A separate SQLite file keeps Payload's schema
  * migrations and these tables fully independent.
  */
 const SCHEMA = `
@@ -24,6 +24,10 @@ CREATE TABLE IF NOT EXISTS search_queries (
 CREATE TABLE IF NOT EXISTS not_found_log (
   day TEXT NOT NULL, path TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (day, path)
+) WITHOUT ROWID;
+CREATE TABLE IF NOT EXISTS promo_stats (
+  promo INTEGER NOT NULL, event TEXT NOT NULL, day TEXT NOT NULL, count INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (promo, event, day)
 ) WITHOUT ROWID;
 CREATE TABLE IF NOT EXISTS rate_limits (
   bucket TEXT NOT NULL, window INTEGER NOT NULL, hits INTEGER NOT NULL DEFAULT 0,

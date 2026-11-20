@@ -313,6 +313,7 @@
   .announce-bar__when { opacity: 0.9; }
   .announce-bar__more { text-decoration: underline; }
   .announce-bar__close { flex: none; color: inherit; }
+  .announce-bar :focus-visible { outline-color: var(--on-brand); }
   .announce-bar__close:hover { background: color-mix(in srgb, var(--on-brand) 15%, transparent); color: inherit; }
   .announce-list { display: grid; gap: var(--space-5); }
   .announce-row { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); }

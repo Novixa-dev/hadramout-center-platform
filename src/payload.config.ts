@@ -20,6 +20,7 @@ import { Glossary } from './collections/Glossary.ts';
 import { Messages, Subscribers, TranslationUsage } from './collections/Forms.ts';
 import { Audio } from './collections/Audio.ts';
 import { Announcements } from './collections/Announcements.ts';
+import { Promotions } from './collections/Promotions.ts';
 import { Partners } from './collections/Partners.ts';
 import { Testimonials } from './collections/Testimonials.ts';
 import { Site } from './globals/Site.ts';
@@ -58,7 +59,7 @@ export default buildConfig({
   },
   i18n: { supportedLanguages: { ar, en }, fallbackLanguage: 'ar', translations: ADMIN_TRANSLATIONS },
   localization: { locales: PAYLOAD_LOCALES, defaultLocale: DEFAULT_LOCALE, fallback: true },
-  collections: withStatusCells([News, Articles, Books, Magazines, Events, ForumEvents, Videos, Encyclopedia, Audio, Announcements, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, Orders, Pledges, Receipts, Volunteers, Members, TranslationUsage, Users]),
+  collections: withStatusCells([News, Articles, Books, Magazines, Events, ForumEvents, Videos, Encyclopedia, Audio, Announcements, Promotions, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, Orders, Pledges, Receipts, Volunteers, Members, TranslationUsage, Users]),
   globals: [Site],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

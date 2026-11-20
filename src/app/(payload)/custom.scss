@@ -1247,6 +1247,16 @@ html[data-theme='dark'] .btn--style-primary { --hover-bg: #226a5a; }
 .hc-status-chip--progress { border-color: var(--d-border-strong); color: var(--d-text-2); }
 .hc-status-chip--closed { background: var(--d-surface-3); color: var(--d-text-2); }
 
+/* Promotions: schedule chip in the sidebar and the statistics panel (src/admin/fields/Promo*.tsx) */
+.hc-promo-state { display: grid; justify-items: start; gap: 6px; margin-block-end: 20px; }
+.hc-promo-stats { margin-block: 24px; padding: 16px 18px; border: 1px solid var(--d-border); border-radius: 14px; background: var(--d-surface-2); }
+.hc-promo-stats__title { margin: 0 0 12px; font-family: var(--font-display, inherit); font-size: 1.125rem; }
+.hc-promo-stats__table { inline-size: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.hc-promo-stats__table th, .hc-promo-stats__table td { padding: 8px 10px; border-block-end: 1px solid var(--d-border); text-align: start; }
+.hc-promo-stats__table thead th { color: var(--d-text-2); font-size: 0.8125rem; font-weight: 600; }
+.hc-promo-stats__table tbody td { font-size: 1.125rem; font-weight: 700; }
+.hc-promo-stats__note { margin: 10px 0 0; color: var(--d-muted); font-size: 0.8125rem; }
+
 /* Forms: the site's fields — 44 px, rounded 10, a clear border, the green ring on focus — and its labels and help text. */
 :is(
   .field-type.text:not(.has-many) input,

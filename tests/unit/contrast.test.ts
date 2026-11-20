@@ -43,6 +43,8 @@ const TEXT_PAIRS: [string, string][] = [
   ['brand', 'bg'], ['brand', 'surface'], ['brand', 'surface-2'], ['brand', 'brand-soft'], ['brand-strong', 'surface'],
   ['accent-text', 'bg'], ['accent-text', 'surface'], ['accent-text', 'surface-2'], ['accent-text', 'accent-soft'],
   ['danger', 'surface'], ['success', 'surface'], ['warning', 'surface'],
+  // promotions (src/styles/promotions.css): gold and paper tones, their labels
+  ['text', 'accent-soft'], ['brand', 'surface-2'], ['text', 'surface-2'],
 ];
 
 describe('design token contrast (WCAG 2.2 AA)', () => {
@@ -60,6 +62,12 @@ describe('design token contrast (WCAG 2.2 AA)', () => {
     });
   }
   test('gold button (dark text on gold) is readable', () => assert.ok(ratio('#2b2008', resolve('gold-500', 'light')) >= 4.5));
+  test('focus ring on the green bands (announcement bar, brand promotions) is on-brand and reaches 3:1', () => {
+    for (const mode of ['light', 'dark'] as const) assert.ok(ratio(resolve('on-brand', mode), resolve('brand-fill', mode)) >= 3, mode);
+  });
+  test('promotion label chip (gold-900 on accent) is readable in both themes', () => {
+    for (const mode of ['light', 'dark'] as const) assert.ok(ratio(resolve('gold-900', mode), resolve('accent', mode)) >= 4.5, mode);
+  });
   test('hero text on the hero background', () => {
     for (const mode of ['light', 'dark'] as const) assert.ok(ratio(resolve('hero-text', mode), resolve('hero-bg', mode)) >= 7, mode);
   });

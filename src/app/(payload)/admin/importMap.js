@@ -1,5 +1,8 @@
 import { HtmlField as HtmlField_7ba720e0ead33a0f6fb9b27e62969cd8 } from '../../../admin/fields/HtmlField'
 import { StatusCell as StatusCell_d9ac5b6d2f12cd91e680bb1d391b55fa } from '../../../admin/components/StatusCell'
+import { PromoStats as PromoStats_3088b0caec2016faff5d739e801ab9b4 } from '../../../admin/fields/PromoStats'
+import { PromoStateCell as PromoStateCell_bb12e84d69b57f72a89d925f571fd50a } from '../../../admin/fields/PromoStateCell'
+import { PromoStateField as PromoStateField_bb12e84d69b57f72a89d925f571fd50a } from '../../../admin/fields/PromoStateCell'
 import { AiEditorialBar as AiEditorialBar_de28c5430a614e4fa692feffd1f52be1 } from '../../../admin/fields/AiEditorialBar'
 import { SerpPreview as SerpPreview_a1031014c13b20f5d86f4bb607a64895 } from '../../../admin/fields/SerpPreview'
 import { ProfileCard as ProfileCard_6114d6fcf68c1d3f18d875a9fc16757a } from '../../../admin/components/ProfileCard'
@@ -18,6 +21,9 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "/admin/fields/HtmlField#HtmlField": HtmlField_7ba720e0ead33a0f6fb9b27e62969cd8,
   "/admin/components/StatusCell#StatusCell": StatusCell_d9ac5b6d2f12cd91e680bb1d391b55fa,
+  "/admin/fields/PromoStats#PromoStats": PromoStats_3088b0caec2016faff5d739e801ab9b4,
+  "/admin/fields/PromoStateCell#PromoStateCell": PromoStateCell_bb12e84d69b57f72a89d925f571fd50a,
+  "/admin/fields/PromoStateCell#PromoStateField": PromoStateField_bb12e84d69b57f72a89d925f571fd50a,
   "/admin/fields/AiEditorialBar#AiEditorialBar": AiEditorialBar_de28c5430a614e4fa692feffd1f52be1,
   "/admin/fields/SerpPreview#SerpPreview": SerpPreview_a1031014c13b20f5d86f4bb607a64895,
   "/admin/components/ProfileCard#ProfileCard": ProfileCard_6114d6fcf68c1d3f18d875a9fc16757a,

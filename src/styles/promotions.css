@@ -1,0 +1,84 @@
+@layer pages {
+  /* ── promotions: top bar, in-page card, popup (bottom sheet on phones), corner notice ─────────────────────────
+     Colours come from the tokens only; every pair is in tests/unit/contrast.test.ts. Logical properties throughout. */
+  .promo--brand { --p-bg: var(--brand-fill); --p-text: var(--on-brand); --p-border: transparent; --p-kicker-bg: var(--accent); --p-kicker-text: var(--gold-900); --p-kicker-pad: 0.1rem 0.55rem; --p-accent: var(--brand-fill); }
+  .promo--gold { --p-bg: var(--accent-soft); --p-text: var(--text); --p-border: var(--accent); --p-kicker-bg: transparent; --p-kicker-text: var(--accent-text); --p-kicker-pad: 0; --p-accent: var(--accent); }
+  .promo--paper { --p-bg: var(--surface-2); --p-text: var(--text); --p-border: var(--border); --p-kicker-bg: transparent; --p-kicker-text: var(--brand); --p-kicker-pad: 0; --p-accent: var(--border-strong); }
+
+  /* the site's blue focus ring disappears on the green band (≈1:1): white instead, as in the utility bar */
+  .promo--brand :focus-visible { outline-color: var(--on-brand); }
+
+  /* top bar */
+  .promo-bar { background: var(--p-bg); color: var(--p-text); border-block-end: 1px solid var(--p-border); font-size: var(--step--1); }
+  .promo-bar__row { display: flex; align-items: center; gap: var(--space-3); min-block-size: 2.75rem; }
+  .promo-bar__kicker { flex: none; padding: var(--p-kicker-pad); border-radius: var(--r-sm); background: var(--p-kicker-bg); color: var(--p-kicker-text); font-weight: 700; }
+  .promo-bar__text { flex: 1 1 auto; min-inline-size: 0; margin: 0; overflow-wrap: anywhere; }
+  .promo-bar__cta { flex: none; display: inline-flex; align-items: center; gap: 0.3rem; min-block-size: 2.75rem; color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 0.2em; }
+  .promo-bar__cta .icon { inline-size: 1rem; block-size: 1rem; }
+  .promo-bar__close { flex: none; color: inherit; }
+  .promo-bar__close:hover { background: color-mix(in srgb, currentColor 14%, transparent); color: inherit; }
+  /* phones keep the bar short; a partner's sponsorship stays disclosed */
+  @media (max-width: 560px) { .promo-bar__kicker:not(.promo-bar__kicker--partner) { display: none; } }
+
+  /* in-page card: the slot has no spacing of its own, so a card hidden before paint leaves no gap */
+  .promo-card { position: relative; display: grid; grid-template-columns: minmax(0, 18rem) 1fr; align-items: center; gap: var(--space-5); margin-block: var(--space-6); padding: var(--space-5); border: 1px solid var(--p-border); border-radius: var(--r-lg); background: var(--p-bg); color: var(--p-text); }
+  .promo-card:not(:has(.promo-card__img)) { grid-template-columns: 1fr; }
+  .promo-card__img { inline-size: 100%; block-size: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--r-md); background: var(--surface-3); }
+  .promo-card__body { display: grid; justify-items: start; gap: var(--space-2); padding-inline-end: 2.75rem; }
+  .promo-card__kicker { margin: 0; padding: var(--p-kicker-pad); border-radius: var(--r-sm); background: var(--p-kicker-bg); color: var(--p-kicker-text); font-size: var(--step--1); font-weight: 700; }
+  .promo-card__title { margin: 0; font-family: var(--font-display); font-size: var(--step-2); line-height: var(--lh-title); color: inherit; }
+  .promo-card__text { margin: 0; max-inline-size: 62ch; color: inherit; }
+  .promo-card__cta { margin-block-start: var(--space-2); }
+  .promo-card__close { position: absolute; inset-block-start: var(--space-2); inset-inline-end: var(--space-2); color: inherit; }
+  .promo-card__close:hover { background: color-mix(in srgb, currentColor 14%, transparent); color: inherit; }
+  @media (max-width: 700px) {
+    .promo-card { grid-template-columns: 1fr; gap: var(--space-4); padding: var(--space-4); }
+    .promo-card__img { order: -1; }
+    /* the image runs under the close button on phones: give the button its own backing */
+    .promo-card:has(.promo-card__img) .promo-card__close { inset-block-start: calc(var(--space-4) + var(--space-2)); inset-inline-end: calc(var(--space-4) + var(--space-2)); background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--text); }
+  }
+
+  /* popup: native modal <dialog>; a bottom sheet on phones, never full screen */
+  /* the base reset (`* { margin: 0 }`) removes the dialog's own centring, so it is restated */
+  .promo-pop { position: fixed; inset: 0; margin: auto; inline-size: min(34rem, calc(100vw - 2rem)); max-inline-size: none; max-block-size: min(90vh, 42rem); padding: 0; border: 0; border-block-start: 6px solid var(--p-accent); border-radius: var(--r-xl); background: var(--surface); color: var(--text); box-shadow: var(--shadow-3); overflow: auto; overscroll-behavior: contain; }
+  .promo-pop::backdrop { background: var(--scrim); }
+  .promo-pop__inner { position: relative; }
+  .promo-pop__img { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 1200 / 630; object-fit: cover; background: var(--surface-3); }
+  .promo-pop__body { display: grid; justify-items: start; gap: var(--space-3); padding: var(--space-5); }
+  .promo-pop__kicker { margin: 0; padding-inline-end: 2.75rem; color: var(--accent-text); font-size: var(--step--1); font-weight: 700; }
+  .promo-pop__title { margin: 0; font-family: var(--font-display); font-size: var(--step-3); line-height: var(--lh-title); }
+  .promo-pop__text { margin: 0; color: var(--text-2); }
+  .promo-pop__close { position: absolute; inset-block-start: var(--space-2); inset-inline-end: var(--space-2); z-index: 1; background: color-mix(in srgb, var(--surface) 88%, transparent); }
+  @media (max-width: 760px) {
+    .promo-pop { inline-size: 100%; max-block-size: 72vh; margin: auto 0 0; border-radius: var(--r-xl) var(--r-xl) 0 0; padding-block-end: env(safe-area-inset-bottom); }
+    .promo-pop__img { aspect-ratio: 16 / 7; }
+    .promo-pop__title { font-size: var(--step-2); }
+  }
+
+  /* corner notice: on the start side, away from the back-to-top button on the end side */
+  .promo-corner { position: fixed; inset-block-end: var(--space-4); inset-inline-start: var(--space-4); z-index: calc(var(--z-drawer) - 1); display: flex; align-items: flex-start; gap: var(--space-2); inline-size: min(22rem, calc(100vw - 2rem)); padding: var(--space-4); border: 1px solid var(--border); border-inline-start: 4px solid var(--p-accent); border-radius: var(--r-lg); background: var(--surface); color: var(--text); box-shadow: var(--shadow-2); }
+  .promo-corner__body { flex: 1 1 auto; min-inline-size: 0; display: grid; justify-items: start; gap: var(--space-1); }
+  .promo-corner__kicker { margin: 0; color: var(--accent-text); font-size: var(--step--2); font-weight: 700; }
+  .promo-corner__title { margin: 0; font-weight: 700; }
+  .promo-corner__text { margin: 0; color: var(--text-2); font-size: var(--step--1); }
+  .promo-corner__cta { margin-block-start: var(--space-2); }
+  .promo-corner__close { flex: none; margin-block-start: calc(-1 * var(--space-2)); margin-inline-end: calc(-1 * var(--space-2)); }
+  @media (max-width: 760px) {
+    .promo-corner { inset-inline: var(--space-3); inset-block-end: calc(var(--space-3) + env(safe-area-inset-bottom)); inline-size: auto; }
+  }
+
+  /* the phone menu and the filters sheet (not dialogs) open above it and are never covered by it */
+  :root:has(.drawer[data-open='true'], .listing[data-filters-open='true']) .promo-corner { display: none; }
+  /* on phones the notice spans the bottom edge: back-to-top waits until it is closed */
+  @media (max-width: 760px) { :root:has(.promo-corner) .back-top { display: none; } }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .promo-pop[open] { animation: promo-rise var(--t-slow) var(--ease); }
+    .promo-corner { animation: promo-rise var(--t-slow) var(--ease); }
+  }
+  @keyframes promo-rise { from { opacity: 0; transform: translateY(0.75rem); } }
+
+  @media (forced-colors: active) {
+    .promo-bar, .promo-card, .promo-pop, .promo-corner { border: 1px solid CanvasText; }
+  }
+}

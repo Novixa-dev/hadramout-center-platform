@@ -9,6 +9,9 @@ import { allow, clientKey } from '../../../../lib/ratelimit.ts';
 
 export const dynamic = 'force-dynamic';
 
+/** Visitor-requested translation is for pages people read; promotions are translated when an editor publishes them. */
+const visitorSlug = (slug: string): boolean => isTranslatableSlug(slug) && slug !== 'promotions';
+
 const asked = new Map<string, number>();
 const key = (slug: string, id: string, lang: string) => `${slug}:${id}:${lang}`;
 
@@ -38,7 +41,7 @@ export async function GET(req: Request) {
   const slug = u.searchParams.get('slug') ?? '';
   const id = u.searchParams.get('id') ?? '';
   const lang = u.searchParams.get('lang') ?? '';
-  if (!isTranslatableSlug(slug) || !getLanguage(lang)) return NextResponse.json({ state: 'none' }, { status: 400 });
+  if (!visitorSlug(slug) || !getLanguage(lang)) return NextResponse.json({ state: 'none' }, { status: 400 });
   return NextResponse.json({ state: await stateOf(slug, id, lang) }, { headers: { 'cache-control': 'no-store' } });
 }
 
@@ -54,7 +57,7 @@ export async function POST(req: Request) {
   const slug = body.slug ?? '';
   const lang = body.lang ?? '';
   const id = String(body.id ?? '');
-  if (!isTranslatableSlug(slug) || !getLanguage(lang) || lang === 'ar' || !/^\d+$/.test(id) || !isLangEnabled(cfg, lang)) return NextResponse.json({ error: 'invalid' }, { status: 400 });
+  if (!visitorSlug(slug) || !getLanguage(lang) || lang === 'ar' || !/^\d+$/.test(id) || !isLangEnabled(cfg, lang)) return NextResponse.json({ error: 'invalid' }, { status: 400 });
   // per visitor: 40 requests / 10 min; whole site: 600 / hour — protects the translation budget
   if (!allow(`tr:${clientKey(req)}`, 40, 600) || !allow('tr:all', 600, 3600)) return NextResponse.json({ error: 'rate limited' }, { status: 429 });
 

@@ -23,6 +23,8 @@ import * as migration_20261108_120000_reconcile_center_feedback from './20261108
 import * as migration_20261108_130000_book_records from './20261108_130000_book_records';
 import * as migration_20261109_125858_platforms from './20261109_125858_platforms';
 import * as migration_20261111_141033_receipts from './20261111_141033_receipts';
+import * as migration_20261119_235429_promotions from './20261119_235429_promotions';
+import * as migration_20261120_010000_support_page_links from './20261120_010000_support_page_links';
 
 export const migrations = [
   {
@@ -149,5 +151,15 @@ export const migrations = [
     up: migration_20261111_141033_receipts.up,
     down: migration_20261111_141033_receipts.down,
     name: '20261111_141033_receipts',
+  },
+  {
+    up: migration_20261119_235429_promotions.up,
+    down: migration_20261119_235429_promotions.down,
+    name: '20261119_235429_promotions',
+  },
+  {
+    up: migration_20261120_010000_support_page_links.up,
+    down: migration_20261120_010000_support_page_links.down,
+    name: '20261120_010000_support_page_links',
   },
 ];

@@ -21,6 +21,9 @@ async function relatedOf(doc: Record<string, unknown>): Promise<{ slug: Translat
   return out;
 }
 
+/** Translated records that are not documents of the search index (and have no related records to translate). */
+const NOT_INDEXED = new Set<string>(['authors', 'categories', 'site', 'media', 'promotions']);
+
 export const translateDocTask: TaskConfig<'translate-doc'> = {
   slug: 'translate-doc',
   retries: { attempts: 5, backoff: { type: 'exponential', delay: 30_000 } },
@@ -35,7 +38,7 @@ export const translateDocTask: TaskConfig<'translate-doc'> = {
     const cfg = appConfig();
     const engine = new TranslationEngine({ payload: req.payload, provider, isLanguageEnabled: (l) => isLangEnabled(cfg, l), dailyCharLimit: cfg.translation.dailyCharLimit });
     await engine.translateDoc(slug, id ?? null, lang);
-    if (id && slug !== 'authors' && slug !== 'categories' && slug !== 'site' && slug !== 'media') {
+    if (id && !NOT_INDEXED.has(slug)) {
       const doc = (await req.payload.findByID({ collection: slug as never, id, locale: 'ar', depth: 0, overrideAccess: true })) as unknown as Record<string, unknown>;
       for (const rel of await relatedOf(doc)) await engine.translateDoc(rel.slug, rel.id, lang);
       await reindexDoc(req.payload, slug as CollectionSlug | 'pages', id);

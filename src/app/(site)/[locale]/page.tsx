@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { absolute, isLocale, makeCtx, docHref } from '../../../lib/ctx.ts';
 import { getSite, listAnnouncements, listTimeline } from '../../../lib/data.ts';
 import { AnnouncementCard } from '../../../components/AnnouncementCard.tsx';
+import { PromoSlot } from '../../../components/PromoSlot.tsx';
 import { getTopics, latest, rowCount, topAuthors } from '../../../lib/facets.ts';
 import { buildMetadata } from '../../../lib/seo.ts';
 import { describe } from '../../../lib/seo-text.ts';
@@ -119,6 +120,8 @@ export default async function Home({ params }: Props) {
           </div>
         </section>
       ) : null}
+
+      <PromoSlot ctx={ctx} page="home" />
 
       <section className="section section--tight">
         <div className="container split">

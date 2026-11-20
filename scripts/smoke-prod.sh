@@ -122,6 +122,8 @@ case "$(body /sitemap.xml)" in *'/ar/about/advisors'*) echo "FAIL sitemap lists 
 check /og/ar/platforms.png 200; check /og/ar/store.png 200; check /og/ar/constructor.png 404
 # the digital platforms: accounts, requests and their walls. Writes rows, so only here on this throwaway copy, never against a live site.
 (cd "$ROOT" && node scripts/platform-check.mjs "http://127.0.0.1:$PORT" --db "$DB_DIR/payload.db") || fail=1
+# promotions ("ads"): schedule, targeting, pre-paint script, anonymous counter and its walls (writes and removes its rows)
+(cd "$ROOT" && node scripts/promo-check.mjs "http://127.0.0.1:$PORT" --db "$DB_DIR/payload.db") || fail=1
 # security fixes of this pass: staff-only assistant, no draft leaks through ?preview=1 or calendar files, dead route gone
 assist=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' -d '{"action":"translate","title":"x","targetLang":"en"}' "http://127.0.0.1:$PORT/api/hc/editorial-assist")
 [ "$assist" = 401 ] && echo "ok   editorial assistant refuses visitors" || { echo "FAIL editorial-assist answered $assist without a session"; fail=1; }

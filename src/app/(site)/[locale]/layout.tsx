@@ -9,6 +9,10 @@ import { loadConfig } from '../../../config.ts';
 import { uiCoverage } from '../../../i18n/ui-store.ts';
 import { Footer, Header, UtilityBar, langOptions } from '../../../components/Shell.tsx';
 import { AnnouncementBanner } from '../../../components/AnnouncementBanner.tsx';
+import { PromoBar, PromoOverlays } from '../../../components/client/Promotions.tsx';
+import { promoLabels } from '../../../components/PromoSlot.tsx';
+import { listPromotions } from '../../../lib/promotions-data.ts';
+import { promoHeadScript } from '../../../lib/promotions.ts';
 import { BackToTop } from '../../../components/client/BackToTop.tsx';
 import { PwaRegister } from '../../../components/client/PwaRegister.tsx';
 import { NavProgress } from '../../../components/client/NavProgress.tsx';
@@ -56,11 +60,17 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const { locale } = await params;
   if (!isLocale(locale) || !enabledOrAll().has(locale)) notFound();
   const ctx = makeCtx(locale);
-  const [site, announcements, navPages] = await Promise.all([
+  const [site, announcements, navPages, promos] = await Promise.all([
     getSite(locale),
     listAnnouncements(locale, { only: 'pinned', limit: 1 }),
     listNavPages(locale),
+    listPromotions(locale, ctx.t('promo.details')),
   ]);
+  // an official pinned announcement owns the top of the page: no promotion bar beside it
+  const bars = announcements[0] ? [] : promos.filter((p) => p.format === 'bar');
+  const overlays = promos.filter((p) => p.format === 'popup' || p.format === 'corner');
+  const prePaint = [...bars, ...promos.filter((p) => p.format === 'card')];
+  const labels = promoLabels(ctx);
   const ready = new Set(['ar', 'en', ...[...enabledOrAll()].filter((c) => uiCoverage(c) >= 0.95)]);
   return (
     <html lang={ctx.lang.tag} dir={ctx.lang.dir} data-theme="dark" suppressHydrationWarning>
@@ -74,6 +84,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
           </>
         ) : null}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        {prePaint.length ? <script dangerouslySetInnerHTML={{ __html: promoHeadScript(prePaint) }} /> : null}
       </head>
       <body>
         <a className="skip-link" href="#main">{ctx.t('site.skip')}</a>
@@ -87,10 +98,12 @@ export default async function LocaleLayout({ children, params }: { children: Rea
             labels={{ kicker: ctx.t('announcements.kicker'), more: ctx.t('announcements.details'), close: ctx.t('nav.close') }}
           />
         ) : null}
+        {bars.length ? <PromoBar items={bars} labels={labels} /> : null}
         <UtilityBar ctx={ctx} langs={langOptions(ready)} />
         <Header ctx={ctx} site={site} navPages={navPages} />
         <main id="main" tabIndex={-1}>{children}</main>
         <Footer ctx={ctx} site={site} navPages={navPages} />
+        {overlays.length ? <PromoOverlays items={overlays} labels={labels} /> : null}
         <BackToTop label={ctx.t('tools.backToTop')} />
         <PwaRegister />
         <Suspense fallback={null}><NavProgress /></Suspense>

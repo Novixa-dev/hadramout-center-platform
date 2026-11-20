@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { absolute, authorsOf, coverOf, displayDate, docHref, isLocale, makeCtx } from '../../../../../lib/ctx.ts';
 import { typeFromRoute, type ContentType } from '../../../../../lib/content-types.ts';
+import { PromoSlot } from '../../../../../components/PromoSlot.tsx';
 import { getDoc, getDocsByIds, getSite, trInfo, type Doc } from '../../../../../lib/data.ts';
 import { neighboursAndRelated, queryArchive } from '../../../../../lib/facets.ts';
 import { buildMetadata, cardUrl } from '../../../../../lib/seo.ts';
@@ -598,6 +599,8 @@ export default async function DetailPage({ params, searchParams }: Props) {
             {pager}
             {doc.updatedAt ? <p className="no-print" style={{ color: 'var(--muted)', fontSize: 'var(--step--2)', marginBlockStart: 'var(--space-6)' }}>{t('meta.updated')}: <time dateTime={doc.updatedAt}>{displayDate({ publishedAt: doc.updatedAt, datePrecision: 'day' }, locale)}</time></p> : null}
           </article>
+          {/* the Center's promotion sits after the text, outside the article (reader modes, citations) */}
+          <PromoSlot ctx={ctx} page={section} contained={false} />
         </div>
       </div>
       {jsonLd.map((j, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(j) }} />)}

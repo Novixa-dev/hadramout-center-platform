@@ -769,5 +769,17 @@
   "account.passwordChanged": "تغيّرت كلمة المرور، وخرجت الأجهزة الأخرى من الحساب.",
   "account.deleteTitle": "حذف الحساب",
   "account.deleteNote": "يُحذف الحساب ومحفوظاته نهائيًا. تبقى طلباتكم السابقة لدى المركز لمتابعتها، دون ربطها بحساب.",
-  "account.deleteConfirm": "حذف حسابي نهائيًا"
+  "account.deleteConfirm": "حذف حسابي نهائيًا",
+  "promo.kind.event": "فعالية",
+  "promo.kind.release": "إصدار جديد",
+  "promo.kind.call": "دعوة للمشاركة",
+  "promo.kind.donation": "حملة تبرع",
+  "promo.kind.project": "مشروع للدعم",
+  "promo.kind.store": "عرض في المتجر",
+  "promo.kind.volunteer": "دعوة للتطوع",
+  "promo.kind.partner": "برعاية شريك",
+  "promo.kind.notice": "تنبيه",
+  "promo.close": "إغلاق الإعلان",
+  "promo.details": "التفاصيل",
+  "promo.region": "إعلان من المركز"
 }

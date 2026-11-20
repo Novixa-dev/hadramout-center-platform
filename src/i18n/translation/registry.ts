@@ -4,7 +4,7 @@ import { TRANSLATABLE_EXTRA, type CollectionSlug } from '../../lib/content-types
  * Which localized fields of which collection/global the translation engine handles,
  * and whether each holds plain text or sanitized HTML.
  */
-export type TranslatableSlug = CollectionSlug | 'authors' | 'categories' | 'pages' | 'timeline' | 'media' | 'site';
+export type TranslatableSlug = CollectionSlug | 'authors' | 'categories' | 'pages' | 'timeline' | 'media' | 'promotions' | 'site';
 
 export interface FieldSpec {
   name: string;
@@ -43,6 +43,11 @@ export const TRANSLATABLE: Record<TranslatableSlug, FieldSpec[]> = {
     { name: 'body', format: 'text' },
   ],
   media: [{ name: 'alt', format: 'text' }],
+  promotions: [
+    { name: 'headline', format: 'text' },
+    { name: 'text', format: 'text' },
+    { name: 'ctaLabel', format: 'text' },
+  ],
   site: [
     { name: 'name', format: 'text' },
     { name: 'shortName', format: 'text' },
@@ -76,6 +81,8 @@ export function contextFor(slug: TranslatableSlug): string {
       return 'names and short biographies of authors and scholars (transliterate names)';
     case 'timeline':
       return 'a short historical encyclopedia entry';
+    case 'promotions':
+      return 'a short promotional message and button label from a research center (keep it brief)';
     default:
       return 'website text';
   }

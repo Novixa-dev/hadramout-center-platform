@@ -769,5 +769,17 @@
   "account.passwordChanged": "Password changed; other devices were signed out.",
   "account.deleteTitle": "Delete account",
   "account.deleteNote": "The account and its saved items are deleted for good. Your past requests stay with the Center for follow-up, no longer linked to an account.",
-  "account.deleteConfirm": "Delete my account for good"
+  "account.deleteConfirm": "Delete my account for good",
+  "promo.kind.event": "Event",
+  "promo.kind.release": "New release",
+  "promo.kind.call": "Call for participation",
+  "promo.kind.donation": "Donation campaign",
+  "promo.kind.project": "Support a project",
+  "promo.kind.store": "Store offer",
+  "promo.kind.volunteer": "Volunteer",
+  "promo.kind.partner": "Sponsored by a partner",
+  "promo.kind.notice": "Notice",
+  "promo.close": "Close this promotion",
+  "promo.details": "Details",
+  "promo.region": "From the Center"
 }

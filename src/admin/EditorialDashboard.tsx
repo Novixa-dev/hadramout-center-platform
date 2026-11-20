@@ -35,6 +35,7 @@ const CONTENT: { slug: CollectionSlug; ar: string; en: string }[] = [
   { slug: 'videos', ar: 'المرئيات', en: 'Videos' },
   { slug: 'encyclopedia', ar: 'الموسوعة الحضرمية', en: 'Encyclopedia' },
   { slug: 'announcements', ar: 'الإعلانات والبيانات', en: 'Announcements' },
+  { slug: 'promotions', ar: 'الإعلانات الترويجية', en: 'Promotions (ads)' },
   { slug: 'partners', ar: 'الشركاء والجهات', en: 'Partners' },
   { slug: 'pages', ar: 'الصفحات التعريفية', en: 'Pages' },
 ];
@@ -239,6 +240,7 @@ export async function EditorialDashboard({ payload, user, i18n }: Props) {
                     ['pages', 'page', t.newPage],
                     ['audio', 'audio', t.newAudio],
                     ['announcements', 'announcement', t.newAnnouncement],
+                    ['promotions', 'announcement', t.newPromotion],
                   ] as const
                 ).map(([slug, icon, label], i) => (
                   <li key={slug}>
