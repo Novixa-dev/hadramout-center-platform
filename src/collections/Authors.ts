@@ -5,7 +5,7 @@ import { revalidateSite } from '../hooks/revalidate.ts';
 export const Authors: CollectionConfig = {
   slug: 'authors',
   labels: { singular: L('كاتب', 'Author'), plural: L('الكتّاب', 'Authors') },
-  admin: { useAsTitle: 'name', defaultColumns: ['name', 'updatedAt'], group: L('المحتوى', 'Content'), listSearchableFields: ['name'] },
+  admin: { useAsTitle: 'name', defaultColumns: ['name', 'updatedAt'], group: L('الهيكل والموقع', 'Site Structure'), listSearchableFields: ['name'] },
   access: { ...contentAccess, read: () => true },
   hooks: {
     afterChange: [

@@ -9,7 +9,7 @@ import { revalidateSite } from '../hooks/revalidate.ts';
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
   labels: { singular: L('مراجعة قارئ', 'Reader review'), plural: L('مراجعات القراء', 'Reader reviews') },
-  admin: { useAsTitle: 'name', defaultColumns: ['name', 'rating', 'targetType', 'targetId', 'status', 'createdAt'], group: L('المجتمع', 'Community') },
+  admin: { useAsTitle: 'name', defaultColumns: ['name', 'rating', 'targetType', 'targetId', 'status', 'createdAt'], group: L('المنصات والخدمات', 'Platforms & Services') },
   defaultSort: '-createdAt',
   access: { read: isEditorOrAdmin, create: () => false, update: isEditorOrAdmin, delete: isAdmin },
   hooks: {

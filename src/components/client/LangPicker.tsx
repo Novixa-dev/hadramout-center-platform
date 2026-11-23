@@ -121,7 +121,7 @@ export function LangPicker({ current, currentNative, options, labels }: Props) {
         aria-controls={panelId}
         aria-label={`${labels.title}: ${currentNative}`}
       >
-        <Icon name="globe" />
+        <Icon name="globe" className="icon lang-trigger__globe" />
         <span className="lang-trigger__text" lang={current}>{currentNative}</span>
         <Icon name="down" className="icon lang-trigger__chev" />
       </button>

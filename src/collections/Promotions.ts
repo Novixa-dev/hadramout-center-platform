@@ -52,7 +52,7 @@ export const Promotions: CollectionConfig = {
   admin: {
     useAsTitle: 'headline',
     defaultColumns: ['headline', 'format', 'scheduleState', 'startAt', 'endAt', 'status'],
-    group: L('المحتوى', 'Content'),
+    group: L('الهيكل والموقع', 'Site Structure'),
     description: L(
       'حملات المركز على الموقع: فعالية، إصدار جديد، دعوة للمشاركة، حملة تبرع، عرض في المتجر… لكل إعلان شكل وموعد بداية ونهاية بالدقيقة وصفحات وأجهزة يظهر فيها. الإحصاءات مجهولة الهوية: لا تُحفظ بيانات الزوار.',
       'The Center\'s campaigns on the site: an event, a new release, a call for papers, a donation drive, a store offer… Each has a format, a start and end to the minute, and the pages and devices it shows on. Counts are anonymous: nothing about visitors is stored.',

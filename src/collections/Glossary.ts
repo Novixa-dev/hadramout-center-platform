@@ -8,7 +8,7 @@ export const Glossary: CollectionConfig = {
   admin: {
     useAsTitle: 'termAr',
     defaultColumns: ['termAr', 'lang', 'translation', 'kind'],
-    group: L('الترجمة', 'Translation'),
+    group: L('الترجمة واللغات', 'Translation & Languages'),
     description: L('مصطلحات وأسماء أعلام وأماكن تُترجم بصيغة ثابتة في كل المحتوى (مثل: سمهرم ← Sumhuram).', 'Terms, names and places that are always translated the same way (e.g. سمهرم → Sumhuram).'),
   },
   access: { read: isStaff, create: isEditorOrAdmin, update: isEditorOrAdmin, delete: isAdmin },

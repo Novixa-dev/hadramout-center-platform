@@ -5,7 +5,7 @@ import { revalidateSite } from '../hooks/revalidate.ts';
 export const Timeline: CollectionConfig = {
   slug: 'timeline',
   labels: { singular: L('حدث تاريخي', 'Timeline event'), plural: L('الخط الزمني', 'Timeline') },
-  admin: { useAsTitle: 'title', defaultColumns: ['title', 'yearFrom', 'status'], group: L('المحتوى', 'Content') },
+  admin: { useAsTitle: 'title', defaultColumns: ['title', 'yearFrom', 'status'], group: L('الفعاليات والتاريخ', 'Events & History') },
   defaultSort: 'yearFrom',
   access: contentAccess,
   hooks: {

@@ -9,7 +9,7 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'status', 'navPlacement', 'updatedAt'],
-    group: L('المحتوى', 'Content'),
+    group: L('الهيكل والموقع', 'Site Structure'),
     preview: (doc, { locale }) => {
       const lang = locale || 'ar';
       const slug = (doc as { slug?: string })?.slug;

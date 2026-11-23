@@ -52,6 +52,7 @@ export default buildConfig({
       beforeLogin: ['/admin/HeaderActions#LoginLanguage'],
       beforeDashboard: ['/admin/EditorialDashboard#EditorialDashboard'],
       beforeNavLinks: ['/admin/components/NavHomeLink#NavHomeLink'],
+      afterNavLinks: ['/admin/components/NavProfileFooter#NavProfileFooter'],
       logout: { Button: '/admin/components/LogoutButton#LogoutButton' },
       providers: ['/admin/components/PasswordReveal#PasswordReveal'],
       // No email adapter is configured: Payload's own screen would promise a reset email that never leaves the server.
@@ -60,7 +61,45 @@ export default buildConfig({
   },
   i18n: { supportedLanguages: { ar, en }, fallbackLanguage: 'ar', translations: ADMIN_TRANSLATIONS },
   localization: { locales: PAYLOAD_LOCALES, defaultLocale: DEFAULT_LOCALE, fallback: true },
-  collections: withStatusCells([News, Articles, Books, Magazines, Events, ForumEvents, Videos, Encyclopedia, Audio, Announcements, Promotions, Partners, Testimonials, Authors, Categories, Pages, Timeline, Media, Glossary, Reviews, Messages, Subscribers, Orders, Pledges, Receipts, Volunteers, Members, TranslationUsage, Users]),
+  collections: withStatusCells([
+    // النشر والدراسات
+    Articles,
+    Books,
+    Magazines,
+    Encyclopedia,
+    // الفعاليات والتاريخ
+    Events,
+    ForumEvents,
+    Timeline,
+    // المركز الإعلامي
+    News,
+    Announcements,
+    Videos,
+    Audio,
+    Media,
+    // المنصات والخدمات
+    Orders,
+    Receipts,
+    Pledges,
+    Members,
+    Volunteers,
+    Reviews,
+    // التواصل والوارد
+    Messages,
+    Subscribers,
+    // الترجمة واللغات
+    Glossary,
+    TranslationUsage,
+    // الهيكل والموقع
+    Authors,
+    Categories,
+    Pages,
+    Partners,
+    Promotions,
+    Testimonials,
+    // الإدارة
+    Users,
+  ]),
   globals: [Site],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

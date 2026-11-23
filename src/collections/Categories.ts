@@ -5,7 +5,7 @@ import { revalidateSite } from '../hooks/revalidate.ts';
 export const Categories: CollectionConfig = {
   slug: 'categories',
   labels: { singular: L('تصنيف', 'Category'), plural: L('التصنيفات', 'Categories') },
-  admin: { useAsTitle: 'name', defaultColumns: ['name', 'parent', 'kind', 'order'], group: L('المحتوى', 'Content'), description: L('مستويان: موضوع رئيسي ثم تصنيفات فرعية (أبواب المجلة وغيرها).', 'Two levels: a main topic, then sub-categories (magazine columns etc.).') },
+  admin: { useAsTitle: 'name', defaultColumns: ['name', 'parent', 'kind', 'order'], group: L('الهيكل والموقع', 'Site Structure'), description: L('مستويان: موضوع رئيسي ثم تصنيفات فرعية (أبواب المجلة وغيرها).', 'Two levels: a main topic, then sub-categories (magazine columns etc.).') },
   defaultSort: 'order',
   access: { ...contentAccess, read: () => true },
   hooks: {

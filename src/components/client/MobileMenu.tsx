@@ -58,9 +58,15 @@ export function MobileMenu({ label, closeLabel, entries, footer }: Props) {
       <div className="drawer" id="mobile-drawer" data-open={open} role="dialog" aria-modal="true" aria-label={label} hidden={!open}>
         <div className="drawer__scrim" onClick={() => setOpen(false)} />
         <div className="drawer__panel" ref={panel}>
-          <button type="button" className="icon-btn" onClick={() => setOpen(false)} aria-label={closeLabel} style={{ alignSelf: 'flex-end' }}>
-            <Icon name="close" />
-          </button>
+          <div className="drawer__head">
+            <div className="drawer__brand">
+              <img src="/brand/logo-icon.svg" alt="" width={20} height={42} className="brand__mark" style={{ inlineSize: '1.35rem' }} />
+              <span className="brand__name" style={{ fontSize: 'var(--step-0)' }}>{label}</span>
+            </div>
+            <button type="button" className="icon-btn" onClick={() => setOpen(false)} aria-label={closeLabel}>
+              <Icon name="close" />
+            </button>
+          </div>
           <nav className="drawer__nav" aria-label={label}>
             {entries.map((e) => (isMenuGroup(e) ? <DrawerGroup key={e.label} group={e} pathname={pathname} close={() => setOpen(false)} /> : <DrawerLink key={e.href} href={e.href} label={e.label} pathname={pathname} close={() => setOpen(false)} />))}
           </nav>

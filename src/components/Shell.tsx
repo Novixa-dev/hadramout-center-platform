@@ -90,23 +90,21 @@ export function Header({ ctx, site, navPages = [] }: { ctx: Ctx; site: Site; nav
     <header className="site-header">
       <div className="container site-header__bar">
         <Link prefetch={false} className="brand" href={href('/')}>
-          <img className="brand__mark" src="/brand/logo-icon.svg" alt="" width={28} height={58} />
+          <img className="brand__mark" src="/brand/logo-icon.svg" alt="" width={24} height={50} />
           <span className="brand__text">
             <span className="brand__name">{site.shortName || site.name}</span>
             <span className="brand__sub">{t('header.sub')}</span>
           </span>
         </Link>
+        <nav className="nav" aria-label={t('nav.main')}>
+          <MainNav entries={entries} />
+        </nav>
         <div className="header-tools">
           <SearchToggle action={href('/search')} lang={ctx.lang.code} labels={searchLabels(ctx)} hint={t('search.panel.hint')} />
           <span className="theme-desktop"><ThemeToggle label={t('theme.toggle')} /></span>
           <MobileMenu label={t('nav.menu')} closeLabel={t('nav.close')} entries={[...entries, { href: href('/saved'), label: t('saved.title') }]} footer={<ThemeToggle label={t('theme.toggle')} />} />
         </div>
       </div>
-      <nav className="nav" aria-label={t('nav.main')}>
-        <div className="container">
-          <MainNav entries={entries} />
-        </div>
-      </nav>
     </header>
   );
 }

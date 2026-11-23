@@ -12,7 +12,7 @@ function contentCollection(
   slug: CollectionSlug,
   labels: { singular: Record<string, string>; plural: Record<string, string> },
   extra: Field[],
-  opts: { body?: boolean; cover?: boolean; date?: boolean; columns?: string[] } = {},
+  opts: { body?: boolean; cover?: boolean; date?: boolean; columns?: string[]; group?: Record<string, string> } = {},
 ): CollectionConfig {
   const hooks = contentHooks(slug);
   return {
@@ -20,7 +20,7 @@ function contentCollection(
     labels,
     admin: {
       useAsTitle: 'title',
-      group: L('المحتوى', 'Content'),
+      group: opts.group ?? L('النشر والدراسات', 'Publications & Studies'),
       defaultColumns: opts.columns ?? ['title', 'status', 'publishedAt'],
       listSearchableFields: ['title'],
     },
@@ -42,9 +42,14 @@ const authorsField: Field = {
 
 const categoryField: Field = { name: 'category', type: 'relationship', relationTo: 'categories', label: L('التصنيف', 'Category'), admin: { position: 'sidebar' } };
 
-export const News = contentCollection('news', { singular: L('خبر', 'News item'), plural: L('الأخبار', 'News') }, [
-  localizedText('dateline', L('سطر المصدر', 'Dateline'), { admin: { position: 'sidebar', description: L('مثال: المكلا / إعلام المركز', 'e.g. Mukalla / Center Media') } }),
-]);
+export const News = contentCollection(
+  'news',
+  { singular: L('خبر', 'News item'), plural: L('الأخبار', 'News') },
+  [
+    localizedText('dateline', L('سطر المصدر', 'Dateline'), { admin: { position: 'sidebar', description: L('مثال: المكلا / إعلام المركز', 'e.g. Mukalla / Center Media') } }),
+  ],
+  { group: L('المركز الإعلامي', 'Media Center') },
+);
 
 export const Articles = contentCollection(
   'articles',
@@ -239,9 +244,19 @@ const eventFields: Field[] = [
   },
 ];
 
-export const Events = contentCollection('events', { singular: L('مؤتمر / ندوة', 'Conference / seminar'), plural: L('المؤتمرات والندوات', 'Conferences & seminars') }, eventFields, { columns: ['title', 'eventDate', 'status'] });
+export const Events = contentCollection(
+  'events',
+  { singular: L('مؤتمر / ندوة', 'Conference / seminar'), plural: L('المؤتمرات والندوات', 'Conferences & seminars') },
+  eventFields,
+  { columns: ['title', 'eventDate', 'status'], group: L('الفعاليات والتاريخ', 'Events & History') },
+);
 
-export const ForumEvents = contentCollection('forum-events', { singular: L('فعالية منتدى', 'Forum event'), plural: L('منتدى عميد الوفاء', 'Ameed Al-Wafa Forum') }, [...eventFields, categoryField], { columns: ['title', 'eventDate', 'status'] });
+export const ForumEvents = contentCollection(
+  'forum-events',
+  { singular: L('فعالية منتدى', 'Forum event'), plural: L('منتدى عميد الوفاء', 'Ameed Al-Wafa Forum') },
+  [...eventFields, categoryField],
+  { columns: ['title', 'eventDate', 'status'], group: L('الفعاليات والتاريخ', 'Events & History') },
+);
 
 export const Videos = contentCollection(
   'videos',
@@ -269,6 +284,7 @@ export const Videos = contentCollection(
       ],
     },
   ],
+  { group: L('المركز الإعلامي', 'Media Center') },
 );
 
 /**

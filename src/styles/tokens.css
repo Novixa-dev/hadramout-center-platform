@@ -79,9 +79,9 @@
     --shadow-3: 0 22px 48px -14px rgb(40 30 10 / 0.3);
     --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --t-fast: 120ms; --t-med: 200ms; --t-slow: 320ms;
-    --header-h: 4.25rem;
-    --nav-h: 3rem;
-    --header-offset: var(--header-h); /* height of the sticky header: one row on phones, two from 1100px (layout.css) */
+    --header-h: 3.85rem;
+    --nav-h: 3.85rem;
+    --header-offset: var(--header-h); /* sleek single-row sticky header on all viewports */
     --z-header: 50; --z-drawer: 90; --z-dialog: 120; --z-toast: 200;
   }
 

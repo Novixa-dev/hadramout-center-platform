@@ -17,7 +17,6 @@ import { BackToTop } from '../../../components/client/BackToTop.tsx';
 import { PwaRegister } from '../../../components/client/PwaRegister.tsx';
 import { NavProgress } from '../../../components/client/NavProgress.tsx';
 import { StagingBar } from '../../../components/StagingBar.tsx';
-import { isProductionSite } from '../../../lib/site-env.ts';
 import { formatDate } from '../../../lib/dates.ts';
 
 export const dynamicParams = true;
@@ -88,7 +87,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
       </head>
       <body>
         <a className="skip-link" href="#main">{ctx.t('site.skip')}</a>
-        {isProductionSite() ? null : <StagingBar text={ctx.t('staging.banner')} />}
+        <StagingBar text={ctx.t('staging.banner')} />
         {announcements[0] ? (
           <AnnouncementBanner
             id={announcements[0].id}

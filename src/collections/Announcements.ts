@@ -8,7 +8,7 @@ export const Announcements: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'pinned', 'expiresAt', 'status'],
-    group: L('المحتوى', 'Content'),
+    group: L('المركز الإعلامي', 'Media Center'),
   },
   defaultSort: '-publishedAt',
   access: contentAccess,

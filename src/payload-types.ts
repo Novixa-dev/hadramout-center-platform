@@ -67,34 +67,34 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    news: News;
     articles: Article;
     books: Book;
     magazines: Magazine;
+    encyclopedia: Encyclopedia;
     events: Event;
     'forum-events': ForumEvent;
-    videos: Video;
-    encyclopedia: Encyclopedia;
-    audio: Audio;
-    announcements: Announcement;
-    promotions: Promotion;
-    partners: Partner;
-    testimonials: Testimonial;
-    authors: Author;
-    categories: Category;
-    pages: Page;
     timeline: Timeline;
+    news: News;
+    announcements: Announcement;
+    videos: Video;
+    audio: Audio;
     media: Media;
-    glossary: Glossary;
+    orders: Order;
+    receipts: Receipt;
+    pledges: Pledge;
+    members: Member;
+    volunteers: Volunteer;
     reviews: Review;
     messages: Message;
     subscribers: Subscriber;
-    orders: Order;
-    pledges: Pledge;
-    receipts: Receipt;
-    volunteers: Volunteer;
-    members: Member;
+    glossary: Glossary;
     'translation-usage': TranslationUsage;
+    authors: Author;
+    categories: Category;
+    pages: Page;
+    partners: Partner;
+    promotions: Promotion;
+    testimonials: Testimonial;
     users: User;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
@@ -111,34 +111,34 @@ export interface Config {
     };
   };
   collectionsSelect: {
-    news: NewsSelect<false> | NewsSelect<true>;
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     books: BooksSelect<false> | BooksSelect<true>;
     magazines: MagazinesSelect<false> | MagazinesSelect<true>;
+    encyclopedia: EncyclopediaSelect<false> | EncyclopediaSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     'forum-events': ForumEventsSelect<false> | ForumEventsSelect<true>;
-    videos: VideosSelect<false> | VideosSelect<true>;
-    encyclopedia: EncyclopediaSelect<false> | EncyclopediaSelect<true>;
-    audio: AudioSelect<false> | AudioSelect<true>;
-    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
-    promotions: PromotionsSelect<false> | PromotionsSelect<true>;
-    partners: PartnersSelect<false> | PartnersSelect<true>;
-    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
-    authors: AuthorsSelect<false> | AuthorsSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
     timeline: TimelineSelect<false> | TimelineSelect<true>;
+    news: NewsSelect<false> | NewsSelect<true>;
+    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
+    videos: VideosSelect<false> | VideosSelect<true>;
+    audio: AudioSelect<false> | AudioSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    glossary: GlossarySelect<false> | GlossarySelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    receipts: ReceiptsSelect<false> | ReceiptsSelect<true>;
+    pledges: PledgesSelect<false> | PledgesSelect<true>;
+    members: MembersSelect<false> | MembersSelect<true>;
+    volunteers: VolunteersSelect<false> | VolunteersSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     messages: MessagesSelect<false> | MessagesSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
-    orders: OrdersSelect<false> | OrdersSelect<true>;
-    pledges: PledgesSelect<false> | PledgesSelect<true>;
-    receipts: ReceiptsSelect<false> | ReceiptsSelect<true>;
-    volunteers: VolunteersSelect<false> | VolunteersSelect<true>;
-    members: MembersSelect<false> | MembersSelect<true>;
+    glossary: GlossarySelect<false> | GlossarySelect<true>;
     'translation-usage': TranslationUsageSelect<false> | TranslationUsageSelect<true>;
+    authors: AuthorsSelect<false> | AuthorsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    partners: PartnersSelect<false> | PartnersSelect<true>;
+    promotions: PromotionsSelect<false> | PromotionsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
@@ -494,9 +494,9 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news".
+ * via the `definition` "articles".
  */
-export interface News {
+export interface Article {
   id: number;
   title: string;
   /**
@@ -536,10 +536,9 @@ export interface News {
     | number
     | boolean
     | null;
-  /**
-   * e.g. Mukalla / Center Media
-   */
-  dateline?: string | null;
+  authors?: (number | Author)[] | null;
+  category?: (number | null) | Category;
+  magazine?: (number | null) | Magazine;
   updatedAt: string;
   createdAt: string;
 }
@@ -591,56 +590,6 @@ export interface Media {
       filename?: string | null;
     };
   };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "articles".
- */
-export interface Article {
-  id: number;
-  title: string;
-  /**
-   * Shown on cards and search results. Generated from the text when left empty.
-   */
-  excerpt?: string | null;
-  /**
-   * Write in Arabic only — other languages are translated automatically.
-   */
-  body?: string | null;
-  /**
-   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
-   */
-  cover?: (number | null) | Media;
-  /**
-   * Image from the legacy site, used until it is mirrored locally.
-   */
-  coverUrl?: string | null;
-  coverAlt?: string | null;
-  status: 'draft' | 'published' | 'archived';
-  featured?: boolean | null;
-  publishedAt?: string | null;
-  /**
-   * "Estimated" is only used for sorting and never shown to readers.
-   */
-  datePrecision?: ('day' | 'month' | 'year' | 'estimated' | 'none') | null;
-  legacyId?: number | null;
-  legacyUrl?: string | null;
-  source?: ('manual' | 'legacy') | null;
-  edited?: boolean | null;
-  translationMeta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  authors?: (number | Author)[] | null;
-  category?: (number | null) | Category;
-  magazine?: (number | null) | Magazine;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -826,6 +775,60 @@ export interface Book {
    * Download link when the book is publicly available.
    */
   pdf?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "encyclopedia".
+ */
+export interface Encyclopedia {
+  id: number;
+  title: string;
+  /**
+   * Shown on cards and search results. Generated from the text when left empty.
+   */
+  excerpt?: string | null;
+  /**
+   * Write in Arabic only — other languages are translated automatically.
+   */
+  body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
+  cover?: (number | null) | Media;
+  /**
+   * Image from the legacy site, used until it is mirrored locally.
+   */
+  coverUrl?: string | null;
+  coverAlt?: string | null;
+  status: 'draft' | 'published' | 'archived';
+  featured?: boolean | null;
+  publishedAt?: string | null;
+  /**
+   * "Estimated" is only used for sorting and never shown to readers.
+   */
+  datePrecision?: ('day' | 'month' | 'year' | 'estimated' | 'none') | null;
+  legacyId?: number | null;
+  legacyUrl?: string | null;
+  source?: ('manual' | 'legacy') | null;
+  edited?: boolean | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  entryKind?: ('person' | 'place' | 'event' | 'term' | 'group' | 'other') | null;
+  authors?: (number | Author)[] | null;
+  category?: (number | null) | Category;
+  /**
+   * One source per line. No entry is published without a source.
+   */
+  sources?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1020,6 +1023,143 @@ export interface ForumEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "timeline".
+ */
+export interface Timeline {
+  id: number;
+  title: string;
+  body?: string | null;
+  era?: string | null;
+  yearFrom: number;
+  yearTo?: number | null;
+  /**
+   * Cite the scholarly reference for each event.
+   */
+  source?: string | null;
+  sourceUrl?: string | null;
+  /**
+   * Link the event to a published study in the archive when one exists.
+   */
+  relatedArticle?: (number | null) | Article;
+  reviewStatus?: ('pending' | 'reviewed') | null;
+  reviewedAt?: string | null;
+  status: 'draft' | 'published';
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  title: string;
+  /**
+   * Shown on cards and search results. Generated from the text when left empty.
+   */
+  excerpt?: string | null;
+  /**
+   * Write in Arabic only — other languages are translated automatically.
+   */
+  body?: string | null;
+  /**
+   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
+   */
+  cover?: (number | null) | Media;
+  /**
+   * Image from the legacy site, used until it is mirrored locally.
+   */
+  coverUrl?: string | null;
+  coverAlt?: string | null;
+  status: 'draft' | 'published' | 'archived';
+  featured?: boolean | null;
+  publishedAt?: string | null;
+  /**
+   * "Estimated" is only used for sorting and never shown to readers.
+   */
+  datePrecision?: ('day' | 'month' | 'year' | 'estimated' | 'none') | null;
+  legacyId?: number | null;
+  legacyUrl?: string | null;
+  source?: ('manual' | 'legacy') | null;
+  edited?: boolean | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * e.g. Mukalla / Center Media
+   */
+  dateline?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements".
+ */
+export interface Announcement {
+  id: number;
+  title: string;
+  kind?: ('conference' | 'seminar' | 'lecture' | 'forum' | 'call' | 'event') | null;
+  /**
+   * Shown in the bar at the top of every page until it expires.
+   */
+  pinned?: boolean | null;
+  /**
+   * Shown in the home page announcements until it expires.
+   */
+  showOnHome?: boolean | null;
+  cover?: (number | null) | Media;
+  /**
+   * Shown on the card and in the calendar entry.
+   */
+  excerpt?: string | null;
+  venue?: string | null;
+  link?: string | null;
+  /**
+   * The full text of the announcement or circular.
+   */
+  body?: string | null;
+  attachment?: (number | null) | Media;
+  attachmentUrl?: string | null;
+  /**
+   * If the announcement concerns a workshop, conference, or call for papers deadline.
+   */
+  eventDate?: string | null;
+  /**
+   * Hidden automatically after this date. When empty it ends after the event day.
+   */
+  expiresAt?: string | null;
+  publishedAt?: string | null;
+  status?: ('draft' | 'published') | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "videos".
  */
 export interface Video {
@@ -1085,60 +1225,6 @@ export interface Video {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "encyclopedia".
- */
-export interface Encyclopedia {
-  id: number;
-  title: string;
-  /**
-   * Shown on cards and search results. Generated from the text when left empty.
-   */
-  excerpt?: string | null;
-  /**
-   * Write in Arabic only — other languages are translated automatically.
-   */
-  body?: string | null;
-  /**
-   * At least 1200 px wide, ideally without lettering. Shown at the top of the page and on the social share card.
-   */
-  cover?: (number | null) | Media;
-  /**
-   * Image from the legacy site, used until it is mirrored locally.
-   */
-  coverUrl?: string | null;
-  coverAlt?: string | null;
-  status: 'draft' | 'published' | 'archived';
-  featured?: boolean | null;
-  publishedAt?: string | null;
-  /**
-   * "Estimated" is only used for sorting and never shown to readers.
-   */
-  datePrecision?: ('day' | 'month' | 'year' | 'estimated' | 'none') | null;
-  legacyId?: number | null;
-  legacyUrl?: string | null;
-  source?: ('manual' | 'legacy') | null;
-  edited?: boolean | null;
-  translationMeta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  entryKind?: ('person' | 'place' | 'event' | 'term' | 'group' | 'other') | null;
-  authors?: (number | Author)[] | null;
-  category?: (number | null) | Category;
-  /**
-   * One source per line. No entry is published without a source.
-   */
-  sources?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "audio".
  */
 export interface Audio {
@@ -1198,193 +1284,64 @@ export interface Audio {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcements".
- */
-export interface Announcement {
-  id: number;
-  title: string;
-  kind?: ('conference' | 'seminar' | 'lecture' | 'forum' | 'call' | 'event') | null;
-  /**
-   * Shown in the bar at the top of every page until it expires.
-   */
-  pinned?: boolean | null;
-  /**
-   * Shown in the home page announcements until it expires.
-   */
-  showOnHome?: boolean | null;
-  cover?: (number | null) | Media;
-  /**
-   * Shown on the card and in the calendar entry.
-   */
-  excerpt?: string | null;
-  venue?: string | null;
-  link?: string | null;
-  /**
-   * The full text of the announcement or circular.
-   */
-  body?: string | null;
-  attachment?: (number | null) | Media;
-  attachmentUrl?: string | null;
-  /**
-   * If the announcement concerns a workshop, conference, or call for papers deadline.
-   */
-  eventDate?: string | null;
-  /**
-   * Hidden automatically after this date. When empty it ends after the event day.
-   */
-  expiresAt?: string | null;
-  publishedAt?: string | null;
-  status?: ('draft' | 'published') | null;
-  translationMeta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * The Center's campaigns on the site: an event, a new release, a call for papers, a donation drive, a store offer… Each has a format, a start and end to the minute, and the pages and devices it shows on. Counts are anonymous: nothing about visitors is stored.
+ * No online payment: staff contact the customer with availability, price, payment and shipping.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "promotions".
+ * via the `definition` "orders".
  */
-export interface Promotion {
+export interface Order {
   id: number;
+  reference: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  address: string;
+  note?: string | null;
+  items: {
+    book?: (number | null) | Book;
+    title?: string | null;
+    quantity: number;
+    id?: string | null;
+  }[];
   /**
-   * One short, clear line (up to 90 characters). Translated automatically.
+   * The member sees it in their account when the request is linked to one.
    */
-  headline: string;
-  /**
-   * One or two lines (up to 240 characters). Not shown in the top bar.
-   */
-  text?: string | null;
-  /**
-   * e.g. Register now, Order the book. Empty = «Details».
-   */
-  ctaLabel?: string | null;
-  /**
-   * A site path such as /donate or /events/12 (the language is added), or an https:// URL
-   */
-  ctaUrl?: string | null;
-  /**
-   * Optional; shown on the card and popup. Prefer 1200×630 with alt text in the library. Edges are cropped on different screens: keep important text out of the image.
-   */
-  image?: (number | null) | Media;
-  targeting: {
-    /**
-     * Leave empty for every page. A section includes its own pages (Books = the list and every book). A card shows only on the home page and on reading pages (an article, book, issue, event…), so choosing «Store», for example, does not show it.
-     */
-    pages?:
-      | (
-          | 'home'
-          | 'articles'
-          | 'books'
-          | 'magazines'
-          | 'events'
-          | 'forum'
-          | 'news'
-          | 'videos'
-          | 'audio'
-          | 'podcast'
-          | 'announcements'
-          | 'encyclopedia'
-          | 'culture'
-          | 'store'
-          | 'donate'
-          | 'volunteer'
-          | 'submit'
-          | 'about'
-          | 'support'
-          | 'partners'
-          | 'search'
-          | 'authors'
-          | 'topics'
-          | 'timeline'
-          | 'contact'
-        )[]
-      | null;
-    device: 'all' | 'mobile' | 'desktop';
+  status: 'new' | 'confirmed' | 'paid' | 'delivered' | 'cancelled';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  receipts?: {
+    docs?: (number | Receipt)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
   };
-  behaviour: {
-    /**
-     * A popup and a corner notice can always be closed.
-     */
-    dismissible?: boolean | null;
-    /**
-     * 0 = until the visitor closes the tab.
-     */
-    hideDays: number;
-    frequency: 'once' | 'session' | 'always';
-    trigger: 'delay' | 'scroll';
-    /**
-     * At least 3 s: nothing covers the page on arrival.
-     */
-    delay: number;
-  };
-  /**
-   * Bar: one line above every page (hidden while an official announcement is pinned). Card: on the home page after the numbers strip and official announcements, and after the text on reading pages. Popup: a window after a delay, a bottom sheet on phones. Corner: a small card in a corner of the screen.
-   */
-  format: 'bar' | 'card' | 'popup' | 'corner';
-  /**
-   * Shown as a small label above the headline.
-   */
-  kind: 'event' | 'release' | 'call' | 'donation' | 'project' | 'store' | 'volunteer' | 'partner' | 'notice';
-  tone: 'brand' | 'gold' | 'paper';
-  /**
-   * In your device's time. Honoured to the minute, even on cached pages.
-   */
-  startAt: string;
-  /**
-   * Empty = until switched off by hand.
-   */
-  endAt?: string | null;
-  /**
-   * When two of the same format overlap, the higher priority shows (then the newest). One per format per page.
-   */
-  priority: number;
-  /**
-   * «Published» with a later start = scheduled.
-   */
-  status: 'draft' | 'published';
-  translationMeta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  lang?: string | null;
+  ipHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Reader accounts. Separate from staff accounts; they never open this admin.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partners".
+ * via the `definition` "members".
  */
-export interface Partner {
+export interface Member {
   id: number;
   name: string;
-  category?: ('academic' | 'research' | 'cultural' | 'governmental') | null;
+  email: string;
+  phone?: string | null;
   /**
-   * Optional; shown only with the written consent below. Without it the name and collaboration areas are shown.
+   * A suspended member cannot sign in and their sessions end at once.
    */
-  logo?: (number | null) | Media;
-  website?: string | null;
-  summary?: string | null;
+  status: 'active' | 'suspended';
   /**
-   * Logos are not shown publicly without explicit written consent from the partner institution.
+   * There is no reset email: when a member asks, type a temporary password here (10+ characters) and tell them; they change it from their account. It is neither stored nor shown.
    */
-  hasWrittenConsent?: boolean | null;
-  order?: number | null;
-  status?: ('draft' | 'published') | null;
-  translationMeta?:
+  temporaryPassword?: string | null;
+  lastLoginAt?: string | null;
+  passwordHash?: string | null;
+  sessionVersion?: number | null;
+  savedItems?:
     | {
         [k: string]: unknown;
       }
@@ -1397,35 +1354,274 @@ export interface Partner {
   createdAt: string;
 }
 /**
+ * Receipt photos sent with orders and pledges. Check that the money really arrived before marking the request paid or received: a photo alone is no proof of payment.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials".
+ * via the `definition` "receipts".
  */
-export interface Testimonial {
+export interface Receipt {
   id: number;
-  personName: string;
-  personTitle?: string | null;
-  institution?: string | null;
-  quote: string;
-  avatar?: (number | null) | Media;
+  reference: string;
+  kind: 'order' | 'pledge';
+  order?: (number | null) | Order;
+  pledge?: (number | null) | Pledge;
+  amount?: number | null;
+  currency?: ('YER' | 'SAR' | 'USD' | 'AED') | null;
+  transferRef?: string | null;
+  note?: string | null;
   /**
-   * e.g. Guestbook, conference speech, press statement.
+   * The member sees it in their account when the request is linked to one.
    */
-  source?: string | null;
+  status: 'new' | 'verified' | 'rejected';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  lang?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+/**
+ * A pledge only: the site never takes money. Staff confirm receipt by hand.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pledges".
+ */
+export interface Pledge {
+  id: number;
+  reference: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  amount?: number | null;
+  currency?: ('YER' | 'SAR' | 'USD' | 'AED') | null;
+  purpose?: string | null;
+  anonymous?: boolean | null;
+  note?: string | null;
   /**
-   * Confirm the author gave permission to publish publicly on the site.
+   * The member sees it in their account when the request is linked to one.
    */
-  hasWrittenConsent?: boolean | null;
-  date?: string | null;
-  status?: ('draft' | 'published') | null;
-  translationMeta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
+  status: 'new' | 'contacted' | 'received' | 'cancelled';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  receipts?: {
+    docs?: (number | Receipt)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  lang?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "volunteers".
+ */
+export interface Volunteer {
+  id: number;
+  reference: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  city?: string | null;
+  areas: ('documents' | 'digitization' | 'research' | 'translation' | 'events' | 'media' | 'other')[];
+  availability?: string | null;
+  experience: string;
+  /**
+   * The member sees it in their account when the request is linked to one.
+   */
+  status: 'new' | 'reviewing' | 'accepted' | 'declined';
+  member?: (number | null) | Member;
+  staffNotes?: string | null;
+  lang?: string | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  targetType: 'book' | 'article' | 'magazine';
+  targetId: number;
+  rating: number;
+  name?: string | null;
+  body: string;
+  lang?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  fingerprint?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages".
+ */
+export interface Message {
+  id: number;
+  kind: 'contact' | 'book_request' | 'translation_issue';
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  subject?: string | null;
+  body?: string | null;
+  pageUrl?: string | null;
+  lang?: string | null;
+  status?: ('new' | 'read' | 'archived') | null;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers".
+ */
+export interface Subscriber {
+  id: number;
+  email: string;
+  lang?: string | null;
+  token?: string | null;
+  unsubscribedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Terms, names and places that are always translated the same way (e.g. سمهرم → Sumhuram).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary".
+ */
+export interface Glossary {
+  id: number;
+  termAr: string;
+  /**
+   * English also acts as the canonical Latin spelling for other languages.
+   */
+  lang:
+    | '*'
+    | 'en'
+    | 'fr'
+    | 'id'
+    | 'ms'
+    | 'ur'
+    | 'tr'
+    | 'fa'
+    | 'ru'
+    | 'de'
+    | 'es'
+    | 'it'
+    | 'pt'
+    | 'nl'
+    | 'so'
+    | 'sw'
+    | 'am'
+    | 'ha'
+    | 'hi'
+    | 'bn'
+    | 'ta'
+    | 'ml'
+    | 'gu'
+    | 'te'
+    | 'kn'
+    | 'mr'
+    | 'pa'
+    | 'ne'
+    | 'si'
+    | 'jv'
+    | 'su'
+    | 'tl'
+    | 'th'
+    | 'vi'
+    | 'km'
+    | 'my'
+    | 'zh'
+    | 'zh-tw'
+    | 'ja'
+    | 'ko'
+    | 'mn'
+    | 'kk'
+    | 'uz'
+    | 'az'
+    | 'ky'
+    | 'tg'
+    | 'tk'
+    | 'ug'
+    | 'ps'
+    | 'sd'
+    | 'ku'
+    | 'ckb'
+    | 'he'
+    | 'hy'
+    | 'ka'
+    | 'el'
+    | 'bg'
+    | 'sr'
+    | 'hr'
+    | 'bs'
+    | 'sq'
+    | 'mk'
+    | 'sl'
+    | 'sk'
+    | 'cs'
+    | 'pl'
+    | 'uk'
+    | 'be'
+    | 'ro'
+    | 'hu'
+    | 'fi'
+    | 'sv'
+    | 'no'
+    | 'da'
+    | 'is'
+    | 'et'
+    | 'lv'
+    | 'lt'
+    | 'ga'
+    | 'cy'
+    | 'ca'
+    | 'gl'
+    | 'eu'
+    | 'mt'
+    | 'af'
+    | 'zu'
+    | 'xh'
+    | 'yo'
+    | 'ig'
+    | 'rw'
+    | 'mg'
+    | 'ln'
+    | 'ti'
+    | 'om'
+    | 'lo'
+    | 'dv'
+    | 'eo'
+    | 'la';
+  translation: string;
+  kind?: ('term' | 'person' | 'place' | 'org' | 'keep') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage".
+ */
+export interface TranslationUsage {
+  id: number;
+  key?: string | null;
+  day?: string | null;
+  provider?: string | null;
+  charsIn?: number | null;
+  charsOut?: number | null;
+  calls?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1644,26 +1840,139 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "timeline".
+ * via the `definition` "partners".
  */
-export interface Timeline {
+export interface Partner {
   id: number;
-  title: string;
-  body?: string | null;
-  era?: string | null;
-  yearFrom: number;
-  yearTo?: number | null;
+  name: string;
+  category?: ('academic' | 'research' | 'cultural' | 'governmental') | null;
   /**
-   * Cite the scholarly reference for each event.
+   * Optional; shown only with the written consent below. Without it the name and collaboration areas are shown.
    */
-  source?: string | null;
-  sourceUrl?: string | null;
+  logo?: (number | null) | Media;
+  website?: string | null;
+  summary?: string | null;
   /**
-   * Link the event to a published study in the archive when one exists.
+   * Logos are not shown publicly without explicit written consent from the partner institution.
    */
-  relatedArticle?: (number | null) | Article;
-  reviewStatus?: ('pending' | 'reviewed') | null;
-  reviewedAt?: string | null;
+  hasWrittenConsent?: boolean | null;
+  order?: number | null;
+  status?: ('draft' | 'published') | null;
+  translationMeta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The Center's campaigns on the site: an event, a new release, a call for papers, a donation drive, a store offer… Each has a format, a start and end to the minute, and the pages and devices it shows on. Counts are anonymous: nothing about visitors is stored.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions".
+ */
+export interface Promotion {
+  id: number;
+  /**
+   * One short, clear line (up to 90 characters). Translated automatically.
+   */
+  headline: string;
+  /**
+   * One or two lines (up to 240 characters). Not shown in the top bar.
+   */
+  text?: string | null;
+  /**
+   * e.g. Register now, Order the book. Empty = «Details».
+   */
+  ctaLabel?: string | null;
+  /**
+   * A site path such as /donate or /events/12 (the language is added), or an https:// URL
+   */
+  ctaUrl?: string | null;
+  /**
+   * Optional; shown on the card and popup. Prefer 1200×630 with alt text in the library. Edges are cropped on different screens: keep important text out of the image.
+   */
+  image?: (number | null) | Media;
+  targeting: {
+    /**
+     * Leave empty for every page. A section includes its own pages (Books = the list and every book). A card shows only on the home page and on reading pages (an article, book, issue, event…), so choosing «Store», for example, does not show it.
+     */
+    pages?:
+      | (
+          | 'home'
+          | 'articles'
+          | 'books'
+          | 'magazines'
+          | 'events'
+          | 'forum'
+          | 'news'
+          | 'videos'
+          | 'audio'
+          | 'podcast'
+          | 'announcements'
+          | 'encyclopedia'
+          | 'culture'
+          | 'store'
+          | 'donate'
+          | 'volunteer'
+          | 'submit'
+          | 'about'
+          | 'support'
+          | 'partners'
+          | 'search'
+          | 'authors'
+          | 'topics'
+          | 'timeline'
+          | 'contact'
+        )[]
+      | null;
+    device: 'all' | 'mobile' | 'desktop';
+  };
+  behaviour: {
+    /**
+     * A popup and a corner notice can always be closed.
+     */
+    dismissible?: boolean | null;
+    /**
+     * 0 = until the visitor closes the tab.
+     */
+    hideDays: number;
+    frequency: 'once' | 'session' | 'always';
+    trigger: 'delay' | 'scroll';
+    /**
+     * At least 3 s: nothing covers the page on arrival.
+     */
+    delay: number;
+  };
+  /**
+   * Bar: one line above every page (hidden while an official announcement is pinned). Card: on the home page after the numbers strip and official announcements, and after the text on reading pages. Popup: a window after a delay, a bottom sheet on phones. Corner: a small card in a corner of the screen.
+   */
+  format: 'bar' | 'card' | 'popup' | 'corner';
+  /**
+   * Shown as a small label above the headline.
+   */
+  kind: 'event' | 'release' | 'call' | 'donation' | 'project' | 'store' | 'volunteer' | 'partner' | 'notice';
+  tone: 'brand' | 'gold' | 'paper';
+  /**
+   * In your device's time. Honoured to the minute, even on cached pages.
+   */
+  startAt: string;
+  /**
+   * Empty = until switched off by hand.
+   */
+  endAt?: string | null;
+  /**
+   * When two of the same format overlap, the higher priority shows (then the newest). One per format per page.
+   */
+  priority: number;
+  /**
+   * «Published» with a later start = scheduled.
+   */
   status: 'draft' | 'published';
   translationMeta?:
     | {
@@ -1678,229 +1987,27 @@ export interface Timeline {
   createdAt: string;
 }
 /**
- * Terms, names and places that are always translated the same way (e.g. سمهرم → Sumhuram).
- *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "glossary".
+ * via the `definition` "testimonials".
  */
-export interface Glossary {
+export interface Testimonial {
   id: number;
-  termAr: string;
+  personName: string;
+  personTitle?: string | null;
+  institution?: string | null;
+  quote: string;
+  avatar?: (number | null) | Media;
   /**
-   * English also acts as the canonical Latin spelling for other languages.
+   * e.g. Guestbook, conference speech, press statement.
    */
-  lang:
-    | '*'
-    | 'en'
-    | 'fr'
-    | 'id'
-    | 'ms'
-    | 'ur'
-    | 'tr'
-    | 'fa'
-    | 'ru'
-    | 'de'
-    | 'es'
-    | 'it'
-    | 'pt'
-    | 'nl'
-    | 'so'
-    | 'sw'
-    | 'am'
-    | 'ha'
-    | 'hi'
-    | 'bn'
-    | 'ta'
-    | 'ml'
-    | 'gu'
-    | 'te'
-    | 'kn'
-    | 'mr'
-    | 'pa'
-    | 'ne'
-    | 'si'
-    | 'jv'
-    | 'su'
-    | 'tl'
-    | 'th'
-    | 'vi'
-    | 'km'
-    | 'my'
-    | 'zh'
-    | 'zh-tw'
-    | 'ja'
-    | 'ko'
-    | 'mn'
-    | 'kk'
-    | 'uz'
-    | 'az'
-    | 'ky'
-    | 'tg'
-    | 'tk'
-    | 'ug'
-    | 'ps'
-    | 'sd'
-    | 'ku'
-    | 'ckb'
-    | 'he'
-    | 'hy'
-    | 'ka'
-    | 'el'
-    | 'bg'
-    | 'sr'
-    | 'hr'
-    | 'bs'
-    | 'sq'
-    | 'mk'
-    | 'sl'
-    | 'sk'
-    | 'cs'
-    | 'pl'
-    | 'uk'
-    | 'be'
-    | 'ro'
-    | 'hu'
-    | 'fi'
-    | 'sv'
-    | 'no'
-    | 'da'
-    | 'is'
-    | 'et'
-    | 'lv'
-    | 'lt'
-    | 'ga'
-    | 'cy'
-    | 'ca'
-    | 'gl'
-    | 'eu'
-    | 'mt'
-    | 'af'
-    | 'zu'
-    | 'xh'
-    | 'yo'
-    | 'ig'
-    | 'rw'
-    | 'mg'
-    | 'ln'
-    | 'ti'
-    | 'om'
-    | 'lo'
-    | 'dv'
-    | 'eo'
-    | 'la';
-  translation: string;
-  kind?: ('term' | 'person' | 'place' | 'org' | 'keep') | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews".
- */
-export interface Review {
-  id: number;
-  targetType: 'book' | 'article' | 'magazine';
-  targetId: number;
-  rating: number;
-  name?: string | null;
-  body: string;
-  lang?: string | null;
-  status: 'pending' | 'approved' | 'rejected';
-  fingerprint?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "messages".
- */
-export interface Message {
-  id: number;
-  kind: 'contact' | 'book_request' | 'translation_issue';
-  name?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  subject?: string | null;
-  body?: string | null;
-  pageUrl?: string | null;
-  lang?: string | null;
-  status?: ('new' | 'read' | 'archived') | null;
-  ipHash?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "subscribers".
- */
-export interface Subscriber {
-  id: number;
-  email: string;
-  lang?: string | null;
-  token?: string | null;
-  unsubscribedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * No online payment: staff contact the customer with availability, price, payment and shipping.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders".
- */
-export interface Order {
-  id: number;
-  reference: string;
-  name: string;
-  email: string;
-  phone?: string | null;
-  address: string;
-  note?: string | null;
-  items: {
-    book?: (number | null) | Book;
-    title?: string | null;
-    quantity: number;
-    id?: string | null;
-  }[];
+  source?: string | null;
   /**
-   * The member sees it in their account when the request is linked to one.
+   * Confirm the author gave permission to publish publicly on the site.
    */
-  status: 'new' | 'confirmed' | 'paid' | 'delivered' | 'cancelled';
-  member?: (number | null) | Member;
-  staffNotes?: string | null;
-  receipts?: {
-    docs?: (number | Receipt)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  lang?: string | null;
-  ipHash?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Reader accounts. Separate from staff accounts; they never open this admin.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "members".
- */
-export interface Member {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string | null;
-  /**
-   * A suspended member cannot sign in and their sessions end at once.
-   */
-  status: 'active' | 'suspended';
-  /**
-   * There is no reset email: when a member asks, type a temporary password here (10+ characters) and tell them; they change it from their account. It is neither stored nor shown.
-   */
-  temporaryPassword?: string | null;
-  lastLoginAt?: string | null;
-  passwordHash?: string | null;
-  sessionVersion?: number | null;
-  savedItems?:
+  hasWrittenConsent?: boolean | null;
+  date?: string | null;
+  status?: ('draft' | 'published') | null;
+  translationMeta?:
     | {
         [k: string]: unknown;
       }
@@ -1909,113 +2016,6 @@ export interface Member {
     | number
     | boolean
     | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Receipt photos sent with orders and pledges. Check that the money really arrived before marking the request paid or received: a photo alone is no proof of payment.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "receipts".
- */
-export interface Receipt {
-  id: number;
-  reference: string;
-  kind: 'order' | 'pledge';
-  order?: (number | null) | Order;
-  pledge?: (number | null) | Pledge;
-  amount?: number | null;
-  currency?: ('YER' | 'SAR' | 'USD' | 'AED') | null;
-  transferRef?: string | null;
-  note?: string | null;
-  /**
-   * The member sees it in their account when the request is linked to one.
-   */
-  status: 'new' | 'verified' | 'rejected';
-  member?: (number | null) | Member;
-  staffNotes?: string | null;
-  lang?: string | null;
-  ipHash?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-}
-/**
- * A pledge only: the site never takes money. Staff confirm receipt by hand.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pledges".
- */
-export interface Pledge {
-  id: number;
-  reference: string;
-  name: string;
-  email: string;
-  phone?: string | null;
-  amount?: number | null;
-  currency?: ('YER' | 'SAR' | 'USD' | 'AED') | null;
-  purpose?: string | null;
-  anonymous?: boolean | null;
-  note?: string | null;
-  /**
-   * The member sees it in their account when the request is linked to one.
-   */
-  status: 'new' | 'contacted' | 'received' | 'cancelled';
-  member?: (number | null) | Member;
-  staffNotes?: string | null;
-  receipts?: {
-    docs?: (number | Receipt)[];
-    hasNextPage?: boolean;
-    totalDocs?: number;
-  };
-  lang?: string | null;
-  ipHash?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "volunteers".
- */
-export interface Volunteer {
-  id: number;
-  reference: string;
-  name: string;
-  email: string;
-  phone?: string | null;
-  city?: string | null;
-  areas: ('documents' | 'digitization' | 'research' | 'translation' | 'events' | 'media' | 'other')[];
-  availability?: string | null;
-  experience: string;
-  /**
-   * The member sees it in their account when the request is linked to one.
-   */
-  status: 'new' | 'reviewing' | 'accepted' | 'declined';
-  member?: (number | null) | Member;
-  staffNotes?: string | null;
-  lang?: string | null;
-  ipHash?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "translation-usage".
- */
-export interface TranslationUsage {
-  id: number;
-  key?: string | null;
-  day?: string | null;
-  provider?: string | null;
-  charsIn?: number | null;
-  charsOut?: number | null;
-  calls?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2167,10 +2167,6 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'news';
-        value: number | News;
-      } | null)
-    | ({
         relationTo: 'articles';
         value: number | Article;
       } | null)
@@ -2183,6 +2179,10 @@ export interface PayloadLockedDocument {
         value: number | Magazine;
       } | null)
     | ({
+        relationTo: 'encyclopedia';
+        value: number | Encyclopedia;
+      } | null)
+    | ({
         relationTo: 'events';
         value: number | Event;
       } | null)
@@ -2191,56 +2191,48 @@ export interface PayloadLockedDocument {
         value: number | ForumEvent;
       } | null)
     | ({
-        relationTo: 'videos';
-        value: number | Video;
+        relationTo: 'timeline';
+        value: number | Timeline;
       } | null)
     | ({
-        relationTo: 'encyclopedia';
-        value: number | Encyclopedia;
-      } | null)
-    | ({
-        relationTo: 'audio';
-        value: number | Audio;
+        relationTo: 'news';
+        value: number | News;
       } | null)
     | ({
         relationTo: 'announcements';
         value: number | Announcement;
       } | null)
     | ({
-        relationTo: 'promotions';
-        value: number | Promotion;
+        relationTo: 'videos';
+        value: number | Video;
       } | null)
     | ({
-        relationTo: 'partners';
-        value: number | Partner;
-      } | null)
-    | ({
-        relationTo: 'testimonials';
-        value: number | Testimonial;
-      } | null)
-    | ({
-        relationTo: 'authors';
-        value: number | Author;
-      } | null)
-    | ({
-        relationTo: 'categories';
-        value: number | Category;
-      } | null)
-    | ({
-        relationTo: 'pages';
-        value: number | Page;
-      } | null)
-    | ({
-        relationTo: 'timeline';
-        value: number | Timeline;
+        relationTo: 'audio';
+        value: number | Audio;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'glossary';
-        value: number | Glossary;
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'receipts';
+        value: number | Receipt;
+      } | null)
+    | ({
+        relationTo: 'pledges';
+        value: number | Pledge;
+      } | null)
+    | ({
+        relationTo: 'members';
+        value: number | Member;
+      } | null)
+    | ({
+        relationTo: 'volunteers';
+        value: number | Volunteer;
       } | null)
     | ({
         relationTo: 'reviews';
@@ -2255,28 +2247,36 @@ export interface PayloadLockedDocument {
         value: number | Subscriber;
       } | null)
     | ({
-        relationTo: 'orders';
-        value: number | Order;
-      } | null)
-    | ({
-        relationTo: 'pledges';
-        value: number | Pledge;
-      } | null)
-    | ({
-        relationTo: 'receipts';
-        value: number | Receipt;
-      } | null)
-    | ({
-        relationTo: 'volunteers';
-        value: number | Volunteer;
-      } | null)
-    | ({
-        relationTo: 'members';
-        value: number | Member;
+        relationTo: 'glossary';
+        value: number | Glossary;
       } | null)
     | ({
         relationTo: 'translation-usage';
         value: number | TranslationUsage;
+      } | null)
+    | ({
+        relationTo: 'authors';
+        value: number | Author;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'partners';
+        value: number | Partner;
+      } | null)
+    | ({
+        relationTo: 'promotions';
+        value: number | Promotion;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
       } | null)
     | ({
         relationTo: 'users';
@@ -2323,30 +2323,6 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "news_select".
- */
-export interface NewsSelect<T extends boolean = true> {
-  title?: T;
-  excerpt?: T;
-  body?: T;
-  cover?: T;
-  coverUrl?: T;
-  coverAlt?: T;
-  status?: T;
-  featured?: T;
-  publishedAt?: T;
-  datePrecision?: T;
-  legacyId?: T;
-  legacyUrl?: T;
-  source?: T;
-  edited?: T;
-  translationMeta?: T;
-  dateline?: T;
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2433,6 +2409,33 @@ export interface MagazinesSelect<T extends boolean = true> {
   issueNumber?: T;
   season?: T;
   pdf?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "encyclopedia_select".
+ */
+export interface EncyclopediaSelect<T extends boolean = true> {
+  title?: T;
+  excerpt?: T;
+  body?: T;
+  cover?: T;
+  coverUrl?: T;
+  coverAlt?: T;
+  status?: T;
+  featured?: T;
+  publishedAt?: T;
+  datePrecision?: T;
+  legacyId?: T;
+  legacyUrl?: T;
+  source?: T;
+  edited?: T;
+  translationMeta?: T;
+  entryKind?: T;
+  authors?: T;
+  category?: T;
+  sources?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2567,6 +2570,74 @@ export interface ForumEventsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "timeline_select".
+ */
+export interface TimelineSelect<T extends boolean = true> {
+  title?: T;
+  body?: T;
+  era?: T;
+  yearFrom?: T;
+  yearTo?: T;
+  source?: T;
+  sourceUrl?: T;
+  relatedArticle?: T;
+  reviewStatus?: T;
+  reviewedAt?: T;
+  status?: T;
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news_select".
+ */
+export interface NewsSelect<T extends boolean = true> {
+  title?: T;
+  excerpt?: T;
+  body?: T;
+  cover?: T;
+  coverUrl?: T;
+  coverAlt?: T;
+  status?: T;
+  featured?: T;
+  publishedAt?: T;
+  datePrecision?: T;
+  legacyId?: T;
+  legacyUrl?: T;
+  source?: T;
+  edited?: T;
+  translationMeta?: T;
+  dateline?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "announcements_select".
+ */
+export interface AnnouncementsSelect<T extends boolean = true> {
+  title?: T;
+  kind?: T;
+  pinned?: T;
+  showOnHome?: T;
+  cover?: T;
+  excerpt?: T;
+  venue?: T;
+  link?: T;
+  body?: T;
+  attachment?: T;
+  attachmentUrl?: T;
+  eventDate?: T;
+  expiresAt?: T;
+  publishedAt?: T;
+  status?: T;
+  translationMeta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "videos_select".
  */
 export interface VideosSelect<T extends boolean = true> {
@@ -2602,33 +2673,6 @@ export interface VideosSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "encyclopedia_select".
- */
-export interface EncyclopediaSelect<T extends boolean = true> {
-  title?: T;
-  excerpt?: T;
-  body?: T;
-  cover?: T;
-  coverUrl?: T;
-  coverAlt?: T;
-  status?: T;
-  featured?: T;
-  publishedAt?: T;
-  datePrecision?: T;
-  legacyId?: T;
-  legacyUrl?: T;
-  source?: T;
-  edited?: T;
-  translationMeta?: T;
-  entryKind?: T;
-  authors?: T;
-  category?: T;
-  sources?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "audio_select".
  */
 export interface AudioSelect<T extends boolean = true> {
@@ -2659,96 +2703,243 @@ export interface AudioSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "announcements_select".
+ * via the `definition` "media_select".
  */
-export interface AnnouncementsSelect<T extends boolean = true> {
-  title?: T;
-  kind?: T;
-  pinned?: T;
-  showOnHome?: T;
-  cover?: T;
-  excerpt?: T;
-  venue?: T;
-  link?: T;
-  body?: T;
-  attachment?: T;
-  attachmentUrl?: T;
-  eventDate?: T;
-  expiresAt?: T;
-  publishedAt?: T;
-  status?: T;
-  translationMeta?: T;
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  sourceUrl?: T;
   updatedAt?: T;
   createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumb?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "promotions_select".
+ * via the `definition` "orders_select".
  */
-export interface PromotionsSelect<T extends boolean = true> {
-  headline?: T;
-  text?: T;
-  ctaLabel?: T;
-  ctaUrl?: T;
-  image?: T;
-  targeting?:
-    | T
-    | {
-        pages?: T;
-        device?: T;
-      };
-  behaviour?:
-    | T
-    | {
-        dismissible?: T;
-        hideDays?: T;
-        frequency?: T;
-        trigger?: T;
-        delay?: T;
-      };
-  format?: T;
-  kind?: T;
-  tone?: T;
-  startAt?: T;
-  endAt?: T;
-  priority?: T;
-  status?: T;
-  translationMeta?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "partners_select".
- */
-export interface PartnersSelect<T extends boolean = true> {
+export interface OrdersSelect<T extends boolean = true> {
+  reference?: T;
   name?: T;
-  category?: T;
-  logo?: T;
-  website?: T;
-  summary?: T;
-  hasWrittenConsent?: T;
-  order?: T;
+  email?: T;
+  phone?: T;
+  address?: T;
+  note?: T;
+  items?:
+    | T
+    | {
+        book?: T;
+        title?: T;
+        quantity?: T;
+        id?: T;
+      };
   status?: T;
-  translationMeta?: T;
+  member?: T;
+  staffNotes?: T;
+  receipts?: T;
+  lang?: T;
+  ipHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "testimonials_select".
+ * via the `definition` "receipts_select".
  */
-export interface TestimonialsSelect<T extends boolean = true> {
-  personName?: T;
-  personTitle?: T;
-  institution?: T;
-  quote?: T;
-  avatar?: T;
-  source?: T;
-  hasWrittenConsent?: T;
-  date?: T;
+export interface ReceiptsSelect<T extends boolean = true> {
+  reference?: T;
+  kind?: T;
+  order?: T;
+  pledge?: T;
+  amount?: T;
+  currency?: T;
+  transferRef?: T;
+  note?: T;
   status?: T;
-  translationMeta?: T;
+  member?: T;
+  staffNotes?: T;
+  lang?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pledges_select".
+ */
+export interface PledgesSelect<T extends boolean = true> {
+  reference?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  amount?: T;
+  currency?: T;
+  purpose?: T;
+  anonymous?: T;
+  note?: T;
+  status?: T;
+  member?: T;
+  staffNotes?: T;
+  receipts?: T;
+  lang?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "members_select".
+ */
+export interface MembersSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  status?: T;
+  temporaryPassword?: T;
+  lastLoginAt?: T;
+  passwordHash?: T;
+  sessionVersion?: T;
+  savedItems?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "volunteers_select".
+ */
+export interface VolunteersSelect<T extends boolean = true> {
+  reference?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  city?: T;
+  areas?: T;
+  availability?: T;
+  experience?: T;
+  status?: T;
+  member?: T;
+  staffNotes?: T;
+  lang?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  targetType?: T;
+  targetId?: T;
+  rating?: T;
+  name?: T;
+  body?: T;
+  lang?: T;
+  status?: T;
+  fingerprint?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages_select".
+ */
+export interface MessagesSelect<T extends boolean = true> {
+  kind?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  subject?: T;
+  body?: T;
+  pageUrl?: T;
+  lang?: T;
+  status?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers_select".
+ */
+export interface SubscribersSelect<T extends boolean = true> {
+  email?: T;
+  lang?: T;
+  token?: T;
+  unsubscribedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "glossary_select".
+ */
+export interface GlossarySelect<T extends boolean = true> {
+  termAr?: T;
+  lang?: T;
+  translation?: T;
+  kind?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "translation-usage_select".
+ */
+export interface TranslationUsageSelect<T extends boolean = true> {
+  key?: T;
+  day?: T;
+  provider?: T;
+  charsIn?: T;
+  charsOut?: T;
+  calls?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2948,19 +3139,16 @@ export interface PagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "timeline_select".
+ * via the `definition` "partners_select".
  */
-export interface TimelineSelect<T extends boolean = true> {
-  title?: T;
-  body?: T;
-  era?: T;
-  yearFrom?: T;
-  yearTo?: T;
-  source?: T;
-  sourceUrl?: T;
-  relatedArticle?: T;
-  reviewStatus?: T;
-  reviewedAt?: T;
+export interface PartnersSelect<T extends boolean = true> {
+  name?: T;
+  category?: T;
+  logo?: T;
+  website?: T;
+  summary?: T;
+  hasWrittenConsent?: T;
+  order?: T;
   status?: T;
   translationMeta?: T;
   updatedAt?: T;
@@ -2968,243 +3156,55 @@ export interface TimelineSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "promotions_select".
  */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  sourceUrl?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
-  sizes?:
+export interface PromotionsSelect<T extends boolean = true> {
+  headline?: T;
+  text?: T;
+  ctaLabel?: T;
+  ctaUrl?: T;
+  image?: T;
+  targeting?:
     | T
     | {
-        thumb?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        card?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
-        large?:
-          | T
-          | {
-              url?: T;
-              width?: T;
-              height?: T;
-              mimeType?: T;
-              filesize?: T;
-              filename?: T;
-            };
+        pages?: T;
+        device?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "glossary_select".
- */
-export interface GlossarySelect<T extends boolean = true> {
-  termAr?: T;
-  lang?: T;
-  translation?: T;
-  kind?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews_select".
- */
-export interface ReviewsSelect<T extends boolean = true> {
-  targetType?: T;
-  targetId?: T;
-  rating?: T;
-  name?: T;
-  body?: T;
-  lang?: T;
-  status?: T;
-  fingerprint?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "messages_select".
- */
-export interface MessagesSelect<T extends boolean = true> {
-  kind?: T;
-  name?: T;
-  email?: T;
-  phone?: T;
-  subject?: T;
-  body?: T;
-  pageUrl?: T;
-  lang?: T;
-  status?: T;
-  ipHash?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "subscribers_select".
- */
-export interface SubscribersSelect<T extends boolean = true> {
-  email?: T;
-  lang?: T;
-  token?: T;
-  unsubscribedAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "orders_select".
- */
-export interface OrdersSelect<T extends boolean = true> {
-  reference?: T;
-  name?: T;
-  email?: T;
-  phone?: T;
-  address?: T;
-  note?: T;
-  items?:
+  behaviour?:
     | T
     | {
-        book?: T;
-        title?: T;
-        quantity?: T;
-        id?: T;
+        dismissible?: T;
+        hideDays?: T;
+        frequency?: T;
+        trigger?: T;
+        delay?: T;
       };
-  status?: T;
-  member?: T;
-  staffNotes?: T;
-  receipts?: T;
-  lang?: T;
-  ipHash?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pledges_select".
- */
-export interface PledgesSelect<T extends boolean = true> {
-  reference?: T;
-  name?: T;
-  email?: T;
-  phone?: T;
-  amount?: T;
-  currency?: T;
-  purpose?: T;
-  anonymous?: T;
-  note?: T;
-  status?: T;
-  member?: T;
-  staffNotes?: T;
-  receipts?: T;
-  lang?: T;
-  ipHash?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "receipts_select".
- */
-export interface ReceiptsSelect<T extends boolean = true> {
-  reference?: T;
+  format?: T;
   kind?: T;
-  order?: T;
-  pledge?: T;
-  amount?: T;
-  currency?: T;
-  transferRef?: T;
-  note?: T;
+  tone?: T;
+  startAt?: T;
+  endAt?: T;
+  priority?: T;
   status?: T;
-  member?: T;
-  staffNotes?: T;
-  lang?: T;
-  ipHash?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "volunteers_select".
- */
-export interface VolunteersSelect<T extends boolean = true> {
-  reference?: T;
-  name?: T;
-  email?: T;
-  phone?: T;
-  city?: T;
-  areas?: T;
-  availability?: T;
-  experience?: T;
-  status?: T;
-  member?: T;
-  staffNotes?: T;
-  lang?: T;
-  ipHash?: T;
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "members_select".
+ * via the `definition` "testimonials_select".
  */
-export interface MembersSelect<T extends boolean = true> {
-  name?: T;
-  email?: T;
-  phone?: T;
+export interface TestimonialsSelect<T extends boolean = true> {
+  personName?: T;
+  personTitle?: T;
+  institution?: T;
+  quote?: T;
+  avatar?: T;
+  source?: T;
+  hasWrittenConsent?: T;
+  date?: T;
   status?: T;
-  temporaryPassword?: T;
-  lastLoginAt?: T;
-  passwordHash?: T;
-  sessionVersion?: T;
-  savedItems?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "translation-usage_select".
- */
-export interface TranslationUsageSelect<T extends boolean = true> {
-  key?: T;
-  day?: T;
-  provider?: T;
-  charsIn?: T;
-  charsOut?: T;
-  calls?: T;
+  translationMeta?: T;
   updatedAt?: T;
   createdAt?: T;
 }

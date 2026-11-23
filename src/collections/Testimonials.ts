@@ -12,7 +12,7 @@ export const Testimonials: CollectionConfig = {
   admin: {
     useAsTitle: 'personName',
     defaultColumns: ['personName', 'institution', 'hasWrittenConsent', 'status'],
-    group: L('المحتوى', 'Content'),
+    group: L('الهيكل والموقع', 'Site Structure'),
   },
   defaultSort: '-date',
   access: { ...contentAccess, read: readConsented },

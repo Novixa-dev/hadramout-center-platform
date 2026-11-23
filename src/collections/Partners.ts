@@ -8,7 +8,7 @@ export const Partners: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'category', 'hasWrittenConsent', 'status'],
-    group: L('المحتوى', 'Content'),
+    group: L('الهيكل والموقع', 'Site Structure'),
   },
   defaultSort: 'order',
   access: contentAccess,

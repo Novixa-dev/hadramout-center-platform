@@ -10,7 +10,7 @@ import { CURRENCIES, VOLUNTEER_AREAS, type Currency, type VolunteerArea } from '
 
 const nobody: Access = () => false;
 const noField = () => false;
-const GROUP = L('الأعضاء والطلبات', 'Members & requests');
+const GROUP = L('المنصات والخدمات', 'Platforms & Services');
 const notEditor = ({ user }: { user: unknown }) => (user as { role?: string } | null)?.role !== 'admin';
 const staffOnlyNav = ({ user }: { user: unknown }) => !['admin', 'editor'].includes((user as { role?: string } | null)?.role ?? '');
 

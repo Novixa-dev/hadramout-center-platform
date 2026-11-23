@@ -5,7 +5,7 @@ import { revalidateSite } from '../hooks/revalidate.ts';
 export const Site: GlobalConfig = {
   slug: 'site',
   label: L('إعدادات الموقع', 'Site settings'),
-  admin: { group: L('الإدارة', 'Administration') },
+  admin: { group: L('الهيكل والموقع', 'Site Structure') },
   access: { read: () => true, update: isEditorOrAdmin },
   hooks: {
     afterChange: [

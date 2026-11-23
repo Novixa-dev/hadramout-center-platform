@@ -5,7 +5,7 @@ import { isAdmin, isStaff, L } from './shared.ts';
 export const Messages: CollectionConfig = {
   slug: 'messages',
   labels: { singular: L('رسالة', 'Message'), plural: L('الرسائل', 'Messages') },
-  admin: { useAsTitle: 'subject', defaultColumns: ['kind', 'name', 'subject', 'status', 'createdAt'], group: L('التواصل', 'Inbox') },
+  admin: { useAsTitle: 'subject', defaultColumns: ['kind', 'name', 'subject', 'status', 'createdAt'], group: L('التواصل والوارد', 'Inbox & Inquiries') },
   defaultSort: '-createdAt',
   access: { read: isStaff, create: () => false, update: isStaff, delete: isAdmin },
   fields: [
@@ -47,7 +47,7 @@ export const Messages: CollectionConfig = {
 export const Subscribers: CollectionConfig = {
   slug: 'subscribers',
   labels: { singular: L('مشترك', 'Subscriber'), plural: L('مشتركو النشرة', 'Newsletter subscribers') },
-  admin: { useAsTitle: 'email', defaultColumns: ['email', 'lang', 'createdAt'], group: L('التواصل', 'Inbox') },
+  admin: { useAsTitle: 'email', defaultColumns: ['email', 'lang', 'createdAt'], group: L('التواصل والوارد', 'Inbox & Inquiries') },
   access: { read: isStaff, create: () => false, update: isStaff, delete: isAdmin },
   fields: [
     { name: 'email', type: 'email', required: true, unique: true, index: true, label: L('البريد', 'Email') },
@@ -60,7 +60,7 @@ export const Subscribers: CollectionConfig = {
 export const TranslationUsage: CollectionConfig = {
   slug: 'translation-usage',
   labels: { singular: L('استهلاك الترجمة', 'Translation usage'), plural: L('استهلاك الترجمة', 'Translation usage') },
-  admin: { useAsTitle: 'key', defaultColumns: ['day', 'provider', 'charsIn', 'charsOut', 'calls'], group: L('الترجمة', 'Translation') },
+  admin: { useAsTitle: 'key', defaultColumns: ['day', 'provider', 'charsIn', 'charsOut', 'calls'], group: L('الترجمة واللغات', 'Translation & Languages') },
   defaultSort: '-day',
   access: { read: isStaff, create: () => false, update: () => false, delete: isAdmin },
   fields: [

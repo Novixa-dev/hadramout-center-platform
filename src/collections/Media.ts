@@ -4,7 +4,7 @@ import { L, localizedText, isEditorOrAdmin, isAdmin } from './shared.ts';
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: L('ملف وسائط', 'Media file'), plural: L('الوسائط', 'Media') },
-  admin: { group: L('المحتوى', 'Content'), useAsTitle: 'filename' },
+  admin: { group: L('المركز الإعلامي', 'Media Center'), useAsTitle: 'filename' },
   access: { read: () => true, create: isEditorOrAdmin, update: isEditorOrAdmin, delete: isAdmin },
   upload: {
     staticDir: process.env.MEDIA_DIR || './data/media',

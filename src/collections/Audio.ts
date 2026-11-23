@@ -8,7 +8,7 @@ export const Audio: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'presenter', 'duration', 'status'],
-    group: L('المحتوى', 'Content'),
+    group: L('المركز الإعلامي', 'Media Center'),
   },
   defaultSort: '-publishedAt',
   access: contentAccess,
